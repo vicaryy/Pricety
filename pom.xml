@@ -20,6 +20,8 @@
 		<selenium.version>4.14.1</selenium.version>
 		<webflux.version>6.0.13</webflux.version>
 		<postgresql.version>42.6.0</postgresql.version>
+		<logback.version>1.4.11</logback.version>
+		<gson.version>2.10.1</gson.version>
 	</properties>
 
 
@@ -67,9 +69,14 @@
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
-			<version>2.10.1</version>
+			<version>${gson.version}</version>
 		</dependency>
 
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>${logback.version}</version>
+		</dependency>
 	</dependencies>
 
 

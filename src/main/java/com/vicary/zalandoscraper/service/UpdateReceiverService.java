@@ -2,38 +2,31 @@ package com.vicary.zalandoscraper.service;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.vicary.zalandoscraper.api_object.inline_query.inline_query_result.InlineQueryResult;
-import com.vicary.zalandoscraper.api_object.inline_query.inline_query_result.InlineQueryResultArticle;
-import com.vicary.zalandoscraper.api_object.inline_query.input_message_content.InputTextMessageContent;
-import com.vicary.zalandoscraper.api_object.keyboard.InlineKeyboardButton;
-import com.vicary.zalandoscraper.api_object.keyboard.InlineKeyboardMarkup;
-import com.vicary.zalandoscraper.api_object.keyboard.ReplyKeyboardRemove;
-import com.vicary.zalandoscraper.api_object.message.Message;
+import com.vicary.zalandoscraper.ActiveUser;
 import com.vicary.zalandoscraper.api_object.other.CallbackQuery;
-import com.vicary.zalandoscraper.api_request.AnswerCallbackQuery;
 import com.vicary.zalandoscraper.api_request.edit_message.DeleteMessage;
-import com.vicary.zalandoscraper.api_request.edit_message.EditMessageReplyMarkup;
-import com.vicary.zalandoscraper.api_request.edit_message.EditMessageReplyMarkupAsInlineMessage;
-import com.vicary.zalandoscraper.api_request.edit_message.EditMessageText;
-import com.vicary.zalandoscraper.api_request.inline_query.AnswerInlineQuery;
-import com.vicary.zalandoscraper.api_request.send.SendMessage;
-import com.vicary.zalandoscraper.service.RequestService;
+import com.vicary.zalandoscraper.exception.ActiveUserException;
+import com.vicary.zalandoscraper.exception.InvalidLinkException;
+import com.vicary.zalandoscraper.pattern.Pattern;
 import com.vicary.zalandoscraper.service.quick_sender.QuickSender;
 import com.vicary.zalandoscraper.service.response.CommandResponse;
+import com.vicary.zalandoscraper.service.response.LinkResponse;
+import com.vicary.zalandoscraper.service.response.ReplyMarkupResponse;
 import lombok.RequiredArgsConstructor;
 
 import com.vicary.zalandoscraper.api_object.Update;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 @Service
 @RequiredArgsConstructor
 public class UpdateReceiverService {
+
+    private final static Logger logger = LoggerFactory.getLogger(UpdateReceiverService.class);
 
     private final QuickSender quickSender;
 
@@ -41,53 +34,51 @@ public class UpdateReceiverService {
 
     private final CommandResponse commandResponse;
 
-    Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private final ReplyMarkupResponse replyMarkupResponse;
+
+    private final LinkResponse linkResponse;
+
+    private final UpdateVerification updateVerification;
+
+    private final ActiveRequestService activeRequestService;
+
+    private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     public void updateReceiver(Update update) {
-        String text = "";
-        String chatId = "";
-        if (update.getMessage() != null) {
-            text = update.getMessage().getText();
-            chatId = update.getMessage().getChat().getId().toString();
+        if (update.getMessage() == null && update.getCallbackQuery() == null) {
+            logger.info("Got update without message.");
+            return;
         }
 
-//        if (update.getCallbackQuery() != null) {
-//            queryResult(update);
-//            return;
-//        }
-//
-//
-//        if (update.getMessage() != null)
-//            chatId = update.getChatId();
-//
-//
-//        InlineKeyboardButton button = InlineKeyboardButton.builder().text("siema").callbackData("siema_callback").build();
-//        InlineKeyboardButton button1 = InlineKeyboardButton.builder().text("hej").callbackData("hej_callback").build();
-//        InlineKeyboardButton button2 = InlineKeyboardButton.builder().text("elo").callbackData("elo_callback").build();
-//
-//        List<InlineKeyboardButton> buttonList = List.of(button, button1);
-//        List<InlineKeyboardButton> buttonList1 = List.of(button, button1, button2);
-//        var inline = new InlineKeyboardMarkup(List.of(buttonList, buttonList1));
-//
-//        SendMessage sendMessage = new SendMessage(chatId, "siema");
-//        sendMessage.setReplyMarkup(inline);
-//
-//        try {
-//            Message message = requestService.sendRequest(sendMessage);
-//            System.out.println("------------------------------------------------");
-//            System.out.println("Return message: \n" + gson.toJson(message));
-//        } catch (WebClientRequestException ex) {
-//            System.out.println(ex.getMessage());
-//            System.out.println(ex.getHeaders());
-//            System.out.println(ex.getMethod());
-//        } catch (WebClientResponseException ex) {
-//            System.out.println(ex.getStatusText());
-//            System.out.println(ex.getResponseBodyAsString());
-//        }
+        try {
+            updateVerification.verify(update);
+        } catch (ActiveUserException ignored) {
+            return;
+        }
 
 
-        if (text.startsWith("/"))
-            commandResponse.response(text, chatId);
+        String text = ActiveUser.get().getText();
+        String userId = ActiveUser.get().getUserId();
+        String chatId = ActiveUser.get().getChatId();
+        try {
+            if (update.getCallbackQuery() != null)
+                replyMarkupResponse.response(update.getCallbackQuery());
+
+            else if (Pattern.isZalandoURL(text))
+                linkResponse.response(text);
+
+            else if (Pattern.isCommand(text))
+                commandResponse.response(text, chatId);
+
+        } catch (IllegalArgumentException ex) {
+            logger.warn(ex.getMessage());
+        } catch (InvalidLinkException ex) {
+            logger.warn(ex.getLoggerMessage());
+            quickSender.message(chatId, ex.getMessage(), false);
+        } finally {
+            activeRequestService.deleteByUserId(userId);
+            ActiveUser.remove();
+        }
     }
 
 
