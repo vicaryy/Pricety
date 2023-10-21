@@ -15,19 +15,19 @@ public class ReplyKeyboardMarkup implements ApiObject, ReplyMarkup {
     private List<List<KeyboardButton>> keyboard;
 
     @JsonProperty("is_persistent")
-    private Boolean isPersistent;
+    private boolean isPersistent;
 
     @JsonProperty("resize_keyboard")
-    private Boolean resizeKeyboard;
+    private boolean resizeKeyboard;
 
     @JsonProperty("one_time_keyboard")
-    private Boolean oneTimeKeyboard;
+    private boolean oneTimeKeyboard;
 
     @JsonProperty("input_field_placeholder")
-    private String inputFieldPlaceholder;
+    private final String inputFieldPlaceholder = "";
 
     @JsonProperty("selective")
-    private Boolean selective;
+    private boolean selective;
 
     @Override
     public void checkValidation() {

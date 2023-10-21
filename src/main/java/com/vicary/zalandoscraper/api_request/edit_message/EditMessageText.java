@@ -49,9 +49,9 @@ public class EditMessageText implements ApiRequest<Message> {
 
     @JsonProperty("disable_web_page_preview")
     private Boolean disableWebPagePreview;
-
-    @JsonProperty("reply_markup")
-    private InlineKeyboardMarkup replyMarkup;
+//
+//    @JsonProperty("reply_markup")
+//    private InlineKeyboardMarkup replyMarkup;
 
     public void setParseModeOnMarkdownV2() {
         parseMode = "MarkdownV2";
@@ -76,8 +76,8 @@ public class EditMessageText implements ApiRequest<Message> {
 
     @Override
     public void checkValidation() {
-        if (replyMarkup != null)
-            replyMarkup.checkValidation();
+//        if (replyMarkup != null)
+//            replyMarkup.checkValidation();
 
         if (inlineMessageId != null && (chatId != null || messageId != null))
             throw new IllegalArgumentException("If inline message id specified, chat id and message id must be null.");

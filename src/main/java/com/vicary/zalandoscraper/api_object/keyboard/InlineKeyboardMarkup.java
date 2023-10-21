@@ -17,9 +17,6 @@ public class InlineKeyboardMarkup implements ApiObject, ReplyMarkup, Validation 
 
     @Override
     public void checkValidation() {
-//        if (inlineKeyboard == null)
-//            throw new IllegalArgumentException("Inline Keyboard cannot be null.");
-
         if (inlineKeyboard != null) {
             for (List<InlineKeyboardButton> i : inlineKeyboard) {
                 for (InlineKeyboardButton ii : i) {

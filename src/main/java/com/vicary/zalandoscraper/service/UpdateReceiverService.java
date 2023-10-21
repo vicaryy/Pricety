@@ -15,6 +15,7 @@ import com.vicary.zalandoscraper.service.response.ReplyMarkupResponse;
 import lombok.RequiredArgsConstructor;
 
 import com.vicary.zalandoscraper.api_object.Update;
+import org.openqa.selenium.WebDriverException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -38,7 +39,7 @@ public class UpdateReceiverService {
 
     private final LinkResponse linkResponse;
 
-    private final UpdateVerification updateVerification;
+    private final UserAuthentication userAuthentication;
 
     private final ActiveRequestService activeRequestService;
 
@@ -51,17 +52,18 @@ public class UpdateReceiverService {
         }
 
         try {
-            updateVerification.verify(update);
+            userAuthentication.authenticate(update);
         } catch (ActiveUserException ignored) {
             return;
         }
 
-
         String text = ActiveUser.get().getText();
         String userId = ActiveUser.get().getUserId();
         String chatId = ActiveUser.get().getChatId();
+        logger.info("Got message from user '{}'", userId);
+        logger.info("Text: " + text);
         try {
-            if (update.getCallbackQuery() != null)
+            if (Pattern.isReplyMarkup(update))
                 replyMarkupResponse.response(update.getCallbackQuery());
 
             else if (Pattern.isZalandoURL(text))
@@ -75,11 +77,17 @@ public class UpdateReceiverService {
         } catch (InvalidLinkException ex) {
             logger.warn(ex.getLoggerMessage());
             quickSender.message(chatId, ex.getMessage(), false);
+        } catch (WebDriverException ex) {
+            logger.error("Web Driver exception: " + ex.getMessage());
+            quickSender.message(chatId, "Sorry but something goes wrong.", false);
+        } catch (Exception ex) {
+            logger.error("Unexpected exception: " + ex.getMessage());
+            ex.printStackTrace();
         } finally {
-            activeRequestService.deleteByUserId(userId);
-            ActiveUser.remove();
-        }
+        activeRequestService.deleteByUserId(userId);
+        ActiveUser.remove();
     }
+}
 
 
     public void queryResult(Update update) {

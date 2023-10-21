@@ -49,7 +49,7 @@ public class InlineKeyboardButton implements ApiObject, Validation {
     @Override
     public void checkValidation() {
         if (url == null) url = "";
-        if (callbackData == null) callbackData = "";
+        if (callbackData == null) callbackData = "unknown";
     }
 }
 

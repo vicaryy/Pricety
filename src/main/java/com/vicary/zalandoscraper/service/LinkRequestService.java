@@ -1,0 +1,18 @@
+package com.vicary.zalandoscraper.service;
+
+import com.vicary.zalandoscraper.entity.LinkRequestEntity;
+import com.vicary.zalandoscraper.repository.LinkRequestRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
+public class LinkRequestService {
+
+    private final LinkRequestRepository repository;
+
+
+    public void saveRequest(LinkRequestEntity entity) {
+        repository.save(entity);
+    }
+}

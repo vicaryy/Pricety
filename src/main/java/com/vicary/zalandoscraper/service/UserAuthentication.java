@@ -3,6 +3,7 @@ package com.vicary.zalandoscraper.service;
 import com.vicary.zalandoscraper.ActiveUser;
 import com.vicary.zalandoscraper.api_object.Update;
 import com.vicary.zalandoscraper.api_object.User;
+import com.vicary.zalandoscraper.api_object.message.Message;
 import com.vicary.zalandoscraper.entity.ActiveRequestEntity;
 import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.exception.ActiveUserException;
@@ -17,8 +18,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class UpdateVerification {
-    private final static Logger logger = LoggerFactory.getLogger(UpdateVerification.class);
+public class UserAuthentication {
+    private final static Logger logger = LoggerFactory.getLogger(UserAuthentication.class);
 
     private final UserService userService;
 
@@ -28,48 +29,47 @@ public class UpdateVerification {
 
     private final UserMapper userMapper;
 
-    public void verify(Update update) {
-        String userId = update.getCallbackQuery() == null
-                ? update.getMessage().getFrom().getId().toString()
-                : update.getCallbackQuery().getFrom().getId().toString();
+    public void authenticate(Update update) {
+        Message message = update.getCallbackQuery() == null
+                ? update.getMessage()
+                : update.getCallbackQuery().getMessage();
 
-        String chatId = update.getCallbackQuery() == null
-                ? update.getMessage().getChat().getId().toString()
-                : update.getCallbackQuery().getMessage().getChat().getId().toString();
-
+        String chatId = message.getChat().getId().toString();
+        String messageId = message.getMessageId().toString();
         String text = update.getCallbackQuery() == null
                 ? update.getMessage().getText()
                 : update.getCallbackQuery().getData();
 
-        checkActiveUser(userId, chatId);
+        checkActiveUser(chatId);
 
-        UserEntity userEntity = checkUserInRepository(update.getMessage().getFrom(), userId);
+        UserEntity userEntity = checkUserInRepository(message.getFrom(), chatId);
 
-        setActiveUserInThread(userEntity, text, chatId);
+        setActiveUserInThread(userEntity, text, chatId, messageId);
     }
 
-    private void checkActiveUser(String userId, String chatId) {
-        if (activeRequestService.existsByUserId(userId)) {
-            logger.info("User %s is trying to do more than one request".formatted(userId));
+    private void checkActiveUser(String chatId) {
+        if (activeRequestService.existsByUserId(chatId)) {
+            logger.info("User %s is trying to do more than one request".formatted(chatId));
             quickSender.message(chatId, "One request at a time please.", false);
             throw new ActiveUserException();
         }
-        activeRequestService.saveActiveUser(new ActiveRequestEntity(userId));
+        activeRequestService.saveActiveUser(new ActiveRequestEntity(chatId));
     }
 
-    private UserEntity checkUserInRepository(User user, String userId) {
-        if (userService.existsByUserId(userId))
-            return userService.findByUserId(userId).orElseThrow(ZalandoScraperBotException::new);
+    private UserEntity checkUserInRepository(User user, String chatId) {
+        if (userService.existsByUserId(chatId))
+            return userService.findByUserId(chatId).orElseThrow(ZalandoScraperBotException::new);
 
         UserEntity userEntity = userMapper.map(user);
         userService.saveUser(userEntity);
         return userEntity;
     }
 
-    private void setActiveUserInThread(UserEntity userEntity, String text, String chatId) {
+    private void setActiveUserInThread(UserEntity userEntity, String text, String chatId, String messageId) {
         ActiveUser activeUser = ActiveUser.get();
         activeUser.setUserId(userEntity.getUserId());
         activeUser.setChatId(chatId);
+        activeUser.setMessageId(messageId);
         activeUser.setText(text);
         activeUser.setPremium(userEntity.isPremium());
         activeUser.setAdmin(userEntity.isAdmin());

@@ -11,6 +11,8 @@ public class ActiveUser {
 
     private String chatId;
 
+    private String messageId;
+
     private String text;
 
     private boolean premium;
