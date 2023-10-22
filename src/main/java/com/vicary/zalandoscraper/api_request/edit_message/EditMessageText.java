@@ -2,6 +2,8 @@ package com.vicary.zalandoscraper.api_request.edit_message;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.vicary.zalandoscraper.api_object.keyboard.InlineKeyboardMarkup;
+import com.vicary.zalandoscraper.api_object.keyboard.ReplyKeyboardRemove;
+import com.vicary.zalandoscraper.api_object.keyboard.ReplyMarkup;
 import com.vicary.zalandoscraper.api_request.ApiRequest;
 import lombok.*;
 import com.vicary.zalandoscraper.api_object.message.Message;
@@ -19,7 +21,7 @@ public class EditMessageText implements ApiRequest<Message> {
      * Use this method to edit text and game messages.
      *
      * @param chatId             Unique identifier for the target chat or username of the target channel (in the format @channelusername).
-     *                           Required if inlineMessageId is not specified.
+     * Required if inlineMessageId is not specified.
      * @param messageId          Identifier of the message to edit. Required if inlineMessageId is not specified.
      * @param inlineMessageId    Identifier of the inline message. Required if chatId and messageId are not specified.
      * @param text               New text of the message, 1-4096 characters after entities parsing.
@@ -49,13 +51,14 @@ public class EditMessageText implements ApiRequest<Message> {
 
     @JsonProperty("disable_web_page_preview")
     private Boolean disableWebPagePreview;
-//
+
 //    @JsonProperty("reply_markup")
-//    private InlineKeyboardMarkup replyMarkup;
+//    private ReplyMarkup replyMarkup;
 
     public void setParseModeOnMarkdownV2() {
         parseMode = "MarkdownV2";
     }
+
     public void setParseModeOnMarkdown() {
         parseMode = "Markdown";
     }
@@ -78,6 +81,9 @@ public class EditMessageText implements ApiRequest<Message> {
     public void checkValidation() {
 //        if (replyMarkup != null)
 //            replyMarkup.checkValidation();
+//
+//        if (replyMarkup == null)
+//            replyMarkup = new ReplyKeyboardRemove(true, false);
 
         if (inlineMessageId != null && (chatId != null || messageId != null))
             throw new IllegalArgumentException("If inline message id specified, chat id and message id must be null.");

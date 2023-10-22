@@ -21,12 +21,6 @@ public class LinkRequestEntity {
     @Column(name = "LINK")
     private String link;
 
-    @Column(name = "CHAT_ID")
-    private String chatId;
-
-    @Column(name = "MESSAGE_ID")
-    private String messageId;
-
     @Column(name = "EXPIRATION")
     private long expiration;
 }

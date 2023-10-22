@@ -3,6 +3,9 @@ package com.vicary.zalandoscraper.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Data
 @AllArgsConstructor
@@ -12,9 +15,9 @@ import lombok.*;
 @Table(name = "USERS")
 public class UserEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID")
-    private long id;
+    @Column(name = "USER_ID")
+    @NonNull
+    private String userId;
 
     @Column(name = "NICK")
     private String nick;
@@ -28,7 +31,6 @@ public class UserEntity {
     @Column(name = "ADMIN")
     private boolean admin;
 
-    @Column(name = "USER_ID")
-    @NonNull
-    private String userId;
+    @OneToMany(mappedBy = "user")
+    Set<ProductEntity> products = new HashSet<>();
 }

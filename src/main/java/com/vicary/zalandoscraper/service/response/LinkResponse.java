@@ -2,9 +2,11 @@ package com.vicary.zalandoscraper.service.response;
 
 import com.vicary.zalandoscraper.ActiveUser;
 import com.vicary.zalandoscraper.api_object.keyboard.*;
+import com.vicary.zalandoscraper.api_object.message.Message;
 import com.vicary.zalandoscraper.api_request.edit_message.EditMessageText;
 import com.vicary.zalandoscraper.api_request.send.SendMessage;
 import com.vicary.zalandoscraper.entity.LinkRequestEntity;
+import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.service.LinkRequestService;
 import com.vicary.zalandoscraper.service.RequestService;
 import com.vicary.zalandoscraper.service.Scraper;
@@ -12,6 +14,7 @@ import com.vicary.zalandoscraper.service.quick_sender.QuickSender;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.security.SecureRandom;
@@ -34,13 +37,26 @@ public class LinkResponse {
     private final LinkRequestService linkRequestService;
 
     public void response(String URL) {
-        List<String> sizes = scraper.getSizes(URL);
+        String chatId = ActiveUser.get().getChatId();
+        int messageId = quickSender.messageWithReturn(chatId, "Give me a sec..", false).getMessageId();
+        quickSender.chatAction(chatId, "typing");
+        ActiveUser.get().setMessageId(messageId);
 
-        if (sizes.size() == 1 && sizes.get(0).contains("-oneVariant")) {
-            quickSender.message(ActiveUser.get().getChatId(), "Successfully added item to your catalog.", false);
+        List<String> variants = scraper.getSizes(URL);
+
+        if (variants.size() == 1 && variants.getFirst().contains("-oneVariant")) {
+            addProduct(URL, variants.getFirst());
         } else {
-            sendVariantMessage(sizes);
+            sendVariantMessage(variants);
         }
+    }
+
+
+    public void addProduct(String URL, String oneVariant) {
+        Product product = scraper.getProduct(URL, oneVariant);
+        System.out.println(product);
+        quickSender.deleteMessage(ActiveUser.get().getChatId(), ActiveUser.get().getMessageId());
+        quickSender.message(ActiveUser.get().getChatId(), "Product added successfully.", false);
     }
 
     public void sendVariantMessage(List<String> variants) {
@@ -78,7 +94,12 @@ public class LinkResponse {
                 .replyMarkup(replyMarkup)
                 .build();
 
-        requestService.sendRequest(sendMessage);
+        try {
+            quickSender.deleteMessage(ActiveUser.get().getChatId(), ActiveUser.get().getMessageId());
+            requestService.sendRequest(sendMessage);
+        } catch (WebClientResponseException e) {
+            System.out.println(e.getResponseBodyAsString());
+        }
     }
 
     public void addLinkRequestToRepository(String requestId) {
@@ -87,8 +108,6 @@ public class LinkResponse {
         LinkRequestEntity entity = LinkRequestEntity.builder()
                 .requestId(requestId)
                 .link(activeUser.getText())
-                .chatId(activeUser.getChatId())
-                .messageId(activeUser.getMessageId())
                 .expiration(System.currentTimeMillis() + fiveMinutes)
                 .build();
         linkRequestService.saveRequest(entity);
@@ -96,7 +115,7 @@ public class LinkResponse {
 
     public String generateRequestId() {
         StringBuilder sb = new StringBuilder();
-        IntStream intStream = ThreadLocalRandom.current().ints(8, 0, 10);
+        IntStream intStream = ThreadLocalRandom.current().ints(10, 0, 10);
         intStream.forEach(sb::append);
         return sb.toString();
     }

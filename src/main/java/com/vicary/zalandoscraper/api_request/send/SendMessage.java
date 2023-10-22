@@ -92,13 +92,11 @@ public class SendMessage implements ApiRequest<Message> {
         if (!parseMode.equals("") && (entities != null && !entities.isEmpty()))
             throw new IllegalArgumentException("If entities are provided, the parse mode cannot be active.");
 
-        if (replyMarkup != null) {
+        if (replyMarkup != null)
             replyMarkup.checkValidation();
-        }
 
-        if (replyMarkup == null) {
+        if (replyMarkup == null)
             replyMarkup = new ReplyKeyboardRemove(true, true);
-        }
     }
     @Override
     public Message getReturnObject() {

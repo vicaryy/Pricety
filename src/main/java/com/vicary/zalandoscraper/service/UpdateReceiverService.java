@@ -3,10 +3,16 @@ package com.vicary.zalandoscraper.service;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.vicary.zalandoscraper.ActiveUser;
+import com.vicary.zalandoscraper.api_object.message.Message;
 import com.vicary.zalandoscraper.api_object.other.CallbackQuery;
 import com.vicary.zalandoscraper.api_request.edit_message.DeleteMessage;
+import com.vicary.zalandoscraper.api_request.edit_message.EditMessageReplyMarkup;
+import com.vicary.zalandoscraper.api_request.edit_message.EditMessageText;
+import com.vicary.zalandoscraper.api_request.send.SendMessage;
+import com.vicary.zalandoscraper.entity.LinkRequestEntity;
 import com.vicary.zalandoscraper.exception.ActiveUserException;
 import com.vicary.zalandoscraper.exception.InvalidLinkException;
+import com.vicary.zalandoscraper.exception.ZalandoScraperBotException;
 import com.vicary.zalandoscraper.pattern.Pattern;
 import com.vicary.zalandoscraper.service.quick_sender.QuickSender;
 import com.vicary.zalandoscraper.service.response.CommandResponse;
@@ -43,7 +49,7 @@ public class UpdateReceiverService {
 
     private final ActiveRequestService activeRequestService;
 
-    private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private final LinkRequestService service;
 
     public void updateReceiver(Update update) {
         if (update.getMessage() == null && update.getCallbackQuery() == null) {
@@ -64,7 +70,7 @@ public class UpdateReceiverService {
         logger.info("Text: " + text);
         try {
             if (Pattern.isReplyMarkup(update))
-                replyMarkupResponse.response(update.getCallbackQuery());
+                replyMarkupResponse.response(text);
 
             else if (Pattern.isZalandoURL(text))
                 linkResponse.response(text);
@@ -80,14 +86,17 @@ public class UpdateReceiverService {
         } catch (WebDriverException ex) {
             logger.error("Web Driver exception: " + ex.getMessage());
             quickSender.message(chatId, "Sorry but something goes wrong.", false);
+        } catch (ZalandoScraperBotException ex) {
+            logger.error(ex.getLoggerMessage());
+            quickSender.message(chatId, ex.getMessage(), false);
         } catch (Exception ex) {
             logger.error("Unexpected exception: " + ex.getMessage());
             ex.printStackTrace();
         } finally {
-        activeRequestService.deleteByUserId(userId);
-        ActiveUser.remove();
+            activeRequestService.deleteByUserId(userId);
+            ActiveUser.remove();
+        }
     }
-}
 
 
     public void queryResult(Update update) {

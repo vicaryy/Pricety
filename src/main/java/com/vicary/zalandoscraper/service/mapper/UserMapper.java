@@ -9,11 +9,11 @@ public class UserMapper {
 
     public UserEntity map(User user) {
         return UserEntity.builder()
+                .userId(user.getId().toString())
                 .nick(user.getUsername())
                 .nationality(user.getLanguageCode())
                 .premium(false)
                 .admin(false)
-                .userId(user.getId().toString())
                 .build();
     }
 }

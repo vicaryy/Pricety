@@ -35,7 +35,7 @@ public class UserAuthentication {
                 : update.getCallbackQuery().getMessage();
 
         String chatId = message.getChat().getId().toString();
-        String messageId = message.getMessageId().toString();
+        int messageId = message.getMessageId();
         String text = update.getCallbackQuery() == null
                 ? update.getMessage().getText()
                 : update.getCallbackQuery().getData();
@@ -65,7 +65,7 @@ public class UserAuthentication {
         return userEntity;
     }
 
-    private void setActiveUserInThread(UserEntity userEntity, String text, String chatId, String messageId) {
+    private void setActiveUserInThread(UserEntity userEntity, String text, String chatId, int messageId) {
         ActiveUser activeUser = ActiveUser.get();
         activeUser.setUserId(userEntity.getUserId());
         activeUser.setChatId(chatId);

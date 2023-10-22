@@ -1,6 +1,7 @@
 package com.vicary.zalandoscraper.service.quick_sender;
 
 import com.vicary.zalandoscraper.api_object.message.Message;
+import com.vicary.zalandoscraper.api_request.edit_message.DeleteMessage;
 import com.vicary.zalandoscraper.api_request.edit_message.EditMessageText;
 import com.vicary.zalandoscraper.api_request.send.SendChatAction;
 import com.vicary.zalandoscraper.api_request.send.SendMessage;
@@ -28,6 +29,18 @@ public class QuickSender {
             requestService.sendRequestAsync(sendMessage);
         } catch (Exception ex) {
             logger.warn("Error in sending message request, message: {}", ex.getMessage());
+        }
+    }
+
+    public void deleteMessage(String chatId, int messageId) {
+        try {
+            DeleteMessage deleteMessage = DeleteMessage.builder()
+                    .chatId(chatId)
+                    .messageId(messageId)
+                    .build();
+            requestService.sendRequestAsync(deleteMessage);
+        } catch (Exception ex) {
+            logger.warn("Error in deleting message request, message: {}", ex.getMessage());
         }
     }
 

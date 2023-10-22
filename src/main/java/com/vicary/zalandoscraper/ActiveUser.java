@@ -11,7 +11,7 @@ public class ActiveUser {
 
     private String chatId;
 
-    private String messageId;
+    private int messageId;
 
     private String text;
 
