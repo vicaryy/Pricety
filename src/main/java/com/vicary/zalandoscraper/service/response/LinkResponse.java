@@ -2,25 +2,21 @@ package com.vicary.zalandoscraper.service.response;
 
 import com.vicary.zalandoscraper.ActiveUser;
 import com.vicary.zalandoscraper.api_object.keyboard.*;
-import com.vicary.zalandoscraper.api_object.message.Message;
-import com.vicary.zalandoscraper.api_request.edit_message.EditMessageText;
 import com.vicary.zalandoscraper.api_request.send.SendMessage;
 import com.vicary.zalandoscraper.entity.LinkRequestEntity;
 import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.service.LinkRequestService;
+import com.vicary.zalandoscraper.service.ProductService;
 import com.vicary.zalandoscraper.service.RequestService;
 import com.vicary.zalandoscraper.service.Scraper;
+import com.vicary.zalandoscraper.service.map.ProductMapper;
 import com.vicary.zalandoscraper.service.quick_sender.QuickSender;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
 
@@ -35,6 +31,10 @@ public class LinkResponse {
     private final RequestService requestService;
 
     private final LinkRequestService linkRequestService;
+
+    private final ProductMapper mapper;
+
+    private final ProductService productService;
 
     public void response(String URL) {
         String chatId = ActiveUser.get().getChatId();
@@ -54,7 +54,7 @@ public class LinkResponse {
 
     public void addProduct(String URL, String oneVariant) {
         Product product = scraper.getProduct(URL, oneVariant);
-        System.out.println(product);
+        productService.saveProduct(product);
         quickSender.deleteMessage(ActiveUser.get().getChatId(), ActiveUser.get().getMessageId());
         quickSender.message(ActiveUser.get().getChatId(), "Product added successfully.", false);
     }

@@ -10,9 +10,12 @@ import com.vicary.zalandoscraper.api_request.edit_message.EditMessageReplyMarkup
 import com.vicary.zalandoscraper.api_request.edit_message.EditMessageText;
 import com.vicary.zalandoscraper.api_request.send.SendMessage;
 import com.vicary.zalandoscraper.entity.LinkRequestEntity;
+import com.vicary.zalandoscraper.entity.ProductEntity;
+import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.exception.ActiveUserException;
 import com.vicary.zalandoscraper.exception.InvalidLinkException;
 import com.vicary.zalandoscraper.exception.ZalandoScraperBotException;
+import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.pattern.Pattern;
 import com.vicary.zalandoscraper.service.quick_sender.QuickSender;
 import com.vicary.zalandoscraper.service.response.CommandResponse;
@@ -27,6 +30,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Set;
 
 
 @Service
@@ -49,9 +56,31 @@ public class UpdateReceiverService {
 
     private final ActiveRequestService activeRequestService;
 
-    private final LinkRequestService service;
+    private final UserService userService;
+
+    private final ProductService productService;
+
 
     public void updateReceiver(Update update) {
+        int i = 1;
+        if (i == 1) {
+//            ActiveUser.get().setChatId("1935527130");
+//            Product product = Product.builder()
+//                    .name("Bluzza")
+//                    .description("Zajebista")
+//                    .price(99.99)
+//                    .variant("M")
+//                    .link("zalando.pl")
+//                    .lastUpdate(LocalDateTime.now())
+//                    .build();
+//            productService.saveProduct(product);
+
+//            ProductEntity product = productService.getProductById(9L);
+//            System.out.println(product.getLastUpdate().format(DateTimeFormatter.ofPattern(Pattern.datePattern())));
+            // YYYY-MM-DD HH:MM:SS.ssssss
+
+            productService.updateProductPrice(9L, 1000, "NO ALERT");
+        }
         if (update.getMessage() == null && update.getCallbackQuery() == null) {
             logger.info("Got update without message.");
             return;
@@ -67,7 +96,6 @@ public class UpdateReceiverService {
         String userId = ActiveUser.get().getUserId();
         String chatId = ActiveUser.get().getChatId();
         logger.info("Got message from user '{}'", userId);
-        logger.info("Text: " + text);
         try {
             if (Pattern.isReplyMarkup(update))
                 replyMarkupResponse.response(text);
@@ -95,38 +123,6 @@ public class UpdateReceiverService {
         } finally {
             activeRequestService.deleteByUserId(userId);
             ActiveUser.remove();
-        }
-    }
-
-
-    public void queryResult(Update update) {
-        CallbackQuery query = update.getCallbackQuery();
-        String queryId = query.getId();
-//
-//        InlineKeyboardButton inlineKeyboardButton = InlineKeyboardButton.builder()
-//                .text("")
-//                .build();
-//        EditMessageText editMessageReplyMarkup = EditMessageText.builder()
-//                .text("")
-//                .chatId("1935527130")
-//                .messageId(query.getMessage().getMessageId())
-//                .replyMarkup(new InlineKeyboardMarkup(List.of(List.of(inlineKeyboardButton))))
-//                .build();
-
-        DeleteMessage deleteMessage = DeleteMessage.builder()
-                .chatId("1935527130")
-                .messageId(query.getMessage().getMessageId())
-                .build();
-
-        try {
-            requestService.sendRequest(deleteMessage);
-        } catch (WebClientRequestException ex) {
-            System.out.println(ex.getMessage());
-            System.out.println(ex.getHeaders());
-            System.out.println(ex.getMethod());
-        } catch (WebClientResponseException ex) {
-            System.out.println(ex.getStatusText());
-            System.out.println(ex.getResponseBodyAsString());
         }
     }
 }

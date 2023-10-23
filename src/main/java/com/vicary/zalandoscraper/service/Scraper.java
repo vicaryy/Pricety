@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -39,7 +40,9 @@ public class Scraper {
             String name = getName(webDriver);
             String description = getDescription(webDriver);
             double price = 0;
-            Product product = new Product(name, description, price, variant);
+
+            // TODO
+            Product product = new Product(name, description, price, variant, URL, null);
             if (isItemSoldOut(webDriver)) {
                 logger.debug("Item sold out.");
                 return product;

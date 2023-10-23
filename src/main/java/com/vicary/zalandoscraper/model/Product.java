@@ -4,6 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import net.bytebuddy.asm.Advice;
+
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -18,4 +21,8 @@ public class Product {
     private double price;
 
     private String variant;
+
+    private String link;
+
+    private LocalDateTime lastUpdate;
 }

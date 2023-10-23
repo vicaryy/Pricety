@@ -1,4 +1,4 @@
-package com.vicary.zalandoscraper.service.mapper;
+package com.vicary.zalandoscraper.service.map;
 
 import com.vicary.zalandoscraper.api_object.User;
 import com.vicary.zalandoscraper.entity.UserEntity;

@@ -1,39 +1,45 @@
 package com.vicary.zalandoscraper.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "PRODUCTS")
+@Table(name = "products", schema = "public")
 public class ProductEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID")
+    @Column(name = "product_id")
     private Long id;
 
-    @Column(name = "PRODUCT_NAME")
+    @Column(name = "product_name")
     private String name;
 
-    @Column(name = "DESCRIPTION")
+    @Column(name = "description")
     private String description;
 
-    @Column(name = "PRICE")
+    @Column(name = "price")
     private double price;
 
-    @Column(name = "VARIANT")
+    @Column(name = "variant")
     private String variant;
 
-    @Column(name = "PRICE_ALERT")
+    @Column(name = "link")
+    private String link;
+
+    @Column(name = "price_alert")
     private String priceAlert;
 
+    @Column(name = "last_update")
+    private LocalDateTime lastUpdate;
+
     @ManyToOne
-    @JoinColumn(name = "USER_ID")
+    @JoinColumn(name = "user_id")
     private UserEntity user;
 }

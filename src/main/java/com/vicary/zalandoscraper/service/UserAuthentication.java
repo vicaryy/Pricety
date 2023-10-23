@@ -8,7 +8,7 @@ import com.vicary.zalandoscraper.entity.ActiveRequestEntity;
 import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.exception.ActiveUserException;
 import com.vicary.zalandoscraper.exception.ZalandoScraperBotException;
-import com.vicary.zalandoscraper.service.mapper.UserMapper;
+import com.vicary.zalandoscraper.service.map.UserMapper;
 import com.vicary.zalandoscraper.service.quick_sender.QuickSender;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;

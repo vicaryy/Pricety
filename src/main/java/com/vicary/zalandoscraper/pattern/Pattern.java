@@ -3,6 +3,8 @@ package com.vicary.zalandoscraper.pattern;
 import com.vicary.zalandoscraper.api_object.Update;
 import org.springframework.stereotype.Component;
 
+import java.time.format.DateTimeFormatter;
+
 @Component
 public class Pattern {
 
@@ -16,5 +18,9 @@ public class Pattern {
 
     public static boolean isReplyMarkup(Update update) {
         return update.getCallbackQuery() != null;
+    }
+
+    public static String datePattern() {
+        return "yyyy-MM-dd HH:mm:ss";
     }
 }

@@ -1,36 +1,38 @@
 package com.vicary.zalandoscraper.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@RequiredArgsConstructor
 @Builder
-@Table(name = "USERS")
+@Table(name = "users", schema = "public")
 public class UserEntity {
     @Id
-    @Column(name = "USER_ID")
-    @NonNull
+    @Column(name = "user_id")
     private String userId;
 
-    @Column(name = "NICK")
+    @Column(name = "nick")
     private String nick;
 
-    @Column(name = "NATIONALITY")
+    @Column(name = "nationality")
     private String nationality;
 
-    @Column(name = "PREMIUM")
+    @Column(name = "premium")
     private boolean premium;
 
-    @Column(name = "ADMIN")
+    @Column(name = "admin")
     private boolean admin;
 
     @OneToMany(mappedBy = "user")
-    Set<ProductEntity> products = new HashSet<>();
+    @ToString.Exclude
+    private List<ProductEntity> products;
 }
