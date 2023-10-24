@@ -14,43 +14,46 @@ public class CommandResponse {
     private final static String START = MarkdownV2.apply("Just paste link to zalando item.").get();
 
     private final static String HELP = MarkdownV2.apply("More help 🛟").toBold().newlineAfter(2).get()
-                                       + MarkdownV2.apply("For more help you can contact the administrator: ").get() + MarkdownV2.apply("@vicary1").toItalic().get();
+            + MarkdownV2.apply("For more help you can contact the administrator: ").get() + MarkdownV2.apply("@vicary1").toItalic().get();
 
     private final static String TIP = MarkdownV2.apply("Want to support me? ☕️").toBold().newlineAfter(2).get()
-                                      + MarkdownV2.apply("BTC address: 17PkbNkE1FfCcyWwJLWMkthaHTRfvBbLtT").newlineAfter().get()
-                                      + MarkdownV2.apply("ETH address: 0x2ac2cc2fc09fcb051a928c7f7dcb6c332a2e73ac").newlineAfter(2).get()
-                                      + MarkdownV2.apply("Thank you! 💞").get();
+            + MarkdownV2.apply("BTC address: 17PkbNkE1FfCcyWwJLWMkthaHTRfvBbLtT").newlineAfter().get()
+            + MarkdownV2.apply("ETH address: 0x2ac2cc2fc09fcb051a928c7f7dcb6c332a2e73ac").newlineAfter(2).get()
+            + MarkdownV2.apply("Thank you! 💞").get();
 
     private final static String EXTENSIONS = MarkdownV2.apply("Extensions 🔑").toBold().newlineAfter(2).get()
 
-                                             + MarkdownV2.apply("YouTube").toBold().newlineAfter().get()
-                                             + MarkdownV2.apply("Default extension: mp3").newlineAfter().get()
-                                             + MarkdownV2.apply("Available extensions: m4a, flac, wav, (mp4 in the future)").newlineAfter(2).get()
+            + MarkdownV2.apply("YouTube").toBold().newlineAfter().get()
+            + MarkdownV2.apply("Default extension: mp3").newlineAfter().get()
+            + MarkdownV2.apply("Available extensions: m4a, flac, wav, (mp4 in the future)").newlineAfter(2).get()
 
-                                             + MarkdownV2.apply("Soundcloud").toBold().newlineAfter().get()
-                                             + MarkdownV2.apply("Default extension: mp3").newlineAfter().get()
-                                             + MarkdownV2.apply("Available extensions: m4a, flac, wav").newlineAfter(2).get()
+            + MarkdownV2.apply("Soundcloud").toBold().newlineAfter().get()
+            + MarkdownV2.apply("Default extension: mp3").newlineAfter().get()
+            + MarkdownV2.apply("Available extensions: m4a, flac, wav").newlineAfter(2).get()
 
-                                             + MarkdownV2.apply("Twitter").toBold().newlineAfter().get()
-                                             + MarkdownV2.apply("Default extension: mp4").newlineAfter().get()
-                                             + MarkdownV2.apply("Available extensions: mp3, m4a, flac, wav").newlineAfter(2).get()
+            + MarkdownV2.apply("Twitter").toBold().newlineAfter().get()
+            + MarkdownV2.apply("Default extension: mp4").newlineAfter().get()
+            + MarkdownV2.apply("Available extensions: mp3, m4a, flac, wav").newlineAfter(2).get()
 
-                                             + MarkdownV2.apply("TikTok").toBold().newlineAfter().get()
-                                             + MarkdownV2.apply("Default extension: mp4").newlineAfter().get()
-                                             + MarkdownV2.apply("Available extensions: mp3, m4a, flac, wav").newlineAfter(2).get()
+            + MarkdownV2.apply("TikTok").toBold().newlineAfter().get()
+            + MarkdownV2.apply("Default extension: mp4").newlineAfter().get()
+            + MarkdownV2.apply("Available extensions: mp3, m4a, flac, wav").newlineAfter(2).get()
 
-                                             + MarkdownV2.apply("Instagram").toBold().newlineAfter().get()
-                                             + MarkdownV2.apply("Default extension: mp4").newlineAfter().get()
-                                             + MarkdownV2.apply("Available extensions: mp3, m4a, flac, wav").newlineAfter(2).get();
+            + MarkdownV2.apply("Instagram").toBold().newlineAfter().get()
+            + MarkdownV2.apply("Default extension: mp4").newlineAfter().get()
+            + MarkdownV2.apply("Available extensions: mp3, m4a, flac, wav").newlineAfter(2).get();
 
     private final static String LIMITS = MarkdownV2.apply("Limits ☝️").toBold().newlineAfter(2).get()
-                                         + MarkdownV2.apply("Due to Telegram's limitations, I can send files up to 50MB but this will change in the future.").get();
+            + MarkdownV2.apply("Due to Telegram's limitations, I can send files up to 50MB but this will change in the future.").get();
 
 
     public void response(String text, String chatId) {
         String message = null;
-        if (text.equals("/start")) {
+        if (text.equals("/start"))
             message = START;
+        else if (text.equals("/menu")) {
+            sendMenuBlocks();
+        }
 //        } else if (text.equals("/help")) {
 //            message = HELP;
 //        } else if (text.equals("/tip")) {
@@ -61,9 +64,12 @@ public class CommandResponse {
 //            message = LIMITS;
 //        }
 
-            if (message != null)
-                quickSender.message(chatId, message, true);
-        }
+        if (message != null)
+            quickSender.message(chatId, message, true);
+    }
+
+    public void sendMenuBlocks() {
+        quickSender.message(InlineBlock.getMenu());
     }
 }
 

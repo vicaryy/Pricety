@@ -14,6 +14,7 @@ public class UserMapper {
                 .nationality(user.getLanguageCode())
                 .premium(false)
                 .admin(false)
+                .notifyByEmail(false)
                 .build();
     }
 }

@@ -98,7 +98,7 @@ public class Scraper {
             clickCookiesButton(driverWait);
 
             if (isItemOneVariant(webDriver)) {
-                return List.of(getItemOneVariant(webDriver) + "-oneVariant");
+                return List.of("-oneVariant " + getItemOneVariant(webDriver));
             }
 
             clickSizeButton(driverWait);

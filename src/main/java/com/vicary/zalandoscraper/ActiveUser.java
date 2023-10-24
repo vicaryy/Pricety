@@ -11,9 +11,15 @@ public class ActiveUser {
 
     private String chatId;
 
+    private String nick;
+
     private int messageId;
 
     private String text;
+
+    private boolean awaitedMessage;
+
+    private boolean notifyByEmail;
 
     private boolean premium;
 

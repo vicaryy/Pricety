@@ -1,4 +1,4 @@
-package com.vicary.zalandoscraper.service;
+package com.vicary.zalandoscraper.service.entity;
 
 import com.vicary.zalandoscraper.entity.ProductEntity;
 import com.vicary.zalandoscraper.model.Product;
@@ -6,9 +6,10 @@ import com.vicary.zalandoscraper.repository.ProductRepository;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;
 import com.vicary.zalandoscraper.service.map.ProductMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -19,9 +20,10 @@ public class ProductService {
 
     private final ProductMapper mapper;
 
-    public void getProductDTO() {
+    private final UserService userService;
 
-//        repository.fin
+    public ProductDTO getProductDTOById(Long productId) {
+        return mapper.map(repository.findById(productId).get());
     }
 
     public void updateProductPrice(Long productId, double price) {
@@ -32,8 +34,19 @@ public class ProductService {
         repository.updatePrice(productId, price, priceAlert);
     }
 
+    public void updateProductPriceAlert(Long productId, String priceAlert) {
+        repository.updatePriceAlert(productId, priceAlert);
+    }
+
     public List<ProductDTO> getAllProductsDto() {
         return mapper.map(repository.findAll());
+    }
+
+    public List<ProductDTO> getAllProductsDtoByUserId(String userId) {
+        List<ProductEntity> productEntities = repository.findAllByUser(userService.findByUserId(userId).get(), Sort.by("id"));
+        if (productEntities.isEmpty())
+            return Collections.emptyList();
+        return mapper.map(productEntities);
     }
 
     public void saveProduct(Product product) {

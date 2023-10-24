@@ -19,6 +19,9 @@ public class NotificationEntity {
     @Column(name = "user_id")
     private String userId;
 
+    @Column(name = "email")
+    private String email;
+
     @Column(name = "product_name")
     private String productName;
 

@@ -1,22 +1,13 @@
 package com.vicary.zalandoscraper.service;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.vicary.zalandoscraper.ActiveUser;
-import com.vicary.zalandoscraper.api_object.message.Message;
-import com.vicary.zalandoscraper.api_object.other.CallbackQuery;
-import com.vicary.zalandoscraper.api_request.edit_message.DeleteMessage;
-import com.vicary.zalandoscraper.api_request.edit_message.EditMessageReplyMarkup;
-import com.vicary.zalandoscraper.api_request.edit_message.EditMessageText;
-import com.vicary.zalandoscraper.api_request.send.SendMessage;
-import com.vicary.zalandoscraper.entity.LinkRequestEntity;
-import com.vicary.zalandoscraper.entity.ProductEntity;
-import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.exception.ActiveUserException;
 import com.vicary.zalandoscraper.exception.InvalidLinkException;
 import com.vicary.zalandoscraper.exception.ZalandoScraperBotException;
-import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.pattern.Pattern;
+import com.vicary.zalandoscraper.service.entity.ActiveRequestService;
+import com.vicary.zalandoscraper.service.entity.ProductService;
+import com.vicary.zalandoscraper.service.entity.UserService;
 import com.vicary.zalandoscraper.service.quick_sender.QuickSender;
 import com.vicary.zalandoscraper.service.response.CommandResponse;
 import com.vicary.zalandoscraper.service.response.LinkResponse;
@@ -28,12 +19,6 @@ import org.openqa.selenium.WebDriverException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClientRequestException;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Set;
 
 
 @Service
@@ -97,7 +82,10 @@ public class UpdateReceiverService {
         String chatId = ActiveUser.get().getChatId();
         logger.info("Got message from user '{}'", userId);
         try {
-            if (Pattern.isReplyMarkup(update))
+            if (Pattern.isAwaitedMessage(ActiveUser.get().isAwaitedMessage()))
+
+
+            else if (Pattern.isReplyMarkup(update))
                 replyMarkupResponse.response(text);
 
             else if (Pattern.isZalandoURL(text))

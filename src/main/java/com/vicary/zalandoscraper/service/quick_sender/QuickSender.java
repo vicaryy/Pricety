@@ -32,6 +32,15 @@ public class QuickSender {
         }
     }
 
+
+    public void message(SendMessage sendMessage) {
+        try {
+            requestService.sendRequestAsync(sendMessage);
+        } catch (Exception ex) {
+            logger.warn("Error in sending message request, message: {}", ex.getMessage());
+        }
+    }
+
     public void deleteMessage(String chatId, int messageId) {
         try {
             DeleteMessage deleteMessage = DeleteMessage.builder()

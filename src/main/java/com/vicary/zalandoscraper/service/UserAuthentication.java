@@ -8,6 +8,9 @@ import com.vicary.zalandoscraper.entity.ActiveRequestEntity;
 import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.exception.ActiveUserException;
 import com.vicary.zalandoscraper.exception.ZalandoScraperBotException;
+import com.vicary.zalandoscraper.service.entity.ActiveRequestService;
+import com.vicary.zalandoscraper.service.entity.AwaitedMessageService;
+import com.vicary.zalandoscraper.service.entity.UserService;
 import com.vicary.zalandoscraper.service.map.UserMapper;
 import com.vicary.zalandoscraper.service.quick_sender.QuickSender;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +28,8 @@ public class UserAuthentication {
 
     private final ActiveRequestService activeRequestService;
 
+    private final AwaitedMessageService awaitedMessageService;
+
     private final QuickSender quickSender;
 
     private final UserMapper userMapper;
@@ -40,11 +45,17 @@ public class UserAuthentication {
                 ? update.getMessage().getText()
                 : update.getCallbackQuery().getData();
 
+        boolean awaitedMessage = false;
+
         checkActiveUser(chatId);
 
         UserEntity userEntity = checkUserInRepository(message.getFrom(), chatId);
 
-        setActiveUserInThread(userEntity, text, chatId, messageId);
+        setActiveUserInThread(userEntity, text, chatId, messageId, awaitedMessage);
+    }
+
+    private boolean isAwaitedMessage(String userId) {
+        return awaitedMessageService.existsByUserId(userId);
     }
 
     private void checkActiveUser(String chatId) {
@@ -65,13 +76,16 @@ public class UserAuthentication {
         return userEntity;
     }
 
-    private void setActiveUserInThread(UserEntity userEntity, String text, String chatId, int messageId) {
+    private void setActiveUserInThread(UserEntity userEntity, String text, String chatId, int messageId, boolean awaitedMessage) {
         ActiveUser activeUser = ActiveUser.get();
         activeUser.setUserId(userEntity.getUserId());
         activeUser.setChatId(chatId);
         activeUser.setMessageId(messageId);
         activeUser.setText(text);
         activeUser.setPremium(userEntity.isPremium());
+        activeUser.setNick(userEntity.getNick());
+        activeUser.setNotifyByEmail(userEntity.isNotifyByEmail());
+        activeUser.setAwaitedMessage(awaitedMessage);
         activeUser.setAdmin(userEntity.isAdmin());
     }
 }

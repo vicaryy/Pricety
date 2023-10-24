@@ -3,7 +3,7 @@ package com.vicary.zalandoscraper.service.map;
 import com.vicary.zalandoscraper.ActiveUser;
 import com.vicary.zalandoscraper.entity.ProductEntity;
 import com.vicary.zalandoscraper.model.Product;
-import com.vicary.zalandoscraper.service.UserService;
+import com.vicary.zalandoscraper.service.entity.UserService;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -35,10 +35,13 @@ public class ProductMapper {
     public ProductDTO map(ProductEntity product) {
         return ProductDTO.builder()
                 .productId(product.getId())
+                .name(product.getName())
+                .description(product.getDescription())
                 .link(product.getLink())
                 .variant(product.getVariant())
                 .price(product.getPrice())
                 .priceAlert(product.getPriceAlert())
+                .lastUpdate(product.getLastUpdate())
                 .build();
     }
 

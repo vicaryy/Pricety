@@ -22,6 +22,7 @@ public class InlineKeyboardButton implements ApiObject, Validation {
     @JsonProperty("url")
     private String url;
 
+    @NonNull
     @JsonProperty("callback_data")
     private String callbackData;
 

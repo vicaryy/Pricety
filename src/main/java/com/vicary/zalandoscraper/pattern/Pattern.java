@@ -23,4 +23,8 @@ public class Pattern {
     public static String datePattern() {
         return "yyyy-MM-dd HH:mm:ss";
     }
+
+    public static boolean isAwaitedMessage(boolean awaitedMessage) {
+        return awaitedMessage;
+    }
 }

@@ -1,4 +1,4 @@
-package com.vicary.zalandoscraper.service;
+package com.vicary.zalandoscraper.service.entity;
 
 import com.vicary.zalandoscraper.entity.ActiveRequestEntity;
 import com.vicary.zalandoscraper.repository.ActiveRequestRepository;

@@ -20,6 +20,9 @@ public class UserEntity {
     @Column(name = "user_id")
     private String userId;
 
+    @Column(name = "email")
+    private String email;
+
     @Column(name = "nick")
     private String nick;
 
@@ -31,6 +34,9 @@ public class UserEntity {
 
     @Column(name = "admin")
     private boolean admin;
+
+    @Column(name = "notify_by_email")
+    private boolean notifyByEmail;
 
     @OneToMany(mappedBy = "user")
     @ToString.Exclude
