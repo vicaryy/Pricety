@@ -14,6 +14,7 @@ import com.vicary.zalandoscraper.service.entity.UserService;
 import com.vicary.zalandoscraper.service.map.UserMapper;
 import com.vicary.zalandoscraper.service.quick_sender.QuickSender;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -45,7 +46,7 @@ public class UserAuthentication {
                 ? update.getMessage().getText()
                 : update.getCallbackQuery().getData();
 
-        boolean awaitedMessage = false;
+        boolean awaitedMessage = isAwaitedMessage(chatId);
 
         checkActiveUser(chatId);
 
@@ -54,14 +55,17 @@ public class UserAuthentication {
         setActiveUserInThread(userEntity, text, chatId, messageId, awaitedMessage);
     }
 
-    private boolean isAwaitedMessage(String userId) {
-        return awaitedMessageService.existsByUserId(userId);
+    private boolean isAwaitedMessage(String chatId) {
+        return awaitedMessageService.existsByUserId(chatId);
     }
 
+    @SneakyThrows
     private void checkActiveUser(String chatId) {
         if (activeRequestService.existsByUserId(chatId)) {
             logger.info("User %s is trying to do more than one request".formatted(chatId));
-            quickSender.message(chatId, "One request at a time please.", false);
+            int messageId = quickSender.messageWithReturn(chatId, "One request at a time please.", false).getMessageId();
+            Thread.sleep(1000);
+            quickSender.deleteMessage(chatId, messageId);
             throw new ActiveUserException();
         }
         activeRequestService.saveActiveUser(new ActiveRequestEntity(chatId));
@@ -86,6 +90,7 @@ public class UserAuthentication {
         activeUser.setNick(userEntity.getNick());
         activeUser.setNotifyByEmail(userEntity.isNotifyByEmail());
         activeUser.setAwaitedMessage(awaitedMessage);
+        activeUser.setEmail(userEntity.getEmail());
         activeUser.setAdmin(userEntity.isAdmin());
     }
 }

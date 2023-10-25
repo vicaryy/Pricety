@@ -1,9 +1,11 @@
 package com.vicary.zalandoscraper.service.response;
 
+import com.vicary.zalandoscraper.ActiveUser;
 import com.vicary.zalandoscraper.service.quick_sender.QuickSender;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
-import org.vicary.format.MarkdownV2;
+import com.vicary.zalandoscraper.format.MarkdownV2;
 
 @Component
 @RequiredArgsConstructor
@@ -50,7 +52,7 @@ public class CommandResponse {
     public void response(String text, String chatId) {
         String message = null;
         if (text.equals("/start"))
-            message = START;
+            sendStart();
         else if (text.equals("/menu")) {
             sendMenuBlocks();
         }
@@ -66,6 +68,14 @@ public class CommandResponse {
 
         if (message != null)
             quickSender.message(chatId, message, true);
+    }
+
+    @SneakyThrows
+    public void sendStart() {
+        ActiveUser user = ActiveUser.get();
+        int messageId = quickSender.messageWithReturn(user.getChatId(), "Just paste Zalando URL down below 👇", false).getMessageId();
+        Thread.sleep(2500);
+        quickSender.deleteMessage(user.getChatId(), messageId);
     }
 
     public void sendMenuBlocks() {

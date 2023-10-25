@@ -34,7 +34,7 @@ public class UpdatePollingThread implements Runnable {
     private List<Update> updates;
     private static final int BREAK_BEFORE_START = 1000; // milliseconds
     private static final int TRYING_TO_RECONNECT_DELAY = 4000; // milliseconds
-    private static final int EXECUTING_THREADS_DELAY = 100; // milliseconds
+    private static final int EXECUTING_THREADS_DELAY = 150; // milliseconds
     private static final int GET_UPDATES_DELAY = 1500; // milliseconds
     private static final int MAX_UPDATES_SIZE = 6;
 

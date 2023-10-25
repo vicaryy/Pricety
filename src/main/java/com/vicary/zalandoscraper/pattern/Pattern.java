@@ -3,10 +3,11 @@ package com.vicary.zalandoscraper.pattern;
 import com.vicary.zalandoscraper.api_object.Update;
 import org.springframework.stereotype.Component;
 
-import java.time.format.DateTimeFormatter;
-
 @Component
 public class Pattern {
+
+    private static final java.util.regex.Pattern emailPattern = java.util.regex.Pattern.compile("^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@"
+            + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$");
 
     public static boolean isZalandoURL(String text) {
         return text.startsWith("https://www.zalando.pl/") || text.startsWith("https://zalando.pl/");
@@ -20,11 +21,17 @@ public class Pattern {
         return update.getCallbackQuery() != null;
     }
 
-    public static String datePattern() {
+    public static String getDatePattern() {
         return "yyyy-MM-dd HH:mm:ss";
     }
 
     public static boolean isAwaitedMessage(boolean awaitedMessage) {
         return awaitedMessage;
+    }
+
+    public static boolean isEmailAddressValid(String emailAddress) {
+        return emailPattern
+                .matcher(emailAddress)
+                .matches();
     }
 }

@@ -4,13 +4,16 @@ import com.vicary.zalandoscraper.ActiveUser;
 import com.vicary.zalandoscraper.api_request.send.SendMessage;
 import com.vicary.zalandoscraper.entity.AwaitedMessageEntity;
 import com.vicary.zalandoscraper.entity.LinkRequestEntity;
+import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.exception.InvalidLinkException;
+import com.vicary.zalandoscraper.format.MarkdownV2;
 import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.service.entity.AwaitedMessageService;
 import com.vicary.zalandoscraper.service.entity.LinkRequestService;
 import com.vicary.zalandoscraper.service.entity.ProductService;
 import com.vicary.zalandoscraper.service.Scraper;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;
+import com.vicary.zalandoscraper.service.entity.UserService;
 import com.vicary.zalandoscraper.service.quick_sender.QuickSender;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -32,6 +35,8 @@ public class ReplyMarkupResponse {
 
     private final AwaitedMessageService awaitedMessageService;
 
+    private final UserService userService;
+
 
     public void response(String text) {
         System.out.println(text);
@@ -51,12 +56,189 @@ public class ReplyMarkupResponse {
         else if (text.startsWith("-edit "))
             displayEditPriceAlertMessage(text);
 
+        else if (text.equals("-deleteProduct"))
+            displayDeleteProduct();
+
+        else if (text.startsWith("-delete "))
+            deleteProduct(text);
+
+        else if (text.equals("-deleteAll"))
+            displayDeleteYesOrNo();
+
+        else if (text.equals("-deleteAllYes"))
+            deleteAllProducts();
+
+        else if (text.equals("-deleteAllNo"))
+            backToMenu();
+
         else if (text.equals("-exit"))
             exit();
 
         else if (text.equals("-back"))
-            back();
+            backToMenu();
 
+        else if (text.equals("-notification"))
+            displayNotification();
+
+        else if (text.equals("-enableEmail") || text.equals("-disableEmail"))
+            updateNotifyByEmail(text);
+
+        else if (text.equals("-setEmail"))
+            displaySetEmailMessage(text);
+    }
+
+
+    @SneakyThrows
+    public void displaySetEmailMessage(String text) {
+        var awaitedMessageEntity = AwaitedMessageEntity.builder()
+                .userId(ActiveUser.get().getUserId())
+                .request(text)
+                .build();
+        awaitedMessageService.saveAwaitedMessage(awaitedMessageEntity);
+        quickSender.deleteMessage(ActiveUser.get().getChatId(), ActiveUser.get().getMessageId());
+        Thread.sleep(1500);
+
+        String message = """
+                Okay, send me a new email address.
+                                
+                Type DELETE if you want to delete your email address.""";
+
+        quickSender.message(ActiveUser.get().getUserId(), message, false);
+    }
+
+
+    @SneakyThrows
+    public void updateNotifyByEmail(String text) {
+        ActiveUser user = ActiveUser.get();
+
+        quickSender.deleteMessage(user.getChatId(), user.getMessageId());
+
+        if (user.getEmail() == null) {
+            int messageId = quickSender.messageWithReturn(user.getChatId(), "You have to set up an email address.", false).getMessageId();
+            user.setMessageId(messageId);
+            Thread.sleep(2000);
+            displayNotification();
+            return;
+        }
+        boolean notifyByEmail = text.equals("-enableEmail");
+        userService.updateNotifyByEmailById(user.getUserId(), notifyByEmail);
+        user.setNotifyByEmail(notifyByEmail);
+        Thread.sleep(1000);
+        displayNotification();
+    }
+
+
+    public void displayNotification() {
+        ActiveUser user = ActiveUser.get();
+
+        quickSender.deleteMessage(user.getChatId(), user.getMessageId());
+
+        String email = user.getEmail() == null ? "not specified" : user.getEmail();
+
+        quickSender.message(InlineBlock.getNotification(user.isNotifyByEmail(), email));
+    }
+
+
+    @SneakyThrows
+    public void deleteAllProducts() {
+        ActiveUser user = ActiveUser.get();
+
+        quickSender.deleteMessage(user.getChatId(), user.getMessageId());
+
+        productService.deleteAllProductsByUserId(user.getUserId());
+
+        int messageId = quickSender.messageWithReturn(user.getChatId(), "All products deleted successfully", false).getMessageId();
+        Thread.sleep(2000);
+
+        quickSender.deleteMessage(user.getChatId(), messageId);
+        quickSender.message(InlineBlock.getMenu());
+    }
+
+
+    @SneakyThrows
+    public void displayDeleteYesOrNo() {
+        ActiveUser user = ActiveUser.get();
+
+        quickSender.deleteMessage(user.getChatId(), user.getMessageId());
+
+        quickSender.message(InlineBlock.getDeleteYesOrNo());
+        Thread.sleep(1500);
+    }
+
+    @SneakyThrows
+    public void deleteProduct(String text) {
+        String[] textArray = text.split(" ");
+        long productId = Long.parseLong(textArray[1]);
+        ActiveUser user = ActiveUser.get();
+
+        quickSender.deleteMessage(user.getChatId(), user.getMessageId());
+
+        productService.deleteProductById(productId);
+
+        int messageId = quickSender.messageWithReturn(user.getChatId(), "Product deleted successfully.", false).getMessageId();
+        Thread.sleep(2000);
+        quickSender.deleteMessage(user.getChatId(), messageId);
+        quickSender.message(InlineBlock.getMenu());
+    }
+
+
+    @SneakyThrows
+    public void displayDeleteProduct() {
+        ActiveUser user = ActiveUser.get();
+        List<ProductDTO> productDTOList = productService.getAllProductsDtoByUserId(user.getUserId());
+
+        quickSender.deleteMessage(user.getChatId(), user.getMessageId());
+
+        if (productDTOList.isEmpty()) {
+            quickSender.deleteMessage(user.getChatId(), user.getMessageId());
+            int messageId = quickSender.messageWithReturn(user.getChatId(), "You don't have any products.", false).getMessageId();
+            Thread.sleep(2000);
+            quickSender.deleteMessage(user.getChatId(), messageId);
+            quickSender.message(InlineBlock.getMenu());
+            return;
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = 0; i < productDTOList.size(); i++) {
+            ProductDTO dto = productDTOList.get(i);
+
+            if (productDTOList.size() == 1)
+                sb.append("Product:\n\n");
+
+            else if (i == 0)
+                sb.append("Products:\n\n");
+
+            String price = dto.getPrice() == 0 ? "Sold Out" : String.format("%.2f zł", dto.getPrice());
+            String variant = dto.getVariant();
+            if (variant.startsWith("-oneVariant "))
+                variant = variant.substring(12);
+
+            sb.append("""     
+                    Product nr %d
+                    Name: %s
+                    Description: %s
+                    Variant: %s
+                    Price: %s"""
+                    .formatted(i + 1,
+                            dto.getName(),
+                            dto.getDescription(),
+                            variant,
+                            price));
+
+            if (i != productDTOList.size() - 1)
+                sb.append("\n\n------------\n\n");
+        }
+
+        sb.append("\n\nPlease select the item number you want to delete.");
+
+        SendMessage sendMessage = SendMessage.builder()
+                .chatId(user.getChatId())
+                .text(sb.toString())
+                .disableWebPagePreview(true)
+                .replyMarkup(InlineBlock.getProductChoice(productDTOList, "-delete"))
+                .build();
+        quickSender.message(sendMessage);
     }
 
 
@@ -66,39 +248,49 @@ public class ReplyMarkupResponse {
                 .userId(ActiveUser.get().getUserId())
                 .request(text)
                 .build();
-//        awaitedMessageService.saveAwaitedMessage(awaitedMessageEntity);
+        awaitedMessageService.saveAwaitedMessage(awaitedMessageEntity);
         quickSender.deleteMessage(ActiveUser.get().getChatId(), ActiveUser.get().getMessageId());
         Thread.sleep(1500);
 
         String[] textArray = text.split(" ");
         Long productId = Long.valueOf(textArray[1]);
 
-        ProductDTO productDTO = productService.getProductDTOById(productId);
+        ProductDTO dto = productService.getProductDTOById(productId);
 
+        String price = dto.getPrice() == 0 ? "Sold Out" : String.format("%.2f zł", dto.getPrice());
+        String variant = dto.getVariant();
+        if (variant.startsWith("-oneVariant "))
+            variant = variant.substring(12);
 
         String message = """
                 Product to edit:
-                
+                                
                 Name: %s
                 Description: %s
-                Price: %.2f
+                Variant: %s
+                Price: %s
                 Price Alert: %s
-                
+                                
                 ------------
-                
+                                
                 Okay, send me a new price alert.
                 For example: 100.50zł
-                
+                                
                 Type AUTO for automatic notification.
                 Type 0 if you don't want notification at all."""
-                .formatted(productDTO.getName(), productDTO.getDescription(), productDTO.getPrice(), productDTO.getPriceAlert());
+                .formatted(dto.getName(),
+                        dto.getDescription(),
+                        variant,
+                        price, dto.getPriceAlert());
 
         quickSender.message(ActiveUser.get().getUserId(), message, false);
     }
 
-    public void back() {
+    @SneakyThrows
+    public void backToMenu() {
         quickSender.deleteMessage(ActiveUser.get().getChatId(), ActiveUser.get().getMessageId());
         quickSender.message(InlineBlock.getMenu());
+        Thread.sleep(1500);
     }
 
     @SneakyThrows
@@ -128,11 +320,25 @@ public class ReplyMarkupResponse {
             else if (i == 0)
                 sb.append("Products:\n\n");
 
+            String price = dto.getPrice() == 0 ? "Sold Out" : String.format("%.2f zł", dto.getPrice());
+            String variant = dto.getVariant();
+            if (variant.startsWith("-oneVariant "))
+                variant = variant.substring(12);
+
             sb.append("""     
-                    Product nr %d
+                    Product %d
+                    
+                    Name: %s
                     Description: %s
-                    Price: %.2f zł
-                    Price alert: %s""".formatted(i + 1, dto.getDescription(), dto.getPrice(), dto.getPriceAlert()));
+                    Variant: %s
+                    Price: %s
+                    Price alert: %s"""
+                    .formatted(i + 1,
+                            dto.getName(),
+                            dto.getDescription(),
+                            variant,
+                            price,
+                            dto.getPriceAlert()));
 
             if (i != productDTOList.size() - 1)
                 sb.append("\n\n------------\n\n");
@@ -144,7 +350,7 @@ public class ReplyMarkupResponse {
                 .chatId(user.getChatId())
                 .text(sb.toString())
                 .disableWebPagePreview(true)
-                .replyMarkup(InlineBlock.getProductChoice(productDTOList))
+                .replyMarkup(InlineBlock.getProductChoice(productDTOList, "-edit"))
                 .build();
         quickSender.message(sendMessage);
     }
@@ -163,7 +369,7 @@ public class ReplyMarkupResponse {
     @SneakyThrows
     public void exit() {
         quickSender.deleteMessage(ActiveUser.get().getChatId(), ActiveUser.get().getMessageId());
-        Thread.sleep(1500);
+        Thread.sleep(2000);
     }
 
 
@@ -194,14 +400,23 @@ public class ReplyMarkupResponse {
             else if (i == 0)
                 sb.append("That's your all products:\n\n");
 
+            String price = dto.getPrice() == 0 ? "Sold Out" : String.format("%.2f zł", dto.getPrice());
             sb.append("""     
-                    Product nr %d
+                    Product %d
+                    
                     Name: %s
                     Description: %s
                     Link: %s
                     Variant: %s
-                    Price: %.2f zł
-                    Price alert: %s""".formatted(i + 1, dto.getName(), dto.getDescription(), dto.getLink(), dto.getVariant(), dto.getPrice(), dto.getPriceAlert()));
+                    Price: %s
+                    Price alert: %s""".
+                    formatted(i + 1,
+                            dto.getName(),
+                            dto.getDescription(),
+                            dto.getLink(),
+                            dto.getVariant(),
+                            price,
+                            dto.getPriceAlert()));
 
             if (i != productDTOList.size() - 1)
                 sb.append("\n\n------------\n\n");
@@ -221,6 +436,7 @@ public class ReplyMarkupResponse {
     }
 
 
+    @SneakyThrows
     public void addProduct(String text) {
         String chatId = ActiveUser.get().getChatId();
         String[] arrayText = text.split(" ");
@@ -236,7 +452,9 @@ public class ReplyMarkupResponse {
 
         productService.saveProduct(product);
         quickSender.deleteMessage(chatId, messageId);
-        quickSender.message(chatId, "Product added successfully.", false);
+        int messageId1 = quickSender.messageWithReturn(ActiveUser.get().getChatId(), "Product added successfully.", false).getMessageId();
+        Thread.sleep(2000);
+        quickSender.deleteMessage(ActiveUser.get().getChatId(), messageId1);
     }
 
 

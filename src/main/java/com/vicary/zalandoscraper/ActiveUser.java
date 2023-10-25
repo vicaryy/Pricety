@@ -17,6 +17,8 @@ public class ActiveUser {
 
     private String text;
 
+    private String email;
+
     private boolean awaitedMessage;
 
     private boolean notifyByEmail;

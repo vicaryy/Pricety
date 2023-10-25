@@ -2,13 +2,16 @@ package com.vicary.zalandoscraper.service;
 
 import com.vicary.zalandoscraper.ActiveUser;
 import com.vicary.zalandoscraper.exception.ActiveUserException;
+import com.vicary.zalandoscraper.exception.IllegalInputException;
 import com.vicary.zalandoscraper.exception.InvalidLinkException;
 import com.vicary.zalandoscraper.exception.ZalandoScraperBotException;
 import com.vicary.zalandoscraper.pattern.Pattern;
 import com.vicary.zalandoscraper.service.entity.ActiveRequestService;
+import com.vicary.zalandoscraper.service.entity.AwaitedMessageService;
 import com.vicary.zalandoscraper.service.entity.ProductService;
 import com.vicary.zalandoscraper.service.entity.UserService;
 import com.vicary.zalandoscraper.service.quick_sender.QuickSender;
+import com.vicary.zalandoscraper.service.response.AwaitedMessageResponse;
 import com.vicary.zalandoscraper.service.response.CommandResponse;
 import com.vicary.zalandoscraper.service.response.LinkResponse;
 import com.vicary.zalandoscraper.service.response.ReplyMarkupResponse;
@@ -45,27 +48,11 @@ public class UpdateReceiverService {
 
     private final ProductService productService;
 
+    private final AwaitedMessageResponse awaitedMessageResponse;
+
 
     public void updateReceiver(Update update) {
-        int i = 1;
-        if (i == 1) {
-//            ActiveUser.get().setChatId("1935527130");
-//            Product product = Product.builder()
-//                    .name("Bluzza")
-//                    .description("Zajebista")
-//                    .price(99.99)
-//                    .variant("M")
-//                    .link("zalando.pl")
-//                    .lastUpdate(LocalDateTime.now())
-//                    .build();
-//            productService.saveProduct(product);
 
-//            ProductEntity product = productService.getProductById(9L);
-//            System.out.println(product.getLastUpdate().format(DateTimeFormatter.ofPattern(Pattern.datePattern())));
-            // YYYY-MM-DD HH:MM:SS.ssssss
-
-            productService.updateProductPrice(9L, 1000, "NO ALERT");
-        }
         if (update.getMessage() == null && update.getCallbackQuery() == null) {
             logger.info("Got update without message.");
             return;
@@ -83,7 +70,7 @@ public class UpdateReceiverService {
         logger.info("Got message from user '{}'", userId);
         try {
             if (Pattern.isAwaitedMessage(ActiveUser.get().isAwaitedMessage()))
-
+                awaitedMessageResponse.response();
 
             else if (Pattern.isReplyMarkup(update))
                 replyMarkupResponse.response(text);
@@ -96,7 +83,7 @@ public class UpdateReceiverService {
 
         } catch (IllegalArgumentException ex) {
             logger.warn(ex.getMessage());
-        } catch (InvalidLinkException ex) {
+        } catch (InvalidLinkException | IllegalInputException ex) {
             logger.warn(ex.getLoggerMessage());
             quickSender.message(chatId, ex.getMessage(), false);
         } catch (WebDriverException ex) {

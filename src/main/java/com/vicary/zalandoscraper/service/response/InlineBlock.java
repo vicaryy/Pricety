@@ -4,6 +4,7 @@ import com.vicary.zalandoscraper.ActiveUser;
 import com.vicary.zalandoscraper.api_object.keyboard.InlineKeyboardButton;
 import com.vicary.zalandoscraper.api_object.keyboard.InlineKeyboardMarkup;
 import com.vicary.zalandoscraper.api_request.send.SendMessage;
+import com.vicary.zalandoscraper.format.MarkdownV2;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;
 
 import java.util.ArrayList;
@@ -32,9 +33,20 @@ public class InlineBlock {
     private final static InlineKeyboardButton deleteProduct = new InlineKeyboardButton("Delete Product", "-deleteProduct");
 
     private final static InlineKeyboardButton notification = new InlineKeyboardButton("Notification", "-notification");
+
+    private final static InlineKeyboardButton deleteAll = new InlineKeyboardButton("Delete All", "-deleteAll");
+
     private final static InlineKeyboardButton back = new InlineKeyboardButton("Back To Menu", "-back");
 
     private final static InlineKeyboardButton exit = new InlineKeyboardButton("Exit", "-exit");
+
+    private final static InlineKeyboardButton deleteAllYes = new InlineKeyboardButton("Yes", "-deleteAllYes");
+
+    private final static InlineKeyboardButton deleteAllNo = new InlineKeyboardButton("No", "-deleteAllNo");
+
+    private final static InlineKeyboardButton enableOrDisable = new InlineKeyboardButton("","");
+
+    private final static InlineKeyboardButton setEmail = new InlineKeyboardButton("","");
 
     private final static List<InlineKeyboardButton> listOfButtons = List.of(allProducts, addProduct);
 
@@ -46,19 +58,61 @@ public class InlineBlock {
 
     private final static List<InlineKeyboardButton> listOfButtons4 = List.of(back);
 
-    private final static List<List<InlineKeyboardButton>> backButtons = List.of(listOfButtons4);
+    private final static List<InlineKeyboardButton> listOfButtons5 = List.of(deleteAll);
 
-    private final static List<List<InlineKeyboardButton>> menuButtons = List.of(listOfButtons, listOfButtons1, listOfButtons2, listOfButtons3);
+    private final static List<InlineKeyboardButton> listOfButtons6 = List.of(deleteAllYes, deleteAllNo);
 
-    private final static InlineKeyboardMarkup menuMarkup = new InlineKeyboardMarkup(menuButtons);
+    private final static List<InlineKeyboardButton> listOfButtons7 = List.of(enableOrDisable);
 
-    private final static InlineKeyboardMarkup backMarkup = new InlineKeyboardMarkup(backButtons);
+    private final static List<InlineKeyboardButton> listOfButtons8 = List.of(setEmail);
+
+    private final static InlineKeyboardMarkup menuMarkup = new InlineKeyboardMarkup(List.of(listOfButtons, listOfButtons1, listOfButtons2, listOfButtons3));
+
+    private final static InlineKeyboardMarkup backMarkup = new InlineKeyboardMarkup(List.of(listOfButtons4));
+
+    private final static InlineKeyboardMarkup yesOrNoMarkup = new InlineKeyboardMarkup(List.of(listOfButtons6));
+
+    private final static InlineKeyboardMarkup notificationMarkup = new InlineKeyboardMarkup(List.of(listOfButtons7, listOfButtons8, listOfButtons4));
+
+    public static SendMessage getNotification(boolean isNotifyByEmailActive, String email) {
+        if (isNotifyByEmailActive) {
+            enableOrDisable.setText("Disable email notifications");
+            enableOrDisable.setCallbackData("-disableEmail");
+        } else {
+            enableOrDisable.setText("Enable email notifications");
+            enableOrDisable.setCallbackData("-enableEmail");
+        }
+
+        if (email.equals("not specified")) {
+            setEmail.setText("Set email");
+            setEmail.setCallbackData("-setEmail");
+        } else {
+            setEmail.setText("Change email");
+            setEmail.setCallbackData("-setEmail");
+        }
+
+        String message = """
+                Notification 📧
+                            
+                I am able to send price notification via email
+                
+                Status: %s    
+                Your email: %s"""
+                .formatted(isNotifyByEmailActive ? "Enabled" : "Disabled", email);
+
+        return SendMessage.builder()
+                .text(message)
+                .chatId(ActiveUser.get().getChatId())
+                .replyMarkup(notificationMarkup)
+                .build();
+    }
 
     public static SendMessage getMenu() {
         ActiveUser user = ActiveUser.get();
 
         String menuMessage = """
                 Hi %s,
+                
                 %s""".formatted(user.getNick(), HI_MESSAGES.get(ThreadLocalRandom.current().nextInt(HI_MESSAGES.size())));
 
         return SendMessage.builder()
@@ -72,13 +126,26 @@ public class InlineBlock {
         return backMarkup;
     }
 
-    public static InlineKeyboardMarkup getProductChoice(List<ProductDTO> productDTOList) {
+    public static SendMessage getDeleteYesOrNo() {
+        ActiveUser user = ActiveUser.get();
+
+        String yesOrNoMessage = "Are you sure you want to delete all your products?";
+
+        return SendMessage.builder()
+                .chatId(user.getChatId())
+                .text(yesOrNoMessage)
+                .replyMarkup(yesOrNoMarkup)
+                .build();
+    }
+
+    public static InlineKeyboardMarkup getProductChoice(List<ProductDTO> productDTOList, String callbackDataType) {
         List<List<InlineKeyboardButton>> listOfListsOfButtons = new ArrayList<>();
         List<InlineKeyboardButton> listOfButtons = new ArrayList<>();
 
+
         for (int i = 0; i < productDTOList.size(); i++) {
 
-            listOfButtons.add(new InlineKeyboardButton(String.valueOf(i + 1), "-edit " + productDTOList.get(i).getProductId()));
+            listOfButtons.add(new InlineKeyboardButton(String.valueOf(i + 1), callbackDataType + " " + productDTOList.get(i).getProductId()));
             if (i == productDTOList.size() - 1) {
                 listOfListsOfButtons.add(listOfButtons);
             }
@@ -92,6 +159,9 @@ public class InlineBlock {
                 listOfButtons.clear();
             }
         }
+
+        if (callbackDataType.equals("-delete"))
+            listOfListsOfButtons.add(listOfButtons5);
 
         listOfListsOfButtons.add(listOfButtons4);
 

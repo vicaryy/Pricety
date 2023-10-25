@@ -2,6 +2,7 @@ package com.vicary.zalandoscraper.service.entity;
 
 import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +31,14 @@ public class UserService {
 
     public Optional<UserEntity> findByUserNick(String nick) {
         return repository.findByNick(nick);
+    }
+
+    public void updateNotifyByEmailById(String userId, boolean notifyByEmail) {
+        repository.updateNotifyByEmailById(userId, notifyByEmail);
+    }
+
+    public void updateEmailById(String userId, String email) {
+        repository.updateEmailById(userId, email);
     }
 
     public boolean isUserAdmin(String userId) {

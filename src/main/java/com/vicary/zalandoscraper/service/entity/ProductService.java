@@ -49,6 +49,14 @@ public class ProductService {
         return mapper.map(productEntities);
     }
 
+    public void deleteProductById(Long id) {
+        repository.deleteById(id);
+    }
+
+    public void deleteAllProductsByUserId(String userId) {
+        repository.deleteAllByUserId(userId);
+    }
+
     public void saveProduct(Product product) {
         repository.save(mapper.map(product));
     }

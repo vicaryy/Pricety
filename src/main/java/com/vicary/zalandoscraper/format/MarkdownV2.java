@@ -1,4 +1,4 @@
-package org.vicary.format;
+package com.vicary.zalandoscraper.format;
 
 import java.util.Arrays;
 import java.util.List;

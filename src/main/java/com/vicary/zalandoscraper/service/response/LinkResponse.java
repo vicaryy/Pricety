@@ -12,6 +12,7 @@ import com.vicary.zalandoscraper.service.Scraper;
 import com.vicary.zalandoscraper.service.map.ProductMapper;
 import com.vicary.zalandoscraper.service.quick_sender.QuickSender;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
@@ -52,11 +53,14 @@ public class LinkResponse {
     }
 
 
+    @SneakyThrows
     public void addProduct(String URL, String oneVariant) {
         Product product = scraper.getProduct(URL, oneVariant);
         productService.saveProduct(product);
         quickSender.deleteMessage(ActiveUser.get().getChatId(), ActiveUser.get().getMessageId());
-        quickSender.message(ActiveUser.get().getChatId(), "Product added successfully.", false);
+        int messageId = quickSender.messageWithReturn(ActiveUser.get().getChatId(), "Product added successfully.", false).getMessageId();
+        Thread.sleep(2000);
+        quickSender.deleteMessage(ActiveUser.get().getChatId(), messageId);
     }
 
     public void sendVariantMessage(List<String> variants) {
