@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -13,6 +12,8 @@ import java.time.LocalDateTime;
 @Builder
 public class ProductDTO {
     private Long productId;
+
+    private String userId;
 
     private String name;
 
@@ -28,5 +29,7 @@ public class ProductDTO {
 
     private String priceAlert;
 
-    private LocalDateTime lastUpdate;
+    private String email;
+
+    private boolean notifyByEmail;
 }

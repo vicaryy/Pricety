@@ -36,9 +36,6 @@ public class ProductEntity {
     @Column(name = "price_alert")
     private String priceAlert;
 
-    @Column(name = "last_update")
-    private LocalDateTime lastUpdate;
-
     @ManyToOne
     @JoinColumn(name = "user_id")
     private UserEntity user;

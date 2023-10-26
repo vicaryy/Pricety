@@ -30,7 +30,7 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
             update products
             set price = :price, price_alert = :priceAlert
             where product_id = :productId""", nativeQuery = true)
-    void updatePrice(@Param("productId") Long productId, @Param("price") double price, @Param("priceAlert") String priceAlert);
+    void updatePriceAndPriceAlert(@Param("productId") Long productId, @Param("price") double price, @Param("priceAlert") String priceAlert);
 
     @Transactional
     @Modifying

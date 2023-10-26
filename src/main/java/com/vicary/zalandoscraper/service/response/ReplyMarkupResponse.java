@@ -1,6 +1,7 @@
 package com.vicary.zalandoscraper.service.response;
 
 import com.vicary.zalandoscraper.ActiveUser;
+import com.vicary.zalandoscraper.PrettyTime;
 import com.vicary.zalandoscraper.api_request.send.SendMessage;
 import com.vicary.zalandoscraper.entity.AwaitedMessageEntity;
 import com.vicary.zalandoscraper.entity.LinkRequestEntity;
@@ -8,12 +9,9 @@ import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.exception.InvalidLinkException;
 import com.vicary.zalandoscraper.format.MarkdownV2;
 import com.vicary.zalandoscraper.model.Product;
-import com.vicary.zalandoscraper.service.entity.AwaitedMessageService;
-import com.vicary.zalandoscraper.service.entity.LinkRequestService;
-import com.vicary.zalandoscraper.service.entity.ProductService;
+import com.vicary.zalandoscraper.service.entity.*;
 import com.vicary.zalandoscraper.service.Scraper;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;
-import com.vicary.zalandoscraper.service.entity.UserService;
 import com.vicary.zalandoscraper.service.quick_sender.QuickSender;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -36,6 +34,8 @@ public class ReplyMarkupResponse {
     private final AwaitedMessageService awaitedMessageService;
 
     private final UserService userService;
+
+    private final UpdatesHistoryService updatesHistoryService;
 
 
     public void response(String text) {
@@ -110,8 +110,6 @@ public class ReplyMarkupResponse {
     @SneakyThrows
     public void updateNotifyByEmail(String text) {
         ActiveUser user = ActiveUser.get();
-
-        quickSender.deleteMessage(user.getChatId(), user.getMessageId());
 
         if (user.getEmail() == null) {
             int messageId = quickSender.messageWithReturn(user.getChatId(), "You have to set up an email address.", false).getMessageId();
@@ -421,9 +419,11 @@ public class ReplyMarkupResponse {
             if (i != productDTOList.size() - 1)
                 sb.append("\n\n------------\n\n");
 
-            if (i == productDTOList.size() - 1)
-                sb.append("\n\nLast updated: Tutaj powinien być last update // TODO");
+//            if (i == productDTOList.size() - 1)
+//                sb.append("\n\nLast updated: ").append(PrettyTime.get(updatesHistoryService.getLastUpdateTime()));
+
         }
+        sb.append("\n\nLast updated: ").append(PrettyTime.get(updatesHistoryService.getLastUpdateTime()));
 
         SendMessage sendMessage = SendMessage.builder()
                 .chatId(user.getChatId())
@@ -445,7 +445,7 @@ public class ReplyMarkupResponse {
         String variant = arrayText[2];
 
         quickSender.deleteMessage(chatId, ActiveUser.get().getMessageId());
-        int messageId = quickSender.messageWithReturn(chatId, "Adding product..", false).getMessageId();
+        int messageId = quickSender.messageWithReturn(chatId, "Adding product...", false).getMessageId();
         quickSender.chatAction(chatId, "typing");
 
         Product product = scraper.getProduct(link, variant);

@@ -3,6 +3,7 @@ package com.vicary.zalandoscraper.service;
 import com.vicary.zalandoscraper.ActiveUser;
 import com.vicary.zalandoscraper.exception.InvalidLinkException;
 import com.vicary.zalandoscraper.model.Product;
+import com.vicary.zalandoscraper.service.dto.ProductDTO;
 import com.vicary.zalandoscraper.tag.Tag;
 import lombok.RequiredArgsConstructor;
 import org.openqa.selenium.*;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -113,6 +115,85 @@ public class Scraper {
             webDriver.quit();
         }
         return sizes;
+    }
+
+
+    protected List<ProductDTO> updateProducts(List<ProductDTO> productDTOS) {
+        String zalandoURL = "https://www.zalando.pl/salvatore-ferragamo-gancini-gent-zegarek-blacksilver-3sf52m01p-q11.html";
+        String givenSize = "42";
+
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--headless=new",
+                "--user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36",
+                "--remote-allow-origins=*");
+
+        List<String> windowHandles = new ArrayList<>();
+        WebDriver webDriver = new ChromeDriver(options);
+        WebDriverWait driverWait = new WebDriverWait(webDriver, Duration.ofSeconds(2L));
+
+        for (String url : zalandoURLs) {
+            webDriver.switchTo().newWindow(WindowType.WINDOW).get(url);
+            windowHandles.add(webDriver.getWindowHandle());
+        }
+
+        int z = 1;
+        for (String handle : windowHandles) {
+            System.out.println("---------------------------------------");
+            System.out.println("Item nr. " + z);
+            z++;
+            webDriver.switchTo().window(handle);
+
+//            webDriver.navigate().to(zalandoURL);
+
+            checkLinkValidation(webDriver);
+
+            clickCookiesButton(driverWait);
+
+            WebElement oneSizeButton = getElementFromDriver(webDriver, By.cssSelector("span.sDq_FX._2kjxJ6.dgII7d.Yb63TQ"));
+            if (oneSizeButton != null && oneSizeButton.getText().equals("One Size")) {
+                String name = webDriver.findElement(By.cssSelector("span._ZDS_REF_SCOPE_._5FHGm_")).getText();
+                String description = webDriver.findElement(By.cssSelector("span.EKabf7.R_QwOV")).getText();
+                String price = driverWait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("span.sDq_FX._4sa1cA"))).getText();
+                System.out.println("Size: One size");
+                System.out.println(name);
+                System.out.println(description);
+                System.out.println(price);
+                continue;
+            }
+
+
+            clickSizeButton(driverWait);
+
+            List<WebElement> euSizes = getEuSizes(driverWait);
+
+//            System.out.println("Available sizes: ");
+//            euSizes.stream().forEach(e -> System.out.println(e.getText()));
+
+            int sizeCount = -1;
+            for (int i = 0; i < euSizes.size(); i++) {
+                if (euSizes.get(i).getText().equals(givenSize)) {
+                    euSizes.get(i).click();
+                    sizeCount = i;
+                }
+            }
+
+            if (sizeCount == -1) {
+                System.out.println("Size is not available");
+                continue;
+            }
+
+            String name = webDriver.findElement(By.cssSelector("span._ZDS_REF_SCOPE_._5FHGm_")).getText();
+            String description = webDriver.findElement(By.cssSelector("span.EKabf7.R_QwOV")).getText();
+            String price = driverWait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("span.sDq_FX._4sa1cA"))).getText();
+            System.out.println("Size: " + givenSize);
+            System.out.println(name);
+            System.out.println(description);
+            System.out.println(price);
+
+        }
+
+        webDriver.quit();
+    }
     }
 
 

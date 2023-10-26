@@ -2,13 +2,16 @@ package com.vicary.zalandoscraper.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.checkerframework.common.value.qual.DoesNotMatchRegex;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Table(name = "notifications")
 public class NotificationEntity {
     @Id
@@ -36,4 +39,7 @@ public class NotificationEntity {
 
     @Column(name = "price_alert")
     private String priceAlert;
+
+    @Column(name = "notify_by_email")
+    private boolean notifyByEmail;
 }

@@ -26,12 +26,12 @@ public class ProductService {
         return mapper.map(repository.findById(productId).get());
     }
 
-    public void updateProductPrice(Long productId, double price) {
+    public void updatePriceById(Long productId, double price) {
         repository.updatePrice(productId, price);
     }
 
-    public void updateProductPrice(Long productId, double price, String priceAlert) {
-        repository.updatePrice(productId, price, priceAlert);
+    public void updatePriceAndPriceAlertById(Long productId, double price, String priceAlert) {
+        repository.updatePriceAndPriceAlert(productId, price, priceAlert);
     }
 
     public void updateProductPriceAlert(Long productId, String priceAlert) {
@@ -44,9 +44,26 @@ public class ProductService {
 
     public List<ProductDTO> getAllProductsDtoByUserId(String userId) {
         List<ProductEntity> productEntities = repository.findAllByUser(userService.findByUserId(userId).get(), Sort.by("id"));
+
         if (productEntities.isEmpty())
             return Collections.emptyList();
+
         return mapper.map(productEntities);
+    }
+
+    public void updateProductPrice(List<ProductDTO> productDTOs) {
+        for (ProductDTO p : productDTOs) {
+            if (p.getPriceAlert().equals("AUTO") || p.getPriceAlert().equals("0"))
+                updatePriceById(p.getProductId(), p.getNewPrice());
+
+            else {
+                double priceAlert = Double.parseDouble(p.getPriceAlert());
+                if (p.getNewPrice() <= priceAlert)
+                    updatePriceAndPriceAlertById(p.getProductId(), p.getNewPrice(), "0");
+                else
+                    updatePriceById(p.getProductId(), p.getNewPrice());
+            }
+        }
     }
 
     public void deleteProductById(Long id) {

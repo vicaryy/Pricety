@@ -41,7 +41,7 @@ public class AwaitedMessageResponse {
         String[] requestArray = request.split(" ");
 
         Long productId = Long.parseLong(requestArray[1]);
-        String priceAlert = getPriceAlertFromText(user.getText(), request);
+        String priceAlert = getPriceAlertFromText(user.getText());
 
         productService.updateProductPriceAlert(productId, priceAlert);
 
