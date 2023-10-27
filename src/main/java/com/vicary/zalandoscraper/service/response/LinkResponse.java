@@ -58,9 +58,7 @@ public class LinkResponse {
         Product product = scraper.getProduct(URL, oneVariant);
         productService.saveProduct(product);
         quickSender.deleteMessage(ActiveUser.get().getChatId(), ActiveUser.get().getMessageId());
-        int messageId = quickSender.messageWithReturn(ActiveUser.get().getChatId(), "Product added successfully.", false).getMessageId();
-        Thread.sleep(2000);
-        quickSender.deleteMessage(ActiveUser.get().getChatId(), messageId);
+        quickSender.message(ActiveUser.get().getChatId(), "Product added successfully.", false);
     }
 
     public void sendVariantMessage(List<String> variants) {

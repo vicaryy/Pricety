@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.time.Year;
 import java.util.List;
 
 @Service
@@ -30,12 +31,14 @@ public class NotificationService {
 
 
     public void saveNotifications(List<NotificationEntity> notificationEntities) {
-        int i = 0;
-        for (; i < notificationEntities.size(); i++)
-            if (isNotificationValid(notificationEntities.get(0)))
-                repository.save(notificationEntities.get(0));
+        int savedEntities = 0;
+        for (NotificationEntity n : notificationEntities)
+            if (isNotificationValid(n)) {
+                repository.save(n);
+                savedEntities++;
+            }
 
-        logger.info("Added {} notifications to database.", i);
+        logger.info("Added {} notifications to database.", savedEntities);
     }
 
 
@@ -44,7 +47,7 @@ public class NotificationService {
             return false;
 
         if (n.getPriceAlert().equals("AUTO"))
-            return n.getNewPrice() < n.getOldPrice();
+            return n.getNewPrice() != n.getOldPrice() && n.getNewPrice() < n.getOldPrice();
 
         double priceAlert = Double.parseDouble(n.getPriceAlert());
 
@@ -61,7 +64,7 @@ public class NotificationService {
         notificationSender.send(notifications);
         deleteAllNotifications();
 
-        logger.info("Sent and deleted {} notifications.", notifications.size());
+//        logger.info("Sent and deleted {} notifications.", notifications.size());
     }
 
     public void deleteAllNotifications() {

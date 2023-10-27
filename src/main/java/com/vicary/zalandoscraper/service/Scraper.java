@@ -6,6 +6,7 @@ import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;
 import com.vicary.zalandoscraper.tag.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -16,7 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +28,97 @@ public class Scraper {
     private final static Logger logger = LoggerFactory.getLogger(Scraper.class);
 
     private final ChromeOptions options;
+
+
+    @SneakyThrows
+    protected List<ProductDTO> updateProducts(List<ProductDTO> DTOs) {
+
+        long currentTime = System.currentTimeMillis();
+
+        WebDriver webDriver = null;
+
+        try {
+            // setting webDriver
+            webDriver = new ChromeDriver(options);
+            WebDriverWait driverWait = new WebDriverWait(webDriver, Duration.ofSeconds(3L));
+
+            // creating windowHandles IDs
+            List<String> windowHandles = new ArrayList<>();
+            String mainWindow = webDriver.getWindowHandle();
+            for (int i = 0; i < DTOs.size(); i++) {
+
+                // opening new windows and adding windows IDs to list
+                webDriver.switchTo().newWindow(WindowType.TAB).get(DTOs.get(i).getLink());
+                windowHandles.add(webDriver.getWindowHandle());
+
+                if (i == 0)
+                    clickCookiesButton(driverWait);
+
+                // if list with IDs has 10 elements or DTOs is last element
+                if (windowHandles.size() == 23 || i == DTOs.size() - 1) {
+
+                    for (int k = 0; k < windowHandles.size(); k++) {
+                        // switching window to first windows in list
+                        webDriver.switchTo().window(windowHandles.get(k));
+
+                        double newPrice = 0;
+                        ProductDTO dto = DTOs.get(i - windowHandles.size() + 1 + k);
+                        dto.setNewPrice(newPrice);
+
+                        if (!isLinkValidate(webDriver) || isItemSoldOut(webDriver)) {
+                            webDriver.close();
+                            continue;
+                        }
+
+                        if (dto.getVariant().contains("-oneVariant")) {
+                            dto.setNewPrice(getPrice(driverWait));
+                            webDriver.close();
+                            continue;
+                        }
+
+                        if (isVariantAlreadyChosen(webDriver, dto.getVariant())) {
+                            dto.setNewPrice(getPrice(driverWait));
+                            webDriver.close();
+                            continue;
+                        }
+
+                        clickSizeButton(driverWait);
+
+                        List<WebElement> availableSizes = getAvailableSizes(driverWait);
+
+                        boolean sizeAvailable = false;
+                        for (WebElement e : availableSizes) {
+                            if (e.getText().equals(dto.getVariant())) {
+                                e.click();
+                                sizeAvailable = true;
+                                break;
+                            }
+                        }
+
+                        if (!sizeAvailable) {
+                            webDriver.close();
+                            continue;
+                        }
+
+                        dto.setNewPrice(getPrice(driverWait));
+                        webDriver.close();
+                    }
+                    windowHandles.clear();
+                    webDriver.switchTo().window(mainWindow);
+                }
+            }
+        } catch (WebDriverException ex) {
+            logger.error("Error while updating products: " + ex.getMessage());
+            throw new RuntimeException();
+        } finally {
+            assert webDriver != null;
+            webDriver.quit();
+        }
+
+        System.out.println("It takes me: " + (System.currentTimeMillis() - currentTime) / 1000 + " seconds");
+        return DTOs;
+    }
+
 
     public Product getProduct(String URL, String variant) {
         WebDriver webDriver = null;
@@ -43,8 +135,7 @@ public class Scraper {
             String description = getDescription(webDriver);
             double price = 0;
 
-            // TODO
-            Product product = new Product(name, description, price, variant, URL, null);
+            Product product = new Product(name, description, price, variant, URL);
             if (isItemSoldOut(webDriver)) {
                 logger.debug("Item sold out.");
                 return product;
@@ -95,7 +186,9 @@ public class Scraper {
 
             webDriver.get(URL);
 
-            isLinkValidate(webDriver);
+            if (!isLinkValidate(webDriver))
+                throw new InvalidLinkException("It seems your link is incorrect, please check it and try again.", "User %s specified wrong link: %s".formatted(ActiveUser.get().getUserId(), ActiveUser.get().getText()));
+
 
             clickCookiesButton(driverWait);
 
@@ -118,85 +211,6 @@ public class Scraper {
     }
 
 
-    protected List<ProductDTO> updateProducts(List<ProductDTO> productDTOS) {
-        String zalandoURL = "https://www.zalando.pl/salvatore-ferragamo-gancini-gent-zegarek-blacksilver-3sf52m01p-q11.html";
-        String givenSize = "42";
-
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless=new",
-                "--user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36",
-                "--remote-allow-origins=*");
-
-        List<String> windowHandles = new ArrayList<>();
-        WebDriver webDriver = new ChromeDriver(options);
-        WebDriverWait driverWait = new WebDriverWait(webDriver, Duration.ofSeconds(2L));
-
-        for (String url : zalandoURLs) {
-            webDriver.switchTo().newWindow(WindowType.WINDOW).get(url);
-            windowHandles.add(webDriver.getWindowHandle());
-        }
-
-        int z = 1;
-        for (String handle : windowHandles) {
-            System.out.println("---------------------------------------");
-            System.out.println("Item nr. " + z);
-            z++;
-            webDriver.switchTo().window(handle);
-
-//            webDriver.navigate().to(zalandoURL);
-
-            checkLinkValidation(webDriver);
-
-            clickCookiesButton(driverWait);
-
-            WebElement oneSizeButton = getElementFromDriver(webDriver, By.cssSelector("span.sDq_FX._2kjxJ6.dgII7d.Yb63TQ"));
-            if (oneSizeButton != null && oneSizeButton.getText().equals("One Size")) {
-                String name = webDriver.findElement(By.cssSelector("span._ZDS_REF_SCOPE_._5FHGm_")).getText();
-                String description = webDriver.findElement(By.cssSelector("span.EKabf7.R_QwOV")).getText();
-                String price = driverWait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("span.sDq_FX._4sa1cA"))).getText();
-                System.out.println("Size: One size");
-                System.out.println(name);
-                System.out.println(description);
-                System.out.println(price);
-                continue;
-            }
-
-
-            clickSizeButton(driverWait);
-
-            List<WebElement> euSizes = getEuSizes(driverWait);
-
-//            System.out.println("Available sizes: ");
-//            euSizes.stream().forEach(e -> System.out.println(e.getText()));
-
-            int sizeCount = -1;
-            for (int i = 0; i < euSizes.size(); i++) {
-                if (euSizes.get(i).getText().equals(givenSize)) {
-                    euSizes.get(i).click();
-                    sizeCount = i;
-                }
-            }
-
-            if (sizeCount == -1) {
-                System.out.println("Size is not available");
-                continue;
-            }
-
-            String name = webDriver.findElement(By.cssSelector("span._ZDS_REF_SCOPE_._5FHGm_")).getText();
-            String description = webDriver.findElement(By.cssSelector("span.EKabf7.R_QwOV")).getText();
-            String price = driverWait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("span.sDq_FX._4sa1cA"))).getText();
-            System.out.println("Size: " + givenSize);
-            System.out.println(name);
-            System.out.println(description);
-            System.out.println(price);
-
-        }
-
-        webDriver.quit();
-    }
-    }
-
-
     private String getName(WebDriver webDriver) {
         WebElement name = getElementFromDriver(webDriver, By.cssSelector(Tag.NAME.get()));
         return name == null ? "" : name.getText();
@@ -208,22 +222,28 @@ public class Scraper {
     }
 
     private double getPrice(WebDriverWait driverWait) {
-        WebElement price = getElementFromDriver(driverWait, By.cssSelector(Tag.PRICE.get()));
-        String[] priceArray = price.getText().split(" ");
-        for (int i = 0; i < priceArray.length; i++) {
-            if (priceArray[i].equals("zł")) {
-                String priceInString = priceArray[i - 1];
-                return Double.parseDouble(priceInString.replaceFirst(",", "."));
-            }
-        }
-        return 0;
+        WebElement priceElement = getElementFromDriver(driverWait, By.cssSelector(Tag.PRICE.get()));
+        String price = priceElement.getText();
+
+        if (price.startsWith("od"))
+            price = price.substring(3);
+
+        price = price.substring(0, price.length() - 3);
+
+        if (price.contains(" "))
+            price = price.replaceAll(" ", "");
+
+        return Double.parseDouble(price.replaceFirst(",", "."));
+    }
+
+    private boolean isVariantAlreadyChosen(WebDriver webDriver, String variant) {
+        WebElement alreadyChosen = getElementFromDriver(webDriver, By.cssSelector(Tag.ALREADY_CHOSEN.get()));
+        return alreadyChosen != null && alreadyChosen.getText().equals(variant);
     }
 
     private boolean isItemSoldOut(WebDriver webDriver) {
         WebElement soldOut = getElementFromDriver(webDriver, By.cssSelector(Tag.SOLD_OUT.get()));
-        if (soldOut != null && soldOut.getText().equals("Artykuł wyprzedany"))
-            return true;
-        return false;
+        return soldOut != null && soldOut.getText().equals("Artykuł wyprzedany");
     }
 
     private List<WebElement> getAvailableSizes(WebDriverWait driverWait) {
@@ -244,17 +264,18 @@ public class Scraper {
         return element.findElements(By.cssSelector(Tag.ALL_SIZES.get()));
     }
 
-    private void isLinkValidate(WebDriver webDriver) {
+
+    private boolean isLinkValidate(WebDriver webDriver) {
         WebElement linkValidate = getElementFromDriver(webDriver, By.cssSelector(Tag.LINK_VALIDATION.get()));
-        if (linkValidate == null) {
-            throw new InvalidLinkException("It seems your link is incorrect, please check it and try again.", "User %s specified wrong link: %s".formatted(ActiveUser.get().getUserId(), ActiveUser.get().getText()));
-        }
+        return linkValidate != null;
     }
 
     private void clickCookiesButton(WebDriverWait driverWait) {
         try {
             driverWait.until(ExpectedConditions.elementToBeClickable(By.cssSelector(Tag.COOKIES_BUTTON.get()))).click();
-        } catch (TimeoutException ignored) {
+        } catch (TimeoutException | StaleElementReferenceException ignored) {
+            if (getElementFromDriver(driverWait, By.cssSelector(Tag.COOKIES_BUTTON.get())) != null)
+                clickCookiesButton(driverWait);
         }
     }
 

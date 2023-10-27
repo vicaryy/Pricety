@@ -255,7 +255,8 @@ public class ReplyMarkupResponse {
 
         ProductDTO dto = productService.getProductDTOById(productId);
 
-        String price = dto.getPrice() == 0 ? "Sold Out" : String.format("%.2f zł", dto.getPrice());
+        String price = dto.getPrice() == 0 ? "Sold Out" : String.format("%.2f zł", dto.getPrice()).replaceFirst(",", ".");
+        String priceAlert = dto.getPriceAlert().equals("0") ? "OFF" : dto.getPriceAlert().equals("AUTO") ? "AUTO" : dto.getPriceAlert() + " zł";
         String variant = dto.getVariant();
         if (variant.startsWith("-oneVariant "))
             variant = variant.substring(12);
@@ -279,7 +280,8 @@ public class ReplyMarkupResponse {
                 .formatted(dto.getName(),
                         dto.getDescription(),
                         variant,
-                        price, dto.getPriceAlert());
+                        price,
+                        priceAlert);
 
         quickSender.message(ActiveUser.get().getUserId(), message, false);
     }
@@ -318,14 +320,15 @@ public class ReplyMarkupResponse {
             else if (i == 0)
                 sb.append("Products:\n\n");
 
-            String price = dto.getPrice() == 0 ? "Sold Out" : String.format("%.2f zł", dto.getPrice());
+            String price = dto.getPrice() == 0 ? "Sold Out" : String.format("%.2f zł", dto.getPrice()).replaceFirst(",", ".");
+            String priceAlert = dto.getPriceAlert().equals("0") ? "OFF" : dto.getPriceAlert().equals("AUTO") ? "AUTO" : dto.getPriceAlert() + " zł";
             String variant = dto.getVariant();
             if (variant.startsWith("-oneVariant "))
                 variant = variant.substring(12);
 
             sb.append("""     
                     Product %d
-                    
+                                        
                     Name: %s
                     Description: %s
                     Variant: %s
@@ -336,7 +339,7 @@ public class ReplyMarkupResponse {
                             dto.getDescription(),
                             variant,
                             price,
-                            dto.getPriceAlert()));
+                            priceAlert));
 
             if (i != productDTOList.size() - 1)
                 sb.append("\n\n------------\n\n");
@@ -398,10 +401,14 @@ public class ReplyMarkupResponse {
             else if (i == 0)
                 sb.append("That's your all products:\n\n");
 
-            String price = dto.getPrice() == 0 ? "Sold Out" : String.format("%.2f zł", dto.getPrice());
+            String price = dto.getPrice() == 0 ? "Sold Out" : String.format("%.2f zł", dto.getPrice()).replaceFirst(",", ".");
+            String priceAlert = dto.getPriceAlert().equals("0") ? "OFF" : dto.getPriceAlert().equals("AUTO") ? "AUTO" : dto.getPriceAlert() + " zł";
+            String variant = dto.getVariant();
+            if (variant.startsWith("-oneVariant"))
+                variant = variant.substring(12);
             sb.append("""     
                     Product %d
-                    
+                                        
                     Name: %s
                     Description: %s
                     Link: %s
@@ -412,17 +419,14 @@ public class ReplyMarkupResponse {
                             dto.getName(),
                             dto.getDescription(),
                             dto.getLink(),
-                            dto.getVariant(),
+                            variant,
                             price,
-                            dto.getPriceAlert()));
+                            priceAlert));
 
             if (i != productDTOList.size() - 1)
                 sb.append("\n\n------------\n\n");
-
-//            if (i == productDTOList.size() - 1)
-//                sb.append("\n\nLast updated: ").append(PrettyTime.get(updatesHistoryService.getLastUpdateTime()));
-
         }
+
         sb.append("\n\nLast updated: ").append(PrettyTime.get(updatesHistoryService.getLastUpdateTime()));
 
         SendMessage sendMessage = SendMessage.builder()
@@ -442,19 +446,19 @@ public class ReplyMarkupResponse {
         String[] arrayText = text.split(" ");
         String requestId = arrayText[1];
         String link = getLink(requestId);
-        String variant = arrayText[2];
+        StringBuilder variant = new StringBuilder();
+        for (int i = 2; i < arrayText.length; i++)
+            variant.append(arrayText[i]).append(" ");
 
         quickSender.deleteMessage(chatId, ActiveUser.get().getMessageId());
         int messageId = quickSender.messageWithReturn(chatId, "Adding product...", false).getMessageId();
         quickSender.chatAction(chatId, "typing");
 
-        Product product = scraper.getProduct(link, variant);
+        Product product = scraper.getProduct(link, variant.toString().trim());
 
         productService.saveProduct(product);
         quickSender.deleteMessage(chatId, messageId);
-        int messageId1 = quickSender.messageWithReturn(ActiveUser.get().getChatId(), "Product added successfully.", false).getMessageId();
-        Thread.sleep(2000);
-        quickSender.deleteMessage(ActiveUser.get().getChatId(), messageId1);
+        quickSender.messageWithReturn(ActiveUser.get().getChatId(), "Product added successfully.", false);
     }
 
 

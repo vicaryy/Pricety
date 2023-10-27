@@ -59,9 +59,7 @@ public class AwaitedMessageResponse {
         if (user.getText().equalsIgnoreCase("DELETE")) {
             user.setText(null);
             userService.updateNotifyByEmailById(user.getUserId(), false);
-        }
-
-        else if (!Pattern.isEmailAddressValid(user.getText()))
+        } else if (!Pattern.isEmailAddressValid(user.getText()))
             throw new IllegalInputException("Invalid email.", "User '%s' typed invalid email '%s'".formatted(ActiveUser.get().getUserId(), ActiveUser.get().getText()));
 
         userService.updateEmailById(user.getUserId(), user.getText());
@@ -89,12 +87,19 @@ public class AwaitedMessageResponse {
             if (text.contains(","))
                 text = text.replaceFirst(",", ".");
 
-            priceAlert = Math.max(Double.parseDouble(text), 0);
+            priceAlert = Double.parseDouble(text);
+
+            if (priceAlert < 0)
+                throw new NumberFormatException();
+
+            if (priceAlert == 0)
+                return "0";
 
         } catch (NumberFormatException ex) {
             throw new IllegalInputException("Invalid price alert.", "User '%s' typed invalid message '%s'".formatted(ActiveUser.get().getUserId(), text));
         }
-        return String.format("%.2f zł", priceAlert);
+
+        return String.format("%.2f", priceAlert).replaceFirst(",", ".");
     }
 }
 

@@ -31,9 +31,9 @@ public class ProductUpdater implements Runnable {
 
     private final Thread productUpdaterThread = new Thread(this);
 
-    private final static int DELAY_BEFORE_START = 50000;   // 5 seconds
+    private final static int DELAY_BEFORE_START = 5000;   // 5 seconds
 
-    private final static int DELAY_BETWEEN_UPDATES = 1000 * 60 * 5; // 5 minutes
+    private final static int DELAY_BETWEEN_UPDATES = 10000; // 5 minutes
 
 
     @PostConstruct
@@ -48,18 +48,27 @@ public class ProductUpdater implements Runnable {
 
             while (!Thread.currentThread().isInterrupted()) {
                 update();
+                Thread.sleep(DELAY_BETWEEN_UPDATES);
             }
 
         } catch (Exception ex) {
             logger.error("[Product Updater] Error: " + ex.getMessage());
             logger.error("[Product Updater] Thread interrupted.");
+            ex.printStackTrace();
         } finally {
             productUpdaterThread.interrupt();
         }
     }
 
     private void update() throws InterruptedException {
-        List<ProductDTO> updatedDTOs = scraper.updateProducts(productService.getAllProductsDto());
+        List<ProductDTO> updatedDTOs = productService.getAllProductsDto();
+
+        if (updatedDTOs.isEmpty()) {
+            logger.info("Tried to update but there is no products!");
+            return;
+        }
+
+        scraper.updateProducts(updatedDTOs);
         
         updateProductsPriceInRepository(updatedDTOs);
 
@@ -68,8 +77,6 @@ public class ProductUpdater implements Runnable {
         saveToNotificationsRepository(updatedDTOs);
 
         sendNotificationsToUsers();
-
-        Thread.sleep(DELAY_BETWEEN_UPDATES);
     }
 
 

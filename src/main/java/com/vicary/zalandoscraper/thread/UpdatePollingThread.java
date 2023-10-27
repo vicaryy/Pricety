@@ -2,6 +2,7 @@ package com.vicary.zalandoscraper.thread;
 
 import com.vicary.zalandoscraper.configuration.BotInfo;
 import com.vicary.zalandoscraper.service.UpdateReceiverService;
+import com.vicary.zalandoscraper.service.entity.ActiveRequestService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -26,7 +27,7 @@ public class UpdatePollingThread implements Runnable {
 
     private final UpdateReceiverService updateReceiverService;
 
-//    private final ActiveRequestService activeRequestService;
+    private final ActiveRequestService activeRequestService;
 
     private final WebClient client = WebClient.create();
     private final ExecutorService cachedExecutor = Executors.newCachedThreadPool();
@@ -47,7 +48,7 @@ public class UpdatePollingThread implements Runnable {
     @Override
     public void run() {
         sleep(BREAK_BEFORE_START);
-//        activeRequestService.deleteAllActiveUsers();
+        activeRequestService.deleteAllActiveUsers();
         while (!Thread.currentThread().isInterrupted()) {
             try {
                 updates = getUpdates();

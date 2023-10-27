@@ -11,7 +11,8 @@ public enum Tag {
     COOKIES_BUTTON("button[class='uc-btn uc-btn-default btn-deny'"),
     SIZE_BUTTON("//*[@id=\"picker-trigger\"]"),
     LINK_VALIDATION("div.L5YdXz._0xLoFW._7ckuOK.mROyo1.s8As-K"),
-    SOLD_OUT("h2[class='sDq_FX MnJKTe FxZV-M HlZ_Tf'");
+    SOLD_OUT("h2[class='sDq_FX MnJKTe FxZV-M HlZ_Tf'"),
+    ALREADY_CHOSEN("div[class='sDq_FX _2kjxJ6 dgII7d HlZ_Tf'");
 
     private final String tag;
 

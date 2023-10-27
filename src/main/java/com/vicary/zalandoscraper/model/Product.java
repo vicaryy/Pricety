@@ -23,6 +23,4 @@ public class Product {
     private String variant;
 
     private String link;
-
-    private LocalDateTime lastUpdate;
 }

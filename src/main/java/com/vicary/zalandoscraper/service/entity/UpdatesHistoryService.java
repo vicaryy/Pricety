@@ -26,6 +26,8 @@ public class UpdatesHistoryService {
     public void saveUpdates(List<UpdateHistoryEntity> updateHistoryEntityList) {
         for (UpdateHistoryEntity u : updateHistoryEntityList)
             saveUpdate(u);
+
+        logger.info("Added {} updates history to database.", updateHistoryEntityList.size());
     }
 
     public LocalDateTime getLastUpdateTime() {
