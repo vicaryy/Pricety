@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -390,9 +391,15 @@ public class ReplyMarkupResponse {
             return;
         }
 
+        List<StringBuilder> stringBuilders = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
 
         for (int i = 0; i < productDTOList.size(); i++) {
+            if (i % 14 == 0) {
+                stringBuilders.add(new StringBuilder(sb.toString()));
+                sb.setLength(0);
+            }
+
             ProductDTO dto = productDTOList.get(i);
 
             if (productDTOList.size() == 1)
@@ -429,6 +436,7 @@ public class ReplyMarkupResponse {
 
         sb.append("\n\nLast updated: ").append(PrettyTime.get(updatesHistoryService.getLastUpdateTime()));
 
+        System.out.println("SB length: " + sb.length());
         SendMessage sendMessage = SendMessage.builder()
                 .chatId(user.getChatId())
                 .text(sb.toString())

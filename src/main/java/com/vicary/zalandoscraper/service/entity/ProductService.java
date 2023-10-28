@@ -66,6 +66,10 @@ public class ProductService {
         }
     }
 
+    public boolean existsByLinkAndVariant(String link, String variant) {
+       return repository.existByLinkAndVariant(link, variant) == 1;
+    }
+
     public void deleteProductById(Long id) {
         repository.deleteById(id);
     }

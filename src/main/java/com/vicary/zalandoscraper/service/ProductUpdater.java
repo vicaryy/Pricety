@@ -38,7 +38,7 @@ public class ProductUpdater implements Runnable {
 
     @PostConstruct
     private void starter() {
-        productUpdaterThread.start();
+//        productUpdaterThread.start();
     }
 
     @Override
@@ -60,7 +60,8 @@ public class ProductUpdater implements Runnable {
         }
     }
 
-    private void update() throws InterruptedException {
+    private void update() {
+        logger.info("[Product Updater] Starting auto updating products...");
         List<ProductDTO> updatedDTOs = productService.getAllProductsDto();
 
         if (updatedDTOs.isEmpty()) {
@@ -69,7 +70,7 @@ public class ProductUpdater implements Runnable {
         }
 
         scraper.updateProducts(updatedDTOs);
-        
+
         updateProductsPriceInRepository(updatedDTOs);
 
         saveToUpdatesHistoryRepository(updatedDTOs);
@@ -92,7 +93,7 @@ public class ProductUpdater implements Runnable {
     private void sendNotificationsToUsers() {
         notificationService.sendNotificationsToUsers();
     }
-    
+
     private void updateProductsPriceInRepository(List<ProductDTO> updatedDTOs) {
         productService.updateProductPrice(updatedDTOs);
     }

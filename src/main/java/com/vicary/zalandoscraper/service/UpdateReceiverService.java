@@ -1,6 +1,7 @@
 package com.vicary.zalandoscraper.service;
 
 import com.vicary.zalandoscraper.ActiveUser;
+import com.vicary.zalandoscraper.api_request.send.SendMessage;
 import com.vicary.zalandoscraper.exception.ActiveUserException;
 import com.vicary.zalandoscraper.exception.IllegalInputException;
 import com.vicary.zalandoscraper.exception.InvalidLinkException;
@@ -52,7 +53,6 @@ public class UpdateReceiverService {
 
 
     public void updateReceiver(Update update) {
-
         if (update.getMessage() == null && update.getCallbackQuery() == null) {
             logger.info("Got update without message.");
             return;
@@ -68,6 +68,10 @@ public class UpdateReceiverService {
         String userId = ActiveUser.get().getUserId();
         String chatId = ActiveUser.get().getChatId();
         logger.info("Got message from user '{}'", userId);
+
+        quickSender.message(userId, "[LINK](http://www.example.com/)\n", true);
+
+
         try {
             if (Pattern.isAwaitedMessage(ActiveUser.get().isAwaitedMessage()))
                 awaitedMessageResponse.response();

@@ -9,7 +9,6 @@ import com.vicary.zalandoscraper.service.entity.LinkRequestService;
 import com.vicary.zalandoscraper.service.entity.ProductService;
 import com.vicary.zalandoscraper.service.RequestService;
 import com.vicary.zalandoscraper.service.Scraper;
-import com.vicary.zalandoscraper.service.map.ProductMapper;
 import com.vicary.zalandoscraper.service.quick_sender.QuickSender;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -29,11 +28,7 @@ public class LinkResponse {
 
     private final QuickSender quickSender;
 
-    private final RequestService requestService;
-
     private final LinkRequestService linkRequestService;
-
-    private final ProductMapper mapper;
 
     private final ProductService productService;
 
@@ -96,12 +91,8 @@ public class LinkResponse {
                 .replyMarkup(replyMarkup)
                 .build();
 
-        try {
-            quickSender.deleteMessage(ActiveUser.get().getChatId(), ActiveUser.get().getMessageId());
-            requestService.sendRequest(sendMessage);
-        } catch (WebClientResponseException e) {
-            System.out.println(e.getResponseBodyAsString());
-        }
+        quickSender.deleteMessage(ActiveUser.get().getChatId(), ActiveUser.get().getMessageId());
+        quickSender.message(sendMessage);
     }
 
     public void addLinkRequestToRepository(String requestId) {

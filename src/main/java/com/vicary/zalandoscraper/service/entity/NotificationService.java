@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.time.Year;
 import java.util.List;
 
 @Service
@@ -25,7 +24,7 @@ public class NotificationService {
 
 
     public void saveNotification(NotificationEntity notification) {
-        if (isNotificationValid(notification))
+        if (isUserNeedsToBeNotify(notification))
             repository.save(notification);
     }
 
@@ -33,7 +32,7 @@ public class NotificationService {
     public void saveNotifications(List<NotificationEntity> notificationEntities) {
         int savedEntities = 0;
         for (NotificationEntity n : notificationEntities)
-            if (isNotificationValid(n)) {
+            if (isUserNeedsToBeNotify(n)) {
                 repository.save(n);
                 savedEntities++;
             }
@@ -42,7 +41,7 @@ public class NotificationService {
     }
 
 
-    private boolean isNotificationValid(NotificationEntity n) {
+    private boolean isUserNeedsToBeNotify(NotificationEntity n) {
         if (n.getPriceAlert().equals("0"))
             return false;
 

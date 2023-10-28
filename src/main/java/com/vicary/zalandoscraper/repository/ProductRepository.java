@@ -47,4 +47,10 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
             delete from products
             where user_id = :userId""", nativeQuery = true)
     void deleteAllByUserId(@Param("userId") String userId);
+
+
+    @Query(value = """
+            select count(1) from products
+            where link = :link and variant = :variant""", nativeQuery = true)
+    int existByLinkAndVariant(@Param("link") String link, @Param("variant") String variant);
 }

@@ -5,6 +5,7 @@ import com.vicary.zalandoscraper.exception.IllegalInputException;
 import com.vicary.zalandoscraper.pattern.Pattern;
 import com.vicary.zalandoscraper.service.entity.AwaitedMessageService;
 import com.vicary.zalandoscraper.service.entity.ProductService;
+import com.vicary.zalandoscraper.service.entity.UpdatesHistoryService;
 import com.vicary.zalandoscraper.service.entity.UserService;
 import com.vicary.zalandoscraper.service.quick_sender.QuickSender;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ public class AwaitedMessageResponse {
     private final QuickSender quickSender;
 
     private final UserService userService;
+
 
 
     public void response() {

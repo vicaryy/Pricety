@@ -1,16 +1,23 @@
 package com.vicary.zalandoscraper.service.response;
 
 import com.vicary.zalandoscraper.ActiveUser;
+import com.vicary.zalandoscraper.PrettyTime;
 import com.vicary.zalandoscraper.api_object.keyboard.InlineKeyboardButton;
 import com.vicary.zalandoscraper.api_object.keyboard.InlineKeyboardMarkup;
 import com.vicary.zalandoscraper.api_request.send.SendMessage;
 import com.vicary.zalandoscraper.format.MarkdownV2;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;
+import com.vicary.zalandoscraper.service.entity.UpdatesHistoryService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+@Component
+@RequiredArgsConstructor
 public class InlineBlock {
     private final static List<String> HI_MESSAGES = List.of(
             "How are you?",
@@ -35,6 +42,8 @@ public class InlineBlock {
     private final static InlineKeyboardButton notification = new InlineKeyboardButton("Notification", "-notification");
 
     private final static InlineKeyboardButton deleteAll = new InlineKeyboardButton("Delete All", "-deleteAll");
+
+//    private final static InlineKeyboardButton lastUpdate = new InlineKeyboardButton("", "unknown");
 
     private final static InlineKeyboardButton back = new InlineKeyboardButton("Back To Menu", "-back");
 
@@ -66,6 +75,8 @@ public class InlineBlock {
 
     private final static List<InlineKeyboardButton> listOfButtons8 = List.of(setEmail);
 
+//    private final static List<InlineKeyboardButton> listOfButtons9 = List.of(lastUpdate);
+
     private final static InlineKeyboardMarkup menuMarkup = new InlineKeyboardMarkup(List.of(listOfButtons, listOfButtons1, listOfButtons2, listOfButtons3));
 
     private final static InlineKeyboardMarkup backMarkup = new InlineKeyboardMarkup(List.of(listOfButtons4));
@@ -73,6 +84,7 @@ public class InlineBlock {
     private final static InlineKeyboardMarkup yesOrNoMarkup = new InlineKeyboardMarkup(List.of(listOfButtons6));
 
     private final static InlineKeyboardMarkup notificationMarkup = new InlineKeyboardMarkup(List.of(listOfButtons7, listOfButtons8, listOfButtons4));
+
 
     public static SendMessage getNotification(boolean isNotifyByEmailActive, String email) {
         if (isNotifyByEmailActive) {

@@ -35,73 +35,80 @@ public class Scraper {
 
         long currentTime = System.currentTimeMillis();
 
-        WebDriver webDriver = null;
+        WebDriver webDriver;
+        // setting webDriver
+        webDriver = new ChromeDriver(options);
+        WebDriverWait driverWait = new WebDriverWait(webDriver, Duration.ofSeconds(3L));
 
+        // creating windowHandles IDs
+        List<String> windowHandles = new ArrayList<>();
+        String mainWindow = webDriver.getWindowHandle();
         try {
-            // setting webDriver
-            webDriver = new ChromeDriver(options);
-            WebDriverWait driverWait = new WebDriverWait(webDriver, Duration.ofSeconds(3L));
-
-            // creating windowHandles IDs
-            List<String> windowHandles = new ArrayList<>();
-            String mainWindow = webDriver.getWindowHandle();
             for (int i = 0; i < DTOs.size(); i++) {
-
                 // opening new windows and adding windows IDs to list
                 webDriver.switchTo().newWindow(WindowType.TAB).get(DTOs.get(i).getLink());
                 windowHandles.add(webDriver.getWindowHandle());
+
 
                 if (i == 0)
                     clickCookiesButton(driverWait);
 
                 // if list with IDs has 10 elements or DTOs is last element
-                if (windowHandles.size() == 23 || i == DTOs.size() - 1) {
+                if (windowHandles.size() == 10 || i == DTOs.size() - 1) {
 
                     for (int k = 0; k < windowHandles.size(); k++) {
-                        // switching window to first windows in list
-                        webDriver.switchTo().window(windowHandles.get(k));
 
                         double newPrice = 0;
                         ProductDTO dto = DTOs.get(i - windowHandles.size() + 1 + k);
                         dto.setNewPrice(newPrice);
 
-                        if (!isLinkValidate(webDriver) || isItemSoldOut(webDriver)) {
-                            webDriver.close();
-                            continue;
-                        }
+                        try {
 
-                        if (dto.getVariant().contains("-oneVariant")) {
-                            dto.setNewPrice(getPrice(driverWait));
-                            webDriver.close();
-                            continue;
-                        }
+                            // switching window to first windows in list
+                            webDriver.switchTo().window(windowHandles.get(k));
 
-                        if (isVariantAlreadyChosen(webDriver, dto.getVariant())) {
-                            dto.setNewPrice(getPrice(driverWait));
-                            webDriver.close();
-                            continue;
-                        }
-
-                        clickSizeButton(driverWait);
-
-                        List<WebElement> availableSizes = getAvailableSizes(driverWait);
-
-                        boolean sizeAvailable = false;
-                        for (WebElement e : availableSizes) {
-                            if (e.getText().equals(dto.getVariant())) {
-                                e.click();
-                                sizeAvailable = true;
-                                break;
+                            if (!isLinkValidate(webDriver) || isItemSoldOut(webDriver)) {
+                                webDriver.close();
+                                continue;
                             }
-                        }
 
-                        if (!sizeAvailable) {
+                            if (dto.getVariant().contains("-oneVariant")) {
+                                dto.setNewPrice(getPrice(driverWait));
+                                webDriver.close();
+                                continue;
+                            }
+
+                            if (isVariantAlreadyChosen(webDriver, dto.getVariant())) {
+                                dto.setNewPrice(getPrice(driverWait));
+                                webDriver.close();
+                                continue;
+                            }
+
+                            clickSizeButton(driverWait);
+
+                            List<WebElement> availableSizes = getAvailableSizes(driverWait);
+
+                            boolean sizeAvailable = false;
+                            for (WebElement e : availableSizes) {
+                                if (e.getText().equals(dto.getVariant())) {
+                                    e.click();
+                                    sizeAvailable = true;
+                                    break;
+                                }
+                            }
+
+                            if (!sizeAvailable) {
+                                webDriver.close();
+                                continue;
+                            }
+
+                            dto.setNewPrice(getPrice(driverWait));
                             webDriver.close();
-                            continue;
-                        }
 
-                        dto.setNewPrice(getPrice(driverWait));
-                        webDriver.close();
+                        } catch (WebDriverException ex) {
+                            logger.warn("Error while updating productId '{}': {}", dto.getProductId(), ex.getMessage());
+                            dto.setNewPrice(dto.getPrice());
+                        }
                     }
                     windowHandles.clear();
                     webDriver.switchTo().window(mainWindow);
