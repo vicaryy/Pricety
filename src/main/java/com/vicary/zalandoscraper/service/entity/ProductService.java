@@ -39,7 +39,7 @@ public class ProductService {
     }
 
     public List<ProductDTO> getAllProductsDto() {
-        return mapper.map(repository.findAll());
+        return mapper.map(repository.findAll(Sort.by("id")));
     }
 
     public List<ProductDTO> getAllProductsDtoByUserId(String userId) {

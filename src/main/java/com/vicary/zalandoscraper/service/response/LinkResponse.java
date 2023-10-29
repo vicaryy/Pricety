@@ -4,6 +4,7 @@ import com.vicary.zalandoscraper.ActiveUser;
 import com.vicary.zalandoscraper.api_object.keyboard.*;
 import com.vicary.zalandoscraper.api_request.send.SendMessage;
 import com.vicary.zalandoscraper.entity.LinkRequestEntity;
+import com.vicary.zalandoscraper.exception.InvalidLinkException;
 import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.service.entity.LinkRequestService;
 import com.vicary.zalandoscraper.service.entity.ProductService;
@@ -51,8 +52,10 @@ public class LinkResponse {
     @SneakyThrows
     public void addProduct(String URL, String oneVariant) {
         Product product = scraper.getProduct(URL, oneVariant);
-        productService.saveProduct(product);
         quickSender.deleteMessage(ActiveUser.get().getChatId(), ActiveUser.get().getMessageId());
+        if (productService.existsByLinkAndVariant(product.getLink(), product.getVariant()))
+            throw new InvalidLinkException("You already have this product in your watchlist.", "User try to add same product.");
+        productService.saveProduct(product);
         quickSender.message(ActiveUser.get().getChatId(), "Product added successfully.", false);
     }
 

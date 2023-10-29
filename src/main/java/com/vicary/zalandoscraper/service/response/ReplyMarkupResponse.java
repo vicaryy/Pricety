@@ -5,9 +5,7 @@ import com.vicary.zalandoscraper.PrettyTime;
 import com.vicary.zalandoscraper.api_request.send.SendMessage;
 import com.vicary.zalandoscraper.entity.AwaitedMessageEntity;
 import com.vicary.zalandoscraper.entity.LinkRequestEntity;
-import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.exception.InvalidLinkException;
-import com.vicary.zalandoscraper.format.MarkdownV2;
 import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.service.entity.*;
 import com.vicary.zalandoscraper.service.Scraper;
@@ -464,8 +462,12 @@ public class ReplyMarkupResponse {
 
         Product product = scraper.getProduct(link, variant.toString().trim());
 
-        productService.saveProduct(product);
         quickSender.deleteMessage(chatId, messageId);
+
+        if (productService.existsByLinkAndVariant(product.getLink(), product.getVariant()))
+            throw new InvalidLinkException("You already have this product in your watchlist.", "User try to add same product.");
+
+        productService.saveProduct(product);
         quickSender.messageWithReturn(ActiveUser.get().getChatId(), "Product added successfully.", false);
     }
 

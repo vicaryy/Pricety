@@ -10,6 +10,9 @@ import lombok.SneakyThrows;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.chromium.ChromiumDriver;
+import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
@@ -37,7 +40,7 @@ public class Scraper {
 
         WebDriver webDriver;
         // setting webDriver
-        webDriver = new ChromeDriver(options);
+        webDriver = new ChromeDriver();
         WebDriverWait driverWait = new WebDriverWait(webDriver, Duration.ofSeconds(3L));
 
         // creating windowHandles IDs
@@ -118,7 +121,6 @@ public class Scraper {
             logger.error("Error while updating products: " + ex.getMessage());
             throw new RuntimeException();
         } finally {
-            assert webDriver != null;
             webDriver.quit();
         }
 

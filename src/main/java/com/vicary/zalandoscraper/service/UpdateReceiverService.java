@@ -69,7 +69,7 @@ public class UpdateReceiverService {
         String chatId = ActiveUser.get().getChatId();
         logger.info("Got message from user '{}'", userId);
 
-        quickSender.message(userId, "[LINK](http://www.example.com/)\n", true);
+//        quickSender.message(userId, "[LINK](http://www.example.com/)\n", true);
 
 
         try {
@@ -98,6 +98,7 @@ public class UpdateReceiverService {
             quickSender.message(chatId, ex.getMessage(), false);
         } catch (Exception ex) {
             logger.error("Unexpected exception: " + ex.getMessage());
+            quickSender.message(chatId, "Sorry but something goes wrong.", false);
             ex.printStackTrace();
         } finally {
             activeRequestService.deleteByUserId(userId);
