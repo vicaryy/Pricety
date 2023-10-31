@@ -52,7 +52,7 @@ public class ProductUpdater implements Runnable {
 
     @PostConstruct
     private void starter() {
-        productUpdaterThread.start();
+//        productUpdaterThread.start();
     }
 
     @Override

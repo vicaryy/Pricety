@@ -1,5 +1,6 @@
 package com.vicary.zalandoscraper.service;
 
+import com.microsoft.playwright.PlaywrightException;
 import com.vicary.zalandoscraper.ActiveUser;
 import com.vicary.zalandoscraper.api_request.send.SendMessage;
 import com.vicary.zalandoscraper.exception.ActiveUserException;
@@ -33,8 +34,6 @@ public class UpdateReceiverService {
 
     private final QuickSender quickSender;
 
-    private final RequestService requestService;
-
     private final CommandResponse commandResponse;
 
     private final ReplyMarkupResponse replyMarkupResponse;
@@ -44,10 +43,6 @@ public class UpdateReceiverService {
     private final UserAuthentication userAuthentication;
 
     private final ActiveRequestService activeRequestService;
-
-    private final UserService userService;
-
-    private final ProductService productService;
 
     private final AwaitedMessageResponse awaitedMessageResponse;
 
@@ -90,7 +85,7 @@ public class UpdateReceiverService {
         } catch (InvalidLinkException | IllegalInputException ex) {
             logger.warn(ex.getLoggerMessage());
             quickSender.message(chatId, ex.getMessage(), false);
-        } catch (WebDriverException ex) {
+        } catch (WebDriverException | PlaywrightException ex) {
             logger.error("Web Driver exception: " + ex.getMessage());
             quickSender.message(chatId, "Sorry but something goes wrong.", false);
         } catch (ZalandoScraperBotException ex) {

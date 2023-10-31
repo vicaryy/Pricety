@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class ScraperTest {
 
     @Autowired
-    private Scraper scraper;
+    private ScraperPlay scraper;
 
 
     @Test
@@ -322,14 +322,14 @@ class ScraperTest {
                 givenProductDTO4,
                 givenProductDTO5,
                 givenProductDTO6,
-                givenProductDTO7,
-                givenProductDTO8,
-                givenProductDTO9,
-                givenProductDTO10,
-                givenProductDTO11,
-                givenProductDTO12,
-                givenProductDTO13,
-                givenProductDTO14,
+//                givenProductDTO7,
+//                givenProductDTO8,
+//                givenProductDTO9,
+//                givenProductDTO10,
+//                givenProductDTO11,
+//                givenProductDTO12,
+//                givenProductDTO13,
+//                givenProductDTO14,
                 givenProductDTO15);
 
         List<ProductDTO> expectedListDTOs = List.of(

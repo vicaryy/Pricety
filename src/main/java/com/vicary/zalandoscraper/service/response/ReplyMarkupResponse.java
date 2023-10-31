@@ -7,6 +7,7 @@ import com.vicary.zalandoscraper.entity.AwaitedMessageEntity;
 import com.vicary.zalandoscraper.entity.LinkRequestEntity;
 import com.vicary.zalandoscraper.exception.InvalidLinkException;
 import com.vicary.zalandoscraper.model.Product;
+import com.vicary.zalandoscraper.service.ScraperPlay;
 import com.vicary.zalandoscraper.service.entity.*;
 import com.vicary.zalandoscraper.service.Scraper;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;
@@ -23,6 +24,8 @@ import java.util.List;
 public class ReplyMarkupResponse {
 
     private final Scraper scraper;
+
+    private final ScraperPlay scraperPlay;
 
     private final LinkRequestService linkRequestService;
 
@@ -460,7 +463,7 @@ public class ReplyMarkupResponse {
         int messageId = quickSender.messageWithReturn(chatId, "Adding product...", false).getMessageId();
         quickSender.chatAction(chatId, "typing");
 
-        Product product = scraper.getProduct(link, variant.toString().trim());
+        Product product = scraperPlay.getProduct(link, variant.toString().trim());
 
         quickSender.deleteMessage(chatId, messageId);
 

@@ -6,9 +6,9 @@ import com.vicary.zalandoscraper.api_request.send.SendMessage;
 import com.vicary.zalandoscraper.entity.LinkRequestEntity;
 import com.vicary.zalandoscraper.exception.InvalidLinkException;
 import com.vicary.zalandoscraper.model.Product;
+import com.vicary.zalandoscraper.service.ScraperPlay;
 import com.vicary.zalandoscraper.service.entity.LinkRequestService;
 import com.vicary.zalandoscraper.service.entity.ProductService;
-import com.vicary.zalandoscraper.service.RequestService;
 import com.vicary.zalandoscraper.service.Scraper;
 import com.vicary.zalandoscraper.service.quick_sender.QuickSender;
 import lombok.RequiredArgsConstructor;
@@ -27,22 +27,24 @@ public class LinkResponse {
 
     private final Scraper scraper;
 
+    private final ScraperPlay scraperPlay;
+
     private final QuickSender quickSender;
 
     private final LinkRequestService linkRequestService;
 
     private final ProductService productService;
 
-    public void response(String URL) {
+    public void response(String link) {
         String chatId = ActiveUser.get().getChatId();
         int messageId = quickSender.messageWithReturn(chatId, "Processing...", false).getMessageId();
         quickSender.chatAction(chatId, "typing");
         ActiveUser.get().setMessageId(messageId);
 
-        List<String> variants = scraper.getSizes(URL);
+        List<String> variants = scraperPlay.getAllVariants(link);
 
         if (variants.size() == 1 && variants.getFirst().contains("-oneVariant")) {
-            addProduct(URL, variants.getFirst());
+            addProduct(link, variants.getFirst());
         } else {
             sendVariantMessage(variants);
         }
@@ -50,8 +52,8 @@ public class LinkResponse {
 
 
     @SneakyThrows
-    public void addProduct(String URL, String oneVariant) {
-        Product product = scraper.getProduct(URL, oneVariant);
+    public void addProduct(String link, String oneVariant) {
+        Product product = scraperPlay.getProduct(link, oneVariant);
         quickSender.deleteMessage(ActiveUser.get().getChatId(), ActiveUser.get().getMessageId());
         if (productService.existsByLinkAndVariant(product.getLink(), product.getVariant()))
             throw new InvalidLinkException("You already have this product in your watchlist.", "User try to add same product.");
