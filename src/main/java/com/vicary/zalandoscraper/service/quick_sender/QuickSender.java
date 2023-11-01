@@ -6,7 +6,9 @@ import com.vicary.zalandoscraper.api_request.edit_message.EditMessageText;
 import com.vicary.zalandoscraper.api_request.send.SendChatAction;
 import com.vicary.zalandoscraper.api_request.send.SendMessage;
 import com.vicary.zalandoscraper.service.RequestService;
+import com.vicary.zalandoscraper.service.response.InlineBlock;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -51,6 +53,21 @@ public class QuickSender {
         } catch (Exception ex) {
             logger.warn("Error in deleting message request, message: {}", ex.getMessage());
         }
+    }
+
+    @SneakyThrows
+    public void popupMessage(String chatId, String text) {
+        int messageId = messageWithReturn(chatId, text, false).getMessageId();
+        Thread.sleep(2000);
+        deleteMessage(chatId, messageId);
+    }
+
+    @SneakyThrows
+    public void popupMessage(String chatId, String text, long popupTime) {
+        int messageId = messageWithReturn(chatId, text, false).getMessageId();
+        Thread.sleep(popupTime);
+        deleteMessage(chatId, messageId);
+        message(InlineBlock.getMenu());
     }
 
     public Message messageWithReturn(String chatId, String text, boolean markdownV2) {

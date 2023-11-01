@@ -6,6 +6,7 @@ import com.vicary.zalandoscraper.api_request.send.SendMessage;
 import com.vicary.zalandoscraper.entity.AwaitedMessageEntity;
 import com.vicary.zalandoscraper.entity.LinkRequestEntity;
 import com.vicary.zalandoscraper.exception.InvalidLinkException;
+import com.vicary.zalandoscraper.format.MarkdownV2;
 import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.service.ScraperPlay;
 import com.vicary.zalandoscraper.service.entity.*;
@@ -89,6 +90,10 @@ public class ReplyMarkupResponse {
             displaySetEmailMessage(text);
     }
 
+    public void displayMenu() {
+        quickSender.message(InlineBlock.getMenu());
+    }
+
 
     @SneakyThrows
     public void displaySetEmailMessage(String text) {
@@ -101,11 +106,11 @@ public class ReplyMarkupResponse {
         Thread.sleep(1500);
 
         String message = """
-                Okay, send me a new email address.
+                Okay\\, send me a new email address\\.
                                 
-                Type DELETE if you want to delete your email address.""";
+                Type *delete* if you want to delete your email address\\.""";
 
-        quickSender.message(ActiveUser.get().getUserId(), message, false);
+        quickSender.message(ActiveUser.get().getUserId(), message, true);
     }
 
 
@@ -117,6 +122,7 @@ public class ReplyMarkupResponse {
             int messageId = quickSender.messageWithReturn(user.getChatId(), "You have to set up an email address.", false).getMessageId();
             user.setMessageId(messageId);
             Thread.sleep(2000);
+
             displayNotification();
             return;
         }
@@ -130,8 +136,6 @@ public class ReplyMarkupResponse {
 
     public void displayNotification() {
         ActiveUser user = ActiveUser.get();
-
-        quickSender.deleteMessage(user.getChatId(), user.getMessageId());
 
         String email = user.getEmail() == null ? "not specified" : user.getEmail();
 
@@ -147,11 +151,9 @@ public class ReplyMarkupResponse {
 
         productService.deleteAllProductsByUserId(user.getUserId());
 
-        int messageId = quickSender.messageWithReturn(user.getChatId(), "All products deleted successfully", false).getMessageId();
-        Thread.sleep(2000);
+        quickSender.popupMessage(user.getChatId(), "All products deleted successfully");
 
-        quickSender.deleteMessage(user.getChatId(), messageId);
-        quickSender.message(InlineBlock.getMenu());
+        displayMenu();
     }
 
 
@@ -175,10 +177,9 @@ public class ReplyMarkupResponse {
 
         productService.deleteProductById(productId);
 
-        int messageId = quickSender.messageWithReturn(user.getChatId(), "Product deleted successfully.", false).getMessageId();
-        Thread.sleep(2000);
-        quickSender.deleteMessage(user.getChatId(), messageId);
-        quickSender.message(InlineBlock.getMenu());
+        quickSender.popupMessage(user.getChatId(), "Product deleted successfully.");
+
+        displayMenu();
     }
 
 
@@ -190,24 +191,25 @@ public class ReplyMarkupResponse {
         quickSender.deleteMessage(user.getChatId(), user.getMessageId());
 
         if (productDTOList.isEmpty()) {
-            quickSender.deleteMessage(user.getChatId(), user.getMessageId());
-            int messageId = quickSender.messageWithReturn(user.getChatId(), "You don't have any products.", false).getMessageId();
-            Thread.sleep(2000);
-            quickSender.deleteMessage(user.getChatId(), messageId);
-            quickSender.message(InlineBlock.getMenu());
+            quickSender.popupMessage(user.getChatId(), "You don't have any products.");
+            displayMenu();
             return;
         }
 
+
+        List<StringBuilder> stringBuilders = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
 
         for (int i = 0; i < productDTOList.size(); i++) {
             ProductDTO dto = productDTOList.get(i);
 
             if (productDTOList.size() == 1)
-                sb.append("Product:\n\n");
+                sb.append(MarkdownV2.apply("Product to delete ❌\n\n").toBold().get());
 
             else if (i == 0)
-                sb.append("Products:\n\n");
+                sb.append(MarkdownV2.apply("Products to delete ❌\n\n").toBold().get());
+
+            //'_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!'
 
             String price = dto.getPrice() == 0 ? "Sold Out" : String.format("%.2f zł", dto.getPrice());
             String variant = dto.getVariant();
@@ -215,30 +217,39 @@ public class ReplyMarkupResponse {
                 variant = variant.substring(12);
 
             sb.append("""     
-                    Product nr %d
-                    Name: %s
-                    Description: %s
-                    Variant: %s
-                    Price: %s"""
+                    *Product nr %d*
+                                        
+                    *Name:* %s
+                    *Description:* %s
+                    *Variant:* %s
+                    *Price:* %s"""
                     .formatted(i + 1,
-                            dto.getName(),
-                            dto.getDescription(),
-                            variant,
-                            price));
+                            MarkdownV2.apply(dto.getName()).get(),
+                            MarkdownV2.apply(dto.getDescription()).get(),
+                            MarkdownV2.apply(variant).get(),
+                            MarkdownV2.apply(price).get()));
 
             if (i != productDTOList.size() - 1)
-                sb.append("\n\n------------\n\n");
+                sb.append("\n\n\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\n\n");
+
+            if (i % 14 == 0) {
+                stringBuilders.add(new StringBuilder(sb.toString()));
+                sb.setLength(0);
+            }
         }
+        stringBuilders.add(new StringBuilder(sb));
 
-        sb.append("\n\nPlease select the item number you want to delete.");
+        for (StringBuilder s : stringBuilders)
+            quickSender.message(user.getChatId(), s.toString(), true);
 
-        SendMessage sendMessage = SendMessage.builder()
+
+        quickSender.message(SendMessage.builder()
                 .chatId(user.getChatId())
-                .text(sb.toString())
+                .text("\u200E \n\n*Please select the item you want to delete*\\.")
                 .disableWebPagePreview(true)
+                .parseMode("MarkdownV2")
                 .replyMarkup(InlineBlock.getProductChoice(productDTOList, "-delete"))
-                .build();
-        quickSender.message(sendMessage);
+                .build());
     }
 
 
@@ -264,28 +275,37 @@ public class ReplyMarkupResponse {
             variant = variant.substring(12);
 
         String message = """
-                Product to edit:
+                ‎\s
                                 
-                Name: %s
-                Description: %s
-                Variant: %s
-                Price: %s
-                Price Alert: %s
+                               
+                               
+                               
+                               
+                               
                                 
-                ------------
+                *Product to edit ⚙️*
                                 
-                Okay, send me a new price alert.
-                For example: 100.50zł
+                *Name:* %s
+                *Description:* %s
+                *Variant:* %s
+                *Price:* %s
+                *Price Alert:* %s
                                 
-                Type AUTO for automatic notification.
-                Type 0 if you don't want notification at all."""
-                .formatted(dto.getName(),
-                        dto.getDescription(),
-                        variant,
-                        price,
-                        priceAlert);
+                \\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-
+                                
+                *Send me a new price alert\\.*
+                For example: 100\\.50zł
+                                
+                Type *auto* for automatic notification\\.
+                Type *0* if you don't want notification at all\\."""
+                .formatted(
+                        MarkdownV2.apply(dto.getName()).get(),
+                        MarkdownV2.apply(dto.getDescription()).get(),
+                        MarkdownV2.apply(variant).get(),
+                        MarkdownV2.apply(price).get(),
+                        MarkdownV2.apply(priceAlert).get());
 
-        quickSender.message(ActiveUser.get().getUserId(), message, false);
+        quickSender.message(ActiveUser.get().getUserId(), message, true);
     }
 
     @SneakyThrows
@@ -311,16 +331,17 @@ public class ReplyMarkupResponse {
             return;
         }
 
+        List<StringBuilder> stringBuilders = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
 
         for (int i = 0; i < productDTOList.size(); i++) {
             ProductDTO dto = productDTOList.get(i);
 
             if (productDTOList.size() == 1)
-                sb.append("Product:\n\n");
+                sb.append("*Product to edit* ⚙️\n\n");
 
             else if (i == 0)
-                sb.append("Products:\n\n");
+                sb.append("*Products to edit* ⚙️\n\n");
 
             String price = dto.getPrice() == 0 ? "Sold Out" : String.format("%.2f zł", dto.getPrice()).replaceFirst(",", ".");
             String priceAlert = dto.getPriceAlert().equals("0") ? "OFF" : dto.getPriceAlert().equals("AUTO") ? "AUTO" : dto.getPriceAlert() + " zł";
@@ -329,33 +350,41 @@ public class ReplyMarkupResponse {
                 variant = variant.substring(12);
 
             sb.append("""     
-                    Product %d
+                    *Product nr %d*
                                         
-                    Name: %s
-                    Description: %s
-                    Variant: %s
-                    Price: %s
-                    Price alert: %s"""
+                    *Name:* %s
+                    *Description:* %s
+                    *Variant:* %s
+                    *Price:* %s
+                    *Price alert:* %s"""
                     .formatted(i + 1,
-                            dto.getName(),
-                            dto.getDescription(),
-                            variant,
-                            price,
-                            priceAlert));
+                            MarkdownV2.apply(dto.getName()).get(),
+                            MarkdownV2.apply(dto.getDescription()).get(),
+                            MarkdownV2.apply(variant).get(),
+                            MarkdownV2.apply(price).get(),
+                            MarkdownV2.apply(priceAlert)));
 
             if (i != productDTOList.size() - 1)
-                sb.append("\n\n------------\n\n");
+                sb.append("\n\n\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\n\n");
+
+            if (i % 14 == 0) {
+                stringBuilders.add(new StringBuilder(sb.toString()));
+                sb.setLength(0);
+            }
         }
+        stringBuilders.add(new StringBuilder(sb));
 
-        sb.append("\n\nPlease select the item number you want to edit.");
+        for (StringBuilder s : stringBuilders)
+            quickSender.message(user.getChatId(), s.toString(), true);
 
-        SendMessage sendMessage = SendMessage.builder()
+
+        quickSender.message(SendMessage.builder()
                 .chatId(user.getChatId())
-                .text(sb.toString())
+                .text("\u200E \n\n*Please select the item you want to edit\\.*")
                 .disableWebPagePreview(true)
+                .parseMode("MarkdownV2")
                 .replyMarkup(InlineBlock.getProductChoice(productDTOList, "-edit"))
-                .build();
-        quickSender.message(sendMessage);
+                .build());
     }
 
 
@@ -363,10 +392,8 @@ public class ReplyMarkupResponse {
     public void displayAddProduct() {
         ActiveUser user = ActiveUser.get();
         quickSender.deleteMessage(user.getChatId(), user.getMessageId());
-        int messageId = quickSender.messageWithReturn(user.getChatId(), "Just paste Zalando URL down below 👇", false).getMessageId();
-        Thread.sleep(3000);
-        quickSender.deleteMessage(user.getChatId(), messageId);
-        quickSender.message(InlineBlock.getMenu());
+        quickSender.popupMessage(user.getChatId(), "Just paste Zalando URL down below 👇", 3000);
+        displayMenu();
     }
 
     @SneakyThrows
@@ -384,11 +411,8 @@ public class ReplyMarkupResponse {
         quickSender.deleteMessage(user.getChatId(), user.getMessageId());
 
         if (productDTOList.isEmpty()) {
-            quickSender.deleteMessage(user.getChatId(), user.getMessageId());
-            int messageId = quickSender.messageWithReturn(user.getChatId(), "You don't have any products.", false).getMessageId();
-            Thread.sleep(2000);
-            quickSender.deleteMessage(user.getChatId(), messageId);
-            quickSender.message(InlineBlock.getMenu());
+            quickSender.popupMessage(user.getChatId(), "You don't have any products.");
+            displayMenu();
             return;
         }
 
@@ -396,18 +420,13 @@ public class ReplyMarkupResponse {
         StringBuilder sb = new StringBuilder();
 
         for (int i = 0; i < productDTOList.size(); i++) {
-            if (i % 14 == 0) {
-                stringBuilders.add(new StringBuilder(sb.toString()));
-                sb.setLength(0);
-            }
-
             ProductDTO dto = productDTOList.get(i);
 
             if (productDTOList.size() == 1)
-                sb.append("That's your product:\n\n");
+                sb.append("*That's your product* 📝\n\n");
 
             else if (i == 0)
-                sb.append("That's your all products:\n\n");
+                sb.append("*That's your all products* 📝\n\n");
 
             String price = dto.getPrice() == 0 ? "Sold Out" : String.format("%.2f zł", dto.getPrice()).replaceFirst(",", ".");
             String priceAlert = dto.getPriceAlert().equals("0") ? "OFF" : dto.getPriceAlert().equals("AUTO") ? "AUTO" : dto.getPriceAlert() + " zł";
@@ -415,37 +434,45 @@ public class ReplyMarkupResponse {
             if (variant.startsWith("-oneVariant"))
                 variant = variant.substring(12);
             sb.append("""     
-                    Product %d
+                    *Product nr %d*
                                         
-                    Name: %s
-                    Description: %s
-                    Link: %s
-                    Variant: %s
-                    Price: %s
-                    Price alert: %s""".
+                    *Name:* %s
+                    *Description:* %s
+                    *Link:* %s
+                    *Variant:* %s
+                    *Price:* %s
+                    *Price alert:* %s""".
                     formatted(i + 1,
-                            dto.getName(),
-                            dto.getDescription(),
-                            dto.getLink(),
-                            variant,
-                            price,
-                            priceAlert));
+                            MarkdownV2.apply(dto.getName()).get(),
+                            MarkdownV2.apply(dto.getDescription()).get(),
+                            MarkdownV2.apply(dto.getLink()).get(),
+                            MarkdownV2.apply(variant).get(),
+                            MarkdownV2.apply(price).get(),
+                            MarkdownV2.apply(priceAlert).get()));
 
             if (i != productDTOList.size() - 1)
-                sb.append("\n\n------------\n\n");
+                sb.append("\n\n\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\n\n");
+
+            if (i % 14 == 0) {
+                stringBuilders.add(new StringBuilder(sb.toString()));
+                sb.setLength(0);
+            }
         }
 
         sb.append("\n\nLast updated: ").append(PrettyTime.get(updatesHistoryService.getLastUpdateTime()));
 
-        System.out.println("SB length: " + sb.length());
-        SendMessage sendMessage = SendMessage.builder()
-                .chatId(user.getChatId())
-                .text(sb.toString())
-                .replyMarkup(InlineBlock.getBack())
-                .disableWebPagePreview(true)
-                .build();
+        stringBuilders.add(new StringBuilder(sb));
 
-        quickSender.message(sendMessage);
+
+        for (StringBuilder s : stringBuilders)
+            quickSender.message(user.getChatId(), s.toString(), true);
+
+        if (i == stringBuilders.size() - 1)
+            sendMessage.setReplyMarkup(InlineBlock.getBack());
+        quickSender.message(SendMessage.builder()
+                .chatId(user.getChatId())
+                        .
+                .build());
     }
 
 

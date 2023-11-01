@@ -13,7 +13,8 @@ public class MarkdownV2 {
 
     public static MarkdownV2 apply(String text) {
         for (char c : markdownV2Characters)
-            text = text.replace(String.valueOf(c), "\\" + c);
+            if (text.contains(String.valueOf(c)))
+                text = text.replace(String.valueOf(c), "\\" + c);
         return new MarkdownV2(new StringBuilder().append(text));
     }
 

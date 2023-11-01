@@ -40,6 +40,9 @@ public class NotificationEntity {
     @Column(name = "price_alert")
     private String priceAlert;
 
+    @Column(name = "link")
+    private String link;
+
     @Column(name = "notify_by_email")
     private boolean notifyByEmail;
 }

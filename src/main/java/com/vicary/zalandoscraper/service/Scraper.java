@@ -10,9 +10,6 @@ import lombok.SneakyThrows;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.chromium.ChromiumDriver;
-import org.openqa.selenium.edge.EdgeDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
@@ -20,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,12 +31,30 @@ public class Scraper {
 
     @SneakyThrows
     protected List<ProductDTO> updateProducts(List<ProductDTO> DTOs) {
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--headless=new",
+                "--user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36",
+                "--remote-allow-origins=*",
+                "--no-sandbox",
+                "--disable-dev-shm-usage",
+                "--disable-renderer-backgrounding",
+                "--disable-background-timer-throttling",
+                "--disable-backgrounding-occluded-windows",
+                "--disable-client-side-phishing-detection",
+                "--disable-crash-reporter",
+                "--disable-oopr-debug-crash-dump",
+                "--no-crash-upload",
+                "--disable-gpu",
+                "--disable-extensions",
+                "--disable-low-res-tiling",
+                "--log-level=3",
+                "--silent");
 
         long currentTime = System.currentTimeMillis();
 
         WebDriver webDriver;
         // setting webDriver
-        webDriver = new ChromeDriver();
+        webDriver = new ChromeDriver(options);
         WebDriverWait driverWait = new WebDriverWait(webDriver, Duration.ofSeconds(3L));
 
         // creating windowHandles IDs

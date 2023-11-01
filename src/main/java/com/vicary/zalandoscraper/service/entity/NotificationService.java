@@ -37,12 +37,12 @@ public class NotificationService {
                 savedEntities++;
             }
 
-        logger.info("Added {} notifications to database.", savedEntities);
+        logger.info("[Product Updater] Added {} notifications to database.", savedEntities);
     }
 
 
     private boolean isUserNeedsToBeNotify(NotificationEntity n) {
-        if (n.getPriceAlert().equals("0"))
+        if (n.getPriceAlert().equals("0") || n.getNewPrice() == 0)
             return false;
 
         if (n.getPriceAlert().equals("AUTO"))
@@ -60,10 +60,12 @@ public class NotificationService {
 
     public void sendNotificationsToUsers() {
         List<NotificationEntity> notifications = repository.findAll();
-        notificationSender.send(notifications);
-        deleteAllNotifications();
 
-//        logger.info("Sent and deleted {} notifications.", notifications.size());
+        logger.info("[Product Updater] Sending {} notifications to users.", notifications.size());
+        notificationSender.send(notifications);
+
+        logger.info("[Product Updater] Deleting {} notifications.", notifications.size());
+        deleteAllNotifications();
     }
 
     public void deleteAllNotifications() {

@@ -14,7 +14,6 @@ import com.vicary.zalandoscraper.service.quick_sender.QuickSender;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,8 +23,6 @@ import java.util.stream.IntStream;
 @Service
 @RequiredArgsConstructor
 public class LinkResponse {
-
-    private final Scraper scraper;
 
     private final ScraperPlay scraperPlay;
 

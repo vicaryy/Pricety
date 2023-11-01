@@ -79,6 +79,7 @@ public class ProductMapper {
                 .description(productDTO.getDescription())
                 .newPrice(productDTO.getNewPrice())
                 .oldPrice(productDTO.getPrice())
+                .link(productDTO.getLink())
                 .priceAlert(productDTO.getPriceAlert())
                 .build();
     }
