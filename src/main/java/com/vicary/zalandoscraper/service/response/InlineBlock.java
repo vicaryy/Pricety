@@ -1,17 +1,15 @@
 package com.vicary.zalandoscraper.service.response;
 
 import com.vicary.zalandoscraper.ActiveUser;
-import com.vicary.zalandoscraper.PrettyTime;
+import com.vicary.zalandoscraper.api_object.ParseMode;
 import com.vicary.zalandoscraper.api_object.keyboard.InlineKeyboardButton;
 import com.vicary.zalandoscraper.api_object.keyboard.InlineKeyboardMarkup;
 import com.vicary.zalandoscraper.api_request.send.SendMessage;
 import com.vicary.zalandoscraper.format.MarkdownV2;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;
-import com.vicary.zalandoscraper.service.entity.UpdatesHistoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -53,9 +51,9 @@ public class InlineBlock {
 
     private final static InlineKeyboardButton deleteAllNo = new InlineKeyboardButton("No", "-deleteAllNo");
 
-    private final static InlineKeyboardButton enableOrDisable = new InlineKeyboardButton("","");
+    private final static InlineKeyboardButton enableOrDisable = new InlineKeyboardButton("", "");
 
-    private final static InlineKeyboardButton setEmail = new InlineKeyboardButton("","");
+    private final static InlineKeyboardButton setEmail = new InlineKeyboardButton("", "");
 
     private final static List<InlineKeyboardButton> listOfButtons = List.of(allProducts, addProduct);
 
@@ -87,6 +85,7 @@ public class InlineBlock {
 
 
     public static SendMessage getNotification(boolean isNotifyByEmailActive, String email) {
+        email = email == null ? "Not Specified" : email;
         if (isNotifyByEmailActive) {
             enableOrDisable.setText("Disable email notifications");
             enableOrDisable.setCallbackData("-disableEmail");
@@ -95,7 +94,7 @@ public class InlineBlock {
             enableOrDisable.setCallbackData("-enableEmail");
         }
 
-        if (email.equals("not specified")) {
+        if (email.equals("Not Specified")) {
             setEmail.setText("Set email");
             setEmail.setCallbackData("-setEmail");
         } else {
@@ -104,18 +103,21 @@ public class InlineBlock {
         }
 
         String message = """
-                Notification 📧
+                *Notification* 📧
                             
                 I am able to send price notification via email
-                
-                Status: %s    
-                Your email: %s"""
-                .formatted(isNotifyByEmailActive ? "Enabled" : "Disabled", email);
+                                
+                *Status:* %s    
+                *Your email:* %s"""
+                .formatted(
+                        isNotifyByEmailActive ? "Enabled" : "Disabled",
+                        MarkdownV2.apply(email).get());
 
         return SendMessage.builder()
                 .text(message)
                 .chatId(ActiveUser.get().getChatId())
                 .replyMarkup(notificationMarkup)
+                .parseMode(ParseMode.MarkdownV2)
                 .build();
     }
 
@@ -123,14 +125,17 @@ public class InlineBlock {
         ActiveUser user = ActiveUser.get();
 
         String menuMessage = """
-                Hi %s,
-                
-                %s""".formatted(user.getNick(), HI_MESSAGES.get(ThreadLocalRandom.current().nextInt(HI_MESSAGES.size())));
+                *Hello %s* 👋
+                                
+                %s""".formatted(
+                MarkdownV2.apply(user.getNick()).get(),
+                HI_MESSAGES.get(ThreadLocalRandom.current().nextInt(HI_MESSAGES.size())));
 
         return SendMessage.builder()
                 .chatId(user.getUserId())
                 .text(menuMessage)
                 .replyMarkup(menuMarkup)
+                .parseMode(ParseMode.MarkdownV2)
                 .build();
     }
 

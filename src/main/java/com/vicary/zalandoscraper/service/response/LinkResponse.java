@@ -1,6 +1,7 @@
 package com.vicary.zalandoscraper.service.response;
 
 import com.vicary.zalandoscraper.ActiveUser;
+import com.vicary.zalandoscraper.api_object.Action;
 import com.vicary.zalandoscraper.api_object.keyboard.*;
 import com.vicary.zalandoscraper.api_request.send.SendMessage;
 import com.vicary.zalandoscraper.entity.LinkRequestEntity;
@@ -35,7 +36,7 @@ public class LinkResponse {
     public void response(String link) {
         String chatId = ActiveUser.get().getChatId();
         int messageId = quickSender.messageWithReturn(chatId, "Processing...", false).getMessageId();
-        quickSender.chatAction(chatId, "typing");
+        quickSender.chatAction(chatId, Action.TYPING);
         ActiveUser.get().setMessageId(messageId);
 
         List<String> variants = scraperPlay.getAllVariants(link);

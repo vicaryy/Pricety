@@ -5,7 +5,6 @@ import com.vicary.zalandoscraper.exception.IllegalInputException;
 import com.vicary.zalandoscraper.pattern.Pattern;
 import com.vicary.zalandoscraper.service.entity.AwaitedMessageService;
 import com.vicary.zalandoscraper.service.entity.ProductService;
-import com.vicary.zalandoscraper.service.entity.UpdatesHistoryService;
 import com.vicary.zalandoscraper.service.entity.UserService;
 import com.vicary.zalandoscraper.service.quick_sender.QuickSender;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +22,6 @@ public class AwaitedMessageResponse {
     private final QuickSender quickSender;
 
     private final UserService userService;
-
 
 
     public void response() {
@@ -46,36 +44,31 @@ public class AwaitedMessageResponse {
         String priceAlert = getPriceAlertFromText(user.getText());
 
         productService.updateProductPriceAlert(productId, priceAlert);
-
-        int messageId = quickSender.messageWithReturn(user.getUserId(), "Price Alert updated successfully.", false).getMessageId();
-
-        Thread.sleep(2000);
-        quickSender.deleteMessage(user.getChatId(), messageId);
+        quickSender.popupMessage(user.getChatId(), "Price Alert updated successfully.");
         quickSender.message(InlineBlock.getMenu());
     }
 
     @SneakyThrows
     public void updateUserEmail() {
         ActiveUser user = ActiveUser.get();
+        String email = user.getText();
+        boolean notifyByEmail = user.isNotifyByEmail();
 
-        if (user.getText().equalsIgnoreCase("DELETE")) {
-            user.setText(null);
+        if (email.equalsIgnoreCase("DELETE")) {
+            email = null;
             userService.updateNotifyByEmailById(user.getUserId(), false);
-        } else if (!Pattern.isEmailAddressValid(user.getText()))
+            notifyByEmail = false;
+        } else if (!Pattern.isEmailAddressValid(email))
             throw new IllegalInputException("Invalid email.", "User '%s' typed invalid email '%s'".formatted(ActiveUser.get().getUserId(), ActiveUser.get().getText()));
 
-        userService.updateEmailById(user.getUserId(), user.getText());
-
-        int messageId = quickSender.messageWithReturn(ActiveUser.get().getChatId(), "Email updated successfully.", false).getMessageId();
-
-        Thread.sleep(2000);
-        quickSender.deleteMessage(user.getChatId(), messageId);
-        quickSender.message(InlineBlock.getMenu());
+        userService.updateEmailById(user.getUserId(), email);
+        quickSender.popupMessage(user.getChatId(), "Email updated successfully");
+        quickSender.message(InlineBlock.getNotification(notifyByEmail, email));
     }
 
 
     public String getPriceAlertFromText(String text) {
-        double priceAlert = 0;
+        double priceAlert;
         if (text.equalsIgnoreCase("AUTO"))
             return text.toUpperCase();
 

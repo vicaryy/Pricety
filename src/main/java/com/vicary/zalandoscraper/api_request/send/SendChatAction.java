@@ -1,14 +1,13 @@
 package com.vicary.zalandoscraper.api_request.send;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import com.vicary.zalandoscraper.api_object.Action;
 import com.vicary.zalandoscraper.api_request.ApiRequest;
 import com.vicary.zalandoscraper.end_point.EndPoint;
+import lombok.*;
 
-@Data
-@RequiredArgsConstructor
-@AllArgsConstructor
-@Builder
+@ToString
+@EqualsAndHashCode
 public class SendChatAction implements ApiRequest<Boolean> {
     /**
      * Use this method when you need to tell the user that something is happening on the bot's side.
@@ -29,46 +28,34 @@ public class SendChatAction implements ApiRequest<Boolean> {
      * - "record_video_note" or "upload_video_note" for video notes.
      */
 
+    @Getter
+    @Setter
     @NonNull
     @JsonProperty("chat_id")
     private String chatId;
 
+    @Getter
+    @Setter
     @JsonProperty("message_thread_id")
     private Integer messageThreadId;
 
+    @Getter
+    @Setter
+    @NonNull
+    private Action action;
+
     @JsonProperty("action")
-    private String action;
+    private String actionToSend;
 
-    public void setActionOnTyping() {
-        this.action = "typing";
+    public SendChatAction(@NonNull String chatId, @NonNull Action action, Integer messageThreadId) {
+        this.chatId = chatId;
+        this.messageThreadId = messageThreadId;
+        this.action = action;
     }
 
-    public void setActionOnUploadPhoto() {
-        this.action = "upload_photo";
-    }
-
-    public void setActionOnRecordVideo() {
-        this.action = "record_video";
-    }
-
-    public void setActionOnRecordVoice() {
-        this.action = "record_voice";
-    }
-
-    public void setActionOnUploadDocument() {
-        this.action = "upload_document";
-    }
-
-    public void setActionOnChooseSticker() {
-        this.action = "choose_sticker";
-    }
-
-    public void setActionOnFindLocation() {
-        this.action = "find_location";
-    }
-
-    public void setActionOnRecordVideoNote() {
-        this.action = "record_video_note";
+    public SendChatAction(@NonNull String chatId, @NonNull Action action) {
+        this.chatId = chatId;
+        this.action = action;
     }
 
     @Override
@@ -83,16 +70,40 @@ public class SendChatAction implements ApiRequest<Boolean> {
 
     @Override
     public void checkValidation() {
-        if (chatId.isEmpty()) throw new IllegalArgumentException("chatId cannot be empty.");
-        if (action == null) throw new IllegalArgumentException("action cannot be empty.");
+        actionToSend = action.toString().toLowerCase();
+    }
 
-        if (!action.equals("typing")
-                && !action.equals("upload_photo")
-                && !action.equals("record_video")
-                && !action.equals("upload_document")
-                && !action.equals("choose_sticker")
-                && !action.equals("find_location")
-                && !action.equals("record_video_note"))
-            throw new IllegalArgumentException("Action: \"" + action + "\" does not exist.");
+    public static SendChatActionBuilder builder() {
+        return new SendChatActionBuilder();
+    }
+
+    public static class SendChatActionBuilder {
+        private @NonNull String chatId;
+        private @NonNull Action action;
+        private Integer messageThreadId;
+
+        SendChatActionBuilder() {
+        }
+
+        @JsonProperty("chat_id")
+        public SendChatActionBuilder chatId(@NonNull String chatId) {
+            this.chatId = chatId;
+            return this;
+        }
+
+        @JsonProperty("message_thread_id")
+        public SendChatActionBuilder messageThreadId(Integer messageThreadId) {
+            this.messageThreadId = messageThreadId;
+            return this;
+        }
+
+        public SendChatActionBuilder action(@NonNull Action action) {
+            this.action = action;
+            return this;
+        }
+
+        public SendChatAction build() {
+            return new SendChatAction(this.chatId, this.action, this.messageThreadId);
+        }
     }
 }

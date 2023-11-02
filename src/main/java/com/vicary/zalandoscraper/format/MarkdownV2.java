@@ -18,6 +18,11 @@ public class MarkdownV2 {
         return new MarkdownV2(new StringBuilder().append(text));
     }
 
+    public MarkdownV2 toZalandoURL() {
+        sb.insert(0, "[zalando](").insert(sb.length(), ")");
+        return this;
+    }
+
     public MarkdownV2 toBold() {
         sb.insert(0, "*").insert(sb.length(), "*");
         return this;

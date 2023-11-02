@@ -1,5 +1,7 @@
 package com.vicary.zalandoscraper.service.quick_sender;
 
+import com.vicary.zalandoscraper.api_object.Action;
+import com.vicary.zalandoscraper.api_object.ParseMode;
 import com.vicary.zalandoscraper.api_object.message.Message;
 import com.vicary.zalandoscraper.api_request.edit_message.DeleteMessage;
 import com.vicary.zalandoscraper.api_request.edit_message.EditMessageText;
@@ -25,9 +27,10 @@ public class QuickSender {
             SendMessage sendMessage = SendMessage.builder()
                     .chatId(chatId)
                     .text(text)
-                    .parseMode(markdownV2 ? "MarkdownV2" : "")
                     .disableWebPagePreview(true)
                     .build();
+            if (markdownV2)
+                sendMessage.setParseMode(ParseMode.MarkdownV2);
             requestService.sendRequestAsync(sendMessage);
         } catch (Exception ex) {
             logger.warn("Error in sending message request, message: {}", ex.getMessage());
@@ -67,7 +70,6 @@ public class QuickSender {
         int messageId = messageWithReturn(chatId, text, false).getMessageId();
         Thread.sleep(popupTime);
         deleteMessage(chatId, messageId);
-        message(InlineBlock.getMenu());
     }
 
     public Message messageWithReturn(String chatId, String text, boolean markdownV2) {
@@ -75,8 +77,9 @@ public class QuickSender {
             SendMessage sendMessage = SendMessage.builder()
                     .chatId(chatId)
                     .text(text)
-                    .parseMode(markdownV2 ? "MarkdownV2" : "")
                     .build();
+            if (markdownV2)
+                sendMessage.setParseMode(ParseMode.MarkdownV2);
             return requestService.sendRequest(sendMessage);
         } catch (Exception ex) {
             logger.warn("Error in sending message with return request, message: {}", ex.getMessage());
@@ -93,7 +96,7 @@ public class QuickSender {
         }
     }
 
-    public void chatAction(String chatId, String action) {
+    public void chatAction(String chatId, Action action) {
         try {
             SendChatAction sendChatAction = SendChatAction.builder()
                     .chatId(chatId)
