@@ -8,7 +8,7 @@ public class PrettyTime {
 
     public static String get(LocalDateTime localDateTime) {
 
-        Long updateTime = localDateTime.toEpochSecond(ZoneOffset.ofHours(2));
+        Long updateTime = localDateTime.toEpochSecond(ZoneOffset.ofHours(1));
 
         Long currentTime = Instant.now().getEpochSecond();
 

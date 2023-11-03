@@ -10,10 +10,10 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-class ScraperTest {
+class ScraperSeleniumTest {
 
     @Autowired
-    private ScraperPlay scraper;
+    private Scraper scraper;
 
 
     @Test

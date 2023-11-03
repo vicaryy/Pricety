@@ -2,7 +2,7 @@ package com.vicary.zalandoscraper.service.entity;
 
 import com.vicary.zalandoscraper.entity.NotificationEntity;
 import com.vicary.zalandoscraper.repository.NotificationRepository;
-import com.vicary.zalandoscraper.service.NotificationSender;
+import com.vicary.zalandoscraper.service.send.NotificationSender;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

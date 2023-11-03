@@ -77,6 +77,7 @@ public class ProductMapper {
                 .email(productDTO.getEmail())
                 .productName(productDTO.getName())
                 .description(productDTO.getDescription())
+                .variant(productDTO.getVariant())
                 .newPrice(productDTO.getNewPrice())
                 .oldPrice(productDTO.getPrice())
                 .link(productDTO.getLink())

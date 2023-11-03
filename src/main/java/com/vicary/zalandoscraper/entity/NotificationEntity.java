@@ -31,6 +31,9 @@ public class NotificationEntity {
     @Column(name = "description")
     private String description;
 
+    @Column(name = "variant")
+    private String variant;
+
     @Column(name = "new_price")
     private double newPrice;
 

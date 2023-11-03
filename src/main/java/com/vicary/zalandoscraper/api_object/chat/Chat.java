@@ -8,7 +8,7 @@ import com.vicary.zalandoscraper.api_object.ApiObject;
 @Data
 public class Chat implements ApiObject {
     @JsonProperty("id")
-    private Integer id;
+    private String id;
 
     @JsonProperty("type")
     private String type;

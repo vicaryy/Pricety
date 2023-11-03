@@ -64,8 +64,6 @@ public class UpdateReceiverService {
         String chatId = ActiveUser.get().getChatId();
         logger.info("Got message from user '{}'", userId);
 
-//        quickSender.message(userId, "[LINK](http://www.example.com/)\n", true);
-
 
         try {
             if (Pattern.isAwaitedMessage(ActiveUser.get().isAwaitedMessage()))

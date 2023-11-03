@@ -40,7 +40,7 @@ public class UserAuthentication {
                 ? update.getMessage()
                 : update.getCallbackQuery().getMessage();
 
-        String chatId = message.getChat().getId().toString();
+        String chatId = message.getChat().getId();
         int messageId = message.getMessageId();
         String text = update.getCallbackQuery() == null
                 ? update.getMessage().getText()

@@ -1,348 +1,313 @@
 package com.vicary.zalandoscraper.service;
 
+import com.microsoft.playwright.*;
+import com.microsoft.playwright.options.WaitUntilState;
 import com.vicary.zalandoscraper.ActiveUser;
 import com.vicary.zalandoscraper.exception.InvalidLinkException;
 import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;
 import com.vicary.zalandoscraper.tag.Tag;
-import lombok.RequiredArgsConstructor;
+import jakarta.annotation.PostConstruct;
 import lombok.SneakyThrows;
-import org.openqa.selenium.*;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class Scraper {
 
     private final static Logger logger = LoggerFactory.getLogger(Scraper.class);
+    private final Map<String, String> extraHeaders = Map.of("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36");
+    private final BrowserType.LaunchOptions launchOptions = new BrowserType.LaunchOptions();
+    private final Page.NavigateOptions navigateOptions = new Page.NavigateOptions().setWaitUntil(WaitUntilState.COMMIT);
 
-    private final ChromeOptions options;
 
+    @PostConstruct
+    private void setup() {
+        launchOptions.setArgs(List.of(
+                "--no-sandbox",
+                "--disable-setuid-sandbox",
+                "--disable-dev-shm-usage",
+                "--disable-accelerated-2d-canvas",
+                "--no-first-run",
+                "--no-zygote",
+                "--single-process",
+                "--disable-gpu"
+        ));
+//        launchOptions.setHeadless(false);
+    }
 
     @SneakyThrows
     protected List<ProductDTO> updateProducts(List<ProductDTO> DTOs) {
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless=new",
-                "--user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36",
-                "--remote-allow-origins=*",
-                "--no-sandbox",
-                "--disable-dev-shm-usage",
-                "--disable-renderer-backgrounding",
-                "--disable-background-timer-throttling",
-                "--disable-backgrounding-occluded-windows",
-                "--disable-client-side-phishing-detection",
-                "--disable-crash-reporter",
-                "--disable-oopr-debug-crash-dump",
-                "--no-crash-upload",
-                "--disable-gpu",
-                "--disable-extensions",
-                "--disable-low-res-tiling",
-                "--log-level=3",
-                "--silent");
+        try (Playwright playwright = Playwright.create()) {
 
-        long currentTime = System.currentTimeMillis();
+            try (BrowserContext browser = playwright.chromium().launch(launchOptions).newContext()) {
+                browser.newPage();
+                List<Page> pages = new ArrayList<>();
 
-        WebDriver webDriver;
-        // setting webDriver
-        webDriver = new ChromeDriver(options);
-        WebDriverWait driverWait = new WebDriverWait(webDriver, Duration.ofSeconds(3L));
+                for (int i = 0; i < DTOs.size(); i++) {
+                    Page newPage = browser.newPage();
+                    newPage.setExtraHTTPHeaders(extraHeaders);
+                    newPage.navigate(DTOs.get(i).getLink(), navigateOptions);
+                    pages.add(newPage);
 
-        // creating windowHandles IDs
-        List<String> windowHandles = new ArrayList<>();
-        String mainWindow = webDriver.getWindowHandle();
-        try {
-            for (int i = 0; i < DTOs.size(); i++) {
-                // opening new windows and adding windows IDs to list
-                webDriver.switchTo().newWindow(WindowType.TAB).get(DTOs.get(i).getLink());
-                windowHandles.add(webDriver.getWindowHandle());
+                    if (i == 0)
+                        clickCookiesButton(newPage);
 
-
-                if (i == 0)
-                    clickCookiesButton(driverWait);
-
-                // if list with IDs has 10 elements or DTOs is last element
-                if (windowHandles.size() == 10 || i == DTOs.size() - 1) {
-
-                    for (int k = 0; k < windowHandles.size(); k++) {
-
-                        double newPrice = 0;
-                        ProductDTO dto = DTOs.get(i - windowHandles.size() + 1 + k);
-                        dto.setNewPrice(newPrice);
-
-                        try {
-
-                            // switching window to first windows in list
-                            webDriver.switchTo().window(windowHandles.get(k));
-
-                            if (!isLinkValidate(webDriver) || isItemSoldOut(webDriver)) {
-                                webDriver.close();
-                                continue;
-                            }
-
-                            if (dto.getVariant().contains("-oneVariant")) {
-                                dto.setNewPrice(getPrice(driverWait));
-                                webDriver.close();
-                                continue;
-                            }
-
-                            if (isVariantAlreadyChosen(webDriver, dto.getVariant())) {
-                                dto.setNewPrice(getPrice(driverWait));
-                                webDriver.close();
-                                continue;
-                            }
-
-                            clickSizeButton(driverWait);
-
-                            List<WebElement> availableSizes = getAvailableSizes(driverWait);
-
-                            boolean sizeAvailable = false;
-                            for (WebElement e : availableSizes) {
-                                if (e.getText().equals(dto.getVariant())) {
-                                    e.click();
-                                    sizeAvailable = true;
-                                    break;
-                                }
-                            }
-
-                            if (!sizeAvailable) {
-                                webDriver.close();
-                                continue;
-                            }
-
-                            dto.setNewPrice(getPrice(driverWait));
-                            webDriver.close();
-
-                        } catch (WebDriverException ex) {
-                            logger.warn("Error while updating productId '{}': {}", dto.getProductId(), ex.getMessage());
-                            dto.setNewPrice(dto.getPrice());
+                    if (pages.size() == 10 || i == DTOs.size() - 1) {
+                        for (int k = 0; k < pages.size(); k++) {
+                            updateProduct(pages.get(k), DTOs.get(i - pages.size() + 1 + k));
                         }
+                        pages.clear();
                     }
-                    windowHandles.clear();
-                    webDriver.switchTo().window(mainWindow);
+                }
+                return DTOs;
+            }
+        }
+    }
+
+    private void updateProduct(Page page, ProductDTO dto) {
+        try (page) {
+
+//            waitForMainPage(page);
+
+            dto.setNewPrice(0);
+
+            if (!isLinkValid(page) || isItemSoldOut(page))
+                return;
+
+            if (dto.getVariant().startsWith("-oneVariant")) {
+                dto.setNewPrice(getPrice(page));
+                return;
+            }
+
+            if (isVariantAlreadyChosen(page, dto.getVariant())) {
+                dto.setNewPrice(getPrice(page));
+                return;
+            }
+
+            clickSizeButton(page);
+
+            if (!clickAvailableVariant(getAvailableVariantsAsLocators(page), dto.getVariant()))
+                return;
+
+            dto.setNewPrice(getPrice(page));
+
+        } catch (PlaywrightException ex) {
+            ex.printStackTrace();
+            logger.warn("Failed to update productId '{}'", dto.getProductId());
+        }
+    }
+
+    public Product getProduct(String link, String variant) {
+        try (Playwright playwright = Playwright.create()) {
+            try (Browser browser = playwright.chromium().launch(launchOptions)) {
+                Page page = browser.newPage();
+                page.setDefaultTimeout(10000);
+                page.setExtraHTTPHeaders(extraHeaders);
+                page.navigate(link);
+
+                try {
+                    Product product = Product.builder()
+                            .name(getName(page))
+                            .description(getDescription(page))
+                            .price(0)
+                            .variant(variant)
+                            .link(link)
+                            .build();
+
+                    if (isItemSoldOut(page))
+                        return product;
+
+                    if (variant.startsWith("-oneVariant")) {
+                        product.setPrice(getPrice(page));
+                        return product;
+                    }
+
+                    if (isVariantAlreadyChosen(page, variant)) {
+                        product.setPrice(getPrice(page));
+                        return product;
+                    }
+
+                    clickSizeButton(page);
+
+                    List<Locator> availableVariantsAsLocators = getAvailableVariantsAsLocators(page);
+
+                    if (!clickAvailableVariant(availableVariantsAsLocators, variant))
+                        return product;
+
+                    product.setPrice(getPrice(page));
+
+                    return product;
+                } catch (PlaywrightException ex) {
+
+                    clickCookiesButton(page);
+
+                    Product product = Product.builder()
+                            .name(getName(page))
+                            .description(getDescription(page))
+                            .price(0)
+                            .variant(variant)
+                            .link(link)
+                            .build();
+
+                    if (isItemSoldOut(page))
+                        return product;
+
+                    if (variant.startsWith("-oneVariant")) {
+                        product.setPrice(getPrice(page));
+                        return product;
+                    }
+
+                    if (isVariantAlreadyChosen(page, variant)) {
+                        product.setPrice(getPrice(page));
+                        return product;
+                    }
+
+                    clickSizeButton(page);
+
+                    List<Locator> availableVariantsAsLocators = getAvailableVariantsAsLocators(page);
+
+                    if (!clickAvailableVariant(availableVariantsAsLocators, variant))
+                        return product;
+
+                    product.setPrice(getPrice(page));
+
+                    return product;
                 }
             }
-        } catch (WebDriverException ex) {
-            logger.error("Error while updating products: " + ex.getMessage());
-            throw new RuntimeException();
-        } finally {
-            webDriver.quit();
         }
-
-        System.out.println("It takes me: " + (System.currentTimeMillis() - currentTime) / 1000 + " seconds");
-        return DTOs;
     }
 
 
-    public Product getProduct(String URL, String variant) {
-        WebDriver webDriver = null;
+    public List<String> getAllVariants(String link) {
+        try (Playwright playwright = Playwright.create()) {
+            try (Browser browser = playwright.chromium().launch(launchOptions)) {
+                Page page = browser.newPage();
+                page.setDefaultTimeout(10000);
+                page.setExtraHTTPHeaders(extraHeaders);
+                page.navigate(link);
 
-        try {
-            webDriver = new ChromeDriver(options);
-            WebDriverWait driverWait = new WebDriverWait(webDriver, Duration.ofSeconds(3));
+                try {
+                    if (!isLinkValid(page))
+                        throw new InvalidLinkException("It seems your link is incorrect, please check it and try again.", "User %s specified wrong link: %s".formatted(ActiveUser.get().getUserId(), ActiveUser.get().getText()));
 
-            webDriver.get(URL);
+                    if (isItemOneVariant(page)) {
+                        return List.of("-oneVariant " + getOneVariantName(page));
+                    }
 
-            clickCookiesButton(driverWait);
+                    clickSizeButton(page);
 
-            String name = getName(webDriver);
-            String description = getDescription(webDriver);
-            double price = 0;
+                    return getAllVariants(page);
 
-            Product product = new Product(name, description, price, variant, URL);
-            if (isItemSoldOut(webDriver)) {
-                logger.debug("Item sold out.");
-                return product;
-            }
+                } catch (PlaywrightException ex) {
 
-            if (variant.contains("-oneVariant")) {
-                logger.debug("One variant item.");
-                product.setPrice(getPrice(driverWait));
-                return product;
-            }
+                    clickCookiesButton(page);
 
-            clickSizeButton(driverWait);
+                    if (!isLinkValid(page))
+                        throw new InvalidLinkException("It seems your link is incorrect, please check it and try again.", "User %s specified wrong link: %s".formatted(ActiveUser.get().getUserId(), ActiveUser.get().getText()));
 
-            List<WebElement> availableSizes = getAvailableSizes(driverWait);
+                    if (isItemOneVariant(page)) {
+                        return List.of("-oneVariant " + getOneVariantName(page));
+                    }
 
-            boolean sizeAvailable = false;
-            for (WebElement e : availableSizes) {
-                if (e.getText().equals(variant)) {
-                    e.click();
-                    sizeAvailable = true;
-                    break;
+                    clickSizeButton(page);
+
+                    return getAllVariants(page);
                 }
             }
-
-            if (!sizeAvailable) {
-                logger.debug("Size not available.");
-                return product;
-            }
-
-            product.setPrice(getPrice(driverWait));
-            logger.debug("Valid product.");
-            return product;
-
-        } catch (WebDriverException ex) {
-            throw new WebDriverException(ex.getMessage());
-        } finally {
-            assert webDriver != null;
-            webDriver.quit();
         }
     }
 
-    public List<String> getSizes(String URL) {
-        WebDriver webDriver = null;
-        List<String> sizes;
-        try {
-            webDriver = new ChromeDriver(options);
-            WebDriverWait driverWait = new WebDriverWait(webDriver, Duration.ofSeconds(3));
 
-            webDriver.get(URL);
-
-            if (!isLinkValidate(webDriver))
-                throw new InvalidLinkException("It seems your link is incorrect, please check it and try again.", "User %s specified wrong link: %s".formatted(ActiveUser.get().getUserId(), ActiveUser.get().getText()));
-
-
-            clickCookiesButton(driverWait);
-
-            if (isItemOneVariant(webDriver)) {
-                return List.of("-oneVariant " + getItemOneVariant(webDriver));
-            }
-
-            clickSizeButton(driverWait);
-
-            sizes = getAllSizes(driverWait).stream()
-                    .map(WebElement::getText)
-                    .toList();
-        } catch (WebDriverException ex) {
-            throw new WebDriverException(ex.getMessage());
-        } finally {
-            assert webDriver != null;
-            webDriver.quit();
-        }
-        return sizes;
+    private String getOneVariantName(Page page) {
+        return page.locator(Tag.ONE_VARIANT_NAME).innerText();
     }
 
-
-    private String getName(WebDriver webDriver) {
-        WebElement name = getElementFromDriver(webDriver, By.cssSelector(Tag.NAME.get()));
-        return name == null ? "" : name.getText();
+    private String getName(Page page) {
+        return page.locator(Tag.NAME).innerText();
     }
 
-    private String getDescription(WebDriver webDriver) {
-        WebElement description = getElementFromDriver(webDriver, By.cssSelector(Tag.DESCRIPTION.get()));
-        return description == null ? "" : description.getText();
+    private String getDescription(Page page) {
+        return page.locator(Tag.DESCRIPTION).innerText();
     }
 
-    private double getPrice(WebDriverWait driverWait) {
-        WebElement priceElement = getElementFromDriver(driverWait, By.cssSelector(Tag.PRICE.get()));
-        String price = priceElement.getText();
+    private double getPrice(Page page) {
+        String price = page.locator(Tag.PRICE).textContent();
+        //sDq_FX _4sa1cA dgII7d Km7l2y _65i7kZ
+
+        if (price.contains(" "))
+            price = price.replaceAll(" ", "");
 
         if (price.startsWith("od"))
             price = price.substring(3);
 
         price = price.substring(0, price.length() - 3);
 
-        if (price.contains(" "))
-            price = price.replaceAll(" ", "");
-
         return Double.parseDouble(price.replaceFirst(",", "."));
     }
 
-    private boolean isVariantAlreadyChosen(WebDriver webDriver, String variant) {
-        WebElement alreadyChosen = getElementFromDriver(webDriver, By.cssSelector(Tag.ALREADY_CHOSEN.get()));
-        return alreadyChosen != null && alreadyChosen.getText().equals(variant);
-    }
 
-    private boolean isItemSoldOut(WebDriver webDriver) {
-        WebElement soldOut = getElementFromDriver(webDriver, By.cssSelector(Tag.SOLD_OUT.get()));
-        return soldOut != null && soldOut.getText().equals("Artykuł wyprzedany");
-    }
-
-    private List<WebElement> getAvailableSizes(WebDriverWait driverWait) {
-        WebElement element = driverWait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(Tag.ALL_SIZES_ELEMENT.get())));
-        return element.findElements(By.cssSelector(Tag.ALL_AVAILABLE_SIZES.get()));
-    }
-
-    private boolean isItemOneVariant(WebDriver webDriver) {
-        return getElementFromDriver(webDriver, By.cssSelector(Tag.ONE_SIZE.get())) != null;
-    }
-
-    private String getItemOneVariant(WebDriver webDriver) {
-        return getElementFromDriver(webDriver, By.cssSelector(Tag.ONE_SIZE.get())).getText();
-    }
-
-    private List<WebElement> getAllSizes(WebDriverWait driverWait) {
-        WebElement element = driverWait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(Tag.ALL_SIZES_ELEMENT.get())));
-        return element.findElements(By.cssSelector(Tag.ALL_SIZES.get()));
+    private boolean isLinkValid(Page page) {
+        return page.locator(Tag.LINK_VALID).count() > 0;
     }
 
 
-    private boolean isLinkValidate(WebDriver webDriver) {
-        WebElement linkValidate = getElementFromDriver(webDriver, By.cssSelector(Tag.LINK_VALIDATION.get()));
-        return linkValidate != null;
+    private boolean isItemOneVariant(Page page) {
+        return page.getByTestId(Tag.VARIANT_BUTTON).isDisabled();
     }
 
-    private void clickCookiesButton(WebDriverWait driverWait) {
+    private boolean isItemSoldOut(Page page) {
+        return page.getByText(Tag.SOLD_OUT).count() == 1;
+    }
+
+    private void clickSizeButton(Page page) {
+        page.getByTestId(Tag.VARIANT_BUTTON).click();
+        page.waitForSelector(Tag.ALL_VARIANTS);
+    }
+
+    private void clickCookiesButton(Page page) {
         try {
-            driverWait.until(ExpectedConditions.elementToBeClickable(By.cssSelector(Tag.COOKIES_BUTTON.get()))).click();
-        } catch (TimeoutException | StaleElementReferenceException ignored) {
-            if (getElementFromDriver(driverWait, By.cssSelector(Tag.COOKIES_BUTTON.get())) != null)
-                clickCookiesButton(driverWait);
+            page.waitForSelector(Tag.COOKIES_BUTTON).click();
+        } catch (TimeoutError ignored) {
         }
     }
 
-    private void clickSizeButton(WebDriverWait driverWait) {
-        WebElement sizeButton = driverWait.until(ExpectedConditions.elementToBeClickable(By.xpath(Tag.SIZE_BUTTON.get())));
-        sizeButton.click();
+
+    private List<String> getAllVariants(Page page) {
+        return page
+                .locator(Tag.ALL_VARIANTS)
+                .allTextContents();
     }
 
-    private WebElement getElementFromDriver(WebDriver webDriver, By by) {
-        WebElement webElement = null;
-        try {
-            webElement = webDriver.findElement(by);
-        } catch (NoSuchElementException ignored) {
-        }
-        return webElement;
+    private List<String> getAvailableVariants(Page page) {
+        return getAvailableVariantsAsLocators(page)
+                .stream()
+                .map(Locator::textContent)
+                .collect(Collectors.toList());
     }
 
-    private WebElement getElementFromDriver(WebDriverWait driverWait, By by) {
-        WebElement webElement = null;
-        try {
-            webElement = driverWait.until(ExpectedConditions.visibilityOfElementLocated(by));
-        } catch (NoSuchElementException ignored) {
-        }
-        return webElement;
+    private List<Locator> getAvailableVariantsAsLocators(Page page) {
+        return page
+                .locator(Tag.AVAILABLE_VARIANTS)
+                .all();
+    }
+
+    private boolean isVariantAlreadyChosen(Page page, String variant) {
+        return page.getByTestId(Tag.VARIANT_BUTTON).innerText().startsWith(variant);
+    }
+
+    private boolean clickAvailableVariant(List<Locator> locators, String variant) {
+        for (Locator l : locators)
+            if (l.textContent().startsWith(variant)) {
+                l.click();
+                return true;
+            }
+        return false;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

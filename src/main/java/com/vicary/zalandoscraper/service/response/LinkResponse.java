@@ -7,10 +7,9 @@ import com.vicary.zalandoscraper.api_request.send.SendMessage;
 import com.vicary.zalandoscraper.entity.LinkRequestEntity;
 import com.vicary.zalandoscraper.exception.InvalidLinkException;
 import com.vicary.zalandoscraper.model.Product;
-import com.vicary.zalandoscraper.service.ScraperPlay;
+import com.vicary.zalandoscraper.service.Scraper;
 import com.vicary.zalandoscraper.service.entity.LinkRequestService;
 import com.vicary.zalandoscraper.service.entity.ProductService;
-import com.vicary.zalandoscraper.service.Scraper;
 import com.vicary.zalandoscraper.service.quick_sender.QuickSender;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -25,7 +24,7 @@ import java.util.stream.IntStream;
 @RequiredArgsConstructor
 public class LinkResponse {
 
-    private final ScraperPlay scraperPlay;
+    private final Scraper scraper;
 
     private final QuickSender quickSender;
 
@@ -39,7 +38,7 @@ public class LinkResponse {
         quickSender.chatAction(chatId, Action.TYPING);
         ActiveUser.get().setMessageId(messageId);
 
-        List<String> variants = scraperPlay.getAllVariants(link);
+        List<String> variants = scraper.getAllVariants(link);
 
         if (variants.size() == 1 && variants.getFirst().contains("-oneVariant")) {
             addProduct(link, variants.getFirst());
@@ -51,7 +50,7 @@ public class LinkResponse {
 
     @SneakyThrows
     public void addProduct(String link, String oneVariant) {
-        Product product = scraperPlay.getProduct(link, oneVariant);
+        Product product = scraper.getProduct(link, oneVariant);
         quickSender.deleteMessage(ActiveUser.get().getChatId(), ActiveUser.get().getMessageId());
         if (productService.existsByLinkAndVariant(product.getLink(), product.getVariant()))
             throw new InvalidLinkException("You already have this product in your watchlist.", "User try to add same product.");

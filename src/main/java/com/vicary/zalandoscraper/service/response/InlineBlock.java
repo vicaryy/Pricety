@@ -107,7 +107,7 @@ public class InlineBlock {
                             
                 I am able to send price notification via email
                                 
-                *Status:* %s    
+                *Status:* %s
                 *Your email:* %s"""
                 .formatted(
                         isNotifyByEmailActive ? "Enabled" : "Disabled",
@@ -123,12 +123,13 @@ public class InlineBlock {
 
     public static SendMessage getMenu() {
         ActiveUser user = ActiveUser.get();
+        String nick = user.getNick() != null ? user.getNick() : "";
 
         String menuMessage = """
                 *Hello %s* 👋
                                 
                 %s""".formatted(
-                MarkdownV2.apply(user.getNick()).get(),
+                MarkdownV2.apply(nick).get(),
                 HI_MESSAGES.get(ThreadLocalRandom.current().nextInt(HI_MESSAGES.size())));
 
         return SendMessage.builder()

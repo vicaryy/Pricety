@@ -23,7 +23,7 @@ public class ProductUpdater implements Runnable {
 
     private final static Logger logger = LoggerFactory.getLogger(ProductUpdater.class);
 
-    private final ScraperPlay scraperPlay;
+    private final Scraper scraper;
 
     private final ProductService productService;
 
@@ -94,11 +94,11 @@ public class ProductUpdater implements Runnable {
 
         AtomicInteger completedThreads = new AtomicInteger();
         executorService.execute(() -> {
-            scraperPlay.updateProducts(firstHalf);
+            scraper.updateProducts(firstHalf);
             completedThreads.getAndIncrement();
         });
         executorService.execute(() -> {
-            scraperPlay.updateProducts(secondHalf);
+            scraper.updateProducts(secondHalf);
             completedThreads.getAndIncrement();
         });
 
