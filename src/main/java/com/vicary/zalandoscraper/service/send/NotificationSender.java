@@ -40,6 +40,9 @@ public class NotificationSender {
         String newPrice = String.format("%.2f", n.getNewPrice());
         String oldPrice = String.format("%.2f", n.getOldPrice());
         String cheaper = String.format("%.2f", n.getOldPrice() - n.getNewPrice());
+        String variant = n.getVariant();
+        if (variant.startsWith("-oneVariant "))
+            variant = variant.substring(12);
         return """
                 <html>
                 <body>
@@ -62,7 +65,7 @@ public class NotificationSender {
                 cheaper,
                 n.getProductName(),
                 n.getDescription(),
-                n.getVariant(),
+                variant,
                 n.getLink(),
                 oldPrice,
                 newPrice
@@ -73,9 +76,10 @@ public class NotificationSender {
         String newPrice = String.format("%.2f", n.getNewPrice());
         String oldPrice = String.format("%.2f", n.getOldPrice());
         String cheaper = String.format("%.2f", n.getOldPrice() - n.getNewPrice());
+        String variant = n.getVariant();
+        if (variant.startsWith("-oneVariant "))
+            variant = variant.substring(12);
         return """
-                \\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-
-                                
                 *Price Alert* 🔔
                                 
                 The product you have in your watchlist became cheaper by %s zł\\!
@@ -93,7 +97,7 @@ public class NotificationSender {
                 MarkdownV2.apply(cheaper).get(),
                 MarkdownV2.apply(n.getProductName()).get(),
                 MarkdownV2.apply(n.getDescription()).get(),
-                MarkdownV2.apply(n.getVariant()).get(),
+                MarkdownV2.apply(variant).get(),
                 MarkdownV2.apply(n.getLink()).toZalandoURL().get(),
                 MarkdownV2.apply(oldPrice).get(),
                 MarkdownV2.apply(newPrice).get()

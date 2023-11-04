@@ -78,7 +78,7 @@ public class ReplyMarkupResponse {
             backToMenu(true);
 
         else if (text.equals("-notification"))
-            displayNotification();
+            displayNotification(true);
 
         else if (text.equals("-enableEmail") || text.equals("-disableEmail"))
             updateNotifyByEmail(text);
@@ -113,6 +113,12 @@ public class ReplyMarkupResponse {
         ActiveUser user = ActiveUser.get();
 
         deletePreviousMessage();
+
+        if (!user.isVerifiedEmail()) {
+            popupMessage("You have to verify your email.");
+            displayNotification();
+            return;
+        }
 
         if (user.getEmail() == null) {
             popupMessage("You have to set up an email address.");
@@ -494,7 +500,7 @@ public class ReplyMarkupResponse {
 
 
     private String getLink(String requestId) {
-        LinkRequestEntity linkRequest = linkRequestService.findByRequestId(requestId);
+        LinkRequestEntity linkRequest = linkRequestService.findByRequestIdAndDelete(requestId);
         if (linkRequest == null)
             throw new InvalidLinkException("This session expired.", "User '%s' session expired".formatted(ActiveUser.get().getUserId()));
 
@@ -537,7 +543,7 @@ public class ReplyMarkupResponse {
     }
 
     public void displayNotification() {
-        quickSender.message(InlineBlock.getNotification(ActiveUser.get().isNotifyByEmail(), ActiveUser.get().getEmail()));
+        quickSender.message(InlineBlock.getNotification(ActiveUser.get().isNotifyByEmail(), ActiveUser.get().isVerifiedEmail(), ActiveUser.get().getEmail()));
     }
 
     @SneakyThrows

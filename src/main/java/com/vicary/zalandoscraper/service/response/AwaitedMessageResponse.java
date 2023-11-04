@@ -4,6 +4,7 @@ import com.vicary.zalandoscraper.ActiveUser;
 import com.vicary.zalandoscraper.exception.IllegalInputException;
 import com.vicary.zalandoscraper.pattern.Pattern;
 import com.vicary.zalandoscraper.service.entity.AwaitedMessageService;
+import com.vicary.zalandoscraper.service.entity.EmailVerificationService;
 import com.vicary.zalandoscraper.service.entity.ProductService;
 import com.vicary.zalandoscraper.service.entity.UserService;
 import com.vicary.zalandoscraper.service.quick_sender.QuickSender;
@@ -22,6 +23,8 @@ public class AwaitedMessageResponse {
     private final QuickSender quickSender;
 
     private final UserService userService;
+
+    private final EmailVerificationService emailVerificationService;
 
 
     public void response() {
@@ -44,26 +47,45 @@ public class AwaitedMessageResponse {
         String priceAlert = getPriceAlertFromText(user.getText());
 
         productService.updateProductPriceAlert(productId, priceAlert);
-        quickSender.popupMessage(user.getChatId(), "Price Alert updated successfully.");
-        quickSender.message(InlineBlock.getMenu());
+
+        popupMessage("Price Alert updated successfully.");
+        displayMenu();
     }
 
     @SneakyThrows
     public void updateUserEmail() {
         ActiveUser user = ActiveUser.get();
         String email = user.getText();
-        boolean notifyByEmail = user.isNotifyByEmail();
+
+        if (!Pattern.isEmail(email))
+            throw new IllegalInputException("The provided email doesn't look like a valid email address.", "User '%s' typed invalid email '%s'".formatted(ActiveUser.get().getUserId(), ActiveUser.get().getText()));
+
+        if (email.equals(user.getEmail()))
+            throw new IllegalInputException("The provided email must be different from the one you already have.", "User '%s' typed the same email '%s'".formatted(ActiveUser.get().getUserId(), ActiveUser.get().getText()));
 
         if (email.equalsIgnoreCase("DELETE")) {
-            email = null;
-            userService.updateNotifyByEmailById(user.getUserId(), false);
-            notifyByEmail = false;
-        } else if (!Pattern.isEmailAddressValid(email))
-            throw new IllegalInputException("Invalid email.", "User '%s' typed invalid email '%s'".formatted(ActiveUser.get().getUserId(), ActiveUser.get().getText()));
+            userService.deleteEmailById(user.getUserId());
+            popupMessage("Email deleted successfully");
+            displayMenu();
+            return;
+        }
 
         userService.updateEmailById(user.getUserId(), email);
-        quickSender.popupMessage(user.getChatId(), "Email updated successfully");
-        quickSender.message(InlineBlock.getNotification(notifyByEmail, email));
+
+        if (emailVerificationService.existsByUserId(user.getUserId()))
+            emailVerificationService.deleteAllByUserId(user.getUserId());
+
+        var verification = emailVerificationService.createVerification(user.getUserId());
+
+        emailVerificationService.sendTokenToUser(verification, email);
+
+        String verificationMessage = """
+                Email updated successfully\\.
+                      
+                *Important* ⚠️    
+                Verification code has been sent to the provided email address\\.
+                Please paste the received code here in the chat\\.""";
+        quickSender.message(user.getChatId(), verificationMessage, true);
     }
 
 
@@ -95,6 +117,43 @@ public class AwaitedMessageResponse {
         }
 
         return String.format("%.2f", priceAlert).replaceFirst(",", ".");
+    }
+
+
+    public void deletePreviousMessage() {
+        quickSender.deleteMessage(ActiveUser.get().getChatId(), ActiveUser.get().getMessageId());
+    }
+
+    @SneakyThrows
+    public void deletePreviousMessage(long waitAfterDelete) {
+        deletePreviousMessage();
+        Thread.sleep(waitAfterDelete);
+    }
+
+    public void displayNotification(boolean deletePreviousMessage) {
+        if (deletePreviousMessage)
+            deletePreviousMessage();
+
+        displayNotification();
+    }
+
+    public void displayNotification() {
+        quickSender.message(InlineBlock.getNotification(ActiveUser.get().isNotifyByEmail(), ActiveUser.get().isVerifiedEmail(), ActiveUser.get().getEmail()));
+    }
+
+    public void popupMessage(String message) {
+        quickSender.popupMessage(ActiveUser.get().getChatId(), message);
+    }
+
+    public void popupMessage(String message, boolean deletePreviousMessage) {
+        if (deletePreviousMessage)
+            deletePreviousMessage();
+
+        popupMessage(message);
+    }
+
+    public void displayMenu() {
+        quickSender.message(InlineBlock.getMenu());
     }
 }
 

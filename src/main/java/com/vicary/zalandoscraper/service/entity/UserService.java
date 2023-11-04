@@ -2,11 +2,11 @@ package com.vicary.zalandoscraper.service.entity;
 
 import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.repository.UserRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -35,6 +35,10 @@ public class UserService {
 
     public void updateNotifyByEmailById(String userId, boolean notifyByEmail) {
         repository.updateNotifyByEmailById(userId, notifyByEmail);
+    }
+
+    public void deleteEmailById(String userId) {
+        repository.deleteEmailById(userId);
     }
 
     public void updateEmailById(String userId, String email) {
@@ -102,5 +106,9 @@ public class UserService {
             return true;
         }
         return false;
+    }
+
+    public void setVerifiedEmail(String userId, boolean verified) {
+        repository.setVerifiedEmail(userId, verified);
     }
 }

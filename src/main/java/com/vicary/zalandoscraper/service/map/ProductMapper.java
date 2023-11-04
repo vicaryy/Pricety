@@ -45,7 +45,7 @@ public class ProductMapper {
                 .price(product.getPrice())
                 .priceAlert(product.getPriceAlert())
                 .email(product.getUser().getEmail())
-                .notifyByEmail(product.getUser().isNotifyByEmail())
+                .notifyByEmail(product.getUser().isNotifyByEmail() && product.getUser().isVerifiedEmail())
                 .build();
     }
 
@@ -82,6 +82,7 @@ public class ProductMapper {
                 .oldPrice(productDTO.getPrice())
                 .link(productDTO.getLink())
                 .priceAlert(productDTO.getPriceAlert())
+                .notifyByEmail(productDTO.isNotifyByEmail())
                 .build();
     }
 

@@ -8,6 +8,7 @@ import com.vicary.zalandoscraper.entity.ActiveRequestEntity;
 import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.exception.ActiveUserException;
 import com.vicary.zalandoscraper.exception.ZalandoScraperBotException;
+import com.vicary.zalandoscraper.pattern.Pattern;
 import com.vicary.zalandoscraper.service.entity.ActiveRequestService;
 import com.vicary.zalandoscraper.service.entity.AwaitedMessageService;
 import com.vicary.zalandoscraper.service.entity.UserService;
@@ -18,6 +19,8 @@ import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 
 @Service
@@ -41,10 +44,14 @@ public class UserAuthentication {
                 : update.getCallbackQuery().getMessage();
 
         String chatId = message.getChat().getId();
+
         int messageId = message.getMessageId();
+
         String text = update.getCallbackQuery() == null
                 ? update.getMessage().getText()
                 : update.getCallbackQuery().getData();
+        if (Pattern.isZalandoURLWithPrefix(text))
+            text = Pattern.removeZalandoPrefix(text);
 
         boolean awaitedMessage = isAwaitedMessage(chatId);
 
@@ -91,6 +98,7 @@ public class UserAuthentication {
         activeUser.setNotifyByEmail(userEntity.isNotifyByEmail());
         activeUser.setAwaitedMessage(awaitedMessage);
         activeUser.setEmail(userEntity.getEmail());
+        activeUser.setVerifiedEmail(userEntity.isVerifiedEmail());
         activeUser.setAdmin(userEntity.isAdmin());
     }
 }

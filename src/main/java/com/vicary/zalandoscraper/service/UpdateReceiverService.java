@@ -13,10 +13,7 @@ import com.vicary.zalandoscraper.service.entity.AwaitedMessageService;
 import com.vicary.zalandoscraper.service.entity.ProductService;
 import com.vicary.zalandoscraper.service.entity.UserService;
 import com.vicary.zalandoscraper.service.quick_sender.QuickSender;
-import com.vicary.zalandoscraper.service.response.AwaitedMessageResponse;
-import com.vicary.zalandoscraper.service.response.CommandResponse;
-import com.vicary.zalandoscraper.service.response.LinkResponse;
-import com.vicary.zalandoscraper.service.response.ReplyMarkupResponse;
+import com.vicary.zalandoscraper.service.response.*;
 import lombok.RequiredArgsConstructor;
 
 import com.vicary.zalandoscraper.api_object.Update;
@@ -45,6 +42,8 @@ public class UpdateReceiverService {
     private final ActiveRequestService activeRequestService;
 
     private final AwaitedMessageResponse awaitedMessageResponse;
+
+    private final EmailVerificationResponse emailVerificationResponse;
 
 
     public void updateReceiver(Update update) {
@@ -77,6 +76,9 @@ public class UpdateReceiverService {
 
             else if (Pattern.isCommand(text))
                 commandResponse.response(text, chatId);
+
+            else if (Pattern.isEmailToken(text))
+                emailVerificationResponse.response(text);
 
         } catch (IllegalArgumentException ex) {
             logger.warn(ex.getMessage());

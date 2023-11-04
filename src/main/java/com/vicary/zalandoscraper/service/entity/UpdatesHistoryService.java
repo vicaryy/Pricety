@@ -27,7 +27,7 @@ public class UpdatesHistoryService {
         for (UpdateHistoryEntity u : updateHistoryEntityList)
             saveUpdate(u);
 
-        logger.info("Added {} updates history to database.", updateHistoryEntityList.size());
+        logger.info("[Product Updater] Added {} updates history to database.", updateHistoryEntityList.size());
     }
 
     public LocalDateTime getLastUpdateTime() {

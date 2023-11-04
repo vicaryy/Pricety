@@ -39,12 +39,12 @@ public class ProductUpdater implements Runnable {
 
     private final static int DELAY_BEFORE_START = 5000;   // 5 seconds
 
-    private final static int DELAY_BETWEEN_UPDATES = 10000; // 5 minutes
+    private final static int DELAY_BETWEEN_UPDATES = 100000; // 5 minutes
 
 
     @PostConstruct
     private void starter() {
-//        productUpdaterThread.start();
+        productUpdaterThread.start();
     }
 
     @Override

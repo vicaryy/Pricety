@@ -84,9 +84,20 @@ public class InlineBlock {
     private final static InlineKeyboardMarkup notificationMarkup = new InlineKeyboardMarkup(List.of(listOfButtons7, listOfButtons8, listOfButtons4));
 
 
-    public static SendMessage getNotification(boolean isNotifyByEmailActive, String email) {
-        email = email == null ? "Not Specified" : email;
-        if (isNotifyByEmailActive) {
+    public static SendMessage getNotification(boolean isNotifyByEmail, boolean isVerifiedEmail, String email) {
+        String verified = "";
+
+        if (email == null)
+            email = "Not Specified";
+
+        else if (isVerifiedEmail)
+            verified = "\n\n✅ Email Verified";
+
+        else
+            verified = "\n\n⚠️ Email Not Verified";
+
+
+        if (isNotifyByEmail && isVerifiedEmail) {
             enableOrDisable.setText("Disable email notifications");
             enableOrDisable.setCallbackData("-disableEmail");
         } else {
@@ -108,10 +119,11 @@ public class InlineBlock {
                 I am able to send price notification via email
                                 
                 *Status:* %s
-                *Your email:* %s"""
+                *Your email:* %s%s"""
                 .formatted(
-                        isNotifyByEmailActive ? "Enabled" : "Disabled",
-                        MarkdownV2.apply(email).get());
+                        isNotifyByEmail ? "Enabled" : "Disabled",
+                        MarkdownV2.apply(email).get(),
+                        verified);
 
         return SendMessage.builder()
                 .text(message)

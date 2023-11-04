@@ -23,9 +23,12 @@ public class ActiveUser {
 
     private boolean notifyByEmail;
 
+    private boolean verifiedEmail;
+
     private boolean premium;
 
     private boolean admin;
+
 
     public static ActiveUser get() {
         return activeUserThreadLocal.get();

@@ -13,6 +13,16 @@ public class Pattern {
         return text.startsWith("https://www.zalando.pl/") || text.startsWith("https://zalando.pl/");
     }
 
+    public static boolean isZalandoURLWithPrefix(String text) {
+        String[] arrayText = text.split(" ");
+        return arrayText[arrayText.length - 1].startsWith("https://www.zalando.pl/");
+    }
+
+    public static String removeZalandoPrefix(String text) {
+        String[] arrayText = text.split(" ");
+        return arrayText[arrayText.length - 1];
+    }
+
     public static boolean isCommand(String text) {
         return text.startsWith("/");
     }
@@ -29,9 +39,16 @@ public class Pattern {
         return awaitedMessage;
     }
 
-    public static boolean isEmailAddressValid(String emailAddress) {
+    public static boolean isEmail(String text) {
+        if (text.equalsIgnoreCase("delete"))
+            return true;
+
         return emailPattern
-                .matcher(emailAddress)
+                .matcher(text)
                 .matches();
+    }
+
+    public static boolean isEmailToken(String text) {
+        return text.startsWith("v-");
     }
 }

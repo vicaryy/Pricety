@@ -38,6 +38,9 @@ public class UserEntity {
     @Column(name = "notify_by_email")
     private boolean notifyByEmail;
 
+    @Column(name = "verified_email")
+    private boolean verifiedEmail;
+
     @OneToMany(mappedBy = "user")
     @ToString.Exclude
     private List<ProductEntity> products;

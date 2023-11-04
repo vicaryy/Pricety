@@ -304,7 +304,7 @@ public class Scraper {
 
     private boolean clickAvailableVariant(List<Locator> locators, String variant) {
         for (Locator l : locators)
-            if (l.textContent().startsWith(variant)) {
+            if (l.textContent().equals(variant)) {
                 l.click();
                 return true;
             }
