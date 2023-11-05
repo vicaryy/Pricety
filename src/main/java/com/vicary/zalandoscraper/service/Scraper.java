@@ -73,13 +73,21 @@ public class Scraper {
 
     private void updateProduct(Page page, ProductDTO dto) {
         try (page) {
-
 //            waitForMainPage(page);
 
-            dto.setNewPrice(0);
+            dto.setNewPrice(dto.getPrice());
 
-            if (!isLinkValid(page) || isItemSoldOut(page))
+            if (!isLinkValid(page) || isItemSoldOut(page)) {
+                logger.debug("Product '{}' - link invalid", dto.getProductId());
+                dto.setNewPrice(0);
                 return;
+            }
+
+            if (isItemSoldOut(page)){
+                logger.debug("Product '{}' - item sold out", dto.getProductId());
+                dto.setNewPrice(0);
+                return;
+            }
 
             if (dto.getVariant().startsWith("-oneVariant")) {
                 dto.setNewPrice(getPrice(page));
@@ -93,8 +101,11 @@ public class Scraper {
 
             clickSizeButton(page);
 
-            if (!clickAvailableVariant(getAvailableVariantsAsLocators(page), dto.getVariant()))
+            if (!clickAvailableVariant(getAvailableVariantsAsLocators(page), dto.getVariant())) {
+                dto.setNewPrice(0);
+                logger.debug("Product '{}' - item variant not available", dto.getProductId());
                 return;
+            }
 
             dto.setNewPrice(getPrice(page));
 
@@ -143,6 +154,8 @@ public class Scraper {
 
                     product.setPrice(getPrice(page));
 
+                    System.out.println(getPrice(page));
+
                     return product;
                 } catch (PlaywrightException ex) {
 
@@ -175,8 +188,6 @@ public class Scraper {
 
                     if (!clickAvailableVariant(availableVariantsAsLocators, variant))
                         return product;
-
-                    product.setPrice(getPrice(page));
 
                     return product;
                 }
@@ -244,10 +255,13 @@ public class Scraper {
         if (price.contains(" "))
             price = price.replaceAll(" ", "");
 
-        if (price.startsWith("od"))
-            price = price.substring(3);
+        if (price.contains(" "))
+            price = price.replaceAll(" ", "");
 
-        price = price.substring(0, price.length() - 3);
+        if (price.startsWith("od"))
+            price = price.substring(2);
+
+        price = price.substring(0, price.length() - 2);
 
         return Double.parseDouble(price.replaceFirst(",", "."));
     }
@@ -302,10 +316,12 @@ public class Scraper {
         return page.getByTestId(Tag.VARIANT_BUTTON).innerText().startsWith(variant);
     }
 
+    @SneakyThrows
     private boolean clickAvailableVariant(List<Locator> locators, String variant) {
         for (Locator l : locators)
             if (l.textContent().equals(variant)) {
                 l.click();
+                Thread.sleep(100);
                 return true;
             }
         return false;

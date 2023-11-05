@@ -12,9 +12,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
@@ -33,18 +35,22 @@ public class ProductUpdater implements Runnable {
 
     private final NotificationService notificationService;
 
-    private final ExecutorService executorService = Executors.newFixedThreadPool(2);
-
     private final Thread productUpdaterThread = new Thread(this);
+
+    private final List<Future<?>> activeThreads = new ArrayList<>();
 
     private final static int DELAY_BEFORE_START = 5000;   // 5 seconds
 
-    private final static int DELAY_BETWEEN_UPDATES = 100000; // 5 minutes
+    private final static int DELAY_BETWEEN_UPDATES = 1000 * 30 * 60; // 10 minutes
 
 
     @PostConstruct
     private void starter() {
         productUpdaterThread.start();
+    }
+
+    public boolean isProductUpdaterRunning() {
+        return !activeThreads.isEmpty();
     }
 
     @Override
@@ -62,6 +68,7 @@ public class ProductUpdater implements Runnable {
             logger.error("[Product Updater] Thread interrupted.");
             ex.printStackTrace();
         } finally {
+            activeThreads.clear();
             productUpdaterThread.interrupt();
         }
     }
@@ -92,19 +99,26 @@ public class ProductUpdater implements Runnable {
         List<ProductDTO> firstHalf = updatedDTOs.subList(0, updatedDTOs.size() / 2);
         List<ProductDTO> secondHalf = updatedDTOs.subList(updatedDTOs.size() / 2, updatedDTOs.size());
 
+        final ExecutorService executorService = Executors.newFixedThreadPool(2);
+
         AtomicInteger completedThreads = new AtomicInteger();
-        executorService.execute(() -> {
+        Future<?> future = executorService.submit(() -> {
             scraper.updateProducts(firstHalf);
             completedThreads.getAndIncrement();
         });
-        executorService.execute(() -> {
+        Future<?> future1 = executorService.submit(() -> {
             scraper.updateProducts(secondHalf);
             completedThreads.getAndIncrement();
         });
+        activeThreads.add(future);
+        activeThreads.add(future1);
 
-
-        while (completedThreads.get() != 2)
-            Thread.sleep(200);
+        while (completedThreads.get() != 2) {
+            Thread.sleep(500);
+            System.out.println(completedThreads.get());
+        }
+        executorService.shutdown();
+        activeThreads.clear();
 
         logger.info("[Product Updater] Products updated successfully, it takes {} seconds", (System.currentTimeMillis() - startingTime) / 1000);
     }

@@ -45,6 +45,8 @@ public class UpdateReceiverService {
 
     private final EmailVerificationResponse emailVerificationResponse;
 
+    private final ProductUpdater productUpdater;
+
 
     public void updateReceiver(Update update) {
         if (update.getMessage() == null && update.getCallbackQuery() == null) {
@@ -62,6 +64,12 @@ public class UpdateReceiverService {
         String userId = ActiveUser.get().getUserId();
         String chatId = ActiveUser.get().getChatId();
         logger.info("Got message from user '{}'", userId);
+
+        if (productUpdater.isProductUpdaterRunning()) {
+            activeRequestService.deleteByUserId(userId);
+            quickSender.message(userId, "Wait until updates.", false);
+            return;
+        }
 
 
         try {
