@@ -82,7 +82,7 @@ public class AwaitedMessageResponse {
         String verificationMessage = """
                 Email updated successfully\\.
                       
-                *Important* ⚠️    
+                *Important* ⚠️
                 Verification code has been sent to the provided email address\\.
                 Please paste the received code here in the chat\\.""";
         quickSender.message(user.getChatId(), verificationMessage, true);

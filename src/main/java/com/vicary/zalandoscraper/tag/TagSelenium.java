@@ -1,5 +1,6 @@
 package com.vicary.zalandoscraper.tag;
 
+@Deprecated
 public enum TagSelenium {
     ONE_SIZE("span.sDq_FX._2kjxJ6.dgII7d.Yb63TQ"),
     NAME("span._ZDS_REF_SCOPE_._5FHGm_"),

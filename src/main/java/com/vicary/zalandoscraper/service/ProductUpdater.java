@@ -5,6 +5,7 @@ import com.vicary.zalandoscraper.service.entity.NotificationService;
 import com.vicary.zalandoscraper.service.entity.ProductService;
 import com.vicary.zalandoscraper.service.entity.UpdatesHistoryService;
 import com.vicary.zalandoscraper.service.map.ProductMapper;
+import com.vicary.zalandoscraper.service.send.EmailSender;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -113,10 +114,9 @@ public class ProductUpdater implements Runnable {
         activeThreads.add(future);
         activeThreads.add(future1);
 
-        while (completedThreads.get() != 2) {
+        while (completedThreads.get() != 2)
             Thread.sleep(500);
-            System.out.println(completedThreads.get());
-        }
+
         executorService.shutdown();
         activeThreads.clear();
 

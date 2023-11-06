@@ -55,6 +55,7 @@ public class UpdateReceiverService {
         }
 
         try {
+
             userAuthentication.authenticate(update);
         } catch (ActiveUserException ignored) {
             return;
