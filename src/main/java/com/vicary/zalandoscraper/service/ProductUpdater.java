@@ -5,10 +5,8 @@ import com.vicary.zalandoscraper.service.entity.NotificationService;
 import com.vicary.zalandoscraper.service.entity.ProductService;
 import com.vicary.zalandoscraper.service.entity.UpdatesHistoryService;
 import com.vicary.zalandoscraper.service.map.ProductMapper;
-import com.vicary.zalandoscraper.service.send.EmailSender;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -42,7 +40,7 @@ public class ProductUpdater implements Runnable {
 
     private final static int DELAY_BEFORE_START = 5000;   // 5 seconds
 
-    private final static int DELAY_BETWEEN_UPDATES = 1000 * 30 * 60; // 10 minutes
+    private final static int DELAY_BETWEEN_UPDATES = 5000; // 10 minutes
 
 
     @PostConstruct
@@ -93,7 +91,6 @@ public class ProductUpdater implements Runnable {
         sendNotificationsToUsers();
     }
 
-    @SneakyThrows
     private void updateProducts(List<ProductDTO> updatedDTOs) {
         final long startingTime = System.currentTimeMillis();
         logger.info("[Product Updater] Starting updating '{}' products", updatedDTOs.size());
@@ -111,16 +108,28 @@ public class ProductUpdater implements Runnable {
             scraper.updateProducts(secondHalf);
             completedThreads.getAndIncrement();
         });
+
         activeThreads.add(future);
         activeThreads.add(future1);
 
-        while (completedThreads.get() != 2)
-            Thread.sleep(500);
+        while (completedThreads.get() != 2) {
+            System.out.println(completedThreads);
+            sleep(1000);
+        }
+
 
         executorService.shutdown();
         activeThreads.clear();
 
         logger.info("[Product Updater] Products updated successfully, it takes {} seconds", (System.currentTimeMillis() - startingTime) / 1000);
+    }
+
+    private void sleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 

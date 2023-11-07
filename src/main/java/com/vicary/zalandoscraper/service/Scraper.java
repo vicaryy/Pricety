@@ -8,7 +8,6 @@ import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;
 import com.vicary.zalandoscraper.tag.Tag;
 import jakarta.annotation.PostConstruct;
-import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -42,38 +41,41 @@ public class Scraper {
 //        launchOptions.setHeadless(false);
     }
 
-    @SneakyThrows
-    protected List<ProductDTO> updateProducts(List<ProductDTO> DTOs) {
+    protected void updateProducts(List<ProductDTO> DTOs) {
         try (Playwright playwright = Playwright.create()) {
 
             try (BrowserContext browser = playwright.chromium().launch(launchOptions).newContext()) {
-                browser.newPage();
-                List<Page> pages = new ArrayList<>();
+                Page mainPage = browser.newPage();
 
+                logger.debug("All products: " + DTOs.size());
                 for (int i = 0; i < DTOs.size(); i++) {
                     Page newPage = browser.newPage();
                     newPage.setExtraHTTPHeaders(extraHeaders);
                     newPage.navigate(DTOs.get(i).getLink(), navigateOptions);
-                    pages.add(newPage);
 
                     if (i == 0)
                         clickCookiesButton(newPage);
 
-                    if (pages.size() == 10 || i == DTOs.size() - 1) {
-                        for (int k = 0; k < pages.size(); k++) {
-                            updateProduct(pages.get(k), DTOs.get(i - pages.size() + 1 + k));
-                        }
-                        pages.clear();
-                    }
+                    logger.debug("Updating {} product", i + 1);
+                    updateProduct(newPage, DTOs.get(i));
+                    logger.debug("Updated {} product", i + 1);
+                    logger.debug("Im in loop wtf?");
                 }
-                return DTOs;
+                logger.debug("Im exit loop");
+                logger.debug("Trying to close BrowserContext");
+
             }
+            logger.debug("Im closed BrowserContext");
+            logger.debug("Trying to close Playwright");
         }
+        logger.debug("Closed Playwright");
     }
 
     private void updateProduct(Page page, ProductDTO dto) {
         try (page) {
-//            waitForMainPage(page);
+            logger.debug("Waiting for main page...");
+            waitForMainPage(page);
+            logger.debug("Waiting page appears");
 
             dto.setNewPrice(dto.getPrice());
 
@@ -83,7 +85,7 @@ public class Scraper {
                 return;
             }
 
-            if (isItemSoldOut(page)){
+            if (isItemSoldOut(page)) {
                 logger.debug("Product '{}' - item sold out", dto.getProductId());
                 dto.setNewPrice(0);
                 return;
@@ -100,6 +102,7 @@ public class Scraper {
             }
 
             clickSizeButton(page);
+            logger.debug("Clicked size button");
 
             if (!clickAvailableVariant(getAvailableVariantsAsLocators(page), dto.getVariant())) {
                 dto.setNewPrice(0);
@@ -114,6 +117,7 @@ public class Scraper {
             logger.warn("Failed to update productId '{}'", dto.getProductId());
         }
     }
+
 
     public Product getProduct(String link, String variant) {
         try (Playwright playwright = Playwright.create()) {
@@ -154,45 +158,49 @@ public class Scraper {
 
                     product.setPrice(getPrice(page));
 
-                    System.out.println(getPrice(page));
-
                     return product;
+
                 } catch (PlaywrightException ex) {
-
-                    clickCookiesButton(page);
-
-                    Product product = Product.builder()
-                            .name(getName(page))
-                            .description(getDescription(page))
-                            .price(0)
-                            .variant(variant)
-                            .link(link)
-                            .build();
-
-                    if (isItemSoldOut(page))
-                        return product;
-
-                    if (variant.startsWith("-oneVariant")) {
-                        product.setPrice(getPrice(page));
-                        return product;
-                    }
-
-                    if (isVariantAlreadyChosen(page, variant)) {
-                        product.setPrice(getPrice(page));
-                        return product;
-                    }
-
-                    clickSizeButton(page);
-
-                    List<Locator> availableVariantsAsLocators = getAvailableVariantsAsLocators(page);
-
-                    if (!clickAvailableVariant(availableVariantsAsLocators, variant))
-                        return product;
-
-                    return product;
+                    return getProductWithCookiesClicks(page, link, variant);
                 }
             }
         }
+    }
+
+    private Product getProductWithCookiesClicks(Page page, String link, String variant) {
+        clickCookiesButton(page);
+
+        Product product = Product.builder()
+                .name(getName(page))
+                .description(getDescription(page))
+                .price(0)
+                .variant(variant)
+                .link(link)
+                .build();
+
+        if (isItemSoldOut(page))
+            return product;
+
+        if (variant.startsWith("-oneVariant")) {
+            product.setPrice(getPrice(page));
+            return product;
+        }
+
+        if (isVariantAlreadyChosen(page, variant)) {
+            product.setPrice(getPrice(page));
+            return product;
+        }
+
+        clickSizeButton(page);
+
+        List<Locator> availableVariantsAsLocators = getAvailableVariantsAsLocators(page);
+
+        if (!clickAvailableVariant(availableVariantsAsLocators, variant))
+            return product;
+
+        product.setPrice(getPrice(page));
+
+        return product;
     }
 
 
@@ -235,6 +243,9 @@ public class Scraper {
         }
     }
 
+    private void waitForMainPage(Page page) {
+        page.waitForSelector(Tag.LINK_VALID);
+    }
 
     private String getOneVariantName(Page page) {
         return page.locator(Tag.ONE_VARIANT_NAME).innerText();
@@ -250,7 +261,6 @@ public class Scraper {
 
     private double getPrice(Page page) {
         String price = page.locator(Tag.PRICE).textContent();
-        //sDq_FX _4sa1cA dgII7d Km7l2y _65i7kZ
 
         if (price.contains(" "))
             price = price.replaceAll(" ", "");
@@ -316,12 +326,15 @@ public class Scraper {
         return page.getByTestId(Tag.VARIANT_BUTTON).innerText().startsWith(variant);
     }
 
-    @SneakyThrows
     private boolean clickAvailableVariant(List<Locator> locators, String variant) {
         for (Locator l : locators)
             if (l.textContent().equals(variant)) {
                 l.click();
-                Thread.sleep(100);
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    throw new PlaywrightException(e.getMessage());
+                }
                 return true;
             }
         return false;
