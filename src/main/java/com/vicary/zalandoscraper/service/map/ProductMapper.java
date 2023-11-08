@@ -43,6 +43,7 @@ public class ProductMapper {
                 .link(product.getLink())
                 .variant(product.getVariant())
                 .price(product.getPrice())
+                .newPrice(product.getPrice())
                 .priceAlert(product.getPriceAlert())
                 .email(product.getUser().getEmail())
                 .notifyByEmail(product.getUser().isNotifyByEmail() && product.getUser().isVerifiedEmail())

@@ -14,4 +14,8 @@ public class ZalandoScraperBotException extends RuntimeException {
         super(message);
         this.loggerMessage = loggerMessage;
     }
+    public ZalandoScraperBotException(String message) {
+        super(message);
+    }
+
 }

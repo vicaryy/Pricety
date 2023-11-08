@@ -51,7 +51,7 @@ public class ProductService {
         return mapper.map(productEntities);
     }
 
-    public void updateProductPrice(List<ProductDTO> productDTOs) {
+    public void updateProductPrices(List<ProductDTO> productDTOs) {
         for (ProductDTO p : productDTOs) {
             if (p.getPriceAlert().equals("AUTO") || p.getPriceAlert().equals("0"))
                 updatePriceById(p.getProductId(), p.getNewPrice());

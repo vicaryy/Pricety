@@ -2,18 +2,17 @@ package com.vicary.zalandoscraper.service;
 
 import com.microsoft.playwright.PlaywrightException;
 import com.vicary.zalandoscraper.ActiveUser;
-import com.vicary.zalandoscraper.api_request.send.SendMessage;
+import com.vicary.zalandoscraper.entity.MessageEntity;
 import com.vicary.zalandoscraper.exception.ActiveUserException;
 import com.vicary.zalandoscraper.exception.IllegalInputException;
 import com.vicary.zalandoscraper.exception.InvalidLinkException;
 import com.vicary.zalandoscraper.exception.ZalandoScraperBotException;
 import com.vicary.zalandoscraper.pattern.Pattern;
 import com.vicary.zalandoscraper.service.entity.ActiveRequestService;
-import com.vicary.zalandoscraper.service.entity.AwaitedMessageService;
-import com.vicary.zalandoscraper.service.entity.ProductService;
-import com.vicary.zalandoscraper.service.entity.UserService;
+import com.vicary.zalandoscraper.service.entity.MessageService;
 import com.vicary.zalandoscraper.service.quick_sender.QuickSender;
 import com.vicary.zalandoscraper.service.response.*;
+import com.vicary.zalandoscraper.updater.ProductUpdater;
 import lombok.RequiredArgsConstructor;
 
 import com.vicary.zalandoscraper.api_object.Update;
@@ -44,9 +43,7 @@ public class UpdateReceiverService {
     private final AwaitedMessageResponse awaitedMessageResponse;
 
     private final EmailVerificationResponse emailVerificationResponse;
-
-    private final ProductUpdater productUpdater;
-
+    private final ProductUpdater productUpdater = ProductUpdater.getInstance();
 
     public void updateReceiver(Update update) {
         if (update.getMessage() == null && update.getCallbackQuery() == null) {
@@ -55,7 +52,6 @@ public class UpdateReceiverService {
         }
 
         try {
-
             userAuthentication.authenticate(update);
         } catch (ActiveUserException ignored) {
             return;
@@ -66,7 +62,7 @@ public class UpdateReceiverService {
         String chatId = ActiveUser.get().getChatId();
         logger.info("Got message from user '{}'", userId);
 
-        if (productUpdater.isProductUpdaterRunning()) {
+        if (productUpdater.isRunning()) {
             activeRequestService.deleteByUserId(userId);
             quickSender.message(userId, "Wait until updates.", false);
             return;

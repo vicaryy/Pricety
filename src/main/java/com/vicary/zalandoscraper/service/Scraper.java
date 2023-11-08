@@ -7,27 +7,23 @@ import com.vicary.zalandoscraper.exception.InvalidLinkException;
 import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;
 import com.vicary.zalandoscraper.tag.Tag;
-import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Service
 public class Scraper {
 
     private final static Logger logger = LoggerFactory.getLogger(Scraper.class);
     private final Map<String, String> extraHeaders = Map.of("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36");
     private final BrowserType.LaunchOptions launchOptions = new BrowserType.LaunchOptions();
     private final Page.NavigateOptions navigateOptions = new Page.NavigateOptions().setWaitUntil(WaitUntilState.COMMIT);
+    private static Scraper INSTANCE;
+    private boolean bugged;
 
-
-    @PostConstruct
-    private void setup() {
+    private Scraper() {
         launchOptions.setArgs(List.of(
                 "--no-sandbox",
                 "--disable-setuid-sandbox",
@@ -38,16 +34,23 @@ public class Scraper {
                 "--single-process",
                 "--disable-gpu"
         ));
-//        launchOptions.setHeadless(false);
+        launchOptions.setHeadless(true);
     }
 
-    protected void updateProducts(List<ProductDTO> DTOs) {
+    public static Scraper getInstance() {
+        if (INSTANCE == null)
+            INSTANCE = new Scraper();
+        return INSTANCE;
+    }
+
+    public void updateProducts(List<ProductDTO> DTOs) {
+        checkIfIsBugged();
+
         try (Playwright playwright = Playwright.create()) {
 
             try (BrowserContext browser = playwright.chromium().launch(launchOptions).newContext()) {
-                Page mainPage = browser.newPage();
+                browser.newPage();
 
-                logger.debug("All products: " + DTOs.size());
                 for (int i = 0; i < DTOs.size(); i++) {
                     Page newPage = browser.newPage();
                     newPage.setExtraHTTPHeaders(extraHeaders);
@@ -56,28 +59,15 @@ public class Scraper {
                     if (i == 0)
                         clickCookiesButton(newPage);
 
-                    logger.debug("Updating {} product", i + 1);
                     updateProduct(newPage, DTOs.get(i));
-                    logger.debug("Updated {} product", i + 1);
-                    logger.debug("Im in loop wtf?");
                 }
-                logger.debug("Im exit loop");
-                logger.debug("Trying to close BrowserContext");
-
             }
-            logger.debug("Im closed BrowserContext");
-            logger.debug("Trying to close Playwright");
         }
-        logger.debug("Closed Playwright");
     }
 
     private void updateProduct(Page page, ProductDTO dto) {
         try (page) {
-            logger.debug("Waiting for main page...");
             waitForMainPage(page);
-            logger.debug("Waiting page appears");
-
-            dto.setNewPrice(dto.getPrice());
 
             if (!isLinkValid(page) || isItemSoldOut(page)) {
                 logger.debug("Product '{}' - link invalid", dto.getProductId());
@@ -102,7 +92,6 @@ public class Scraper {
             }
 
             clickSizeButton(page);
-            logger.debug("Clicked size button");
 
             if (!clickAvailableVariant(getAvailableVariantsAsLocators(page), dto.getVariant())) {
                 dto.setNewPrice(0);
@@ -338,5 +327,21 @@ public class Scraper {
                 return true;
             }
         return false;
+    }
+
+    public void checkIfIsBugged() {
+        if (bugged) {
+            setHeadless(false);
+            bugged = false;
+        } else
+            setHeadless(true);
+    }
+
+    public void setBugged(boolean bugged) {
+        this.bugged = bugged;
+    }
+
+    public void setHeadless(boolean headless) {
+        launchOptions.setHeadless(headless);
     }
 }

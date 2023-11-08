@@ -5,12 +5,14 @@ import com.vicary.zalandoscraper.api_object.Update;
 import com.vicary.zalandoscraper.api_object.User;
 import com.vicary.zalandoscraper.api_object.message.Message;
 import com.vicary.zalandoscraper.entity.ActiveRequestEntity;
+import com.vicary.zalandoscraper.entity.MessageEntity;
 import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.exception.ActiveUserException;
 import com.vicary.zalandoscraper.exception.ZalandoScraperBotException;
 import com.vicary.zalandoscraper.pattern.Pattern;
 import com.vicary.zalandoscraper.service.entity.ActiveRequestService;
 import com.vicary.zalandoscraper.service.entity.AwaitedMessageService;
+import com.vicary.zalandoscraper.service.entity.MessageService;
 import com.vicary.zalandoscraper.service.entity.UserService;
 import com.vicary.zalandoscraper.service.map.UserMapper;
 import com.vicary.zalandoscraper.service.quick_sender.QuickSender;
@@ -38,6 +40,8 @@ public class UserAuthentication {
 
     private final UserMapper userMapper;
 
+    private final MessageService messageService;
+
     public void authenticate(Update update) {
         Message message = update.getCallbackQuery() == null
                 ? update.getMessage()
@@ -58,6 +62,8 @@ public class UserAuthentication {
         checkActiveUser(chatId);
 
         UserEntity userEntity = checkUserInRepository(message.getFrom(), chatId);
+
+        saveMessageToRepository(userEntity, text);
 
         setActiveUserInThread(userEntity, text, chatId, messageId, awaitedMessage);
     }
@@ -85,6 +91,13 @@ public class UserAuthentication {
         UserEntity userEntity = userMapper.map(user);
         userService.saveUser(userEntity);
         return userEntity;
+    }
+
+    private void saveMessageToRepository(UserEntity user, String text) {
+        messageService.saveEntity(MessageEntity.builder()
+                .user(user)
+                .message(text)
+                .build());
     }
 
     private void setActiveUserInThread(UserEntity userEntity, String text, String chatId, int messageId, boolean awaitedMessage) {

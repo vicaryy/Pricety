@@ -24,7 +24,7 @@ import java.util.stream.IntStream;
 @RequiredArgsConstructor
 public class LinkResponse {
 
-    private final Scraper scraper;
+    private final Scraper scraper = Scraper.getInstance();
 
     private final QuickSender quickSender;
 

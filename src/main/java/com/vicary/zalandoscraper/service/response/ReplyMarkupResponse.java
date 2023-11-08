@@ -25,7 +25,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReplyMarkupResponse {
 
-    private final Scraper scraper;
+    private final Scraper scraper = Scraper.getInstance();
 
     private final LinkRequestService linkRequestService;
 
