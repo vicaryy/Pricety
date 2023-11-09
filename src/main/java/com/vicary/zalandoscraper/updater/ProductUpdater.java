@@ -132,4 +132,8 @@ public class ProductUpdater {
     public void setAmountOfThreads(int amount) {
         amountOfThreads = amount;
     }
+
+    public int getAmountOfThreads() {
+        return amountOfThreads;
+    }
 }

@@ -72,7 +72,7 @@ public class ProductMapper {
                 .collect(Collectors.toList());
     }
 
-    private NotificationEntity mapToNotificationEntity(ProductDTO productDTO){
+    private NotificationEntity mapToNotificationEntity(ProductDTO productDTO) {
         return NotificationEntity.builder()
                 .userId(productDTO.getUserId())
                 .email(productDTO.getEmail())

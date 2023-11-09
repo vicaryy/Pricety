@@ -1,7 +1,7 @@
 package com.vicary.zalandoscraper.service;
 
 import com.vicary.zalandoscraper.entity.NotificationEntity;
-import com.vicary.zalandoscraper.service.send.NotificationSender;
+import com.vicary.zalandoscraper.updater.NotificationManager;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -9,10 +9,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.List;
 
 @SpringBootTest
-class NotificationSenderTest {
+class NotificationManagerTest {
 
     @Autowired
-    private NotificationSender sender;
+    private NotificationManager sender;
 
     @Test
     void test() {

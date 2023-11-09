@@ -3,7 +3,7 @@ package com.vicary.zalandoscraper.service.entity;
 import com.vicary.zalandoscraper.entity.EmailVerificationEntity;
 import com.vicary.zalandoscraper.model.Email;
 import com.vicary.zalandoscraper.repository.EmailVerificationRepository;
-import com.vicary.zalandoscraper.service.send.EmailSender;
+import com.vicary.zalandoscraper.updater.sender.EmailSender;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

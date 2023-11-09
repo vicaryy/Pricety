@@ -1,12 +1,10 @@
-package com.vicary.zalandoscraper.service;
+package com.vicary.zalandoscraper.updater;
 
 import com.vicary.zalandoscraper.exception.TimeoutException;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;
-import com.vicary.zalandoscraper.service.entity.NotificationService;
 import com.vicary.zalandoscraper.service.entity.ProductService;
 import com.vicary.zalandoscraper.service.entity.UpdatesHistoryService;
 import com.vicary.zalandoscraper.service.map.ProductMapper;
-import com.vicary.zalandoscraper.updater.ProductUpdater;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;

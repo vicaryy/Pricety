@@ -58,6 +58,7 @@ public class ProductService {
 
             else {
                 double priceAlert = Double.parseDouble(p.getPriceAlert());
+                // TODO
                 if (p.getNewPrice() <= priceAlert)
                     updatePriceAndPriceAlertById(p.getProductId(), p.getNewPrice(), "0");
                 else

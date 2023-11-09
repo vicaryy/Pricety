@@ -23,7 +23,7 @@ import java.util.HashMap;
 public class ParameterizedTypeReferences {
     private final HashMap<Class, ParameterizedTypeReference> types = new HashMap<>();
 
-    ParameterizedTypeReferences() {
+    public ParameterizedTypeReferences() {
         types.put(Message.class, new ParameterizedTypeReference<RequestResponse<Message>>() {
         });
         types.put(User.class, new ParameterizedTypeReference<RequestResponse<User>>() {
