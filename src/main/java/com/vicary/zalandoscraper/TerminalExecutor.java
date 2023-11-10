@@ -13,7 +13,7 @@ public class TerminalExecutor {
         String br = browser.toString();
 
         ProcessBuilder processBuilder = new ProcessBuilder("pkill", br);
-        logger.info("[Terminal Executor] Successfully killed {} process", br);
+        logger.info("[Terminal Executor] Killed {} process", br);
         try {
             processBuilder.start();
         } catch (IOException e) {

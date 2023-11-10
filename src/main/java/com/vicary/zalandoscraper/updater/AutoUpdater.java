@@ -1,6 +1,9 @@
 package com.vicary.zalandoscraper.updater;
 
+import com.vicary.zalandoscraper.BrowserType;
+import com.vicary.zalandoscraper.TerminalExecutor;
 import com.vicary.zalandoscraper.exception.TimeoutException;
+import com.vicary.zalandoscraper.service.Scraper;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;
 import com.vicary.zalandoscraper.service.entity.ProductService;
 import com.vicary.zalandoscraper.service.entity.UpdatesHistoryService;
@@ -26,7 +29,7 @@ public class AutoUpdater implements Runnable {
 
     private final ProductMapper productMapper;
 
-    private final NotificationService notificationService;
+    private final NotificationManager notificationManager;
     private final Thread updaterThread = new Thread(this);
     private final static int DELAY_BEFORE_START = 5000;   // 5 seconds
     private final static int DELAY_BETWEEN_UPDATES = 1000 * 10; // 10 minutes
@@ -69,9 +72,7 @@ public class AutoUpdater implements Runnable {
 
         saveToUpdatesHistoryRepository(products);
 
-        saveToNotificationsRepository(products);
-
-        sendNotificationsToUsers();
+        sendNotificationsToUsers(products);
     }
 
     private void sleep(long millis) {
@@ -87,20 +88,17 @@ public class AutoUpdater implements Runnable {
             productUpdater.update(productDTOS);
         } catch (TimeoutException ex) {
             logger.error("[Auto Updater] Timeout in updating products but continuing auto update process.");
+            logger.error("[Auto Updater] Set Scraper as bugged - headless mode OFF.");
+            TerminalExecutor.shutdownBrowser(BrowserType.Chromium);
         }
     }
-
-    private void saveToNotificationsRepository(List<ProductDTO> updatedDTOs) {
-        notificationService.saveNotifications(productMapper.mapToNotificationEntity(updatedDTOs));
-    }
-
 
     private void saveToUpdatesHistoryRepository(List<ProductDTO> updatedDTOs) {
         updatesHistoryService.saveUpdates(productMapper.mapToHistoryEntityList(updatedDTOs));
     }
 
-    private void sendNotificationsToUsers() {
-        notificationService.sendNotificationsToUsers();
+    private void sendNotificationsToUsers(List<ProductDTO> DTOs) {
+        notificationManager.send(DTOs);
     }
 
     private void updateProductsPriceInRepository(List<ProductDTO> updatedDTOs) {

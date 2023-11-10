@@ -7,6 +7,7 @@ import com.vicary.zalandoscraper.api_request.edit_message.DeleteMessage;
 import com.vicary.zalandoscraper.api_request.edit_message.EditMessageText;
 import com.vicary.zalandoscraper.api_request.send.SendChatAction;
 import com.vicary.zalandoscraper.api_request.send.SendMessage;
+import com.vicary.zalandoscraper.model.ChatNotification;
 import com.vicary.zalandoscraper.service.RequestService;
 import com.vicary.zalandoscraper.service.response.InlineBlock;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,14 @@ public class QuickSender {
         } catch (Exception ex) {
             logger.warn("Error in sending message request, message: {}", ex.getMessage());
         }
+    }
+
+    public void notification(ChatNotification notification) throws Exception {
+        requestService.sendRequestAsync(SendMessage.builder()
+                .chatId(notification.getChatId())
+                .text(notification.getMessage())
+                .parseMode(notification.isMarkdownV2() ? ParseMode.MarkdownV2 : null)
+                .build());
     }
 
 

@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 public class Scraper {
 
     private final static Logger logger = LoggerFactory.getLogger(Scraper.class);
+    public static boolean BUGGED;
     private final Map<String, String> extraHeaders = Map.of("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36");
     private final BrowserType.LaunchOptions launchOptions = new BrowserType.LaunchOptions();
     private final Page.NavigateOptions navigateOptions = new Page.NavigateOptions().setWaitUntil(WaitUntilState.COMMIT);
@@ -34,7 +35,7 @@ public class Scraper {
                 "--single-process",
                 "--disable-gpu"
         ));
-        launchOptions.setHeadless(true);
+//        launchOptions.setHeadless(true);
     }
 
     public static Scraper getInstance() {
@@ -44,8 +45,6 @@ public class Scraper {
     }
 
     public void updateProducts(List<ProductDTO> DTOs) {
-        checkIfIsBugged();
-
         try (Playwright playwright = Playwright.create()) {
 
             try (BrowserContext browser = playwright.chromium().launch(launchOptions).newContext()) {
@@ -69,7 +68,7 @@ public class Scraper {
         try (page) {
             waitForMainPage(page);
 
-            if (!isLinkValid(page) || isItemSoldOut(page)) {
+            if (!isLinkValid(page)) {
                 logger.debug("Product '{}' - link invalid", dto.getProductId());
                 dto.setNewPrice(0);
                 return;
@@ -329,19 +328,7 @@ public class Scraper {
         return false;
     }
 
-    public void checkIfIsBugged() {
-        if (bugged) {
-            setHeadless(false);
-            bugged = false;
-        } else
-            setHeadless(true);
-    }
-
     public void setBugged(boolean bugged) {
-        this.bugged = bugged;
-    }
-
-    public void setHeadless(boolean headless) {
-        launchOptions.setHeadless(headless);
+        launchOptions.setHeadless(!bugged);
     }
 }

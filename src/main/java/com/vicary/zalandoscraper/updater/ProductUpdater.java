@@ -71,6 +71,7 @@ public class ProductUpdater {
                 if (isUpdateTimeouts())
                     handleUpdateTimeout();
             }
+            scraper.setBugged(false);
         } finally {
             resetThreadsInfo();
         }
@@ -82,7 +83,6 @@ public class ProductUpdater {
     }
 
     private void handleUpdateTimeout() {
-        TerminalExecutor.shutdownBrowser(BrowserType.Chromium);
         scraper.setBugged(true);
         throw new TimeoutException();
     }

@@ -10,6 +10,8 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 
 @Component
 @RequiredArgsConstructor
@@ -18,95 +20,24 @@ public class EmailSender {
     private final static Logger logger = LoggerFactory.getLogger(EmailSender.class);
 
     private final JavaMailSender mailSender;
-    private int emailsSent;
 
-    public void sendAsNotification(Email notification) {
-        if (notification.isMime())
-            sendAsMime(notification);
-        else
-            sendAsSimple(notification);
-    }
-
-
-    private void sendAsSimple(Email notification) {
+    public void sendAsSimple(Email email) throws Exception {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setSubject(notification.getTitle());
-        mailMessage.setText(notification.getMessage());
-        mailMessage.setTo(notification.getTo());
+        mailMessage.setSubject(email.getTitle());
+        mailMessage.setText(email.getMessage());
+        mailMessage.setTo(email.getTo());
 
-        try {
-            mailSender.send(mailMessage);
-            emailsSent++;
-        } catch (Exception e) {
-            logger.warn("[Email Notification Sender] Failed in sending email as mime to '{}'", notification.getTo());
-            logger.warn("[Email Notification Sender] {}", e.getMessage());
-        }
+        mailSender.send(mailMessage);
     }
 
-    private void sendAsMime(Email email) {
+    public void sendAsMime(Email email) throws Exception {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper messageHelper = new MimeMessageHelper(message);
 
-        try {
-            messageHelper.setTo(email.getTo());
-            messageHelper.setSubject(email.getTitle());
-            messageHelper.setText(email.getMessage(), true);
+        messageHelper.setTo(email.getTo());
+        messageHelper.setSubject(email.getTitle());
+        messageHelper.setText(email.getMessage(), true);
 
-            mailSender.send(message);
-            emailsSent++;
-        } catch (Exception e) {
-            logger.warn("[Email Notification Sender] Failed in sending email as mime to '{}'", email.getTo());
-            logger.warn("[Email Notification Sender] {}", e.getMessage());
-        }
-    }
-
-    public void sendAsNotification(Email notification) {
-        if (notification.isMime())
-            sendAsMime(notification);
-        else
-            sendAsSimple(notification);
-    }
-
-
-    private void sendAsSimple(Email notification) {
-        SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setSubject(notification.getTitle());
-        mailMessage.setText(notification.getMessage());
-        mailMessage.setTo(notification.getTo());
-
-        try {
-            mailSender.send(mailMessage);
-            emailsSent++;
-        } catch (Exception e) {
-            logger.warn("[Email Notification Sender] Failed in sending email as mime to '{}'", notification.getTo());
-            logger.warn("[Email Notification Sender] {}", e.getMessage());
-        }
-    }
-
-    private void sendAsMime(Email email) {
-        MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper messageHelper = new MimeMessageHelper(message);
-
-        try {
-            messageHelper.setTo(email.getTo());
-            messageHelper.setSubject(email.getTitle());
-            messageHelper.setText(email.getMessage(), true);
-
-            mailSender.send(message);
-            emailsSent++;
-        } catch (Exception e) {
-            logger.warn("[Email Notification Sender] Failed in sending email as mime to '{}'", email.getTo());
-            logger.warn("[Email Notification Sender] {}", e.getMessage());
-        }
-    }
-
-    public int getSentAmountAndReset() {
-        int amount = emailsSent;
-        resetSentAmount();
-        return amount;
-    }
-
-    private int resetSentAmount() {
-        emailsSent = 0;
+        mailSender.send(message);
     }
 }

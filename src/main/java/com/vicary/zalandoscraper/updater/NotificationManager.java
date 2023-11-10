@@ -4,7 +4,7 @@ import com.vicary.zalandoscraper.model.Email;
 import com.vicary.zalandoscraper.model.ChatNotification;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;
 import com.vicary.zalandoscraper.service.entity.ProductService;
-import com.vicary.zalandoscraper.updater.sender.EmailSender;
+import com.vicary.zalandoscraper.updater.sender.EmailNotificationSender;
 import com.vicary.zalandoscraper.updater.sender.ChatNotificationSender;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -25,25 +25,28 @@ public class NotificationManager {
 
     private final ChatNotificationSender chatSender;
 
-    private final EmailSender emailSender;
+    private final EmailNotificationSender emailSender;
 
     public void send(List<ProductDTO> DTOs) {
         List<ProductDTO> listThatNeedsToBeSend = DTOs.stream()
                 .filter(this::isUserNeedsNotify)
                 .toList();
+        if (listThatNeedsToBeSend.isEmpty()) {
+            logger.info("[Notification Manager] Nothing to send.");
+            return;
+        }
+
         listThatNeedsToBeSend.forEach(this::updatePriceAlertInRepository);
 
         List<ChatNotification> chatNotifications = getChatNotifications(listThatNeedsToBeSend);
         List<Email> emails = getEmailNotifications(listThatNeedsToBeSend);
 
-        logger.info("[Notification Manager] Sending {} chat notifications.", chatNotifications.size());
-        logger.info("[Notification Manager] Sending {} email notifications.", emails.size());
+        displayLogsBeforeSend(chatNotifications.size(), emails.size());
 
-        chatNotifications.forEach(this::sendOnChat);
-        emails.forEach(this::sendOnEmail);
+        chatSender.sendAndSave(chatNotifications);
+        emailSender.sendAndSave(emails);
 
-        logger.info("[Notification Manager] Successfully sent {} chat notifications.", chatSender.getSentAmountAndReset());
-        logger.info("[Notification Manager] Successfully sent {} email notifications.", emailSender.getSentAmountAndReset());
+        displayLogsAfterSend();
     }
 
     private boolean isUserNeedsNotify(ProductDTO p) {
@@ -93,11 +96,19 @@ public class NotificationManager {
         return emails.isEmpty() ? Collections.emptyList() : emails;
     }
 
-    private void sendOnChat(ChatNotification notification) {
-        chatSender.send(notification);
+    private void displayLogsBeforeSend(int chatNotifiesSize, int emailNotifiesSize) {
+        logger.info("[Notification Manager] Sending {} chat notifications.", chatNotifiesSize);
+        logger.info("[Notification Manager] Sending {} email notifications.", emailNotifiesSize);
     }
 
-    private void sendOnEmail(Email notification) {
-        emailSender.send(notification);
+    private void displayLogsAfterSend() {
+        logger.info("[Notification Manager] Successfully sent {} chat notifications.", chatSender.getSentAmountAndReset());
+        logger.info("[Notification Manager] Successfully sent {} email notifications.", emailSender.getSentAmountAndReset());
+
+        if (chatSender.getFailedAmount() != 0)
+            logger.info("[Notification Manager] Failed {} chat notifications.", chatSender.getFailedAmountAndReset());
+
+        if (emailSender.getFailedAmount() != 0)
+            logger.info("[Notification Manager] Failed {} email notifications.", emailSender.getFailedAmountAndReset());
     }
 }

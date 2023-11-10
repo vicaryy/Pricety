@@ -5,6 +5,8 @@ import com.vicary.zalandoscraper.model.Email;
 import com.vicary.zalandoscraper.repository.EmailVerificationRepository;
 import com.vicary.zalandoscraper.updater.sender.EmailSender;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -13,6 +15,8 @@ import java.util.stream.IntStream;
 @Service
 @RequiredArgsConstructor
 public class EmailVerificationService {
+
+    private final static Logger logger = LoggerFactory.getLogger(EmailVerificationService.class);
 
     private final EmailVerificationRepository repository;
 
@@ -67,7 +71,11 @@ public class EmailVerificationService {
                 .message(getMessage(verification.getToken()))
                 .build();
 
-        emailSender.sendAsMime(emailBody);
+        try {
+            emailSender.sendAsMime(emailBody);
+        } catch (Exception e) {
+            logger.warn("[Email Verification Service] Failed to sent email verification to {}", email);
+        }
     }
 
     private String getMessage(String token) {
