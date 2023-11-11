@@ -3,7 +3,6 @@ package com.vicary.zalandoscraper.updater;
 import com.vicary.zalandoscraper.BrowserType;
 import com.vicary.zalandoscraper.TerminalExecutor;
 import com.vicary.zalandoscraper.exception.TimeoutException;
-import com.vicary.zalandoscraper.service.Scraper;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;
 import com.vicary.zalandoscraper.service.entity.ProductService;
 import com.vicary.zalandoscraper.service.entity.UpdatesHistoryService;
@@ -32,13 +31,13 @@ public class AutoUpdater implements Runnable {
     private final NotificationManager notificationManager;
     private final Thread updaterThread = new Thread(this);
     private final static int DELAY_BEFORE_START = 5000;   // 5 seconds
-    private final static int DELAY_BETWEEN_UPDATES = 1000 * 10; // 10 minutes
+    private final static int DELAY_BETWEEN_UPDATES = 1000 * 60 * 60 * 3; // 10 minutes
     private final static int TEN_MINUTES = 1000 * 60;
 
 
     @PostConstruct
     private void starter() {
-        updaterThread.start();
+//        updaterThread.start();
     }
 
     @Override

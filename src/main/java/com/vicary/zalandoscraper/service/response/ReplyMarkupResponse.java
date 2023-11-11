@@ -2,9 +2,9 @@ package com.vicary.zalandoscraper.service.response;
 
 import com.vicary.zalandoscraper.ActiveUser;
 import com.vicary.zalandoscraper.PrettyTime;
-import com.vicary.zalandoscraper.api_object.Action;
-import com.vicary.zalandoscraper.api_object.ParseMode;
-import com.vicary.zalandoscraper.api_request.send.SendMessage;
+import com.vicary.zalandoscraper.api_telegram.api_object.Action;
+import com.vicary.zalandoscraper.api_telegram.api_object.ParseMode;
+import com.vicary.zalandoscraper.api_telegram.api_request.send.SendMessage;
 import com.vicary.zalandoscraper.entity.AwaitedMessageEntity;
 import com.vicary.zalandoscraper.entity.LinkRequestEntity;
 import com.vicary.zalandoscraper.exception.InvalidLinkException;
@@ -13,7 +13,7 @@ import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.service.Scraper;
 import com.vicary.zalandoscraper.service.entity.*;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;
-import com.vicary.zalandoscraper.service.quick_sender.QuickSender;
+import com.vicary.zalandoscraper.api_telegram.QuickSender;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
@@ -28,8 +28,6 @@ public class ReplyMarkupResponse {
     private final Scraper scraper = Scraper.getInstance();
 
     private final LinkRequestService linkRequestService;
-
-    private final QuickSender quickSender;
 
     private final ProductService productService;
 
@@ -104,7 +102,7 @@ public class ReplyMarkupResponse {
                                 
                 Type *delete* if you want to delete your email address\\.""";
 
-        quickSender.message(ActiveUser.get().getUserId(), message, true);
+        QuickSender.message(ActiveUser.get().getUserId(), message, true);
     }
 
 
@@ -215,7 +213,7 @@ public class ReplyMarkupResponse {
 
         if (stringBuilders.size() == 1) {
             sb.append("\u200E \n\n\n*Please select the item you want to delete*\\.");
-            quickSender.message(SendMessage.builder()
+            QuickSender.message(SendMessage.builder()
                     .chatId(user.getChatId())
                     .text(sb.toString())
                     .disableWebPagePreview(true)
@@ -226,10 +224,10 @@ public class ReplyMarkupResponse {
         }
 
         for (StringBuilder s : stringBuilders)
-            quickSender.message(user.getChatId(), s.toString(), true);
+            QuickSender.message(user.getChatId(), s.toString(), true);
 
 
-        quickSender.message(SendMessage.builder()
+        QuickSender.message(SendMessage.builder()
                 .chatId(user.getChatId())
                 .text("\u200E \n*Please select the item you want to delete*\\.")
                 .disableWebPagePreview(true)
@@ -291,7 +289,7 @@ public class ReplyMarkupResponse {
                         MarkdownV2.apply(price).get(),
                         MarkdownV2.apply(priceAlert).get());
 
-        quickSender.message(ActiveUser.get().getUserId(), message, true);
+        QuickSender.message(ActiveUser.get().getUserId(), message, true);
     }
 
     @SneakyThrows
@@ -354,7 +352,7 @@ public class ReplyMarkupResponse {
 
         if (stringBuilders.size() == 1) {
             sb.append("\u200E \n\n\n*Please select the item you want to edit*\\.");
-            quickSender.message(SendMessage.builder()
+            QuickSender.message(SendMessage.builder()
                     .chatId(user.getChatId())
                     .text(sb.toString())
                     .disableWebPagePreview(true)
@@ -365,10 +363,10 @@ public class ReplyMarkupResponse {
         }
 
         for (StringBuilder s : stringBuilders)
-            quickSender.message(user.getChatId(), s.toString(), true);
+            QuickSender.message(user.getChatId(), s.toString(), true);
 
 
-        quickSender.message(SendMessage.builder()
+        QuickSender.message(SendMessage.builder()
                 .chatId(user.getChatId())
                 .text("\u200E \n*Please select the item you want to edit\\.*")
                 .disableWebPagePreview(true)
@@ -450,7 +448,7 @@ public class ReplyMarkupResponse {
 
         if (stringBuilders.size() == 1) {
             sb.append("\u200E\n\n\n*Last updated:* ").append(PrettyTime.get(updatesHistoryService.getLastUpdateTime()));
-            quickSender.message(SendMessage.builder()
+            QuickSender.message(SendMessage.builder()
                     .chatId(user.getChatId())
                     .text(sb.toString())
                     .disableWebPagePreview(true)
@@ -462,9 +460,9 @@ public class ReplyMarkupResponse {
 
 
         for (StringBuilder s : stringBuilders)
-            quickSender.message(user.getChatId(), s.toString(), true);
+            QuickSender.message(user.getChatId(), s.toString(), true);
 
-        quickSender.message(SendMessage.builder()
+        QuickSender.message(SendMessage.builder()
                 .chatId(user.getChatId())
                 .text("\u200E\n*Last updated:* " + PrettyTime.get(updatesHistoryService.getLastUpdateTime()))
                 .replyMarkup(InlineBlock.getBack())
@@ -484,18 +482,18 @@ public class ReplyMarkupResponse {
             variant.append(arrayText[i]).append(" ");
 
         deletePreviousMessage();
-        int messageId = quickSender.messageWithReturn(chatId, "Adding product...", false).getMessageId();
-        quickSender.chatAction(chatId, Action.TYPING);
+        int messageId = QuickSender.messageWithReturn(chatId, "Adding product...", false).getMessageId();
+        QuickSender.chatAction(chatId, Action.TYPING);
 
         Product product = scraper.getProduct(link, variant.toString().trim());
 
-        quickSender.deleteMessage(chatId, messageId);
+        QuickSender.deleteMessage(chatId, messageId);
 
         if (productService.existsByLinkAndVariant(product.getLink(), product.getVariant()))
             throw new InvalidLinkException("You already have this product in your watchlist.", "User try to add same product.");
 
         productService.saveProduct(product);
-        quickSender.messageWithReturn(ActiveUser.get().getChatId(), "Product added successfully.", false);
+        QuickSender.messageWithReturn(ActiveUser.get().getChatId(), "Product added successfully.", false);
     }
 
 
@@ -515,7 +513,7 @@ public class ReplyMarkupResponse {
 
 
     public void displayMenu() {
-        quickSender.message(InlineBlock.getMenu());
+        QuickSender.message(InlineBlock.getMenu());
     }
 
     public void displayMenu(boolean deletePreviousMessage) {
@@ -526,7 +524,7 @@ public class ReplyMarkupResponse {
     }
 
     public void deletePreviousMessage() {
-        quickSender.deleteMessage(ActiveUser.get().getChatId(), ActiveUser.get().getMessageId());
+        QuickSender.deleteMessage(ActiveUser.get().getChatId(), ActiveUser.get().getMessageId());
     }
 
     @SneakyThrows
@@ -543,50 +541,50 @@ public class ReplyMarkupResponse {
     }
 
     public void displayNotification() {
-        quickSender.message(InlineBlock.getNotification(ActiveUser.get().isNotifyByEmail(), ActiveUser.get().isVerifiedEmail(), ActiveUser.get().getEmail()));
+        QuickSender.message(InlineBlock.getNotification(ActiveUser.get().isNotifyByEmail(), ActiveUser.get().isVerifiedEmail(), ActiveUser.get().getEmail()));
     }
 
     @SneakyThrows
     public void displayDeleteYesOrNo() {
-        quickSender.message(InlineBlock.getDeleteYesOrNo());
+        QuickSender.message(InlineBlock.getDeleteYesOrNo());
         Thread.sleep(1500);
     }
 
     @SneakyThrows
     public void displayDeleteYesOrNo(boolean deletePreviousMessage) {
         if (deletePreviousMessage)
-            quickSender.deleteMessage(ActiveUser.get().getChatId(), ActiveUser.get().getMessageId());
+            QuickSender.deleteMessage(ActiveUser.get().getChatId(), ActiveUser.get().getMessageId());
 
         displayDeleteYesOrNo();
     }
 
     @SneakyThrows
     public void backToMenu() {
-        quickSender.message(InlineBlock.getMenu());
+        QuickSender.message(InlineBlock.getMenu());
         Thread.sleep(1500);
     }
 
     @SneakyThrows
     public void backToMenu(boolean deletePreviousMessage) {
         if (deletePreviousMessage)
-            quickSender.deleteMessage(ActiveUser.get().getChatId(), ActiveUser.get().getMessageId());
+            QuickSender.deleteMessage(ActiveUser.get().getChatId(), ActiveUser.get().getMessageId());
 
         backToMenu();
     }
 
     public void displayNoProducts() {
-        quickSender.popupMessage(ActiveUser.get().getChatId(), "You don't have any products.");
+        QuickSender.popupMessage(ActiveUser.get().getChatId(), "You don't have any products.");
     }
 
     public void displayNoProducts(boolean deletePreviousMessage) {
         if (deletePreviousMessage)
-            quickSender.deleteMessage(ActiveUser.get().getChatId(), ActiveUser.get().getMessageId());
+            QuickSender.deleteMessage(ActiveUser.get().getChatId(), ActiveUser.get().getMessageId());
 
         displayNoProducts();
     }
 
     public void popupMessage(String message) {
-        quickSender.popupMessage(ActiveUser.get().getChatId(), message);
+        QuickSender.popupMessage(ActiveUser.get().getChatId(), message);
     }
 
     public void popupMessage(String message, boolean deletePreviousMessage) {
@@ -604,7 +602,7 @@ public class ReplyMarkupResponse {
     }
 
     public void popupMessage(String message, long popupTime) {
-        quickSender.popupMessage(ActiveUser.get().getChatId(), message, popupTime);
+        QuickSender.popupMessage(ActiveUser.get().getChatId(), message, popupTime);
     }
 }
 

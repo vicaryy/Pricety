@@ -1,6 +1,6 @@
 package com.vicary.zalandoscraper.pattern;
 
-import com.vicary.zalandoscraper.api_object.Update;
+import com.vicary.zalandoscraper.api_telegram.api_object.Update;
 import org.springframework.stereotype.Component;
 
 @Component

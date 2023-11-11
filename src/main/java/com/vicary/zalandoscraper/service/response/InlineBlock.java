@@ -1,10 +1,10 @@
 package com.vicary.zalandoscraper.service.response;
 
 import com.vicary.zalandoscraper.ActiveUser;
-import com.vicary.zalandoscraper.api_object.ParseMode;
-import com.vicary.zalandoscraper.api_object.keyboard.InlineKeyboardButton;
-import com.vicary.zalandoscraper.api_object.keyboard.InlineKeyboardMarkup;
-import com.vicary.zalandoscraper.api_request.send.SendMessage;
+import com.vicary.zalandoscraper.api_telegram.api_object.ParseMode;
+import com.vicary.zalandoscraper.api_telegram.api_object.keyboard.InlineKeyboardButton;
+import com.vicary.zalandoscraper.api_telegram.api_object.keyboard.InlineKeyboardMarkup;
+import com.vicary.zalandoscraper.api_telegram.api_request.send.SendMessage;
 import com.vicary.zalandoscraper.format.MarkdownV2;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;
 import lombok.RequiredArgsConstructor;

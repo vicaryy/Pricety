@@ -1,0 +1,5 @@
+package com.vicary.zalandoscraper.api_telegram.api_request;
+
+public interface Validation {
+    public void checkValidation();
+}

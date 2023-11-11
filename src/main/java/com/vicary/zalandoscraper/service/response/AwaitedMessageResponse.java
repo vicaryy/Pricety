@@ -7,7 +7,7 @@ import com.vicary.zalandoscraper.service.entity.AwaitedMessageService;
 import com.vicary.zalandoscraper.service.entity.EmailVerificationService;
 import com.vicary.zalandoscraper.service.entity.ProductService;
 import com.vicary.zalandoscraper.service.entity.UserService;
-import com.vicary.zalandoscraper.service.quick_sender.QuickSender;
+import com.vicary.zalandoscraper.api_telegram.QuickSender;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
@@ -19,8 +19,6 @@ public class AwaitedMessageResponse {
     private final AwaitedMessageService awaitedMessageService;
 
     private final ProductService productService;
-
-    private final QuickSender quickSender;
 
     private final UserService userService;
 
@@ -85,7 +83,7 @@ public class AwaitedMessageResponse {
                 *Important* ⚠️
                 Verification code has been sent to the provided email address\\.
                 Please paste the received code here in the chat\\.""";
-        quickSender.message(user.getChatId(), verificationMessage, true);
+        QuickSender.message(user.getChatId(), verificationMessage, true);
     }
 
 
@@ -121,7 +119,7 @@ public class AwaitedMessageResponse {
 
 
     public void deletePreviousMessage() {
-        quickSender.deleteMessage(ActiveUser.get().getChatId(), ActiveUser.get().getMessageId());
+        QuickSender.deleteMessage(ActiveUser.get().getChatId(), ActiveUser.get().getMessageId());
     }
 
     @SneakyThrows
@@ -138,11 +136,11 @@ public class AwaitedMessageResponse {
     }
 
     public void displayNotification() {
-        quickSender.message(InlineBlock.getNotification(ActiveUser.get().isNotifyByEmail(), ActiveUser.get().isVerifiedEmail(), ActiveUser.get().getEmail()));
+        QuickSender.message(InlineBlock.getNotification(ActiveUser.get().isNotifyByEmail(), ActiveUser.get().isVerifiedEmail(), ActiveUser.get().getEmail()));
     }
 
     public void popupMessage(String message) {
-        quickSender.popupMessage(ActiveUser.get().getChatId(), message);
+        QuickSender.popupMessage(ActiveUser.get().getChatId(), message);
     }
 
     public void popupMessage(String message, boolean deletePreviousMessage) {
@@ -153,7 +151,7 @@ public class AwaitedMessageResponse {
     }
 
     public void displayMenu() {
-        quickSender.message(InlineBlock.getMenu());
+        QuickSender.message(InlineBlock.getMenu());
     }
 }
 

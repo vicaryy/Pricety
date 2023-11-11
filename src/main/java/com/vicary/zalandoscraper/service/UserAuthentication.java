@@ -1,9 +1,9 @@
 package com.vicary.zalandoscraper.service;
 
 import com.vicary.zalandoscraper.ActiveUser;
-import com.vicary.zalandoscraper.api_object.Update;
-import com.vicary.zalandoscraper.api_object.User;
-import com.vicary.zalandoscraper.api_object.message.Message;
+import com.vicary.zalandoscraper.api_telegram.api_object.Update;
+import com.vicary.zalandoscraper.api_telegram.api_object.User;
+import com.vicary.zalandoscraper.api_telegram.api_object.message.Message;
 import com.vicary.zalandoscraper.entity.ActiveRequestEntity;
 import com.vicary.zalandoscraper.entity.MessageEntity;
 import com.vicary.zalandoscraper.entity.UserEntity;
@@ -15,14 +15,12 @@ import com.vicary.zalandoscraper.service.entity.AwaitedMessageService;
 import com.vicary.zalandoscraper.service.entity.MessageService;
 import com.vicary.zalandoscraper.service.entity.UserService;
 import com.vicary.zalandoscraper.service.map.UserMapper;
-import com.vicary.zalandoscraper.service.quick_sender.QuickSender;
+import com.vicary.zalandoscraper.api_telegram.QuickSender;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-import java.util.UUID;
 
 
 @Service
@@ -35,8 +33,6 @@ public class UserAuthentication {
     private final ActiveRequestService activeRequestService;
 
     private final AwaitedMessageService awaitedMessageService;
-
-    private final QuickSender quickSender;
 
     private final UserMapper userMapper;
 
@@ -76,9 +72,9 @@ public class UserAuthentication {
     private void checkActiveUser(String chatId) {
         if (activeRequestService.existsByUserId(chatId)) {
             logger.info("User %s is trying to do more than one request".formatted(chatId));
-            int messageId = quickSender.messageWithReturn(chatId, "One request at a time please.", false).getMessageId();
+            int messageId = QuickSender.messageWithReturn(chatId, "One request at a time please.", false).getMessageId();
             Thread.sleep(1000);
-            quickSender.deleteMessage(chatId, messageId);
+            QuickSender.deleteMessage(chatId, messageId);
             throw new ActiveUserException();
         }
         activeRequestService.saveActiveUser(new ActiveRequestEntity(chatId));

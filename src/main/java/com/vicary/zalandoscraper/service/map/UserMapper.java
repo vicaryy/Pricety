@@ -1,6 +1,6 @@
 package com.vicary.zalandoscraper.service.map;
 
-import com.vicary.zalandoscraper.api_object.User;
+import com.vicary.zalandoscraper.api_telegram.api_object.User;
 import com.vicary.zalandoscraper.entity.UserEntity;
 import org.springframework.stereotype.Component;
 

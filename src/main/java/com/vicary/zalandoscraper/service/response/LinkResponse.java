@@ -1,16 +1,17 @@
 package com.vicary.zalandoscraper.service.response;
 
 import com.vicary.zalandoscraper.ActiveUser;
-import com.vicary.zalandoscraper.api_object.Action;
-import com.vicary.zalandoscraper.api_object.keyboard.*;
-import com.vicary.zalandoscraper.api_request.send.SendMessage;
+import com.vicary.zalandoscraper.api_telegram.api_object.Action;
+import com.vicary.zalandoscraper.api_telegram.api_object.keyboard.InlineKeyboardButton;
+import com.vicary.zalandoscraper.api_telegram.api_object.keyboard.InlineKeyboardMarkup;
+import com.vicary.zalandoscraper.api_telegram.api_request.send.SendMessage;
 import com.vicary.zalandoscraper.entity.LinkRequestEntity;
 import com.vicary.zalandoscraper.exception.InvalidLinkException;
 import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.service.Scraper;
 import com.vicary.zalandoscraper.service.entity.LinkRequestService;
 import com.vicary.zalandoscraper.service.entity.ProductService;
-import com.vicary.zalandoscraper.service.quick_sender.QuickSender;
+import com.vicary.zalandoscraper.api_telegram.QuickSender;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
@@ -26,16 +27,14 @@ public class LinkResponse {
 
     private final Scraper scraper = Scraper.getInstance();
 
-    private final QuickSender quickSender;
-
     private final LinkRequestService linkRequestService;
 
     private final ProductService productService;
 
     public void response(String link) {
         String chatId = ActiveUser.get().getChatId();
-        int messageId = quickSender.messageWithReturn(chatId, "Processing...", false).getMessageId();
-        quickSender.chatAction(chatId, Action.TYPING);
+        int messageId = QuickSender.messageWithReturn(chatId, "Processing...", false).getMessageId();
+        QuickSender.chatAction(chatId, Action.TYPING);
         ActiveUser.get().setMessageId(messageId);
 
         List<String> variants = scraper.getAllVariants(link);
@@ -51,11 +50,11 @@ public class LinkResponse {
     @SneakyThrows
     public void addProduct(String link, String oneVariant) {
         Product product = scraper.getProduct(link, oneVariant);
-        quickSender.deleteMessage(ActiveUser.get().getChatId(), ActiveUser.get().getMessageId());
+        QuickSender.deleteMessage(ActiveUser.get().getChatId(), ActiveUser.get().getMessageId());
         if (productService.existsByLinkAndVariant(product.getLink(), product.getVariant()))
             throw new InvalidLinkException("You already have this product in your watchlist.", "User try to add same product.");
         productService.saveProduct(product);
-        quickSender.message(ActiveUser.get().getChatId(), "Product added successfully.", false);
+        QuickSender.message(ActiveUser.get().getChatId(), "Product added successfully.", false);
     }
 
     public void sendVariantMessage(List<String> variants) {
@@ -93,8 +92,8 @@ public class LinkResponse {
                 .replyMarkup(replyMarkup)
                 .build();
 
-        quickSender.deleteMessage(ActiveUser.get().getChatId(), ActiveUser.get().getMessageId());
-        quickSender.message(sendMessage);
+        QuickSender.deleteMessage(ActiveUser.get().getChatId(), ActiveUser.get().getMessageId());
+        QuickSender.message(sendMessage);
     }
 
     public void addLinkRequestToRepository(String requestId) {

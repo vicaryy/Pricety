@@ -2,20 +2,22 @@ package com.vicary.zalandoscraper.service;
 
 import com.microsoft.playwright.PlaywrightException;
 import com.vicary.zalandoscraper.ActiveUser;
-import com.vicary.zalandoscraper.entity.MessageEntity;
+import com.vicary.zalandoscraper.api_telegram.thread.UpdateFetcher;
+import com.vicary.zalandoscraper.api_telegram.thread.UpdateReceiver;
+import com.vicary.zalandoscraper.configuration.ApiBotConfiguration;
+import com.vicary.zalandoscraper.configuration.BotInfo;
 import com.vicary.zalandoscraper.exception.ActiveUserException;
 import com.vicary.zalandoscraper.exception.IllegalInputException;
 import com.vicary.zalandoscraper.exception.InvalidLinkException;
 import com.vicary.zalandoscraper.exception.ZalandoScraperBotException;
 import com.vicary.zalandoscraper.pattern.Pattern;
 import com.vicary.zalandoscraper.service.entity.ActiveRequestService;
-import com.vicary.zalandoscraper.service.entity.MessageService;
-import com.vicary.zalandoscraper.service.quick_sender.QuickSender;
+import com.vicary.zalandoscraper.api_telegram.QuickSender;
 import com.vicary.zalandoscraper.service.response.*;
 import com.vicary.zalandoscraper.updater.ProductUpdater;
 import lombok.RequiredArgsConstructor;
 
-import com.vicary.zalandoscraper.api_object.Update;
+import com.vicary.zalandoscraper.api_telegram.api_object.Update;
 import org.openqa.selenium.WebDriverException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,11 +26,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class UpdateReceiverService {
+public class UpdateReceiverService implements UpdateReceiver {
 
     private final static Logger logger = LoggerFactory.getLogger(UpdateReceiverService.class);
-
-    private final QuickSender quickSender;
 
     private final CommandResponse commandResponse;
 
@@ -45,7 +45,10 @@ public class UpdateReceiverService {
     private final EmailVerificationResponse emailVerificationResponse;
     private final ProductUpdater productUpdater = ProductUpdater.getInstance();
 
-    public void updateReceiver(Update update) {
+    private final UpdateFetcher updateFetcher = UpdateFetcher.getInstance(this);
+
+    @Override
+    public void receive(Update update) {
         if (update.getMessage() == null && update.getCallbackQuery() == null) {
             logger.info("Got update without message.");
             return;
@@ -64,7 +67,7 @@ public class UpdateReceiverService {
 
         if (productUpdater.isRunning()) {
             activeRequestService.deleteByUserId(userId);
-            quickSender.message(userId, "Wait until updates.", false);
+            QuickSender.message(userId, "Wait until updates.", false);
             return;
         }
 
@@ -89,21 +92,26 @@ public class UpdateReceiverService {
             logger.warn(ex.getMessage());
         } catch (InvalidLinkException | IllegalInputException ex) {
             logger.warn(ex.getLoggerMessage());
-            quickSender.message(chatId, ex.getMessage(), false);
+            QuickSender.message(chatId, ex.getMessage(), false);
         } catch (WebDriverException | PlaywrightException ex) {
             logger.error("Web Driver exception: " + ex.getMessage());
-            quickSender.message(chatId, "Sorry but something goes wrong.", false);
+            QuickSender.message(chatId, "Sorry but something goes wrong.", false);
         } catch (ZalandoScraperBotException ex) {
             logger.error(ex.getLoggerMessage());
-            quickSender.message(chatId, ex.getMessage(), false);
+            QuickSender.message(chatId, ex.getMessage(), false);
         } catch (Exception ex) {
             logger.error("Unexpected exception: " + ex.getMessage());
-            quickSender.message(chatId, "Sorry but something goes wrong.", false);
+            QuickSender.message(chatId, "Sorry but something goes wrong.", false);
             ex.printStackTrace();
         } finally {
             activeRequestService.deleteByUserId(userId);
             ActiveUser.remove();
         }
+    }
+
+    @Override
+    public String botToken() {
+        return BotInfo.getBotToken();
     }
 }
 

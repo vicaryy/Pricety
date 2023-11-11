@@ -10,11 +10,7 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties("telegram-bot")
 public class ApiBotConfiguration {
 
-    private final String apiUrl = "https://api.telegram.org/";
-
     private String botUsername;
 
     private String botToken;
-
-    private String downloadDestination;
 }

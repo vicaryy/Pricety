@@ -2,7 +2,7 @@ package com.vicary.zalandoscraper.updater.sender;
 
 import com.vicary.zalandoscraper.model.ChatNotification;
 import com.vicary.zalandoscraper.service.entity.NotificationChatService;
-import com.vicary.zalandoscraper.service.quick_sender.QuickSender;
+import com.vicary.zalandoscraper.api_telegram.QuickSender;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,8 +18,6 @@ public class ChatNotificationSender {
     private final static Logger logger = LoggerFactory.getLogger(ChatNotificationSender.class);
     private int messagesSent;
     private int messagesFailed;
-
-    private final QuickSender quickSender;
 
     private final NotificationChatService notificationChatService;
 
@@ -38,7 +36,7 @@ public class ChatNotificationSender {
 
     private void send(ChatNotification notification, boolean save) {
         try {
-            quickSender.notification(notification);
+            QuickSender.notification(notification);
             messagesSent++;
             if (save)
                 saveToRepository(notification);

@@ -4,7 +4,7 @@ import com.vicary.zalandoscraper.ActiveUser;
 import com.vicary.zalandoscraper.exception.IllegalInputException;
 import com.vicary.zalandoscraper.service.entity.EmailVerificationService;
 import com.vicary.zalandoscraper.service.entity.UserService;
-import com.vicary.zalandoscraper.service.quick_sender.QuickSender;
+import com.vicary.zalandoscraper.api_telegram.QuickSender;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,8 +15,6 @@ public class EmailVerificationResponse {
     private final EmailVerificationService emailVerificationService;
 
     private final UserService userService;
-
-    private final QuickSender quickSender;
 
     public void response(String text) {
         ActiveUser user = ActiveUser.get();
@@ -32,6 +30,6 @@ public class EmailVerificationResponse {
         userService.setVerifiedEmail(user.getUserId(), true);
         emailVerificationService.deleteByToken(token);
 
-        quickSender.message(user.getChatId(), "Email verified successfully.", false);
+        QuickSender.message(user.getChatId(), "Email verified successfully.", false);
     }
 }

@@ -1,8 +1,7 @@
 package com.vicary.zalandoscraper.service.response;
 
 import com.vicary.zalandoscraper.ActiveUser;
-import com.vicary.zalandoscraper.service.entity.UpdatesHistoryService;
-import com.vicary.zalandoscraper.service.quick_sender.QuickSender;
+import com.vicary.zalandoscraper.api_telegram.QuickSender;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
@@ -11,8 +10,6 @@ import com.vicary.zalandoscraper.format.MarkdownV2;
 @Component
 @RequiredArgsConstructor
 public class CommandResponse {
-
-    private final QuickSender quickSender;
 
     private final static String START = MarkdownV2.apply("Just paste link to zalando item.").get();
 
@@ -68,19 +65,19 @@ public class CommandResponse {
 //        }
 
         if (message != null)
-            quickSender.message(chatId, message, true);
+            QuickSender.message(chatId, message, true);
     }
 
     @SneakyThrows
     public void sendStart() {
         ActiveUser user = ActiveUser.get();
-        int messageId = quickSender.messageWithReturn(user.getChatId(), "Just paste Zalando URL down below 👇", false).getMessageId();
+        int messageId = QuickSender.messageWithReturn(user.getChatId(), "Just paste Zalando URL down below 👇", false).getMessageId();
         Thread.sleep(2500);
-        quickSender.deleteMessage(user.getChatId(), messageId);
+        QuickSender.deleteMessage(user.getChatId(), messageId);
     }
 
     public void sendMenuBlocks() {
-        quickSender.message(InlineBlock.getMenu());
+        QuickSender.message(InlineBlock.getMenu());
     }
 }
 

@@ -12,14 +12,6 @@ public class BotInfo {
         BotInfo.apiBotConfiguration = apiBotConfiguration;
     }
 
-    public static String getDownloadDestination() {
-        return apiBotConfiguration.getDownloadDestination();
-    }
-
-    public static String getURL() {
-        return apiBotConfiguration.getApiUrl() + apiBotConfiguration.getBotToken();
-    }
-
     public static String getBotUsername() {
         return apiBotConfiguration.getBotUsername();
     }

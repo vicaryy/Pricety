@@ -1,5 +1,6 @@
 package com.vicary.zalandoscraper.updater.sender;
 
+import com.vicary.zalandoscraper.EmailSender;
 import com.vicary.zalandoscraper.model.Email;
 import com.vicary.zalandoscraper.service.entity.NotificationEmailService;
 import lombok.RequiredArgsConstructor;

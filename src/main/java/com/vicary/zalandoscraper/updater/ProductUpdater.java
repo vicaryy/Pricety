@@ -1,7 +1,5 @@
 package com.vicary.zalandoscraper.updater;
 
-import com.vicary.zalandoscraper.BrowserType;
-import com.vicary.zalandoscraper.TerminalExecutor;
 import com.vicary.zalandoscraper.exception.TimeoutException;
 import com.vicary.zalandoscraper.service.Scraper;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;
