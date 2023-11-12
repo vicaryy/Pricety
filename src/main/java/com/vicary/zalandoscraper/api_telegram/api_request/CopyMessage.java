@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.vicary.zalandoscraper.api_telegram.api_object.message.MessageEntity;
 import com.vicary.zalandoscraper.api_telegram.api_object.message.MessageId;
 import lombok.*;
-import com.vicary.zalandoscraper.api_telegram.end_point.EndPoint;
+import com.vicary.zalandoscraper.api_telegram.service.EndPoint;
 
 import java.util.List;
 

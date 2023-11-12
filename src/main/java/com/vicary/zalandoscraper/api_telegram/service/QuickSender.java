@@ -1,4 +1,4 @@
-package com.vicary.zalandoscraper.api_telegram;
+package com.vicary.zalandoscraper.api_telegram.service;
 
 import com.vicary.zalandoscraper.api_telegram.api_object.Action;
 import com.vicary.zalandoscraper.api_telegram.api_object.ParseMode;

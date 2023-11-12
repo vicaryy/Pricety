@@ -15,7 +15,7 @@ import com.vicary.zalandoscraper.service.entity.AwaitedMessageService;
 import com.vicary.zalandoscraper.service.entity.MessageService;
 import com.vicary.zalandoscraper.service.entity.UserService;
 import com.vicary.zalandoscraper.service.map.UserMapper;
-import com.vicary.zalandoscraper.api_telegram.QuickSender;
+import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.slf4j.Logger;

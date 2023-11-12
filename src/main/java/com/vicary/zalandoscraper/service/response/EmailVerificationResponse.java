@@ -4,7 +4,7 @@ import com.vicary.zalandoscraper.ActiveUser;
 import com.vicary.zalandoscraper.exception.IllegalInputException;
 import com.vicary.zalandoscraper.service.entity.EmailVerificationService;
 import com.vicary.zalandoscraper.service.entity.UserService;
-import com.vicary.zalandoscraper.api_telegram.QuickSender;
+import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

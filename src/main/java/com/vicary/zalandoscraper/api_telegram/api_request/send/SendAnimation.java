@@ -7,7 +7,7 @@ import com.vicary.zalandoscraper.api_telegram.api_object.message.MessageEntity;
 import lombok.*;
 import com.vicary.zalandoscraper.api_telegram.api_request.ApiRequest;
 import com.vicary.zalandoscraper.api_telegram.api_request.InputFile;
-import com.vicary.zalandoscraper.api_telegram.end_point.EndPoint;
+import com.vicary.zalandoscraper.api_telegram.service.EndPoint;
 
 import java.util.List;
 

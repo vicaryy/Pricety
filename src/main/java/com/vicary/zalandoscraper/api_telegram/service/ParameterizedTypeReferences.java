@@ -1,4 +1,4 @@
-package com.vicary.zalandoscraper.api_telegram;
+package com.vicary.zalandoscraper.api_telegram.service;
 
 import com.vicary.zalandoscraper.api_telegram.api_object.File;
 import com.vicary.zalandoscraper.api_telegram.api_object.RequestResponse;
@@ -14,7 +14,6 @@ import com.vicary.zalandoscraper.api_telegram.api_object.message.Message;
 import com.vicary.zalandoscraper.api_telegram.api_object.other.UserProfilePhotos;
 import com.vicary.zalandoscraper.api_telegram.api_object.poll.Poll;
 import com.vicary.zalandoscraper.api_telegram.api_object.stickers.StickerSet;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.ParameterizedTypeReference;
 
 import java.util.HashMap;

@@ -54,6 +54,7 @@ public class InlineBlock {
     private final static InlineKeyboardButton enableOrDisable = new InlineKeyboardButton("", "");
 
     private final static InlineKeyboardButton setEmail = new InlineKeyboardButton("", "");
+    private final static InlineKeyboardButton changeLanguage = new InlineKeyboardButton("Change Language 🇵🇱", "-lang");
 
     private final static List<InlineKeyboardButton> listOfButtons = List.of(allProducts, addProduct);
 
@@ -73,9 +74,9 @@ public class InlineBlock {
 
     private final static List<InlineKeyboardButton> listOfButtons8 = List.of(setEmail);
 
-//    private final static List<InlineKeyboardButton> listOfButtons9 = List.of(lastUpdate);
+    private final static List<InlineKeyboardButton> listOfButtons9 = List.of(changeLanguage);
 
-    private final static InlineKeyboardMarkup menuMarkup = new InlineKeyboardMarkup(List.of(listOfButtons, listOfButtons1, listOfButtons2, listOfButtons3));
+    private final static InlineKeyboardMarkup menuMarkup = new InlineKeyboardMarkup(List.of(listOfButtons, listOfButtons1, listOfButtons2, listOfButtons9, listOfButtons3));
 
     private final static InlineKeyboardMarkup backMarkup = new InlineKeyboardMarkup(List.of(listOfButtons4));
 

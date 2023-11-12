@@ -3,7 +3,7 @@ package com.vicary.zalandoscraper.api_telegram.api_request.send;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.vicary.zalandoscraper.api_telegram.api_object.Action;
 import com.vicary.zalandoscraper.api_telegram.api_request.ApiRequest;
-import com.vicary.zalandoscraper.api_telegram.end_point.EndPoint;
+import com.vicary.zalandoscraper.api_telegram.service.EndPoint;
 import lombok.*;
 
 @ToString

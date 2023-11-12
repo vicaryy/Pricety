@@ -11,7 +11,7 @@ import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.service.Scraper;
 import com.vicary.zalandoscraper.service.entity.LinkRequestService;
 import com.vicary.zalandoscraper.service.entity.ProductService;
-import com.vicary.zalandoscraper.api_telegram.QuickSender;
+import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;

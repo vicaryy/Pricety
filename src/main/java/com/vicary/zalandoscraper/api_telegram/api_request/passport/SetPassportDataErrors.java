@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import com.vicary.zalandoscraper.api_telegram.api_object.telegram_passport.passport_element_error.PassportElementError;
 import com.vicary.zalandoscraper.api_telegram.api_request.ApiRequest;
-import com.vicary.zalandoscraper.api_telegram.end_point.EndPoint;
+import com.vicary.zalandoscraper.api_telegram.service.EndPoint;
 
 import java.util.List;
 

@@ -5,7 +5,7 @@ import com.vicary.zalandoscraper.api_telegram.api_object.User;
 import com.vicary.zalandoscraper.api_telegram.api_object.chat.chat_member.ChatMember;
 import lombok.*;
 import com.vicary.zalandoscraper.api_telegram.api_request.ApiRequestList;
-import com.vicary.zalandoscraper.api_telegram.end_point.EndPoint;
+import com.vicary.zalandoscraper.api_telegram.service.EndPoint;
 
 @Data
 @RequiredArgsConstructor

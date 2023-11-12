@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import com.vicary.zalandoscraper.api_telegram.api_object.stickers.Sticker;
 import com.vicary.zalandoscraper.api_telegram.api_request.ApiRequestList;
-import com.vicary.zalandoscraper.api_telegram.end_point.EndPoint;
+import com.vicary.zalandoscraper.api_telegram.service.EndPoint;
 
 @Data
 @NoArgsConstructor

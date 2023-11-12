@@ -2,7 +2,7 @@ package com.vicary.zalandoscraper.updater.sender;
 
 import com.vicary.zalandoscraper.model.ChatNotification;
 import com.vicary.zalandoscraper.service.entity.NotificationChatService;
-import com.vicary.zalandoscraper.api_telegram.QuickSender;
+import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

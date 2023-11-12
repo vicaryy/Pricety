@@ -1,4 +1,4 @@
-package com.vicary.zalandoscraper.api_telegram;
+package com.vicary.zalandoscraper.api_telegram.service;
 
 import com.vicary.zalandoscraper.api_telegram.api_object.File;
 import com.vicary.zalandoscraper.api_telegram.api_object.RequestResponse;
@@ -8,7 +8,6 @@ import com.vicary.zalandoscraper.api_telegram.api_request.ApiRequest;
 import com.vicary.zalandoscraper.api_telegram.api_request.ApiRequestList;
 import com.vicary.zalandoscraper.api_telegram.api_request.GetFile;
 import com.vicary.zalandoscraper.api_telegram.api_request.InputFile;
-import com.vicary.zalandoscraper.configuration.BotInfo;
 import com.vicary.zalandoscraper.api_telegram.api_request.send.*;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.MediaType;
@@ -26,10 +25,11 @@ import java.util.NoSuchElementException;
 public class RequestService {
 
     private final ParameterizedTypeReferences typeReferences = new ParameterizedTypeReferences();
+    private String requestURL;
 
     public <Request extends ApiRequest<? extends ReturnObject>, ReturnObject> ReturnObject send(Request request) throws WebClientRequestException, WebClientResponseException {
         request.checkValidation();
-        String url = BotInfo.getURL() + request.getEndPoint();
+        String url = getRequestURL() + request.getEndPoint();
 
         WebClient webClient = WebClient.create();
         RequestResponse response = (RequestResponse) webClient
@@ -42,24 +42,9 @@ public class RequestService {
         return (ReturnObject) response.getResult();
     }
 
-    private <RequestList extends ApiRequestList<? extends ReturnObject>, ReturnObject> List<ReturnObject> sendRequestList(RequestList request) throws WebClientRequestException, WebClientResponseException {
-        request.checkValidation();
-        String url = BotInfo.getURL() + request.getEndPoint();
-
-        WebClient webClient = WebClient.create();
-        RequestResponseList response = (RequestResponseList) webClient
-                .post()
-                .uri(url)
-                .bodyValue(request)
-                .retrieve()
-                .bodyToMono(typeReferences.get(request.getReturnObject().getClass()))
-                .block();
-        return (List<ReturnObject>) response.getResult();
-    }
-
     public synchronized <Request extends ApiRequest> void sendAsync(Request request) throws RestClientException {
         request.checkValidation();
-        String url = BotInfo.getURL() + request.getEndPoint();
+        String url = getRequestURL() + request.getEndPoint();
 
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.postForEntity(url, request, null);
@@ -67,7 +52,7 @@ public class RequestService {
 
     public Message send(SendPhoto sendPhoto) {
         sendPhoto.checkValidation();
-        String url = BotInfo.getURL() + sendPhoto.getEndPoint();
+        String url = getRequestURL() + sendPhoto.getEndPoint();
         MultipartBodyBuilder bodyBuilder = new MultipartBodyBuilder();
 
         bodyBuilder.part("chat_id", sendPhoto.getChatId());
@@ -105,7 +90,7 @@ public class RequestService {
 
     public Message send(SendAudio sendAudio) {
         sendAudio.checkValidation();
-        String url = BotInfo.getURL() + sendAudio.getEndPoint();
+        String url = getRequestURL() + sendAudio.getEndPoint();
         MultipartBodyBuilder bodyBuilder = new MultipartBodyBuilder();
 
         bodyBuilder.part("chat_id", sendAudio.getChatId());
@@ -152,7 +137,7 @@ public class RequestService {
 
     public Message send(SendDocument sendDocument) {
         sendDocument.checkValidation();
-        String url = BotInfo.getURL() + sendDocument.getEndPoint();
+        String url = getRequestURL() + sendDocument.getEndPoint();
         MultipartBodyBuilder bodyBuilder = new MultipartBodyBuilder();
 
         bodyBuilder.part("chat_id", sendDocument.getChatId());
@@ -193,7 +178,7 @@ public class RequestService {
 
     public Message send(SendVideo sendVideo) {
         sendVideo.checkValidation();
-        String url = BotInfo.getURL() + sendVideo.getEndPoint();
+        String url = getRequestURL() + sendVideo.getEndPoint();
         MultipartBodyBuilder bodyBuilder = new MultipartBodyBuilder();
 
         bodyBuilder.part("chat_id", sendVideo.getChatId());
@@ -246,7 +231,7 @@ public class RequestService {
 
     public Message send(SendAnimation sendAnimation) {
         sendAnimation.checkValidation();
-        String url = BotInfo.getURL() + sendAnimation.getEndPoint();
+        String url = getRequestURL() + sendAnimation.getEndPoint();
         MultipartBodyBuilder bodyBuilder = new MultipartBodyBuilder();
 
         bodyBuilder.part("chat_id", sendAnimation.getChatId());
@@ -296,7 +281,7 @@ public class RequestService {
 
     public Message send(SendVoice sendVoice) {
         sendVoice.checkValidation();
-        String url = BotInfo.getURL() + sendVoice.getEndPoint();
+        String url = getRequestURL() + sendVoice.getEndPoint();
         MultipartBodyBuilder bodyBuilder = new MultipartBodyBuilder();
 
         bodyBuilder.part("chat_id", sendVoice.getChatId());
@@ -334,7 +319,7 @@ public class RequestService {
 
     public Message send(SendVideoNote sendVideoNote) {
         sendVideoNote.checkValidation();
-        String url = BotInfo.getURL() + sendVideoNote.getEndPoint();
+        String url = getRequestURL() + sendVideoNote.getEndPoint();
         MultipartBodyBuilder bodyBuilder = new MultipartBodyBuilder();
 
         bodyBuilder.part("chat_id", sendVideoNote.getChatId());
@@ -370,7 +355,7 @@ public class RequestService {
 
     public Message sendSticker(SendSticker sendSticker) {
         sendSticker.checkValidation();
-        String url = BotInfo.getURL() + sendSticker.getEndPoint();
+        String url = getRequestURL() + sendSticker.getEndPoint();
         MultipartBodyBuilder bodyBuilder = new MultipartBodyBuilder();
 
         bodyBuilder.part("chat_id", sendSticker.getChatId());
@@ -412,6 +397,21 @@ public class RequestService {
         return (Message) response.getResult();
     }
 
+    private <RequestList extends ApiRequestList<? extends ReturnObject>, ReturnObject> List<ReturnObject> sendRequestList(RequestList request) throws WebClientRequestException, WebClientResponseException {
+        request.checkValidation();
+        String url = getRequestURL() + request.getEndPoint();
+
+        WebClient webClient = WebClient.create();
+        RequestResponseList response = (RequestResponseList) webClient
+                .post()
+                .uri(url)
+                .bodyValue(request)
+                .retrieve()
+                .bodyToMono(typeReferences.get(request.getReturnObject().getClass()))
+                .block();
+        return (List<ReturnObject>) response.getResult();
+    }
+
 
     private void inputFile(InputFile inputFile, MultipartBodyBuilder bodyBuilder, String methodName) {
         inputFile.checkValidation(methodName);
@@ -432,5 +432,16 @@ public class RequestService {
             FileSystemResource fileSystemResource = new FileSystemResource(file);
             bodyBuilder.part(methodName, fileSystemResource);
         }
+    }
+
+    private String getRequestURL() {
+        if (requestURL == null) {
+            String botToken = UpdateFetcher.getBotToken();
+            if (botToken == null) {
+                throw new NoSuchElementException("You have to initialize UpdateFetcher first to use RequestService.");
+            }
+            requestURL = "https://api.telegram.org/bot" + botToken;
+        }
+        return requestURL;
     }
 }

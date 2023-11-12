@@ -31,7 +31,7 @@ public class AutoUpdater implements Runnable {
     private final NotificationManager notificationManager;
     private final Thread updaterThread = new Thread(this);
     private final static int DELAY_BEFORE_START = 5000;   // 5 seconds
-    private final static int DELAY_BETWEEN_UPDATES = 1000 * 60 * 60 * 3; // 10 minutes
+    private final static int DELAY_BETWEEN_UPDATES = 1000 * 60 * 60; // 1 hour
     private final static int TEN_MINUTES = 1000 * 60;
 
 

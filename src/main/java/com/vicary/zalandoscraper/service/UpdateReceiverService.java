@@ -2,9 +2,9 @@ package com.vicary.zalandoscraper.service;
 
 import com.microsoft.playwright.PlaywrightException;
 import com.vicary.zalandoscraper.ActiveUser;
-import com.vicary.zalandoscraper.api_telegram.thread.UpdateFetcher;
-import com.vicary.zalandoscraper.api_telegram.thread.UpdateReceiver;
-import com.vicary.zalandoscraper.configuration.ApiBotConfiguration;
+import com.vicary.zalandoscraper.api_telegram.service.FetcherOptions;
+import com.vicary.zalandoscraper.api_telegram.service.UpdateFetcher;
+import com.vicary.zalandoscraper.api_telegram.service.UpdateReceiver;
 import com.vicary.zalandoscraper.configuration.BotInfo;
 import com.vicary.zalandoscraper.exception.ActiveUserException;
 import com.vicary.zalandoscraper.exception.IllegalInputException;
@@ -12,7 +12,7 @@ import com.vicary.zalandoscraper.exception.InvalidLinkException;
 import com.vicary.zalandoscraper.exception.ZalandoScraperBotException;
 import com.vicary.zalandoscraper.pattern.Pattern;
 import com.vicary.zalandoscraper.service.entity.ActiveRequestService;
-import com.vicary.zalandoscraper.api_telegram.QuickSender;
+import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
 import com.vicary.zalandoscraper.service.response.*;
 import com.vicary.zalandoscraper.updater.ProductUpdater;
 import lombok.RequiredArgsConstructor;
@@ -45,7 +45,7 @@ public class UpdateReceiverService implements UpdateReceiver {
     private final EmailVerificationResponse emailVerificationResponse;
     private final ProductUpdater productUpdater = ProductUpdater.getInstance();
 
-    private final UpdateFetcher updateFetcher = UpdateFetcher.getInstance(this);
+    private final UpdateFetcher updateFetcher = new UpdateFetcher(this);
 
     @Override
     public void receive(Update update) {

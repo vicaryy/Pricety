@@ -1,6 +1,6 @@
 package com.vicary.zalandoscraper.api_telegram.api_request;
 
-import com.vicary.zalandoscraper.api_telegram.end_point.EndPoint;
+import com.vicary.zalandoscraper.api_telegram.service.EndPoint;
 
 public class Close implements ApiRequest<Boolean> {
     /**

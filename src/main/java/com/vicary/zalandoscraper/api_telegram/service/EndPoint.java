@@ -1,4 +1,4 @@
-package com.vicary.zalandoscraper.api_telegram.end_point;
+package com.vicary.zalandoscraper.api_telegram.service;
 
 public enum EndPoint {
     GET_UPDATES("/getUpdates"),

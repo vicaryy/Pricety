@@ -5,7 +5,7 @@ import com.vicary.zalandoscraper.api_telegram.api_object.keyboard.InlineKeyboard
 import com.vicary.zalandoscraper.api_telegram.api_request.ApiRequest;
 import com.vicary.zalandoscraper.api_telegram.api_object.message.Message;
 import lombok.*;
-import com.vicary.zalandoscraper.api_telegram.end_point.EndPoint;
+import com.vicary.zalandoscraper.api_telegram.service.EndPoint;
 
 @Data
 @NoArgsConstructor
