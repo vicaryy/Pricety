@@ -65,28 +65,14 @@ public class EmailVerificationService {
     }
 
     public void sendTokenToUser(EmailVerificationEntity verification, String email) {
-        Email emailBody = Email.builder()
-                .to(email)
-                .title("[Verification] Email verification code")
-                .message(getMessage(verification.getToken()))
-                .build();
+        Email emailBody = new Email(email);
+        emailBody.setVerificationMessageAndTitle(verification.getToken());
 
         try {
-            emailSender.sendAsMime(emailBody);
+            emailSender.send(emailBody);
         } catch (Exception e) {
-            logger.warn("[Email Verification Service] Failed to sent email verification to {}", email);
+            logger.warn("[Email Verification Service] Failed sent email verification to {}", email);
         }
-    }
-
-    private String getMessage(String token) {
-        return """
-                <html>
-                <body>
-                <font size=3>Here is your verification code.</font><br><br>
-                <font size=3>Paste it into the chat with the bot:</font><br>
-                <font size=4><b>v-%s</b></font><br><br>
-                <font size=1><i>If you don't recognize this message, please ignore it.</i></font>"""
-                .formatted(token);
     }
 }
 

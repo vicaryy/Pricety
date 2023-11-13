@@ -2,7 +2,6 @@ package com.vicary.zalandoscraper.service;
 
 import com.microsoft.playwright.PlaywrightException;
 import com.vicary.zalandoscraper.ActiveUser;
-import com.vicary.zalandoscraper.api_telegram.service.FetcherOptions;
 import com.vicary.zalandoscraper.api_telegram.service.UpdateFetcher;
 import com.vicary.zalandoscraper.api_telegram.service.UpdateReceiver;
 import com.vicary.zalandoscraper.configuration.BotInfo;
@@ -14,6 +13,7 @@ import com.vicary.zalandoscraper.pattern.Pattern;
 import com.vicary.zalandoscraper.service.entity.ActiveRequestService;
 import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
 import com.vicary.zalandoscraper.service.response.*;
+import com.vicary.zalandoscraper.service.response.reply_markup.ReplyMarkupResponse;
 import com.vicary.zalandoscraper.updater.ProductUpdater;
 import lombok.RequiredArgsConstructor;
 
@@ -44,7 +44,6 @@ public class UpdateReceiverService implements UpdateReceiver {
 
     private final EmailVerificationResponse emailVerificationResponse;
     private final ProductUpdater productUpdater = ProductUpdater.getInstance();
-
     private final UpdateFetcher updateFetcher = new UpdateFetcher(this);
 
     @Override
@@ -54,30 +53,28 @@ public class UpdateReceiverService implements UpdateReceiver {
             return;
         }
 
+        ActiveUser user;
         try {
-            userAuthentication.authenticate(update);
+           user = userAuthentication.authenticate(update);
         } catch (ActiveUserException ignored) {
             return;
         }
 
-        String text = ActiveUser.get().getText();
-        String userId = ActiveUser.get().getUserId();
-        String chatId = ActiveUser.get().getChatId();
+        String text = user.getText();
+        String userId = user.getUserId();
+        String chatId = user.getChatId();
         logger.info("Got message from user '{}'", userId);
-
-        if (productUpdater.isRunning()) {
-            activeRequestService.deleteByUserId(userId);
-            QuickSender.message(userId, "Wait until updates.", false);
-            return;
-        }
-
-
         try {
-            if (Pattern.isAwaitedMessage(ActiveUser.get().isAwaitedMessage()))
+
+            if (isProductUpdaterRunning())
+                handleProductUpdaterRunning(userId);
+
+
+            if (Pattern.isAwaitedMessage(user.isAwaitedMessage()))
                 awaitedMessageResponse.response();
 
             else if (Pattern.isReplyMarkup(update))
-                replyMarkupResponse.response(text);
+                replyMarkupResponse.response(user);
 
             else if (Pattern.isZalandoURL(text))
                 linkResponse.response(text);
@@ -109,18 +106,21 @@ public class UpdateReceiverService implements UpdateReceiver {
         }
     }
 
+    private boolean isProductUpdaterRunning() {
+        return productUpdater.isRunning();
+    }
+
+    private void handleProductUpdaterRunning(String userId) {
+        String message = """
+                        I am updating all the products right now\\.
+                         
+                        *Please try again in a moment*\\.""";
+        QuickSender.message(userId, message, true);
+        throw new IllegalArgumentException("User '%s' interact with bot while product updater is running.".formatted(userId));
+    }
+
     @Override
     public String botToken() {
         return BotInfo.getBotToken();
     }
 }
-
-
-
-
-
-
-
-
-
-

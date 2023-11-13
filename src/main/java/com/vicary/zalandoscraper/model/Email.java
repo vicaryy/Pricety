@@ -16,13 +16,14 @@ public class Email {
 
     private boolean mime;
 
-
-    public void setPriceAlertTitle() {
-        title = "[Price Alert] Zalando product became cheaper!";
+    public Email(String to) {
+        this.to = to;
     }
 
-    public void setPriceAlertMessage(ProductDTO p) {
+
+    public void setPriceAlertMessageAndTitle(ProductDTO p) {
         mime = true;
+        title = "[Price Alert] Zalando product became cheaper!";
         String newPrice = String.format("%.2f", p.getNewPrice());
         String oldPrice = String.format("%.2f", p.getPrice());
         String cheaper = String.format("%.2f", p.getPrice() - p.getNewPrice());
@@ -56,5 +57,29 @@ public class Email {
                 oldPrice,
                 newPrice
         );
+    }
+
+    public void setVerificationMessageAndTitle(String token) {
+        mime = true;
+        title = "[Verification] Email verification code";
+        message = """
+                <html>
+                <body>
+                <font size=3>Here is your verification code.</font><br><br>
+                <font size=3>Paste it into the chat with the bot:</font><br>
+                <font size=4><b>v-%s</b></font><br><br>
+                <font size=1><i>If you don't recognize this message, please ignore it.</i></font>"""
+                .formatted(token);
+    }
+
+    public void checkValidation() {
+        if (to == null || to.isBlank())
+            throw new IllegalArgumentException("Value 'to' in Email cannot be null and empty.");
+
+        if (title == null || title.isBlank())
+            throw new IllegalArgumentException("Value 'title' in Email cannot be null and empty.");
+
+        if (message == null || message.isBlank())
+            throw new IllegalArgumentException("Value 'message' in Email cannot be null and empty.");
     }
 }

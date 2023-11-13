@@ -9,6 +9,7 @@ import com.vicary.zalandoscraper.entity.MessageEntity;
 import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.exception.ActiveUserException;
 import com.vicary.zalandoscraper.exception.ZalandoScraperBotException;
+import com.vicary.zalandoscraper.messages.Messages;
 import com.vicary.zalandoscraper.pattern.Pattern;
 import com.vicary.zalandoscraper.service.entity.ActiveRequestService;
 import com.vicary.zalandoscraper.service.entity.AwaitedMessageService;
@@ -38,7 +39,7 @@ public class UserAuthentication {
 
     private final MessageService messageService;
 
-    public void authenticate(Update update) {
+    public ActiveUser authenticate(Update update) {
         Message message = update.getCallbackQuery() == null
                 ? update.getMessage()
                 : update.getCallbackQuery().getMessage();
@@ -61,7 +62,13 @@ public class UserAuthentication {
 
         saveMessageToRepository(userEntity, text);
 
-        setActiveUserInThread(userEntity, text, chatId, messageId, awaitedMessage);
+        setLanguage(userEntity.getNationality());
+
+        return setActiveUserInThread(userEntity, text, chatId, messageId, awaitedMessage);
+    }
+
+    private void setLanguage(String language) {
+        Messages.setLanguage(language);
     }
 
     private boolean isAwaitedMessage(String chatId) {
@@ -96,7 +103,7 @@ public class UserAuthentication {
                 .build());
     }
 
-    private void setActiveUserInThread(UserEntity userEntity, String text, String chatId, int messageId, boolean awaitedMessage) {
+    private ActiveUser setActiveUserInThread(UserEntity userEntity, String text, String chatId, int messageId, boolean awaitedMessage) {
         ActiveUser activeUser = ActiveUser.get();
         activeUser.setUserId(userEntity.getUserId());
         activeUser.setChatId(chatId);
@@ -109,5 +116,6 @@ public class UserAuthentication {
         activeUser.setEmail(userEntity.getEmail());
         activeUser.setVerifiedEmail(userEntity.isVerifiedEmail());
         activeUser.setAdmin(userEntity.isAdmin());
+        return activeUser;
     }
 }

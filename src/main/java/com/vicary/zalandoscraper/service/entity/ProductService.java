@@ -53,21 +53,25 @@ public class ProductService {
 
     public void updateProductPrices(List<ProductDTO> productDTOs) {
         for (ProductDTO p : productDTOs) {
-            if (p.getPriceAlert().equals("AUTO") || p.getPriceAlert().equals("0"))
+            if (p.getPriceAlert().equals("AUTO") || p.getPriceAlert().equals("OFF"))
                 updatePriceById(p.getProductId(), p.getNewPrice());
 
             else {
                 double priceAlert = Double.parseDouble(p.getPriceAlert());
                 if (p.getNewPrice() <= priceAlert && p.getNewPrice() != 0)
-                    updatePriceAndPriceAlertById(p.getProductId(), p.getNewPrice(), "0");
+                    updatePriceAndPriceAlertById(p.getProductId(), p.getNewPrice(), "OFF");
                 else
                     updatePriceById(p.getProductId(), p.getNewPrice());
             }
         }
     }
 
-    public boolean existsByLinkAndVariant(String link, String variant) {
-       return repository.existByLinkAndVariant(link, variant) == 1;
+    public int countByUserId(String userId) {
+        return repository.countByUserId(userId);
+    }
+
+    public boolean existsByUserIdAndLinkAndVariant(String userId, String link, String variant) {
+        return repository.existByUserIdLinkAndVariant(userId, link, variant) == 1;
     }
 
     public void deleteProductById(Long id) {

@@ -19,7 +19,15 @@ public class EmailSender {
 
     private final JavaMailSender mailSender;
 
-    public void sendAsSimple(Email email) throws Exception {
+    public synchronized void send(Email email) throws Exception {
+        email.checkValidation();
+        if (email.isMime())
+            sendAsMime(email);
+        else
+            sendAsSimple(email);
+    }
+
+    private void sendAsSimple(Email email) throws Exception {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setSubject(email.getTitle());
         mailMessage.setText(email.getMessage());
@@ -28,7 +36,7 @@ public class EmailSender {
         mailSender.send(mailMessage);
     }
 
-    public void sendAsMime(Email email) throws Exception {
+    private void sendAsMime(Email email) throws Exception {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper messageHelper = new MimeMessageHelper(message);
 

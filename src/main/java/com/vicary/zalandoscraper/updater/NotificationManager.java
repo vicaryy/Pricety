@@ -50,7 +50,7 @@ public class NotificationManager {
     }
 
     private boolean isUserNeedsNotify(ProductDTO p) {
-        if (p.getPriceAlert().equals("0") || p.getNewPrice() == 0)
+        if (p.getPriceAlert().equals("OFF") || p.getNewPrice() == 0)
             return false;
 
         if (p.getPriceAlert().equals("AUTO"))
@@ -62,12 +62,12 @@ public class NotificationManager {
     }
 
     private void updatePriceAlertInRepository(ProductDTO p) {
-        if (p.getPriceAlert().equals("0") || p.getPriceAlert().equals("AUTO"))
+        if (p.getPriceAlert().equals("OFF") || p.getPriceAlert().equals("AUTO"))
             return;
 
         double priceAlert = Double.parseDouble(p.getPriceAlert());
         if (p.getNewPrice() <= priceAlert)
-            productService.updateProductPriceAlert(p.getProductId(), "0");
+            productService.updateProductPriceAlert(p.getProductId(), "OFF");
     }
 
     private List<ChatNotification> getChatNotifications(List<ProductDTO> DTOs) {
@@ -86,10 +86,8 @@ public class NotificationManager {
         List<Email> emails = new ArrayList<>();
         for (ProductDTO p : DTOs) {
             if (p.isNotifyByEmail()) {
-                Email notification = new Email();
-                notification.setTo(p.getEmail());
-                notification.setPriceAlertMessage(p);
-                notification.setPriceAlertTitle();
+                Email notification = new Email(p.getEmail());
+                notification.setPriceAlertMessageAndTitle(p);
                 emails.add(notification);
             }
         }

@@ -36,7 +36,7 @@ public class EmailNotificationSender {
 
     private void send(Email email, boolean save) {
         try {
-            emailSender.sendAsMime(email);
+            emailSender.send(email);
             emailsSent++;
             if (save)
                 saveToRepository(email);

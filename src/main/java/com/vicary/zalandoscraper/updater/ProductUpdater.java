@@ -16,12 +16,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ProductUpdater {
 
     private final static Logger logger = LoggerFactory.getLogger(ProductUpdater.class);
+    private long updatesTimeout;
+    private int amountOfThreads;
     private static ProductUpdater INSTANCE;
     private final Scraper scraper = Scraper.getInstance();
     private final List<Future<?>> activeThreads = new ArrayList<>();
     private final AtomicInteger completedThreads = new AtomicInteger();
-    private long updatesTimeout;
-    private int amountOfThreads;
 
 
     private ProductUpdater() {

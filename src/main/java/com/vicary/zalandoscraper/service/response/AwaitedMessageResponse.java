@@ -3,6 +3,7 @@ package com.vicary.zalandoscraper.service.response;
 import com.vicary.zalandoscraper.ActiveUser;
 import com.vicary.zalandoscraper.exception.IllegalInputException;
 import com.vicary.zalandoscraper.pattern.Pattern;
+import com.vicary.zalandoscraper.service.dto.ProductDTO;
 import com.vicary.zalandoscraper.service.entity.AwaitedMessageService;
 import com.vicary.zalandoscraper.service.entity.EmailVerificationService;
 import com.vicary.zalandoscraper.service.entity.ProductService;
@@ -35,7 +36,6 @@ public class AwaitedMessageResponse {
             updateUserEmail();
     }
 
-    @SneakyThrows
     public void updateProductPriceAlert(String request) {
         ActiveUser user = ActiveUser.get();
 
@@ -44,13 +44,17 @@ public class AwaitedMessageResponse {
         Long productId = Long.parseLong(requestArray[1]);
         String priceAlert = getPriceAlertFromText(user.getText());
 
+        ProductDTO dto = productService.getProductDTOById(productId);
+
+        if (isPriceAlertHigherThanPrice(priceAlert, dto.getPrice()))
+            throw new IllegalInputException("Price alert cannot be higher than actual price.", "User '%s' specify price alert higher than actual price".formatted(user.getUserId()));
+
         productService.updateProductPriceAlert(productId, priceAlert);
 
         popupMessage("Price Alert updated successfully.");
         displayMenu();
     }
 
-    @SneakyThrows
     public void updateUserEmail() {
         ActiveUser user = ActiveUser.get();
         String email = user.getText();
@@ -89,7 +93,7 @@ public class AwaitedMessageResponse {
 
     public String getPriceAlertFromText(String text) {
         double priceAlert;
-        if (text.equalsIgnoreCase("AUTO"))
+        if (text.equalsIgnoreCase("AUTO") || text.equalsIgnoreCase("OFF"))
             return text.toUpperCase();
 
         try {
@@ -104,17 +108,22 @@ public class AwaitedMessageResponse {
 
             priceAlert = Double.parseDouble(text);
 
-            if (priceAlert < 0)
+            if (priceAlert <= 0)
                 throw new NumberFormatException();
-
-            if (priceAlert == 0)
-                return "0";
 
         } catch (NumberFormatException ex) {
             throw new IllegalInputException("Invalid price alert.", "User '%s' typed invalid message '%s'".formatted(ActiveUser.get().getUserId(), text));
         }
 
         return String.format("%.2f", priceAlert).replaceFirst(",", ".");
+    }
+
+    public boolean isPriceAlertHigherThanPrice(String priceAlert, double price) {
+        if (priceAlert.equalsIgnoreCase("AUTO") || priceAlert.equalsIgnoreCase("OFF") || price == 0)
+            return false;
+
+
+        return Double.parseDouble(priceAlert.replaceFirst(" zł", "")) >= price;
     }
 
 

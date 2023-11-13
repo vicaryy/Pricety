@@ -13,7 +13,6 @@ import com.vicary.zalandoscraper.service.entity.LinkRequestService;
 import com.vicary.zalandoscraper.service.entity.ProductService;
 import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -47,12 +46,16 @@ public class LinkResponse {
     }
 
 
-    @SneakyThrows
     public void addProduct(String link, String oneVariant) {
         Product product = scraper.getProduct(link, oneVariant);
         QuickSender.deleteMessage(ActiveUser.get().getChatId(), ActiveUser.get().getMessageId());
-        if (productService.existsByLinkAndVariant(product.getLink(), product.getVariant()))
+
+        if (productService.existsByUserIdAndLinkAndVariant(ActiveUser.get().getUserId(), product.getLink(), product.getVariant()))
             throw new InvalidLinkException("You already have this product in your watchlist.", "User try to add same product.");
+
+        if (productService.countByUserId(ActiveUser.get().getUserId()) > 9)
+            throw new InvalidLinkException("You cannot add more than 10 products.", "User try to add more than 10 products.");
+
         productService.saveProduct(product);
         QuickSender.message(ActiveUser.get().getChatId(), "Product added successfully.", false);
     }

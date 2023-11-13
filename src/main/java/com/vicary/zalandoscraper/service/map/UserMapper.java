@@ -11,7 +11,7 @@ public class UserMapper {
         return UserEntity.builder()
                 .userId(user.getId().toString())
                 .nick(user.getUsername())
-                .nationality(user.getLanguageCode())
+                .nationality("pl")
                 .premium(false)
                 .admin(false)
                 .notifyByEmail(false)
