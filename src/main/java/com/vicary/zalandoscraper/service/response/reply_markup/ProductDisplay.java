@@ -12,13 +12,13 @@ import lombok.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
-class ProductDisplayer {
+class ProductDisplay {
 
     private final String chatId;
     private final Type type;
     private final List<ProductDTO> productDTOList;
 
-    public ProductDisplayer(@NonNull List<ProductDTO> productDTOList, @NonNull Type type, @NonNull String chatId) {
+    public ProductDisplay(@NonNull List<ProductDTO> productDTOList, @NonNull Type type, @NonNull String chatId) {
         this.productDTOList = productDTOList;
         this.type = type;
         this.chatId = chatId;

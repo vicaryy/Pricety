@@ -17,7 +17,7 @@ public class FetcherOptions {
         updateFrequency = 1000;
         fastModeUpdatesFrequency = 1000;
         slowModeUpdatesFrequency = 6000;
-        fastModeTimeout = 20000;
+        fastModeTimeout = 50000;
         maxSizeOfUpdates = 6;
     }
 

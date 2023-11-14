@@ -167,7 +167,7 @@ public class ReplyMarkupResponse {
             return;
         }
 
-        ProductDisplayer displayer = new ProductDisplayer(productDTOList, Type.DELETE, user.getChatId());
+        ProductDisplay displayer = new ProductDisplay(productDTOList, Type.DELETE, user.getChatId());
         displayer.display();
     }
 
@@ -205,7 +205,7 @@ public class ReplyMarkupResponse {
             return;
         }
 
-        ProductDisplayer displayer = new ProductDisplayer(productDTOList, Type.EDIT, user.getChatId());
+        ProductDisplay displayer = new ProductDisplay(productDTOList, Type.EDIT, user.getChatId());
         displayer.display();
     }
 
@@ -228,7 +228,7 @@ public class ReplyMarkupResponse {
             return;
         }
 
-        ProductDisplayer displayer = new ProductDisplayer(productDTOList, Type.ALL, user.getChatId());
+        ProductDisplay displayer = new ProductDisplay(productDTOList, Type.ALL, user.getChatId());
         displayer.display();
     }
 

@@ -47,7 +47,7 @@ public class Scraper {
 
             try (BrowserContext browser = playwright.chromium().launch(launchOptions).newContext()) {
                 browser.newPage();
-                browser.setDefaultTimeout(6000);
+                browser.setDefaultTimeout(4000);
 
                 for (int i = 0; i < DTOs.size(); i++) {
                     Page newPage = browser.newPage();

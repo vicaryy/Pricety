@@ -20,6 +20,10 @@ public class ChatNotification {
     private boolean markdownV2;
 
     public void setDefaultMessageNotification(ProductDTO p) {
+        if (p.getPrice() == 0) {
+            setMessageWhenOldPriceIsZero(p);
+            return;
+        }
         String newPrice = String.format("%.2f", p.getNewPrice());
         String oldPrice = String.format("%.2f", p.getPrice());
         String cheaper = String.format("%.2f", p.getPrice() - p.getNewPrice());
@@ -48,6 +52,35 @@ public class ChatNotification {
                 MarkdownV2.apply(p.getLink()).toZalandoURL().get(),
                 MarkdownV2.apply(oldPrice).get(),
                 MarkdownV2.apply(newPrice).get()
+        );
+    }
+
+    private void setMessageWhenOldPriceIsZero(ProductDTO p) {
+        String newPrice = String.format("%.2f", p.getNewPrice());
+        String variant = p.getVariant();
+        if (variant.startsWith("-oneVariant "))
+            variant = variant.substring(12);
+        message = """
+                *Price Alert* 🔔
+                                
+                The product you have in your watchlist became cheaper\\!
+                                
+                *Name*: %s
+                *Description*: %s
+                *Variant*: %s
+                *Link*: %s
+                                
+                *New Price*: %s zł
+                *Price Alert*: %s zł
+                                
+                _Have a nice shopping\\!_
+                """.formatted(
+                MarkdownV2.apply(p.getName()).get(),
+                MarkdownV2.apply(p.getDescription()).get(),
+                MarkdownV2.apply(variant).get(),
+                MarkdownV2.apply(p.getLink()).toZalandoURL().get(),
+                MarkdownV2.apply(newPrice).get(),
+                MarkdownV2.apply(p.getPriceAlert()).get()
         );
     }
 }
