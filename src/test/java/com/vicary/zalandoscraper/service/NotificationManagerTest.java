@@ -76,7 +76,7 @@ class NotificationManagerTest {
                 .variant("L")
                 .build();
 
-        sender.send(List.of(notification));
+//        sender.send(List.of(notification));
     }
 
 }

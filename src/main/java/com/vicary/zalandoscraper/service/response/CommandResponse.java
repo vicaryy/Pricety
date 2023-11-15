@@ -1,6 +1,6 @@
 package com.vicary.zalandoscraper.service.response;
 
-import com.vicary.zalandoscraper.ActiveUser;
+import com.vicary.zalandoscraper.thread_local.ActiveUser;
 import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;

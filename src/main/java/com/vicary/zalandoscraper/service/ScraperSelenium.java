@@ -1,6 +1,6 @@
 package com.vicary.zalandoscraper.service;
 
-import com.vicary.zalandoscraper.ActiveUser;
+import com.vicary.zalandoscraper.thread_local.ActiveUser;
 import com.vicary.zalandoscraper.exception.InvalidLinkException;
 import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;

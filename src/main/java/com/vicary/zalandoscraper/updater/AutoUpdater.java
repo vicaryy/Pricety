@@ -11,6 +11,8 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.MessageSource;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -36,7 +38,7 @@ public class AutoUpdater implements Runnable {
 
     @PostConstruct
     private void starter() {
-        updaterThread.start();
+//        updaterThread.start();
     }
 
     @Override

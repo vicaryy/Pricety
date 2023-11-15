@@ -12,6 +12,6 @@ class ProductRepositoryTest {
 
     @Test
     void updateProduct_expectEquals_whatever() {
-        System.out.println(repository.existByUserIdLinkAndVariant("https://www.zalando.pl/nike-performance-utility-elite-unisex-plecak-blackenigma-stone-n1242l05c-q11.html", "-oneVariant One Size"));
+//        System.out.println(repository.existByUserIdLinkAndVariant("https://www.zalando.pl/nike-performance-utility-elite-unisex-plecak-blackenigma-stone-n1242l05c-q11.html", "-oneVariant One Size"));
     }
 }

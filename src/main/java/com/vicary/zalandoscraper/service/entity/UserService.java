@@ -17,6 +17,11 @@ public class UserService {
 
     private final UserRepository repository;
 
+
+    public void updateLanguage(String userId, String language) {
+        repository.updateLanguage(userId, language);
+    }
+
     public void saveUser(UserEntity userEntity) {
         repository.save(userEntity);
     }

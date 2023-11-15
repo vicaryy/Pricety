@@ -1,6 +1,8 @@
 package com.vicary.zalandoscraper.service.response.reply_markup;
 
-import com.vicary.zalandoscraper.ActiveUser;
+import com.vicary.zalandoscraper.messages.Messages;
+import com.vicary.zalandoscraper.thread_local.ActiveLanguage;
+import com.vicary.zalandoscraper.thread_local.ActiveUser;
 import com.vicary.zalandoscraper.api_telegram.api_object.Action;
 import com.vicary.zalandoscraper.entity.AwaitedMessageEntity;
 import com.vicary.zalandoscraper.entity.LinkRequestEntity;
@@ -16,6 +18,8 @@ import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 @Service
 @RequiredArgsConstructor
@@ -82,9 +86,23 @@ public class ReplyMarkupResponse {
 
         else if (text.equals("-setEmail"))
             displaySetEmailMessage(text);
+
+        else if (text.startsWith("-lang"))
+            updateUserLanguage(text);
     }
 
-    @SneakyThrows
+    private void updateUserLanguage(String text) {
+        deletePreviousMessage();
+
+        String[] textArray = text.split(" ");
+        String language = textArray[1];
+
+        userService.updateLanguage(ActiveUser.get().getUserId(), language);
+        ActiveLanguage.get().setResourceBundle(ResourceBundle.getBundle("messages", Locale.of(language)));
+
+        displayMenu();
+    }
+
     public void displaySetEmailMessage(String text) {
         deletePreviousMessage(1500);
 
@@ -211,7 +229,7 @@ public class ReplyMarkupResponse {
 
 
     public void displayAddProduct() {
-        popupMessage("Just paste Zalando URL down below 👇", 3000, true);
+        popupMessage(Messages.addProduct("justPaste"), 3000, true);
         displayMenu();
     }
 

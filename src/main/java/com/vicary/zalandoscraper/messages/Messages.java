@@ -1,40 +1,28 @@
 package com.vicary.zalandoscraper.messages;
 
-import java.util.Locale;
-import java.util.ResourceBundle;
+import com.vicary.zalandoscraper.thread_local.ActiveLanguage;
 
 public class Messages {
+    private final static String menu = "menu-";
+    private final static String allProducts = "allProducts-";
+    private final static String addProduct = "addProduct-";
+    private final static String editPriceAlert = "editPriceAlert-";
+    private final static String notification = "notification-";
 
-    private static ResourceBundle resourceBundle;
-
-    private static String baseName = "messages";
-
-    public static void setLanguage(String language) {
-        Locale locale = Locale.of(language);
-        resourceBundle = ResourceBundle.getBundle(baseName, locale);
-    }
-
-    public static void setBaseName(String baseName) {
-        Messages.baseName = baseName;
-    }
-
-    public static String get(String key) {
-        return resourceBundle.getString(key);
-    }
 
     public static String menu(String key) {
-        return resourceBundle.getString("menu-" + key);
-    }
-
-    public static String notification(String key) {
-        return resourceBundle.getString("notification-" + key);
+        return ActiveLanguage.get().getResourceBundle().getString(menu + key);
     }
 
     public static String allProducts(String key) {
-        return resourceBundle.getString("allProducts-" + key);
+        return ActiveLanguage.get().getResourceBundle().getString(allProducts + key);
+    }
+
+    public static String addProduct(String key) {
+        return ActiveLanguage.get().getResourceBundle().getString(addProduct + key);
     }
 
     public static String editPriceAlert(String key) {
-        return resourceBundle.getString("editPriceAlert-" + key);
+        return ActiveLanguage.get().getResourceBundle().getString(editPriceAlert + key);
     }
 }

@@ -1,6 +1,6 @@
 package com.vicary.zalandoscraper.service.response;
 
-import com.vicary.zalandoscraper.ActiveUser;
+import com.vicary.zalandoscraper.thread_local.ActiveUser;
 import com.vicary.zalandoscraper.exception.IllegalInputException;
 import com.vicary.zalandoscraper.pattern.Pattern;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;

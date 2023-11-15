@@ -49,4 +49,12 @@ public interface UserRepository extends JpaRepository<UserEntity, String> {
             set verified_email = :verified
             where user_id = :userId""", nativeQuery = true)
     void setVerifiedEmail(@Param("userId") String userId, @Param("verified") boolean verified);
+
+    @Transactional
+    @Modifying
+    @Query(value = """
+            update users
+            set nationality = :language
+            where user_id = :userId""", nativeQuery = true)
+    void updateLanguage(@Param("userId") String userId, @Param("language") String language);
 }

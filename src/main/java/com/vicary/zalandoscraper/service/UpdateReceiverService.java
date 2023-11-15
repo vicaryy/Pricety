@@ -1,7 +1,10 @@
 package com.vicary.zalandoscraper.service;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.microsoft.playwright.PlaywrightException;
-import com.vicary.zalandoscraper.ActiveUser;
+import com.vicary.zalandoscraper.thread_local.ActiveLanguage;
+import com.vicary.zalandoscraper.thread_local.ActiveUser;
 import com.vicary.zalandoscraper.api_telegram.service.UpdateFetcher;
 import com.vicary.zalandoscraper.api_telegram.service.UpdateReceiver;
 import com.vicary.zalandoscraper.configuration.BotInfo;
@@ -22,6 +25,8 @@ import org.openqa.selenium.WebDriverException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import java.util.ResourceBundle;
 
 
 @Service
@@ -103,6 +108,7 @@ public class UpdateReceiverService implements UpdateReceiver {
         } finally {
             activeRequestService.deleteByUserId(userId);
             ActiveUser.remove();
+            ActiveLanguage.remove();
         }
     }
 

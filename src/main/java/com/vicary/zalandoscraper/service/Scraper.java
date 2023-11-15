@@ -2,7 +2,7 @@ package com.vicary.zalandoscraper.service;
 
 import com.microsoft.playwright.*;
 import com.microsoft.playwright.options.WaitUntilState;
-import com.vicary.zalandoscraper.ActiveUser;
+import com.vicary.zalandoscraper.thread_local.ActiveUser;
 import com.vicary.zalandoscraper.exception.InvalidLinkException;
 import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;
@@ -53,6 +53,7 @@ public class Scraper {
                     Page newPage = browser.newPage();
                     newPage.setExtraHTTPHeaders(extraHeaders);
                     newPage.navigate(DTOs.get(i).getLink(), navigateOptions);
+                    newPage.setDefaultTimeout(4000);
 
                     if (i == 0)
                         clickCookiesButton(newPage);

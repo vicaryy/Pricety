@@ -1,6 +1,6 @@
 package com.vicary.zalandoscraper.service.map;
 
-import com.vicary.zalandoscraper.ActiveUser;
+import com.vicary.zalandoscraper.thread_local.ActiveUser;
 import com.vicary.zalandoscraper.entity.NotificationEntity;
 import com.vicary.zalandoscraper.entity.ProductEntity;
 import com.vicary.zalandoscraper.entity.UpdateHistoryEntity;

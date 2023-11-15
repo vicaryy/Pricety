@@ -5,6 +5,7 @@ import com.vicary.zalandoscraper.api_telegram.api_object.keyboard.ReplyMarkup;
 import com.vicary.zalandoscraper.api_telegram.api_request.send.SendMessage;
 import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
 import com.vicary.zalandoscraper.format.MarkdownV2;
+import com.vicary.zalandoscraper.messages.Messages;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;
 import com.vicary.zalandoscraper.service.response.InlineBlock;
 import lombok.NonNull;
@@ -80,11 +81,11 @@ class ProductDisplay {
 
     private void setTitle(StringBuilder sb) {
         if (type == Type.ALL)
-            sb.append("*That's your products* 📝\n\n\n");
+            sb.append("*").append(Messages.allProducts("yourProducts")).append("*\n\n");
         else if (type == Type.EDIT)
-            sb.append("*Products to edit* ⚙️\n\n\n");
+            sb.append("*").append(Messages.editPriceAlert("yourProducts")).append("*\n\n");
         else if (type == Type.DELETE)
-            sb.append("Products to delete 🗑️\n\n\n");
+            sb.append("Products to delete 🗑️\n\n");
     }
 
     private String getFullProductDescription(ProductDTO dto, int iterator) {
@@ -92,25 +93,33 @@ class ProductDisplay {
         String priceAlert = getFormattedPriceAlert(dto.getPriceAlert());
         String variant = getFormattedVariant(dto.getVariant());
         return """     
-                *Product nr %d*
+                *%s nr %d*
                                     
-                *Name:* %s
-                *Description:* %s
-                *Link:* %s
-                *Variant:* %s
-                *Price:* %s
-                *Price alert:* %s""".
-                formatted(iterator + 1,
+                *%s:* %s
+                *%s:* %s
+                *%s:* %s
+                *%s:* %s
+                *%s:* %s
+                *%s:* %s""".
+                formatted(
+                        Messages.allProducts("product"),
+                        iterator + 1,
+                        Messages.allProducts("name"),
                         MarkdownV2.apply(dto.getName()).get(),
+                        Messages.allProducts("description"),
                         MarkdownV2.apply(dto.getDescription()).get(),
+                        Messages.allProducts("link"),
                         MarkdownV2.apply(dto.getLink()).toZalandoURL().get(),
+                        Messages.allProducts("variant"),
                         MarkdownV2.apply(variant).get(),
+                        Messages.allProducts("price"),
                         MarkdownV2.apply(price).get(),
+                        Messages.allProducts("priceAlert"),
                         MarkdownV2.apply(priceAlert).get());
     }
 
     private String getFormattedPrice(double p) {
-        return p == 0 ? "Sold Out" : String.format("%.2f zł", p).replaceFirst(",", ".");
+        return p == 0 ? Messages.allProducts("soldOut") : String.format("%.2f zł", p).replaceFirst(",", ".");
     }
 
     private String getFormattedPriceAlert(String p) {
@@ -125,9 +134,9 @@ class ProductDisplay {
 
     private String getSummaryMessage() {
         if (type == Type.ALL)
-            return "\u200E \n\n\n*Did you know?*\nThe Eiffel Tower can be 15 cm taller during the summer due to the expansion of iron in the heat 💀";
+            return "\u200E \n\n\n" + Messages.allProducts("funFact");
         else if (type == Type.EDIT)
-            return "\u200E \n\n*Please select the item you want to edit*\\.";
+            return "\u200E \n\n*" + Messages.editPriceAlert("select") + "*\\.";
         else if (type == Type.DELETE)
             return "\u200E \n\n*Please select the item you want to delete*\\.";
         return null;
