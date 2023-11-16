@@ -138,7 +138,7 @@ class ProductDisplay {
         else if (type == Type.EDIT)
             return "\u200E \n\n*" + Messages.editPriceAlert("select") + "*\\.";
         else if (type == Type.DELETE)
-            return "\u200E \n\n*Please select the item you want to delete*\\.";
+            return "\u200E \n\n*" + Messages.deleteProduct("select") + "*\\.";
         return null;
     }
 

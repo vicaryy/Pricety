@@ -113,11 +113,7 @@ public class ReplyMarkupResponse {
 
         awaitedMessageService.saveAwaitedMessage(awaitedMessageEntity);
 
-
-        String message = """
-                Okay\\, send me a new email address\\.
-                                
-                Type *delete* if you want to delete your email address\\.""";
+        String message = Messages.other("sendNewEmail");
 
         QuickSender.message(ActiveUser.get().getUserId(), message, true);
     }
@@ -130,13 +126,13 @@ public class ReplyMarkupResponse {
         deletePreviousMessage();
 
         if (user.getEmail() == null) {
-            popupMessage("You have to set up an email address.");
+            popupMessage(Messages.other("setEmailFirst"));
             displayNotification();
             return;
         }
 
         if (!user.isVerifiedEmail()) {
-            popupMessage("You have to verify your email.");
+            popupMessage(Messages.other("verifyEmailFirst"));
             displayNotification();
             return;
         }
@@ -155,7 +151,7 @@ public class ReplyMarkupResponse {
 
         productService.deleteAllProductsByUserId(user.getUserId());
 
-        popupMessage("All products deleted successfully.", true);
+        popupMessage(Messages.other("allDeleted"), true);
 
         displayMenu();
     }
@@ -167,7 +163,7 @@ public class ReplyMarkupResponse {
 
         productService.deleteProductById(productId);
 
-        popupMessage("Product deleted successfully.", true);
+        popupMessage(Messages.other("deleted"), true);
 
         displayMenu();
     }
@@ -180,7 +176,7 @@ public class ReplyMarkupResponse {
         deletePreviousMessage();
 
         if (productDTOList.isEmpty()) {
-            popupMessage("You don't have any products.");
+            popupMessage(Messages.other("dontHaveProducts"));
             displayMenu();
             return;
         }
@@ -199,12 +195,7 @@ public class ReplyMarkupResponse {
 
         deletePreviousMessage(1500);
 
-        //                ‎s
-        String message = """            
-                *Send me a new price alert\\.*
-                                
-                Type *auto* for automatic notification\\.
-                Type *off* if you don't want notification at all\\.""";
+        String message = Messages.other("sendNewAlert");
 
         QuickSender.message(ActiveUser.get().getUserId(), message, true);
     }

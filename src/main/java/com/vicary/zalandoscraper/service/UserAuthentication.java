@@ -60,13 +60,14 @@ public class UserAuthentication {
 
         boolean awaitedMessage = isAwaitedMessage(chatId);
 
-//        checkActiveUser(chatId);
 
         UserEntity userEntity = checkUserInRepository(message.getFrom(), chatId);
 
         saveMessageToRepository(userEntity, text);
 
         setActiveLanguage(userEntity.getNationality());
+
+        checkActiveUser(chatId);
 
         return setActiveUserInThread(userEntity, text, chatId, messageId, awaitedMessage);
     }
@@ -78,7 +79,7 @@ public class UserAuthentication {
     private void checkActiveUser(String chatId) {
         if (activeRequestService.existsByUserId(chatId)) {
             logger.info("User %s is trying to do more than one request".formatted(chatId));
-            QuickSender.popupMessage(chatId, "One request at a time please.");
+            QuickSender.popupMessage(chatId, Messages.other("oneRequest"));
             throw new ActiveUserException();
         }
         activeRequestService.saveActiveUser(new ActiveRequestEntity(chatId));
@@ -116,7 +117,6 @@ public class UserAuthentication {
         return activeUser;
     }
 
-    @SneakyThrows
     private void setActiveLanguage(String l) {
         ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", Locale.of(l));
 //        ResourceBundle.clearCache(Thread.currentThread().getContextClassLoader());

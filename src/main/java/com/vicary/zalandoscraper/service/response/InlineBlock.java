@@ -18,13 +18,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @Component
 @RequiredArgsConstructor
 public class InlineBlock {
-    private final static InlineKeyboardButton deleteAll = new InlineKeyboardButton("Delete All", "-deleteAll");
-
     private final static InlineKeyboardButton back = new InlineKeyboardButton("Back To Menu", "-back");
-
-    private final static InlineKeyboardButton deleteAllYes = new InlineKeyboardButton("Yes", "-deleteAllYes");
-
-    private final static InlineKeyboardButton deleteAllNo = new InlineKeyboardButton("No", "-deleteAllNo");
 
     private final static InlineKeyboardButton enableOrDisable = new InlineKeyboardButton("", "");
 
@@ -32,17 +26,11 @@ public class InlineBlock {
 
     private final static List<InlineKeyboardButton> listOfButtons4 = List.of(back);
 
-    private final static List<InlineKeyboardButton> listOfButtons5 = List.of(deleteAll);
-
-    private final static List<InlineKeyboardButton> listOfButtons6 = List.of(deleteAllYes, deleteAllNo);
-
     private final static List<InlineKeyboardButton> listOfButtons7 = List.of(enableOrDisable);
 
     private final static List<InlineKeyboardButton> listOfButtons8 = List.of(setEmail);
 
     private final static InlineKeyboardMarkup backMarkup = new InlineKeyboardMarkup(List.of(listOfButtons4));
-
-    private final static InlineKeyboardMarkup yesOrNoMarkup = new InlineKeyboardMarkup(List.of(listOfButtons6));
 
     private final static InlineKeyboardMarkup notificationMarkup = new InlineKeyboardMarkup(List.of(listOfButtons7, listOfButtons8, listOfButtons4));
 
@@ -88,40 +76,44 @@ public class InlineBlock {
         String verified = "";
 
         if (email == null)
-            email = "Not Specified";
+            email = Messages.notifications("notSpecified");
 
         else if (isVerifiedEmail)
-            verified = "\n\n✅ Email Verified";
+            verified = "\n\n" + Messages.notifications("emailVerified");
 
         else
-            verified = "\n\n⚠️ Email Not Verified";
+            verified = "\n\n" + Messages.notifications("emailNotVerified");
 
 
         if (isNotifyByEmail && isVerifiedEmail) {
-            enableOrDisable.setText("Disable email notifications");
+            enableOrDisable.setText(Messages.notifications("disable"));
             enableOrDisable.setCallbackData("-disableEmail");
         } else {
-            enableOrDisable.setText("Enable email notifications");
+            enableOrDisable.setText(Messages.notifications("enable"));
             enableOrDisable.setCallbackData("-enableEmail");
         }
 
-        if (email.equals("Not Specified")) {
-            setEmail.setText("Set email");
+        if (email.equals(Messages.notifications("notSpecified"))) {
+            setEmail.setText(Messages.notifications("setEmail"));
             setEmail.setCallbackData("-setEmail");
         } else {
-            setEmail.setText("Change email");
+            setEmail.setText(Messages.notifications("changeEmail"));
             setEmail.setCallbackData("-setEmail");
         }
 
         String message = """
-                *Notification* 📧
+                *%s* 📧
                             
-                I am able to send price notification via email
+                %s
                                 
-                *Status:* %s
-                *Your email:* %s%s"""
+                *%s:* %s
+                *%s:* %s%s"""
                 .formatted(
-                        isNotifyByEmail ? "Enabled" : "Disabled",
+                        Messages.notifications("notifications"),
+                        Messages.notifications("able"),
+                        Messages.notifications("status"),
+                        isNotifyByEmail ? Messages.notifications("enabled") : Messages.notifications("disabled"),
+                        Messages.notifications("yourEmail"),
                         MarkdownV2.apply(email).get(),
                         verified);
 
@@ -140,7 +132,11 @@ public class InlineBlock {
     public static SendMessage getDeleteYesOrNo() {
         ActiveUser user = ActiveUser.get();
 
-        String yesOrNoMessage = "Are you sure you want to delete all your products?";
+        final InlineKeyboardButton deleteAllYes = new InlineKeyboardButton(Messages.deleteProduct("yes"), "-deleteAllYes");
+        final InlineKeyboardButton deleteAllNo = new InlineKeyboardButton(Messages.deleteProduct("no"), "-deleteAllNo");
+        final InlineKeyboardMarkup yesOrNoMarkup = new InlineKeyboardMarkup(List.of(List.of(deleteAllYes, deleteAllNo)));
+
+        String yesOrNoMessage = Messages.deleteProduct("areYouSure");
 
         return SendMessage.builder()
                 .chatId(user.getChatId())
@@ -153,6 +149,7 @@ public class InlineBlock {
         List<List<InlineKeyboardButton>> listOfListsOfButtons = new ArrayList<>();
         List<InlineKeyboardButton> listOfButtons = new ArrayList<>();
         final InlineKeyboardButton back = new InlineKeyboardButton(Messages.editPriceAlert("back"), "-back");
+        final InlineKeyboardButton deleteAll = new InlineKeyboardButton(Messages.deleteProduct("deleteAll"), "-deleteAll");
 
         for (int i = 0; i < productDTOList.size(); i++) {
 
@@ -172,7 +169,7 @@ public class InlineBlock {
         }
 
         if (callbackDataType.equals("-delete"))
-            listOfListsOfButtons.add(listOfButtons5);
+            listOfListsOfButtons.add(List.of(deleteAll));
 
         listOfListsOfButtons.add(List.of(back));
 

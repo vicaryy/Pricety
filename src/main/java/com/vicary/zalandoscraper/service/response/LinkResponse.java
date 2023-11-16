@@ -1,5 +1,6 @@
 package com.vicary.zalandoscraper.service.response;
 
+import com.vicary.zalandoscraper.messages.Messages;
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
 import com.vicary.zalandoscraper.api_telegram.api_object.Action;
 import com.vicary.zalandoscraper.api_telegram.api_object.keyboard.InlineKeyboardButton;
@@ -32,7 +33,7 @@ public class LinkResponse {
 
     public void response(String link) {
         String chatId = ActiveUser.get().getChatId();
-        int messageId = QuickSender.messageWithReturn(chatId, "Processing...", false).getMessageId();
+        int messageId = QuickSender.messageWithReturn(chatId, Messages.other("processing"), false).getMessageId();
         QuickSender.chatAction(chatId, Action.TYPING);
         ActiveUser.get().setMessageId(messageId);
 
@@ -51,13 +52,13 @@ public class LinkResponse {
         QuickSender.deleteMessage(ActiveUser.get().getChatId(), ActiveUser.get().getMessageId());
 
         if (productService.existsByUserIdAndLinkAndVariant(ActiveUser.get().getUserId(), product.getLink(), product.getVariant()))
-            throw new InvalidLinkException("You already have this product in your watchlist.", "User try to add same product.");
+            throw new InvalidLinkException(Messages.other("alreadyHave"), "User try to add same product.");
 
         if (productService.countByUserId(ActiveUser.get().getUserId()) > 9)
-            throw new InvalidLinkException("You cannot add more than 10 products.", "User try to add more than 10 products.");
+            throw new InvalidLinkException(Messages.other("productLimit"), "User try to add more than 10 products.");
 
         productService.saveProduct(product);
-        QuickSender.message(ActiveUser.get().getChatId(), "Product added successfully.", false);
+        QuickSender.message(ActiveUser.get().getChatId(), Messages.other("productAdded"), false);
     }
 
     public void sendVariantMessage(List<String> variants) {
@@ -91,7 +92,7 @@ public class LinkResponse {
         InlineKeyboardMarkup replyMarkup = new InlineKeyboardMarkup(listOfListsOfButtons);
         SendMessage sendMessage = SendMessage.builder()
                 .chatId(ActiveUser.get().getChatId())
-                .text("Select a product variant")
+                .text(Messages.other("selectVariant"))
                 .replyMarkup(replyMarkup)
                 .build();
 
