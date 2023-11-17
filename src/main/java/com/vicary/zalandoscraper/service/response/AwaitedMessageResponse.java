@@ -1,5 +1,6 @@
 package com.vicary.zalandoscraper.service.response;
 
+import com.vicary.zalandoscraper.messages.Messages;
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
 import com.vicary.zalandoscraper.exception.IllegalInputException;
 import com.vicary.zalandoscraper.pattern.Pattern;
@@ -47,11 +48,11 @@ public class AwaitedMessageResponse {
         ProductDTO dto = productService.getProductDTOById(productId);
 
         if (isPriceAlertHigherThanPrice(priceAlert, dto.getPrice()))
-            throw new IllegalInputException("Price alert cannot be higher than actual price.", "User '%s' specify price alert higher than actual price".formatted(user.getUserId()));
+            throw new IllegalInputException(Messages.other("priceAlertHigher"), "User '%s' specify price alert higher than actual price".formatted(user.getUserId()));
 
         productService.updateProductPriceAlert(productId, priceAlert);
 
-        popupMessage("Price Alert updated successfully.");
+        popupMessage(Messages.other("priceAlertUpdated"));
         displayMenu();
     }
 
@@ -60,14 +61,14 @@ public class AwaitedMessageResponse {
         String email = user.getText();
 
         if (!Pattern.isEmail(email))
-            throw new IllegalInputException("The provided email doesn't look like a valid email address.", "User '%s' typed invalid email '%s'".formatted(ActiveUser.get().getUserId(), ActiveUser.get().getText()));
+            throw new IllegalInputException(Messages.other("invalidEmail"), "User '%s' typed invalid email '%s'".formatted(ActiveUser.get().getUserId(), ActiveUser.get().getText()));
 
         if (email.equals(user.getEmail()))
-            throw new IllegalInputException("The provided email must be different from the one you already have.", "User '%s' typed the same email '%s'".formatted(ActiveUser.get().getUserId(), ActiveUser.get().getText()));
+            throw new IllegalInputException(Messages.other("differentEmail"), "User '%s' typed the same email '%s'".formatted(ActiveUser.get().getUserId(), ActiveUser.get().getText()));
 
         if (email.equalsIgnoreCase("DELETE")) {
             userService.deleteEmailById(user.getUserId());
-            popupMessage("Email deleted successfully");
+            popupMessage(Messages.other("emailDeleted"));
             displayMenu();
             return;
         }
@@ -81,12 +82,7 @@ public class AwaitedMessageResponse {
 
         emailVerificationService.sendTokenToUser(verification, email);
 
-        String verificationMessage = """
-                Email updated successfully\\.
-                      
-                *Important* ⚠️
-                Verification code has been sent to the provided email address\\.
-                Please paste the received code here in the chat\\.""";
+        String verificationMessage = Messages.other("verificationCodeMessage");
         QuickSender.message(user.getChatId(), verificationMessage, true);
     }
 
@@ -112,7 +108,7 @@ public class AwaitedMessageResponse {
                 throw new NumberFormatException();
 
         } catch (NumberFormatException ex) {
-            throw new IllegalInputException("Invalid price alert.", "User '%s' typed invalid message '%s'".formatted(ActiveUser.get().getUserId(), text));
+            throw new IllegalInputException(Messages.other("invalidPriceAlert"), "User '%s' typed invalid message '%s'".formatted(ActiveUser.get().getUserId(), text));
         }
 
         return String.format("%.2f", priceAlert).replaceFirst(",", ".");

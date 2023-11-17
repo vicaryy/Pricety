@@ -13,18 +13,16 @@ import lombok.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
-class ProductDisplay {
-
+public class DeleteProductDisplay implements ProductDisplayer {
     private final String chatId;
-    private final Type type;
     private final List<ProductDTO> productDTOList;
 
-    public ProductDisplay(@NonNull List<ProductDTO> productDTOList, @NonNull Type type, @NonNull String chatId) {
+    public DeleteProductDisplay(@NonNull List<ProductDTO> productDTOList, @NonNull String chatId) {
         this.productDTOList = productDTOList;
-        this.type = type;
         this.chatId = chatId;
     }
 
+    @Override
     public void display() {
         List<StringBuilder> stringBuilders = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
@@ -80,12 +78,7 @@ class ProductDisplay {
 
 
     private void setTitle(StringBuilder sb) {
-        if (type == Type.ALL)
-            sb.append("*").append(Messages.allProducts("yourProducts")).append("*\n\n");
-        else if (type == Type.EDIT)
-            sb.append("*").append(Messages.editPriceAlert("yourProducts")).append("*\n\n");
-        else if (type == Type.DELETE)
-            sb.append("Products to delete 🗑️\n\n");
+        sb.append("Products to delete 🗑️\n\n");
     }
 
     private String getFullProductDescription(ProductDTO dto, int iterator) {
@@ -133,41 +126,10 @@ class ProductDisplay {
     }
 
     private String getSummaryMessage() {
-        if (type == Type.ALL)
-            return "\u200E \n\n\n" + Messages.allProducts("funFact");
-        else if (type == Type.EDIT)
-            return "\u200E \n\n*" + Messages.editPriceAlert("select") + "*\\.";
-        else if (type == Type.DELETE)
-            return "\u200E \n\n*" + Messages.deleteProduct("select") + "*\\.";
-        return null;
+        return "\u200E \n\n\n*" + Messages.deleteProduct("select") + "*\\.";
     }
 
     private ReplyMarkup getReplyMarkup() {
-        if (type == Type.ALL)
-            return InlineBlock.getBack();
-        else if (type == Type.EDIT)
-            return InlineBlock.getProductChoice(productDTOList, "-edit");
-        else if (type == Type.DELETE)
-            return InlineBlock.getProductChoice(productDTOList, "-delete");
-        return null;
+        return InlineBlock.getProductChoice(productDTOList, "-delete");
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

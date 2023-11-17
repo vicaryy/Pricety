@@ -1,5 +1,6 @@
 package com.vicary.zalandoscraper.model;
 
+import com.vicary.zalandoscraper.messages.Messages;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;
 import lombok.*;
 
@@ -28,32 +29,14 @@ public class Email {
         }
 
         mime = true;
-        title = "[Price Alert] Zalando product became cheaper!";
+        title = Messages.email("notificationTitle", p.getLanguage());
         String newPrice = String.format("%.2f", p.getNewPrice());
         String oldPrice = String.format("%.2f", p.getPrice());
         String cheaper = String.format("%.2f", p.getPrice() - p.getNewPrice());
         String variant = p.getVariant();
         if (variant.startsWith("-oneVariant "))
             variant = variant.substring(12);
-        message = """
-                <html>
-                <body>
-                <font size=4><b>Price Alert 🔔</b></font>
-                <br><br>
-                <font size=3>The product you have in your watchlist became cheaper by %s zł!</font>
-                <br><br>         
-                <font size=2><b>Name:</b> %s<br></font>
-                <font size=2><b>Description:</b> %s<br></font>
-                <font size=2><b>Variant:</b> %s<br></font>
-                <font size=2><b>Link:</b> %s<br></font>
-                <br>
-                <font size=2><b>Old Price</b>: %s zł<br></font>
-                <font size=2><b>New Price:</b> %s zł<br></font>
-                <br>       
-                <font size=2><i>Have a nice shopping!</i></font>
-                </body>
-                </html>
-                """.formatted(
+        message = Messages.email("notificationMessage", p.getLanguage()).formatted(
                 cheaper,
                 p.getName(),
                 p.getDescription(),
@@ -66,49 +49,24 @@ public class Email {
 
     private void setPriceAlertWhenOldPriceIsZero(ProductDTO p) {
         mime = true;
-        title = "[Price Alert] Zalando product became cheaper!";
+        title = Messages.email("notificationTitle", p.getLanguage());
         String newPrice = String.format("%.2f", p.getNewPrice());
         String variant = p.getVariant();
         if (variant.startsWith("-oneVariant "))
             variant = variant.substring(12);
-        message = """
-                <html>
-                <body>
-                <font size=4><b>Price Alert 🔔</b></font>
-                <br><br>
-                <font size=3>The product you have in your watchlist became cheaper!</font>
-                <br><br>         
-                <font size=2><b>Name:</b> %s<br></font>
-                <font size=2><b>Description:</b> %s<br></font>
-                <font size=2><b>Variant:</b> %s<br></font>
-                <font size=2><b>Link:</b> %s<br></font>
-                <br>
-                <font size=2><b>New Price</b>: %s zł<br></font>
-                <font size=2><b>Price Alert:</b> %s zł<br></font>
-                <br>       
-                <font size=2><i>Have a nice shopping!</i></font>
-                </body>
-                </html>
-                """.formatted(
+        message = Messages.email("notificationMessageWhenPriceZero", p.getLanguage()).formatted(
                 p.getName(),
                 p.getDescription(),
                 variant,
                 p.getLink(),
                 newPrice,
-                p.getPriceAlert()
-        );
+                p.getPriceAlert());
     }
 
     public void setVerificationMessageAndTitle(String token) {
         mime = true;
-        title = "[Verification] Email verification code";
-        message = """
-                <html>
-                <body>
-                <font size=3>Here is your verification code.</font><br><br>
-                <font size=3>Paste it into the chat with the bot:</font><br>
-                <font size=4><b>v-%s</b></font><br><br>
-                <font size=1><i>If you don't recognize this message, please ignore it.</i></font>"""
+        title = Messages.email("verificationTitle");
+        message = Messages.email("verificationMessage")
                 .formatted(token);
     }
 

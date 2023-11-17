@@ -9,7 +9,7 @@ import com.vicary.zalandoscraper.api_telegram.api_request.send.SendMessage;
 import com.vicary.zalandoscraper.entity.LinkRequestEntity;
 import com.vicary.zalandoscraper.exception.InvalidLinkException;
 import com.vicary.zalandoscraper.model.Product;
-import com.vicary.zalandoscraper.service.Scraper;
+import com.vicary.zalandoscraper.scraper.Scraper;
 import com.vicary.zalandoscraper.service.entity.LinkRequestService;
 import com.vicary.zalandoscraper.service.entity.ProductService;
 import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
@@ -25,7 +25,7 @@ import java.util.stream.IntStream;
 @RequiredArgsConstructor
 public class LinkResponse {
 
-    private final Scraper scraper = Scraper.getInstance();
+    private final Scraper scraper;
 
     private final LinkRequestService linkRequestService;
 

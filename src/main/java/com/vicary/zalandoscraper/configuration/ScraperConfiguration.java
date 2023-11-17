@@ -1,18 +1,14 @@
 package com.vicary.zalandoscraper.configuration;
 
-import org.openqa.selenium.chrome.ChromeOptions;
+import com.vicary.zalandoscraper.scraper.Scraper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class ScraperConfiguration {
-    private final ChromeOptions chromeOptions = new ChromeOptions();
 
     @Bean
-    public ChromeOptions getChromeOptions() {
-        chromeOptions.addArguments("--headless=new",
-                "--user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36",
-                "--remote-allow-origins=*");
-        return chromeOptions;
+    public Scraper getScraper() {
+        return new Scraper();
     }
 }

@@ -1,10 +1,12 @@
 package com.vicary.zalandoscraper.updater;
 
 import com.vicary.zalandoscraper.exception.TimeoutException;
-import com.vicary.zalandoscraper.service.Scraper;
+import com.vicary.zalandoscraper.scraper.Scraper;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,26 +15,20 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 
+@Component
 public class ProductUpdater {
 
     private final static Logger logger = LoggerFactory.getLogger(ProductUpdater.class);
     private long updatesTimeout;
     private int amountOfThreads;
-    private static ProductUpdater INSTANCE;
-    private final Scraper scraper = Scraper.getInstance();
     private final List<Future<?>> activeThreads = new ArrayList<>();
     private final AtomicInteger completedThreads = new AtomicInteger();
+    private final Scraper scraper;
 
-
-    private ProductUpdater() {
+    @Autowired
+    private ProductUpdater(Scraper scraper) {
+        this.scraper = scraper;
         setDefaultAmountOfThreads();
-    }
-
-    public static ProductUpdater getInstance() {
-        if (INSTANCE == null)
-            INSTANCE = new ProductUpdater();
-
-        return INSTANCE;
     }
 
 

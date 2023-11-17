@@ -1,13 +1,12 @@
 package com.vicary.zalandoscraper.service;
 
+import com.vicary.zalandoscraper.scraper.Scraper;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class ScraperSeleniumTest {

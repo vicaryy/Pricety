@@ -8,7 +8,7 @@ import com.vicary.zalandoscraper.entity.AwaitedMessageEntity;
 import com.vicary.zalandoscraper.entity.LinkRequestEntity;
 import com.vicary.zalandoscraper.exception.InvalidLinkException;
 import com.vicary.zalandoscraper.model.Product;
-import com.vicary.zalandoscraper.service.Scraper;
+import com.vicary.zalandoscraper.scraper.Scraper;
 import com.vicary.zalandoscraper.service.entity.*;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;
 import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
@@ -25,7 +25,7 @@ import java.util.ResourceBundle;
 @RequiredArgsConstructor
 public class ReplyMarkupResponse {
 
-    private final Scraper scraper = Scraper.getInstance();
+    private final Scraper scraper;
 
     private final LinkRequestService linkRequestService;
 
@@ -35,11 +35,7 @@ public class ReplyMarkupResponse {
 
     private final UserService userService;
 
-    private final UpdatesHistoryService updatesHistoryService;
-
-
     public void response(ActiveUser user) {
-
         String text = user.getText();
 
         if (text.startsWith("-l "))
@@ -181,7 +177,7 @@ public class ReplyMarkupResponse {
             return;
         }
 
-        ProductDisplay displayer = new ProductDisplay(productDTOList, Type.DELETE, user.getChatId());
+        ProductDisplayer displayer = new DeleteProductDisplay(productDTOList, user.getChatId());
         displayer.display();
     }
 
@@ -209,12 +205,12 @@ public class ReplyMarkupResponse {
         List<ProductDTO> productDTOList = productService.getAllProductsDtoByUserId(user.getUserId());
 
         if (productDTOList.isEmpty()) {
-            popupMessage("You don't have any products.");
+            popupMessage(Messages.other("dontHaveProducts"));
             displayMenu();
             return;
         }
 
-        ProductDisplay displayer = new ProductDisplay(productDTOList, Type.EDIT, user.getChatId());
+        ProductDisplayer displayer = new EditProductDisplay(productDTOList, user.getChatId());
         displayer.display();
     }
 
@@ -232,12 +228,12 @@ public class ReplyMarkupResponse {
         deletePreviousMessage();
 
         if (productDTOList.isEmpty()) {
-            popupMessage("You don't have any products.");
+            popupMessage(Messages.other("dontHaveProducts"));
             displayMenu();
             return;
         }
 
-        ProductDisplay displayer = new ProductDisplay(productDTOList, Type.ALL, user.getChatId());
+        ProductDisplayer displayer = new AllProductDisplay(productDTOList, user.getChatId());
         displayer.display();
     }
 
@@ -251,7 +247,7 @@ public class ReplyMarkupResponse {
             variant.append(arrayText[i]).append(" ");
 
         deletePreviousMessage();
-        int messageId = QuickSender.messageWithReturn(chatId, "Adding product...", false).getMessageId();
+        int messageId = QuickSender.messageWithReturn(chatId, Messages.other("adding"), false).getMessageId();
         QuickSender.chatAction(chatId, Action.TYPING);
 
         Product product = scraper.getProduct(link, variant.toString().trim());
@@ -259,20 +255,20 @@ public class ReplyMarkupResponse {
         QuickSender.deleteMessage(chatId, messageId);
 
         if (productService.existsByUserIdAndLinkAndVariant(chatId, product.getLink(), product.getVariant()))
-            throw new InvalidLinkException("You already have this product in your watchlist.", "User try to add same product.");
+            throw new InvalidLinkException(Messages.other("alreadyHave"), "User try to add same product.");
 
         if (productService.countByUserId(ActiveUser.get().getUserId()) > 9)
-            throw new InvalidLinkException("You cannot add more than 10 products.", "User try to add more than 10 products.");
+            throw new InvalidLinkException(Messages.other("productLimit"), "User try to add more than 10 products.");
 
         productService.saveProduct(product);
-        QuickSender.messageWithReturn(ActiveUser.get().getChatId(), "Product added successfully.", false);
+        QuickSender.messageWithReturn(ActiveUser.get().getChatId(), Messages.other("productAdded"), false);
     }
 
 
     private String getLink(String requestId) {
         LinkRequestEntity linkRequest = linkRequestService.findByRequestIdAndDelete(requestId);
         if (linkRequest == null)
-            throw new InvalidLinkException("This session expired.", "User '%s' session expired".formatted(ActiveUser.get().getUserId()));
+            throw new InvalidLinkException(Messages.other("sessionExpired"), "User '%s' session expired".formatted(ActiveUser.get().getUserId()));
 
         checkExpiration(linkRequest.getExpiration());
         return linkRequest.getLink();
@@ -280,7 +276,7 @@ public class ReplyMarkupResponse {
 
     private void checkExpiration(long expiration) {
         if (System.currentTimeMillis() > expiration)
-            throw new InvalidLinkException("This session expired.", "User '%s' session expired".formatted(ActiveUser.get().getUserId()));
+            throw new InvalidLinkException(Messages.other("sessionExpired"), "User '%s' session expired".formatted(ActiveUser.get().getUserId()));
     }
 
 

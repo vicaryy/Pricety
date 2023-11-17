@@ -37,7 +37,6 @@ public class InlineBlock {
 
     public static SendMessage getMenu() {
         ActiveUser user = ActiveUser.get();
-        String nick = user.getNick() != null ? user.getNick() : "";
         String language = Messages.menu("language");
 
         final InlineKeyboardButton allProducts = new InlineKeyboardButton(Messages.menu("allProducts"), "-allProducts");
@@ -56,13 +55,7 @@ public class InlineBlock {
                         List.of(exit),
                         List.of(changeLanguage)));
 
-        String menuMessage = """
-                *%s %s* 👋
-                                
-                %s""".formatted(
-                Messages.menu("hi"),
-                MarkdownV2.apply(nick).get(),
-                Messages.menu("how" + ThreadLocalRandom.current().nextInt(1, 10)));
+        String menuMessage = "*Menu* ⚙️\n\n" + Messages.menu("how" + ThreadLocalRandom.current().nextInt(1, 10));
 
         return SendMessage.builder()
                 .chatId(user.getUserId())

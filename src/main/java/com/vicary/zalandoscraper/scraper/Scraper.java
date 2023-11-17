@@ -1,4 +1,4 @@
-package com.vicary.zalandoscraper.service;
+package com.vicary.zalandoscraper.scraper;
 
 import com.microsoft.playwright.*;
 import com.microsoft.playwright.options.WaitUntilState;
@@ -18,29 +18,9 @@ public class Scraper {
 
     private final static Logger logger = LoggerFactory.getLogger(Scraper.class);
     private final Map<String, String> extraHeaders = Map.of("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36");
-    private final BrowserType.LaunchOptions launchOptions = new BrowserType.LaunchOptions();
+    private final BrowserType.LaunchOptions launchOptions = new DefaultLaunchOptions();
     private final Page.NavigateOptions navigateOptions = new Page.NavigateOptions().setWaitUntil(WaitUntilState.COMMIT);
-    private static Scraper INSTANCE;
 
-    private Scraper() {
-        launchOptions.setArgs(List.of(
-                "--no-sandbox",
-                "--disable-setuid-sandbox",
-                "--disable-dev-shm-usage",
-                "--disable-accelerated-2d-canvas",
-                "--no-first-run",
-                "--no-zygote",
-                "--single-process",
-                "--disable-gpu"
-        ));
-//        launchOptions.setHeadless(false);
-    }
-
-    public static Scraper getInstance() {
-        if (INSTANCE == null)
-            INSTANCE = new Scraper();
-        return INSTANCE;
-    }
 
     public void updateProducts(List<ProductDTO> DTOs) {
         try (Playwright playwright = Playwright.create()) {

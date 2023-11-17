@@ -31,5 +31,7 @@ public class ProductDTO {
 
     private String email;
 
+    private String language;
+
     private boolean notifyByEmail;
 }

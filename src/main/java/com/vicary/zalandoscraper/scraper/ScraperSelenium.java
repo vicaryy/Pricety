@@ -1,4 +1,4 @@
-package com.vicary.zalandoscraper.service;
+package com.vicary.zalandoscraper.scraper;
 
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
 import com.vicary.zalandoscraper.exception.InvalidLinkException;

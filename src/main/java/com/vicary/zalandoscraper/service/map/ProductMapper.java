@@ -46,6 +46,7 @@ public class ProductMapper {
                 .newPrice(product.getPrice())
                 .priceAlert(product.getPriceAlert())
                 .email(product.getUser().getEmail())
+                .language(product.getUser().getNationality())
                 .notifyByEmail(product.getUser().isNotifyByEmail() && product.getUser().isVerifiedEmail())
                 .build();
     }

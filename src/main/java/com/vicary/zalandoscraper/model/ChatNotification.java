@@ -1,6 +1,7 @@
 package com.vicary.zalandoscraper.model;
 
 import com.vicary.zalandoscraper.format.MarkdownV2;
+import com.vicary.zalandoscraper.messages.Messages;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,21 +31,7 @@ public class ChatNotification {
         String variant = p.getVariant();
         if (variant.startsWith("-oneVariant "))
             variant = variant.substring(12);
-        message = """
-                *Price Alert* 🔔
-                                
-                The product you have in your watchlist became cheaper by %s zł\\!
-                                
-                *Name*: %s
-                *Description*: %s
-                *Variant*: %s
-                *Link*: %s
-                                
-                *Old Price*: %s zł
-                *New Price*: %s zł
-                                
-                _Have a nice shopping\\!_
-                """.formatted(
+        message = Messages.chat("notificationMessage", p.getLanguage()).formatted(
                 MarkdownV2.apply(cheaper).get(),
                 MarkdownV2.apply(p.getName()).get(),
                 MarkdownV2.apply(p.getDescription()).get(),
@@ -60,21 +47,7 @@ public class ChatNotification {
         String variant = p.getVariant();
         if (variant.startsWith("-oneVariant "))
             variant = variant.substring(12);
-        message = """
-                *Price Alert* 🔔
-                                
-                The product you have in your watchlist became cheaper\\!
-                                
-                *Name*: %s
-                *Description*: %s
-                *Variant*: %s
-                *Link*: %s
-                                
-                *New Price*: %s zł
-                *Price Alert*: %s zł
-                                
-                _Have a nice shopping\\!_
-                """.formatted(
+        message = Messages.chat("notificationMessageWhenPriceZero", p.getLanguage()).formatted(
                 MarkdownV2.apply(p.getName()).get(),
                 MarkdownV2.apply(p.getDescription()).get(),
                 MarkdownV2.apply(variant).get(),

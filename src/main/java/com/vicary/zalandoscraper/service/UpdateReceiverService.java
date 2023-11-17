@@ -3,6 +3,7 @@ package com.vicary.zalandoscraper.service;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.microsoft.playwright.PlaywrightException;
+import com.vicary.zalandoscraper.messages.Messages;
 import com.vicary.zalandoscraper.thread_local.ActiveLanguage;
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
 import com.vicary.zalandoscraper.api_telegram.service.UpdateFetcher;
@@ -48,11 +49,13 @@ public class UpdateReceiverService implements UpdateReceiver {
     private final AwaitedMessageResponse awaitedMessageResponse;
 
     private final EmailVerificationResponse emailVerificationResponse;
-    private final ProductUpdater productUpdater = ProductUpdater.getInstance();
+
+    private final ProductUpdater productUpdater;
     private final UpdateFetcher updateFetcher = new UpdateFetcher(this);
 
     @Override
     public void receive(Update update) {
+        long time = System.currentTimeMillis();
         if (update.getMessage() == null && update.getCallbackQuery() == null) {
             logger.info("Got update without message.");
             return;
@@ -85,7 +88,7 @@ public class UpdateReceiverService implements UpdateReceiver {
                 linkResponse.response(text);
 
             else if (Pattern.isCommand(text))
-                commandResponse.response(text, chatId);
+                commandResponse.response(text, chatId, user.getNick());
 
             else if (Pattern.isEmailToken(text))
                 emailVerificationResponse.response(text);
@@ -97,15 +100,16 @@ public class UpdateReceiverService implements UpdateReceiver {
             QuickSender.message(chatId, ex.getMessage(), false);
         } catch (WebDriverException | PlaywrightException ex) {
             logger.error("Web Driver exception: " + ex.getMessage());
-            QuickSender.message(chatId, "Sorry but something goes wrong.", false);
+            QuickSender.message(chatId, Messages.other("somethingGoesWrong"), false);
         } catch (ZalandoScraperBotException ex) {
             logger.error(ex.getLoggerMessage());
             QuickSender.message(chatId, ex.getMessage(), false);
         } catch (Exception ex) {
             logger.error("Unexpected exception: " + ex.getMessage());
-            QuickSender.message(chatId, "Sorry but something goes wrong.", false);
+            QuickSender.message(chatId, Messages.other("somethingGoesWrong"), false);
             ex.printStackTrace();
         } finally {
+            System.out.println(System.currentTimeMillis() - time);
             activeRequestService.deleteByUserId(userId);
             ActiveUser.remove();
             ActiveLanguage.remove();
@@ -117,10 +121,7 @@ public class UpdateReceiverService implements UpdateReceiver {
     }
 
     private void handleProductUpdaterRunning(String userId) {
-        String message = """
-                        I am updating all the products right now\\.
-                         
-                        *Please try again in a moment*\\.""";
+        String message = Messages.other("updatingProducts");
         QuickSender.message(userId, message, true);
         throw new IllegalArgumentException("User '%s' interact with bot while product updater is running.".formatted(userId));
     }
