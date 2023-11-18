@@ -51,11 +51,12 @@ public class UpdateReceiverService implements UpdateReceiver {
     private final EmailVerificationResponse emailVerificationResponse;
 
     private final ProductUpdater productUpdater;
+
+    private final AdminResponse adminResponse;
     private final UpdateFetcher updateFetcher = new UpdateFetcher(this);
 
     @Override
     public void receive(Update update) {
-        long time = System.currentTimeMillis();
         if (update.getMessage() == null && update.getCallbackQuery() == null) {
             logger.info("Got update without message.");
             return;
@@ -63,7 +64,7 @@ public class UpdateReceiverService implements UpdateReceiver {
 
         ActiveUser user;
         try {
-           user = userAuthentication.authenticate(update);
+            user = userAuthentication.authenticate(update);
         } catch (ActiveUserException ignored) {
             return;
         }
@@ -77,6 +78,8 @@ public class UpdateReceiverService implements UpdateReceiver {
             if (isProductUpdaterRunning())
                 handleProductUpdaterRunning(userId);
 
+            if (user.isAdmin())
+                adminResponse.response(text, chatId);
 
             if (Pattern.isAwaitedMessage(user.isAwaitedMessage()))
                 awaitedMessageResponse.response();
@@ -92,6 +95,7 @@ public class UpdateReceiverService implements UpdateReceiver {
 
             else if (Pattern.isEmailToken(text))
                 emailVerificationResponse.response(text);
+
 
         } catch (IllegalArgumentException ex) {
             logger.warn(ex.getMessage());
@@ -109,7 +113,6 @@ public class UpdateReceiverService implements UpdateReceiver {
             QuickSender.message(chatId, Messages.other("somethingGoesWrong"), false);
             ex.printStackTrace();
         } finally {
-            System.out.println(System.currentTimeMillis() - time);
             activeRequestService.deleteByUserId(userId);
             ActiveUser.remove();
             ActiveLanguage.remove();

@@ -397,7 +397,7 @@ public class RequestService {
         return (Message) response.getResult();
     }
 
-    private <RequestList extends ApiRequestList<? extends ReturnObject>, ReturnObject> List<ReturnObject> sendRequestList(RequestList request) throws WebClientRequestException, WebClientResponseException {
+    public <RequestList extends ApiRequestList<? extends ReturnObject>, ReturnObject> List<ReturnObject> sendRequestList(RequestList request) throws WebClientRequestException, WebClientResponseException {
         request.checkValidation();
         String url = getRequestURL() + request.getEndPoint();
 

@@ -1,5 +1,6 @@
 package com.vicary.zalandoscraper.service.response;
 
+import com.vicary.zalandoscraper.messages.Messages;
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
 import com.vicary.zalandoscraper.exception.IllegalInputException;
 import com.vicary.zalandoscraper.service.entity.EmailVerificationService;
@@ -25,11 +26,11 @@ public class EmailVerificationResponse {
             return;
 
         if (!emailVerificationService.existsByUserIdAndToken(user.getUserId(), token))
-            throw new IllegalInputException("Invalid email verification code.", "User '%s' type wrong email verification code.".formatted(user.getUserId()));
+            throw new IllegalInputException(Messages.other("invalidEmailVerificationCode"), "User '%s' type wrong email verification code.".formatted(user.getUserId()));
 
         userService.setVerifiedEmail(user.getUserId(), true);
         emailVerificationService.deleteByToken(token);
 
-        QuickSender.message(user.getChatId(), "Email verified successfully.", false);
+        QuickSender.message(user.getChatId(), Messages.other("emailVerifiedSuccessfully"), false);
     }
 }

@@ -1,5 +1,7 @@
 package com.vicary.zalandoscraper;
 
+import com.vicary.zalandoscraper.messages.Messages;
+
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -21,17 +23,17 @@ public class PrettyTime {
         String when = "";
 
         if (minutes == 0)
-            when = "a moment";
+            when = Messages.pretty("moment");
 
         else if (hours == 0 && days == 0)
-            when = String.format("%d %s", minutes, minutes < 2 ? "minute" : "minutes");
+            when = String.format("%d %s", minutes, minutes < 2 ? Messages.pretty("minute") : Messages.pretty("minutes"));
 
         else if (hours != 0 && days == 0)
-            when = String.format("%d %s", hours, hours < 2 ? "hour" : "hours");
+            when = String.format("%d %s", hours, hours < 2 ? Messages.pretty("hour") : Messages.pretty("hours"));
 
         else
-            when = String.format("%d %s", days, days < 2 ? "day" : "days");
+            when = String.format("%d %s", days, days < 2 ? Messages.pretty("day") : Messages.pretty("days"));
 
-        return when + " ago";
+        return "_" + when + Messages.pretty("ago") + "_";
     }
 }

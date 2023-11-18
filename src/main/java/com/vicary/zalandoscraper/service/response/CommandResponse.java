@@ -1,6 +1,8 @@
 package com.vicary.zalandoscraper.service.response;
 
+import com.vicary.zalandoscraper.PrettyTime;
 import com.vicary.zalandoscraper.messages.Messages;
+import com.vicary.zalandoscraper.service.entity.UpdatesHistoryService;
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
 import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +11,10 @@ import org.springframework.stereotype.Component;
 import com.vicary.zalandoscraper.format.MarkdownV2;
 
 @Component
+@RequiredArgsConstructor
 public class CommandResponse {
+
+    private final UpdatesHistoryService updatesHistoryService;
 
     private final static String START = """
             *Cześć %s* 👋
@@ -90,7 +95,8 @@ public class CommandResponse {
     }
 
     private void sendUpdate(String chatId) {
-        QuickSender.message(chatId, Messages.command("update"), true);
+        String message = Messages.command("update").formatted(PrettyTime.get(updatesHistoryService.getLastUpdateTime()));
+        QuickSender.message(chatId, message, true);
     }
 
     private void sendLimits(String chatId) {

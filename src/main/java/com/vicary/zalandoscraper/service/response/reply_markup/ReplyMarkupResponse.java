@@ -172,7 +172,7 @@ public class ReplyMarkupResponse {
         deletePreviousMessage();
 
         if (productDTOList.isEmpty()) {
-            popupMessage(Messages.other("dontHaveProducts"));
+            popupMessage(Messages.other("dontHaveProduct"));
             displayMenu();
             return;
         }
@@ -205,7 +205,7 @@ public class ReplyMarkupResponse {
         List<ProductDTO> productDTOList = productService.getAllProductsDtoByUserId(user.getUserId());
 
         if (productDTOList.isEmpty()) {
-            popupMessage(Messages.other("dontHaveProducts"));
+            popupMessage(Messages.other("dontHaveProduct"));
             displayMenu();
             return;
         }
@@ -228,7 +228,7 @@ public class ReplyMarkupResponse {
         deletePreviousMessage();
 
         if (productDTOList.isEmpty()) {
-            popupMessage(Messages.other("dontHaveProducts"));
+            popupMessage(Messages.other("dontHaveProduct"));
             displayMenu();
             return;
         }

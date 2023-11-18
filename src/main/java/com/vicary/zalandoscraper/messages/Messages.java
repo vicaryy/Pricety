@@ -16,6 +16,7 @@ public class Messages {
     private final static String email = "email-";
     private final static String chat = "chat-";
     private final static String command = "command-";
+    private final static String pretty = "pretty-";
 
 
     public static String menu(String key) {
@@ -60,6 +61,10 @@ public class Messages {
 
     public static String command(String key) {
         return ActiveLanguage.get().getResourceBundle().getString(command + key);
+    }
+
+    public static String pretty(String key) {
+        return ActiveLanguage.get().getResourceBundle().getString(pretty + key);
     }
 
 }

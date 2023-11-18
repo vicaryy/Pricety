@@ -5,6 +5,7 @@ import com.vicary.zalandoscraper.model.Email;
 import com.vicary.zalandoscraper.repository.NotificationEmailRepository;
 import com.vicary.zalandoscraper.service.map.EmailMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.stereotype.Service;
 
 @Service
