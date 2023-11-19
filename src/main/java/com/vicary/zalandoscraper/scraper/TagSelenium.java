@@ -1,4 +1,4 @@
-package com.vicary.zalandoscraper.tag;
+package com.vicary.zalandoscraper.scraper;
 
 @Deprecated
 public enum TagSelenium {

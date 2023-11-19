@@ -4,7 +4,6 @@ import com.vicary.zalandoscraper.thread_local.ActiveUser;
 import com.vicary.zalandoscraper.exception.InvalidLinkException;
 import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;
-import com.vicary.zalandoscraper.tag.TagSelenium;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.openqa.selenium.*;

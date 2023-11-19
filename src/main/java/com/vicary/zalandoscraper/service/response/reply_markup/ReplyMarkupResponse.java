@@ -8,7 +8,7 @@ import com.vicary.zalandoscraper.entity.AwaitedMessageEntity;
 import com.vicary.zalandoscraper.entity.LinkRequestEntity;
 import com.vicary.zalandoscraper.exception.InvalidLinkException;
 import com.vicary.zalandoscraper.model.Product;
-import com.vicary.zalandoscraper.scraper.Scraper;
+import com.vicary.zalandoscraper.scraper.ZalandoScraper;
 import com.vicary.zalandoscraper.service.entity.*;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;
 import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
@@ -25,7 +25,7 @@ import java.util.ResourceBundle;
 @RequiredArgsConstructor
 public class ReplyMarkupResponse {
 
-    private final Scraper scraper;
+    private final ZalandoScraper scraper;
 
     private final LinkRequestService linkRequestService;
 

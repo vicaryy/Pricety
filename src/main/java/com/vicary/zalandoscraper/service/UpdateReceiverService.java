@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.microsoft.playwright.PlaywrightException;
 import com.vicary.zalandoscraper.messages.Messages;
+import com.vicary.zalandoscraper.scraper.HebeScraper;
+import com.vicary.zalandoscraper.scraper.ZalandoScraper;
 import com.vicary.zalandoscraper.thread_local.ActiveLanguage;
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
 import com.vicary.zalandoscraper.api_telegram.service.UpdateFetcher;
@@ -78,23 +80,27 @@ public class UpdateReceiverService implements UpdateReceiver {
             if (isProductUpdaterRunning())
                 handleProductUpdaterRunning(userId);
 
+
             if (user.isAdmin())
                 adminResponse.response(text, chatId);
 
-            if (Pattern.isAwaitedMessage(user.isAwaitedMessage()))
+            if (user.isAwaitedMessage())
                 awaitedMessageResponse.response();
 
             else if (Pattern.isReplyMarkup(update))
                 replyMarkupResponse.response(user);
-
-            else if (Pattern.isZalandoURL(text))
-                linkResponse.response(text);
 
             else if (Pattern.isCommand(text))
                 commandResponse.response(text, chatId, user.getNick());
 
             else if (Pattern.isEmailToken(text))
                 emailVerificationResponse.response(text);
+
+            else if (Pattern.isZalandoURL(text))
+                linkResponse.response(user, new ZalandoScraper());
+
+            else if (Pattern.isHebeURL(text))
+                linkResponse.response(user, new HebeScraper());
 
 
         } catch (IllegalArgumentException ex) {

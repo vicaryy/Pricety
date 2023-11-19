@@ -1,7 +1,7 @@
 package com.vicary.zalandoscraper.updater;
 
 import com.vicary.zalandoscraper.exception.TimeoutException;
-import com.vicary.zalandoscraper.scraper.Scraper;
+import com.vicary.zalandoscraper.scraper.ZalandoScraper;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,10 +23,10 @@ public class ProductUpdater {
     private int amountOfThreads;
     private final List<Future<?>> activeThreads = new ArrayList<>();
     private final AtomicInteger completedThreads = new AtomicInteger();
-    private final Scraper scraper;
+    private final ZalandoScraper scraper;
 
     @Autowired
-    private ProductUpdater(Scraper scraper) {
+    private ProductUpdater(ZalandoScraper scraper) {
         this.scraper = scraper;
         setDefaultAmountOfThreads();
     }

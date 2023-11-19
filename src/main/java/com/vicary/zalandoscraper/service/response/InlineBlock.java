@@ -168,6 +168,34 @@ public class InlineBlock {
 
         return new InlineKeyboardMarkup(listOfListsOfButtons);
     }
+
+    public static InlineKeyboardMarkup getVariantChoice(List<String> variants, String requestId) {
+        String command = "-l " + requestId + " ";
+        List<List<InlineKeyboardButton>> listOfListsOfButtons = new ArrayList<>();
+        List<InlineKeyboardButton> listOfButtons = new ArrayList<>();
+        for (int i = 0; i < variants.size(); i++) {
+
+            listOfButtons.add(InlineKeyboardButton.builder()
+                    .text(variants.get(i))
+                    .callbackData(command + variants.get(i))
+                    .build());
+
+            if (i == variants.size() - 1) {
+                listOfListsOfButtons.add(listOfButtons);
+            }
+
+            if (listOfButtons.size() == 3) {
+                List<InlineKeyboardButton> threeButtons = new ArrayList<>();
+                for (int k = 0; k < 3; k++)
+                    threeButtons.add(listOfButtons.get(k));
+
+                listOfListsOfButtons.add(threeButtons);
+                listOfButtons.clear();
+            }
+        }
+
+        return new InlineKeyboardMarkup(listOfListsOfButtons);
+    }
 }
 
 

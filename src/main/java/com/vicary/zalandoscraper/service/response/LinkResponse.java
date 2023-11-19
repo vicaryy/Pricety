@@ -1,120 +1,74 @@
 package com.vicary.zalandoscraper.service.response;
 
 import com.vicary.zalandoscraper.messages.Messages;
+import com.vicary.zalandoscraper.scraper.Scraper;
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
 import com.vicary.zalandoscraper.api_telegram.api_object.Action;
-import com.vicary.zalandoscraper.api_telegram.api_object.keyboard.InlineKeyboardButton;
-import com.vicary.zalandoscraper.api_telegram.api_object.keyboard.InlineKeyboardMarkup;
 import com.vicary.zalandoscraper.api_telegram.api_request.send.SendMessage;
-import com.vicary.zalandoscraper.entity.LinkRequestEntity;
 import com.vicary.zalandoscraper.exception.InvalidLinkException;
 import com.vicary.zalandoscraper.model.Product;
-import com.vicary.zalandoscraper.scraper.Scraper;
 import com.vicary.zalandoscraper.service.entity.LinkRequestService;
 import com.vicary.zalandoscraper.service.entity.ProductService;
 import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
 public class LinkResponse {
 
-    private final Scraper scraper;
-
     private final LinkRequestService linkRequestService;
 
     private final ProductService productService;
 
-    public void response(String link) {
-        String chatId = ActiveUser.get().getChatId();
-        int messageId = QuickSender.messageWithReturn(chatId, Messages.other("processing"), false).getMessageId();
-        QuickSender.chatAction(chatId, Action.TYPING);
-        ActiveUser.get().setMessageId(messageId);
+    public void response(ActiveUser user, Scraper scraper) {
+        String link = user.getText();
+        int messageId = QuickSender.messageWithReturn(user.getChatId(), Messages.other("processing"), false).getMessageId();
+        QuickSender.chatAction(user.getChatId(), Action.TYPING);
 
         List<String> variants = scraper.getAllVariants(link);
 
-        if (variants.size() == 1 && variants.getFirst().contains("-oneVariant")) {
-            addProduct(link, variants.getFirst());
+        if (isItemOneVariant(variants)) {
+            getAndSaveOneVariantProduct(link, variants.get(0), scraper, user.getUserId());
+            QuickSender.deleteMessage(user.getChatId(), messageId);
+            QuickSender.message(user.getUserId(), Messages.other("productAdded"), false);
         } else {
-            sendVariantMessage(variants);
+            String requestId = linkRequestService.generateAndSaveRequest(link);
+            sendVariantMessage(variants, requestId, user.getUserId());
+            QuickSender.deleteMessage(user.getChatId(), messageId);
         }
     }
 
 
-    public void addProduct(String link, String oneVariant) {
-        Product product = scraper.getProduct(link, oneVariant);
-        QuickSender.deleteMessage(ActiveUser.get().getChatId(), ActiveUser.get().getMessageId());
+    private void getAndSaveOneVariantProduct(String link, String variant, Scraper scraper, String userId) {
+        Product product = scraper.getProduct(link, variant);
 
-        if (productService.existsByUserIdAndLinkAndVariant(ActiveUser.get().getUserId(), product.getLink(), product.getVariant()))
-            throw new InvalidLinkException(Messages.other("alreadyHave"), "User try to add same product.");
-
-        if (productService.countByUserId(ActiveUser.get().getUserId()) > 9)
-            throw new InvalidLinkException(Messages.other("productLimit"), "User try to add more than 10 products.");
+        checkProductValidation(product, userId);
 
         productService.saveProduct(product);
-        QuickSender.message(ActiveUser.get().getChatId(), Messages.other("productAdded"), false);
     }
 
-    public void sendVariantMessage(List<String> variants) {
-        String requestId = generateRequestId();
-        addLinkRequestToRepository(requestId);
-        String command = "-l " + requestId + " ";
+    private void checkProductValidation(Product product, String userId) {
+        if (productService.existsByUserIdAndLinkAndVariant(userId, product.getLink(), product.getVariant()))
+            throw new InvalidLinkException(Messages.other("alreadyHave"), "User try to add same product.");
 
-        List<List<InlineKeyboardButton>> listOfListsOfButtons = new ArrayList<>();
-        List<InlineKeyboardButton> listOfButtons = new ArrayList<>();
-        for (int i = 0; i < variants.size(); i++) {
+        if (productService.countByUserId(userId) > 9)
+            throw new InvalidLinkException(Messages.other("productLimit"), "User try to add more than 10 products.");
+    }
 
-            listOfButtons.add(InlineKeyboardButton.builder()
-                    .text(variants.get(i))
-                    .callbackData(command + variants.get(i))
-                    .build());
-
-            if (i == variants.size() - 1) {
-                listOfListsOfButtons.add(listOfButtons);
-            }
-
-            if (listOfButtons.size() == 3) {
-                List<InlineKeyboardButton> threeButtons = new ArrayList<>();
-                for (int k = 0; k < 3; k++)
-                    threeButtons.add(listOfButtons.get(k));
-
-                listOfListsOfButtons.add(threeButtons);
-                listOfButtons.clear();
-            }
-        }
-
-        InlineKeyboardMarkup replyMarkup = new InlineKeyboardMarkup(listOfListsOfButtons);
+    private void sendVariantMessage(List<String> variants, String requestId, String userId) {
         SendMessage sendMessage = SendMessage.builder()
-                .chatId(ActiveUser.get().getChatId())
+                .chatId(userId)
                 .text(Messages.other("selectVariant"))
-                .replyMarkup(replyMarkup)
+                .replyMarkup(InlineBlock.getVariantChoice(variants, requestId))
                 .build();
 
-        QuickSender.deleteMessage(ActiveUser.get().getChatId(), ActiveUser.get().getMessageId());
         QuickSender.message(sendMessage);
     }
 
-    public void addLinkRequestToRepository(String requestId) {
-        long fiveMinutes = 1000 * 60 * 5;
-        ActiveUser activeUser = ActiveUser.get();
-        LinkRequestEntity entity = LinkRequestEntity.builder()
-                .requestId(requestId)
-                .link(activeUser.getText())
-                .expiration(System.currentTimeMillis() + fiveMinutes)
-                .build();
-        linkRequestService.saveRequest(entity);
-    }
-
-    public String generateRequestId() {
-        StringBuilder sb = new StringBuilder();
-        IntStream intStream = ThreadLocalRandom.current().ints(10, 0, 10);
-        intStream.forEach(sb::append);
-        return sb.toString();
+    private boolean isItemOneVariant(List<String> variants) {
+        return variants.size() == 1 && variants.get(0).contains("-oneVariant");
     }
 }

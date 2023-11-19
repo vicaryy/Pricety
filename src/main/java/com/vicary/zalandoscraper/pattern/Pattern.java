@@ -13,6 +13,10 @@ public class Pattern {
         return text.startsWith("https://www.zalando.pl/") || text.startsWith("https://zalando.pl/");
     }
 
+    public static boolean isHebeURL(String text) {
+        return text.startsWith("https://www.hebe.pl/") || text.startsWith("https://hebe.pl/");
+    }
+
     public static boolean isZalandoURLWithPrefix(String text) {
         String[] arrayText = text.split(" ");
         return arrayText[arrayText.length - 1].startsWith("https://www.zalando.pl/");
@@ -33,10 +37,6 @@ public class Pattern {
 
     public static String getDatePattern() {
         return "yyyy-MM-dd HH:mm:ss";
-    }
-
-    public static boolean isAwaitedMessage(boolean awaitedMessage) {
-        return awaitedMessage;
     }
 
     public static boolean isEmail(String text) {

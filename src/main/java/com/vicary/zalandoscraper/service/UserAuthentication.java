@@ -55,6 +55,7 @@ public class UserAuthentication {
         String text = update.getCallbackQuery() == null
                 ? update.getMessage().getText()
                 : update.getCallbackQuery().getData();
+
         if (Pattern.isZalandoURLWithPrefix(text))
             text = Pattern.removeZalandoPrefix(text);
 
