@@ -11,6 +11,8 @@ import com.vicary.zalandoscraper.service.entity.LinkRequestService;
 import com.vicary.zalandoscraper.service.entity.ProductService;
 import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,6 +20,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class LinkResponse {
+    private final static Logger logger = LoggerFactory.getLogger(LinkResponse.class);
 
     private final LinkRequestService linkRequestService;
 
@@ -52,10 +55,10 @@ public class LinkResponse {
 
     private void checkProductValidation(Product product, String userId) {
         if (productService.existsByUserIdAndLinkAndVariant(userId, product.getLink(), product.getVariant()))
-            throw new InvalidLinkException(Messages.other("alreadyHave"), "User try to add same product.");
+            throw new InvalidLinkException(Messages.other("alreadyHave"), "User %s try to add same product.".formatted(userId));
 
         if (productService.countByUserId(userId) > 9)
-            throw new InvalidLinkException(Messages.other("productLimit"), "User try to add more than 10 products.");
+            throw new InvalidLinkException(Messages.other("productLimit"), "User %s try to add more than 10 products.".formatted(userId));
     }
 
     private void sendVariantMessage(List<String> variants, String requestId, String userId) {

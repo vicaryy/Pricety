@@ -2,6 +2,7 @@ package com.vicary.zalandoscraper.scraper;
 
 import com.microsoft.playwright.*;
 import com.microsoft.playwright.options.WaitUntilState;
+import com.vicary.zalandoscraper.messages.Messages;
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
 import com.vicary.zalandoscraper.exception.InvalidLinkException;
 import com.vicary.zalandoscraper.model.Product;
@@ -90,51 +91,51 @@ public class ZalandoScraper implements Scraper {
     @Override
     public Product getProduct(String link, String variant) {
         try (Playwright playwright = Playwright.create()) {
-            try (Browser browser = playwright.chromium().launch(launchOptions)) {
-                Page page = browser.newPage();
-                page.setDefaultTimeout(10000);
-                page.setExtraHTTPHeaders(extraHeaders);
-                page.navigate(link);
+            Browser browser = playwright.chromium().launch();
+            Page page = browser.newPage();
+            page.setDefaultTimeout(10000);
+            page.setExtraHTTPHeaders(extraHeaders);
+            page.navigate(link);
 
-                try {
-                    Product product = Product.builder()
-                            .name(getName(page))
-                            .description(getDescription(page))
-                            .price(0)
-                            .variant(variant)
-                            .link(link)
-                            .build();
+            try {
+                Product product = Product.builder()
+                        .name(getName(page))
+                        .description(getDescription(page))
+                        .price(0)
+                        .variant(variant)
+                        .link(page.url())
+                        .build();
 
-                    if (isItemSoldOut(page))
-                        return product;
-
-                    if (variant.startsWith("-oneVariant")) {
-                        product.setPrice(getPrice(page));
-                        return product;
-                    }
-
-                    if (isVariantAlreadyChosen(page, variant)) {
-                        product.setPrice(getPrice(page));
-                        return product;
-                    }
-
-                    clickSizeButton(page);
-
-                    List<Locator> availableVariantsAsLocators = getAvailableVariantsAsLocators(page);
-
-                    if (!clickAvailableVariant(availableVariantsAsLocators, variant))
-                        return product;
-
-                    product.setPrice(getPrice(page));
-
+                if (isItemSoldOut(page))
                     return product;
 
-                } catch (PlaywrightException ex) {
-                    return getProductWithCookiesClicks(page, link, variant);
+                if (variant.startsWith("-oneVariant")) {
+                    product.setPrice(getPrice(page));
+                    return product;
                 }
+
+                if (isVariantAlreadyChosen(page, variant)) {
+                    product.setPrice(getPrice(page));
+                    return product;
+                }
+
+                clickSizeButton(page);
+
+                List<Locator> availableVariantsAsLocators = getAvailableVariantsAsLocators(page);
+
+                if (!clickAvailableVariant(availableVariantsAsLocators, variant))
+                    return product;
+
+                product.setPrice(getPrice(page));
+
+                return product;
+
+            } catch (PlaywrightException ex) {
+                return getProductWithCookiesClicks(page, link, variant);
             }
         }
     }
+
 
     private Product getProductWithCookiesClicks(Page page, String link, String variant) {
         clickCookiesButton(page);
@@ -176,7 +177,7 @@ public class ZalandoScraper implements Scraper {
     @Override
     public List<String> getAllVariants(String link) {
         try (Playwright playwright = Playwright.create()) {
-            try (Browser browser = playwright.chromium().launch(launchOptions)) {
+            try (Browser browser = playwright.chromium().launch()) {
                 Page page = browser.newPage();
                 page.setDefaultTimeout(10000);
                 page.setExtraHTTPHeaders(extraHeaders);
@@ -184,7 +185,7 @@ public class ZalandoScraper implements Scraper {
 
                 try {
                     if (!isLinkValid(page))
-                        throw new InvalidLinkException("It seems your link is incorrect, please check it and try again.", "User %s specified wrong link: %s".formatted(ActiveUser.get().getUserId(), ActiveUser.get().getText()));
+                        throw new InvalidLinkException(Messages.scraper("invalidLink"), "User %s specified wrong link: %s".formatted(ActiveUser.get().getUserId(), ActiveUser.get().getText()));
 
                     if (isItemOneVariant(page)) {
                         return List.of("-oneVariant " + getOneVariantName(page));
@@ -199,7 +200,7 @@ public class ZalandoScraper implements Scraper {
                     clickCookiesButton(page);
 
                     if (!isLinkValid(page))
-                        throw new InvalidLinkException("It seems your link is incorrect, please check it and try again.", "User %s specified wrong link: %s".formatted(ActiveUser.get().getUserId(), ActiveUser.get().getText()));
+                        throw new InvalidLinkException(Messages.scraper("invalidLink"), "User %s specified wrong link: %s".formatted(ActiveUser.get().getUserId(), ActiveUser.get().getText()));
 
                     if (isItemOneVariant(page)) {
                         return List.of("-oneVariant " + getOneVariantName(page));

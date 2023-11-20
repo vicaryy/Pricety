@@ -3,42 +3,49 @@ package com.vicary.zalandoscraper.updater;
 import com.vicary.zalandoscraper.BrowserType;
 import com.vicary.zalandoscraper.TerminalExecutor;
 import com.vicary.zalandoscraper.exception.TimeoutException;
+import com.vicary.zalandoscraper.scraper.HebeScraper;
 import com.vicary.zalandoscraper.scraper.Scraper;
+import com.vicary.zalandoscraper.scraper.ZalandoScraper;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;
 import com.vicary.zalandoscraper.service.entity.ProductService;
 import com.vicary.zalandoscraper.service.entity.UpdatesHistoryService;
 import com.vicary.zalandoscraper.service.map.ProductMapper;
 import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
-@RequiredArgsConstructor
 public class AutoUpdater implements Runnable {
 
     private final static Logger logger = LoggerFactory.getLogger(AutoUpdater.class);
-
-    private final ProductUpdater productUpdater;
-
-    private final ProductService productService;
-
-    private final UpdatesHistoryService updatesHistoryService;
-
-    private final ProductMapper productMapper;
-
-    private final NotificationManager notificationManager;
-    private final Thread updaterThread = new Thread(this);
     private final static int DELAY_BEFORE_START = 5000;   // 5 seconds
     private final static int DELAY_BETWEEN_UPDATES = 1000 * 60 * 60; // 1 hour
+    private static boolean isActive;
+    private final ProductService productService;
+    private final UpdatesHistoryService updatesHistoryService;
+    private final ProductMapper productMapper;
+    private final NotificationManager notificationManager;
+    private final Thread updaterThread = new Thread(this);
+    private final Map<String, Scraper> scraperMap = new HashMap<>();
 
+    @Autowired
+    public AutoUpdater(ProductService productService, UpdatesHistoryService updatesHistoryService, ProductMapper productMapper, NotificationManager notificationManager, ZalandoScraper zalandoScraper, HebeScraper hebeScraper) {
+        this.productService = productService;
+        this.updatesHistoryService = updatesHistoryService;
+        this.productMapper = productMapper;
+        this.notificationManager = notificationManager;
 
-    @PostConstruct
-    private void starter() {
-//        updaterThread.start();
+        scraperMap.put("zalando.pl", zalandoScraper);
+        scraperMap.put("hebe.pl", hebeScraper);
+
+        updaterThread.start();
     }
 
     @Override
@@ -47,8 +54,10 @@ public class AutoUpdater implements Runnable {
             sleep(DELAY_BEFORE_START);
 
             while (!Thread.currentThread().isInterrupted()) {
+                isActive = true;
                 update();
                 sleep(DELAY_BETWEEN_UPDATES);
+                isActive = false;
             }
         } catch (Exception ex) {
             logger.error("[Auto Updater] Error: " + ex.getMessage());
@@ -59,14 +68,14 @@ public class AutoUpdater implements Runnable {
     }
 
     private void update() {
-        List<ProductDTO> products = productService.getAllProductsDto();
+        List<ProductDTO> products = productService.getAllProductsDtoSortById();
 
         if (products.isEmpty()) {
             logger.info("[Auto Updater] Tried to update but there is no products!");
             return;
         }
 
-        updateProducts(products);
+        updateProducts(splitListIntoScrapers(products));
 
         updateProductsPriceInRepository(products);
 
@@ -83,13 +92,39 @@ public class AutoUpdater implements Runnable {
         }
     }
 
-    private void updateProducts(List<ProductDTO> productDTOS) {
-        try {
-            productUpdater.update(productDTOS);
-        } catch (TimeoutException ex) {
-            logger.error("[Auto Updater] Timeout in updating products but continuing auto update process.");
-            logger.error("[Auto Updater] Set Scraper as bugged - headless mode OFF.");
-            TerminalExecutor.shutdownBrowser(BrowserType.Chromium);
+    private List<List<ProductDTO>> splitListIntoScrapers(List<ProductDTO> DTOs) {
+        Map<String, List<ProductDTO>> serviceMap = new HashMap<>();
+
+        for (ProductDTO dto : DTOs) {
+            String service = dto.getServiceName();
+
+            if (!serviceMap.containsKey(service)) {
+                serviceMap.put(service, new ArrayList<>());
+            }
+
+            serviceMap.get(service).add(dto);
+        }
+
+        return new ArrayList<>(serviceMap.values());
+    }
+
+    private void updateProducts(List<List<ProductDTO>> productDTOS) {
+        for (List<ProductDTO> DTOs : productDTOS) {
+            String serviceName = DTOs.get(0).getServiceName();
+            Scraper scraper = scraperMap.get(serviceName);
+
+            long startingTime = System.currentTimeMillis();
+            logger.info("[Product Updater] Starting updating '{}' products, service {}", DTOs.size(), serviceName);
+            ProductUpdater updater = new ProductUpdater(scraper, DTOs);
+            try {
+                updater.update();
+            } catch (TimeoutException ex) {
+                logger.error("[Auto Updater] Timeout in updating products but continuing auto update process.");
+                logger.error("[Auto Updater] Set Scraper as bugged - headless mode OFF.");
+                scraper.setBugged(true);
+                TerminalExecutor.shutdownBrowser(BrowserType.Chromium);
+            }
+            logger.info("[Product Updater] Products updated successfully, it takes {} seconds", (System.currentTimeMillis() - startingTime) / 1000);
         }
     }
 
@@ -103,6 +138,10 @@ public class AutoUpdater implements Runnable {
 
     private void updateProductsPriceInRepository(List<ProductDTO> updatedDTOs) {
         productService.updateProductPrices(updatedDTOs);
+    }
+
+    public static boolean isActive() {
+        return isActive;
     }
 }
 

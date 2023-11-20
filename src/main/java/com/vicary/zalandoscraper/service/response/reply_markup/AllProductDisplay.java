@@ -103,7 +103,7 @@ public class AllProductDisplay implements ProductDisplayer {
                         Messages.allProducts("description"),
                         MarkdownV2.apply(dto.getDescription()).get(),
                         Messages.allProducts("link"),
-                        MarkdownV2.apply(dto.getLink()).toZalandoURL().get(),
+                        MarkdownV2.apply(dto.getLink()).toURL().get(),
                         Messages.allProducts("variant"),
                         MarkdownV2.apply(variant).get(),
                         Messages.allProducts("price"),
@@ -122,7 +122,7 @@ public class AllProductDisplay implements ProductDisplayer {
 
     private String getFormattedVariant(String v) {
         if (v.startsWith("-oneVariant"))
-            v = v.substring(12);
+            v = v.substring(11).trim();
         return v;
     }
 

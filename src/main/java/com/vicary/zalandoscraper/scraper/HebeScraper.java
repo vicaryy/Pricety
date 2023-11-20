@@ -2,8 +2,12 @@ package com.vicary.zalandoscraper.scraper;
 
 import com.microsoft.playwright.*;
 import com.microsoft.playwright.options.WaitUntilState;
+import com.vicary.zalandoscraper.exception.InvalidLinkException;
+import com.vicary.zalandoscraper.messages.Messages;
 import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;
+import com.vicary.zalandoscraper.thread_local.ActiveUser;
+import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,59 +22,157 @@ public class HebeScraper implements Scraper {
 
     @Override
     public void updateProducts(List<ProductDTO> DTOs) {
-//        try (Playwright playwright = Playwright.create()) {
-//
-//            try (BrowserContext browser = playwright.chromium().launch(launchOptions).newContext()) {
-//                browser.newPage();
-//                browser.setDefaultTimeout(4000);
-//
-//                for (int i = 0; i < DTOs.size(); i++) {
-//                    Page newPage = browser.newPage();
-//                    newPage.setExtraHTTPHeaders(extraHeaders);
-//                    newPage.navigate(DTOs.get(i).getLink(), navigateOptions);
-//                    newPage.setDefaultTimeout(4000);
-//
-//                    if (i == 0)
-//                        clickCookiesButton(newPage);
-//
-//                    updateProduct(newPage, DTOs.get(i));
-//                }
-//            }
-//        }
+        try (Playwright playwright = Playwright.create()) {
+
+            try (BrowserContext browser = playwright.chromium().launch(launchOptions).newContext()) {
+                browser.newPage();
+                browser.setDefaultTimeout(4000);
+
+                for (int i = 0; i < DTOs.size(); i++) {
+                    Page newPage = browser.newPage();
+                    newPage.setExtraHTTPHeaders(extraHeaders);
+                    newPage.navigate(DTOs.get(i).getLink(), navigateOptions);
+                    newPage.setDefaultTimeout(4000);
+
+                    updateProduct(newPage, DTOs.get(i));
+                }
+            }
+        }
+    }
+
+    private void updateProduct(Page page, ProductDTO dto) {
+        try (page) {
+            waitForContent(page);
+
+            if (!isLinkValid(page)) {
+                logger.debug("Product '{}' - link invalid", dto.getProductId());
+                dto.setNewPrice(0);
+                return;
+            }
+
+            if (isItemSoldOut(page)) {
+                logger.debug("Product '{}' - item sold out", dto.getProductId());
+                dto.setNewPrice(0);
+                return;
+            }
+
+            if (dto.getVariant().startsWith("-oneVariant")) {
+                dto.setNewPrice(getPrice(page));
+                return;
+            }
+
+
+            if (!clickAvailableVariant(page, getAllAvailableVariants(page), dto.getVariant())) {
+                dto.setNewPrice(0);
+                logger.debug("Product '{}' - item variant not available", dto.getProductId());
+                return;
+            }
+
+            dto.setNewPrice(getPrice(page));
+
+        } catch (PlaywrightException ex) {
+            ex.printStackTrace();
+            logger.warn("Failed to update productId '{}'", dto.getProductId());
+        }
     }
 
     @Override
     public Product getProduct(String link, String variant) {
-        return null;
-    }
-
-    @Override
-    public List<String> getAllVariants(String link) {
         try (Playwright playwright = Playwright.create()) {
-            BrowserType.LaunchOptions launchOptions = new BrowserType.LaunchOptions();
-            launchOptions.setHeadless(false);
-            Browser browser = playwright.chromium().launch(launchOptions);
-
+            Browser browser = playwright.chromium().launch();
             Page page = browser.newPage();
-            page.setDefaultTimeout(4000);
+            page.setDefaultTimeout(10000);
             page.setExtraHTTPHeaders(extraHeaders);
             page.navigate(link, navigateOptions);
 
             waitForContent(page);
 
+            Product product = Product.builder()
+                    .name(getName(page))
+                    .description(getDescription(page))
+                    .price(0)
+                    .variant(variant)
+                    .link(page.url())
+                    .build();
+
+
+            if (isItemSoldOut(page)) {
+                return product;
+            }
+
+            if (variant.startsWith("-oneVariant")) {
+                product.setPrice(getPrice(page));
+                return product;
+            }
+
+            if (!clickAvailableVariant(page, getAllAvailableVariants(page), variant)) {
+                return product;
+            }
+
+            product.setDescription(getDescription(page));
+            product.setPrice(getPrice(page));
+
+            return product;
+        }
+    }
+
+
+    @Override
+    public List<String> getAllVariants(String link) {
+        try (Playwright playwright = Playwright.create()) {
+            Browser browser = playwright.chromium().launch(launchOptions);
+
+            Page page = browser.newPage();
+            page.setDefaultTimeout(10000);
+            page.setExtraHTTPHeaders(extraHeaders);
+            page.navigate(link, navigateOptions);
+
+            waitForContent(page);
+
+            if (!isLinkValid(page))
+                throw new InvalidLinkException(Messages.scraper("invalidLink"), "User %s specified wrong link: %s".formatted(ActiveUser.get().getUserId(), ActiveUser.get().getText()));
+
+
             if (isMultiVariant(page))
                 return getAllVariantsAsString(page);
 
-            return List.of("-oneVariant");
+            return List.of("-oneVariant One Variant");
         }
     }
 
     @Override
     public void setBugged(boolean bugged) {
-
+        launchOptions.setHeadless(!bugged);
     }
 
-    private boolean isPageValid(Page page) {
+    @SneakyThrows
+    private boolean clickAvailableVariant(Page page, List<Locator> availableVariants, String variant) {
+        String description = getDescription(page);
+        for (Locator l : availableVariants) {
+            String locatorVariant = l.textContent().trim();
+            if (variant.equals(locatorVariant)) {
+                l.click();
+                waitForPriceUpdate(page, description);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @SneakyThrows
+    private void waitForPriceUpdate(Page page, String description) {
+        long time = System.currentTimeMillis();
+        while (getDescription(page).equals(description)) {
+            Thread.sleep(30);
+            if (System.currentTimeMillis() - time > 5000) {
+                logger.warn("Timeout in waiting for price update after click: " + page.url());
+                break;
+            }
+        }
+    }
+
+
+    private boolean isLinkValid(Page page) {
         return page.locator("div.product-summary__main-box").count() > 0;
     }
 
@@ -110,6 +212,10 @@ public class HebeScraper implements Scraper {
                 .stream()
                 .map(e -> e.textContent().trim())
                 .toList();
+    }
+
+    private List<Locator> getAllAvailableVariants(Page page) {
+        return page.locator("div.swatch__item--selectable").all();
     }
 
     private List<String> getAllVariantsAsString(Page page) {

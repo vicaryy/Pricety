@@ -24,6 +24,7 @@ public class UserService {
 
     public void saveUser(UserEntity userEntity) {
         repository.save(userEntity);
+        logger.info("[User Service] Added new user to database, userId '{}'", userEntity.getUserId());
     }
 
     public boolean existsByUserId(String userId) {

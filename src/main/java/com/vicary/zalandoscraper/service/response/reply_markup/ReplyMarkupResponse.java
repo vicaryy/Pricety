@@ -1,6 +1,9 @@
 package com.vicary.zalandoscraper.service.response.reply_markup;
 
 import com.vicary.zalandoscraper.messages.Messages;
+import com.vicary.zalandoscraper.pattern.Pattern;
+import com.vicary.zalandoscraper.scraper.HebeScraper;
+import com.vicary.zalandoscraper.scraper.Scraper;
 import com.vicary.zalandoscraper.thread_local.ActiveLanguage;
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
 import com.vicary.zalandoscraper.api_telegram.api_object.Action;
@@ -15,6 +18,8 @@ import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
 import com.vicary.zalandoscraper.service.response.InlineBlock;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,8 +29,7 @@ import java.util.ResourceBundle;
 @Service
 @RequiredArgsConstructor
 public class ReplyMarkupResponse {
-
-    private final ZalandoScraper scraper;
+    private final static Logger logger = LoggerFactory.getLogger(ReplyMarkupResponse.class);
 
     private final LinkRequestService linkRequestService;
 
@@ -250,18 +254,29 @@ public class ReplyMarkupResponse {
         int messageId = QuickSender.messageWithReturn(chatId, Messages.other("adding"), false).getMessageId();
         QuickSender.chatAction(chatId, Action.TYPING);
 
+        Scraper scraper = null;
+
+        if (Pattern.isZalandoURL(link))
+            scraper = new ZalandoScraper();
+        else if (Pattern.isHebeURL(link))
+            scraper = new HebeScraper();
+
         Product product = scraper.getProduct(link, variant.toString().trim());
 
         QuickSender.deleteMessage(chatId, messageId);
 
-        if (productService.existsByUserIdAndLinkAndVariant(chatId, product.getLink(), product.getVariant()))
-            throw new InvalidLinkException(Messages.other("alreadyHave"), "User try to add same product.");
-
-        if (productService.countByUserId(ActiveUser.get().getUserId()) > 9)
-            throw new InvalidLinkException(Messages.other("productLimit"), "User try to add more than 10 products.");
+        checkProductValidation(chatId, product);
 
         productService.saveProduct(product);
         QuickSender.messageWithReturn(ActiveUser.get().getChatId(), Messages.other("productAdded"), false);
+    }
+
+    private void checkProductValidation(String chatId, Product product) {
+        if (productService.existsByUserIdAndLinkAndVariant(chatId, product.getLink(), product.getVariant()))
+            throw new InvalidLinkException(Messages.other("alreadyHave"), "User try to add same product.");
+
+        if (productService.countByUserId(chatId) > 9)
+            throw new InvalidLinkException(Messages.other("productLimit"), "User try to add more than 10 products.");
     }
 
 

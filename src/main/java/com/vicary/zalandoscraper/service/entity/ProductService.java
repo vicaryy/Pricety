@@ -6,6 +6,8 @@ import com.vicary.zalandoscraper.repository.ProductRepository;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;
 import com.vicary.zalandoscraper.service.map.ProductMapper;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +17,8 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ProductService {
+
+    private final static Logger logger = LoggerFactory.getLogger(ProductService.class);
 
     private final ProductRepository repository;
 
@@ -38,8 +42,12 @@ public class ProductService {
         repository.updatePriceAlert(productId, priceAlert);
     }
 
-    public List<ProductDTO> getAllProductsDto() {
+    public List<ProductDTO> getAllProductsDtoSortById() {
         return mapper.map(repository.findAll(Sort.by("id")));
+    }
+
+    public List<ProductDTO> getAllProductsDtoSortByLink() {
+        return mapper.map(repository.findAll(Sort.by("link")));
     }
 
     public List<ProductDTO> getAllProductsDtoByUserId(String userId) {
@@ -84,6 +92,7 @@ public class ProductService {
 
     public void saveProduct(Product product) {
         repository.save(mapper.map(product));
+        logger.info("[Product Service] Added new product to database link: {}", product.getLink());
     }
 
     public ProductEntity getProductById(Long id) {

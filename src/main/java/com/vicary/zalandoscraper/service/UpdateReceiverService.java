@@ -1,7 +1,5 @@
 package com.vicary.zalandoscraper.service;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.microsoft.playwright.PlaywrightException;
 import com.vicary.zalandoscraper.messages.Messages;
 import com.vicary.zalandoscraper.scraper.HebeScraper;
@@ -20,6 +18,7 @@ import com.vicary.zalandoscraper.service.entity.ActiveRequestService;
 import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
 import com.vicary.zalandoscraper.service.response.*;
 import com.vicary.zalandoscraper.service.response.reply_markup.ReplyMarkupResponse;
+import com.vicary.zalandoscraper.updater.AutoUpdater;
 import com.vicary.zalandoscraper.updater.ProductUpdater;
 import lombok.RequiredArgsConstructor;
 
@@ -28,8 +27,6 @@ import org.openqa.selenium.WebDriverException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-import java.util.ResourceBundle;
 
 
 @Service
@@ -51,8 +48,6 @@ public class UpdateReceiverService implements UpdateReceiver {
     private final AwaitedMessageResponse awaitedMessageResponse;
 
     private final EmailVerificationResponse emailVerificationResponse;
-
-    private final ProductUpdater productUpdater;
 
     private final AdminResponse adminResponse;
     private final UpdateFetcher updateFetcher = new UpdateFetcher(this);
@@ -77,7 +72,7 @@ public class UpdateReceiverService implements UpdateReceiver {
         logger.info("Got message from user '{}'", userId);
         try {
 
-            if (isProductUpdaterRunning())
+            if (isUpdaterRunning())
                 handleProductUpdaterRunning(userId);
 
 
@@ -125,8 +120,8 @@ public class UpdateReceiverService implements UpdateReceiver {
         }
     }
 
-    private boolean isProductUpdaterRunning() {
-        return productUpdater.isRunning();
+    private boolean isUpdaterRunning() {
+        return AutoUpdater.isActive();
     }
 
     private void handleProductUpdaterRunning(String userId) {

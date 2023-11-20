@@ -1,6 +1,7 @@
 package com.vicary.zalandoscraper.updater;
 
 import com.vicary.zalandoscraper.exception.TimeoutException;
+import com.vicary.zalandoscraper.scraper.Scraper;
 import com.vicary.zalandoscraper.scraper.ZalandoScraper;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;
 import org.slf4j.Logger;
@@ -15,7 +16,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 
-@Component
 public class ProductUpdater {
 
     private final static Logger logger = LoggerFactory.getLogger(ProductUpdater.class);
@@ -23,31 +23,27 @@ public class ProductUpdater {
     private int amountOfThreads;
     private final List<Future<?>> activeThreads = new ArrayList<>();
     private final AtomicInteger completedThreads = new AtomicInteger();
-    private final ZalandoScraper scraper;
+    private final List<ProductDTO> DTOs;
+    private final Scraper scraper;
 
-    @Autowired
-    private ProductUpdater(ZalandoScraper scraper) {
+    public ProductUpdater(Scraper scraper, List<ProductDTO> DTOs) {
         this.scraper = scraper;
+        this.DTOs = DTOs;
         setDefaultAmountOfThreads();
     }
 
 
-    public void update(List<ProductDTO> DTOs) {
-        logger.info("[Product Updater] Starting updating '{}' products", DTOs.size());
-        final long startingTime = System.currentTimeMillis();
+    public void update() {
+        executeThreads();
 
-        executeThreads(DTOs);
-
-        setUpdatesTimeout(DTOs.size());
+        setUpdatesTimeout();
 
         waitUntilThreadsEndsAndCheckTimeout();
-
-        logger.info("[Product Updater] Products updated successfully, it takes {} seconds", (System.currentTimeMillis() - startingTime) / 1000);
     }
 
-    private void executeThreads(List<ProductDTO> DTOs) {
+    private void executeThreads() {
         final ExecutorService executorService = Executors.newFixedThreadPool(amountOfThreads);
-        List<List<ProductDTO>> cuttedList = cutProductDTOList(DTOs);
+        List<List<ProductDTO>> cuttedList = cutProductDTOList();
 
         for (List<ProductDTO> p : cuttedList) {
             Future<?> future = executorService.submit(() -> {
@@ -63,7 +59,7 @@ public class ProductUpdater {
             while (!isEveryThreadEnds()) {
                 sleep(1000);
                 if (isUpdateTimeouts())
-                    handleUpdateTimeout();
+                    throw new TimeoutException();
             }
             scraper.setBugged(false);
         } finally {
@@ -76,11 +72,6 @@ public class ProductUpdater {
         completedThreads.set(0);
     }
 
-    private void handleUpdateTimeout() {
-        scraper.setBugged(true);
-        throw new TimeoutException();
-    }
-
     private boolean isUpdateTimeouts() {
         return System.currentTimeMillis() > updatesTimeout;
     }
@@ -89,7 +80,7 @@ public class ProductUpdater {
         return completedThreads.get() == activeThreads.size();
     }
 
-    private List<List<ProductDTO>> cutProductDTOList(List<ProductDTO> DTOs) {
+    private List<List<ProductDTO>> cutProductDTOList() {
         List<List<ProductDTO>> cuttedList = new ArrayList<>();
 
         for (int i = 0; i < amountOfThreads; i++) {
@@ -103,8 +94,8 @@ public class ProductUpdater {
         return cuttedList;
     }
 
-    private void setUpdatesTimeout(int amountOfProducts) {
-        updatesTimeout = System.currentTimeMillis() + (long) amountOfProducts * 2000;
+    private void setUpdatesTimeout() {
+        updatesTimeout = System.currentTimeMillis() + (long) DTOs.size() * 2000;
     }
 
     private void sleep(long millis) {
@@ -113,10 +104,6 @@ public class ProductUpdater {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public boolean isRunning() {
-        return !activeThreads.isEmpty();
     }
 
     public void setDefaultAmountOfThreads() {

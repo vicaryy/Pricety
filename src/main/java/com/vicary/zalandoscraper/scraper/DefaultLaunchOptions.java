@@ -14,8 +14,9 @@ public class DefaultLaunchOptions extends BrowserType.LaunchOptions {
                 "--disable-accelerated-2d-canvas",
                 "--no-first-run",
                 "--no-zygote",
-                "--single-process",
-                "--disable-gpu"));
+//                "--single-process",
+                "--disable-gpu"
+        ));
 //        setHeadless(false);
     }
 }

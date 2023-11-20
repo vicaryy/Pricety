@@ -34,4 +34,8 @@ public class ProductDTO {
     private String language;
 
     private boolean notifyByEmail;
+
+    public String getServiceName() {
+        return link.split("\\.")[1] + ".pl";
+    }
 }
