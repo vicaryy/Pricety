@@ -7,63 +7,64 @@ import com.vicary.zalandoscraper.api_telegram.api_object.Action;
 import com.vicary.zalandoscraper.api_telegram.api_request.send.SendMessage;
 import com.vicary.zalandoscraper.exception.InvalidLinkException;
 import com.vicary.zalandoscraper.model.Product;
-import com.vicary.zalandoscraper.service.entity.LinkRequestService;
-import com.vicary.zalandoscraper.service.entity.ProductService;
 import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
-@RequiredArgsConstructor
-public class LinkResponse {
+public class LinkResponse implements Responser {
     private final static Logger logger = LoggerFactory.getLogger(LinkResponse.class);
+    private final ResponseFacade responseFacade;
+    private final ActiveUser user;
+    private final Scraper scraper;
 
-    private final LinkRequestService linkRequestService;
+    public LinkResponse(ResponseFacade responseFacade,
+                        ActiveUser user,
+                        Scraper scraper) {
+        this.responseFacade = responseFacade;
+        this.user = user;
+        this.scraper = scraper;
+    }
 
-    private final ProductService productService;
-
-    public void response(ActiveUser user, Scraper scraper) {
-        String link = user.getText();
+    @Override
+    public void response() {
         int messageId = QuickSender.messageWithReturn(user.getChatId(), Messages.other("processing"), false).getMessageId();
         QuickSender.chatAction(user.getChatId(), Action.TYPING);
 
-        List<String> variants = scraper.getAllVariants(link);
+        List<String> variants = scraper.getAllVariants(user.getText());
 
         if (isItemOneVariant(variants)) {
-            getAndSaveOneVariantProduct(link, variants.get(0), scraper, user.getUserId());
+            getAndSaveOneVariantProduct(variants.get(0), scraper);
             QuickSender.deleteMessage(user.getChatId(), messageId);
             QuickSender.message(user.getUserId(), Messages.other("productAdded"), false);
         } else {
-            String requestId = linkRequestService.generateAndSaveRequest(link);
-            sendVariantMessage(variants, requestId, user.getUserId());
+            String requestId = responseFacade.generateAndSaveRequest(user.getText());
+            sendVariantMessage(variants, requestId);
             QuickSender.deleteMessage(user.getChatId(), messageId);
         }
     }
 
 
-    private void getAndSaveOneVariantProduct(String link, String variant, Scraper scraper, String userId) {
-        Product product = scraper.getProduct(link, variant);
+    private void getAndSaveOneVariantProduct(String variant, Scraper scraper) {
+        Product product = scraper.getProduct(user.getText(), variant);
 
-        checkProductValidation(product, userId);
+        checkProductValidation(product);
 
-        productService.saveProduct(product);
+        responseFacade.saveProduct(product);
     }
 
-    private void checkProductValidation(Product product, String userId) {
-        if (productService.existsByUserIdAndLinkAndVariant(userId, product.getLink(), product.getVariant()))
-            throw new InvalidLinkException(Messages.other("alreadyHave"), "User %s try to add same product.".formatted(userId));
+    private void checkProductValidation(Product product) {
+        if (responseFacade.productExistsByUserIdAndLinkAndVariant(user.getChatId(), product.getLink(), product.getVariant()))
+            throw new InvalidLinkException(Messages.other("alreadyHave"), "User try to add same product.");
 
-        if (productService.countByUserId(userId) > 9)
-            throw new InvalidLinkException(Messages.other("productLimit"), "User %s try to add more than 10 products.".formatted(userId));
+        if (responseFacade.countProductsByUserId(user.getUserId()) > 9)
+            throw new InvalidLinkException(Messages.other("productLimit"), "User try to add more than 10 products.");
     }
 
-    private void sendVariantMessage(List<String> variants, String requestId, String userId) {
+    private void sendVariantMessage(List<String> variants, String requestId) {
         SendMessage sendMessage = SendMessage.builder()
-                .chatId(userId)
+                .chatId(user.getChatId())
                 .text(Messages.other("selectVariant"))
                 .replyMarkup(InlineBlock.getVariantChoice(variants, requestId))
                 .build();

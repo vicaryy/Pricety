@@ -1,4 +1,4 @@
-package com.vicary.zalandoscraper.service.response.reply_markup;
+package com.vicary.zalandoscraper.service.response.inline_markup;
 
 import com.vicary.zalandoscraper.api_telegram.api_object.ParseMode;
 import com.vicary.zalandoscraper.api_telegram.api_object.keyboard.ReplyMarkup;
@@ -13,7 +13,7 @@ import lombok.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DeleteProductDisplay implements ProductDisplayer {
+class DeleteProductDisplay implements ProductDisplayer {
     private final String chatId;
     private final List<ProductDTO> productDTOList;
 

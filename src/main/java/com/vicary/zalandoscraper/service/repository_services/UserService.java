@@ -1,4 +1,4 @@
-package com.vicary.zalandoscraper.service.entity;
+package com.vicary.zalandoscraper.service.repository_services;
 
 import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.repository.UserRepository;
@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 

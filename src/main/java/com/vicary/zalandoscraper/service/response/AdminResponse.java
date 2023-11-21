@@ -6,76 +6,81 @@ import com.vicary.zalandoscraper.api_telegram.api_request.commands.GetMyCommands
 import com.vicary.zalandoscraper.api_telegram.api_request.commands.SetMyCommands;
 import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
 import com.vicary.zalandoscraper.api_telegram.service.RequestService;
-import com.vicary.zalandoscraper.service.entity.UserService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import com.vicary.zalandoscraper.thread_local.ActiveUser;
 
 import java.util.List;
 
-@Component
-@RequiredArgsConstructor
-public class AdminResponse {
-
-    private final UserService userService;
+public class AdminResponse implements Responser {
     private final RequestService requestService = new RequestService();
+    private final ResponseFacade responseFacade;
+    private final ActiveUser user;
 
-    public void response(String text, String chatId) {
-        if (text.startsWith("/set premium "))
-            setPremium(removePrefix(text), chatId);
-
-        else if (text.startsWith("/set standard "))
-            setStandard(removePrefix(text), chatId);
-
-        else if (text.startsWith("/set admin "))
-            setAdmin(removePrefix(text), chatId);
-
-        else if (text.startsWith("/set non-admin "))
-            setNonAdmin(removePrefix(text), chatId);
-
-        else if (text.startsWith("/set command "))
-            setCommand(removePrefix(text), chatId);
-
-        else if (text.startsWith("/remove command "))
-            removeCommand(removePrefix(text), chatId);
-
-        else if (text.startsWith("/remove commands all"))
-            removeAllCommands(chatId);
+    public AdminResponse(ResponseFacade responseFacade, ActiveUser activeUser) {
+        this.responseFacade = responseFacade;
+        this.user = activeUser;
     }
 
-    private void setPremium(String userNick, String chatId) {
-        if (userService.updateUserToPremiumByNick(userNick))
-            QuickSender.message(chatId, String.format("User %s successfully updated to Premium.", userNick), false);
+    public void response() {
+        if (user.getText().startsWith("/set premium "))
+            setPremium();
+
+        else if (user.getText().startsWith("/set standard "))
+            setStandard();
+
+        else if (user.getText().startsWith("/set admin "))
+            setAdmin();
+
+        else if (user.getText().startsWith("/set non-admin "))
+            setNonAdmin();
+
+        else if (user.getText().startsWith("/set command "))
+            setCommand();
+
+        else if (user.getText().startsWith("/remove command "))
+            removeCommand();
+
+        else if (user.getText().startsWith("/remove commands all"))
+            removeAllCommands();
+    }
+
+    private void setPremium() {
+        String userNick = removePrefix(user.getText());
+        if (responseFacade.updateUserToPremiumByNick(userNick))
+            QuickSender.message(user.getChatId(), String.format("User %s successfully updated to Premium.", userNick), false);
         else
-            QuickSender.message(chatId, String.format("User %s does not exist.", userNick), false);
+            QuickSender.message(user.getChatId(), String.format("User %s does not exist.", userNick), false);
     }
 
-    private void setStandard(String userNick, String chatId) {
-        if (userService.updateUserToStandardByNick(userNick))
-            QuickSender.message(chatId, String.format("User %s successfully updated to Standard.", userNick), false);
+    private void setStandard() {
+        String userNick = removePrefix(user.getText());
+        if (responseFacade.updateUserToStandardByNick(userNick))
+            QuickSender.message(user.getChatId(), String.format("User %s successfully updated to Standard.", userNick), false);
         else
-            QuickSender.message(chatId, String.format("User %s does not exist.", userNick), false);
+            QuickSender.message(user.getChatId(), String.format("User %s does not exist.", userNick), false);
     }
 
-    private void setAdmin(String userNick, String chatId) {
-        if (userService.updateUserToAdminByNick(userNick))
-            QuickSender.message(chatId, String.format("User %s successfully updated to Admin.", userNick), false);
+    private void setAdmin() {
+        String userNick = removePrefix(user.getText());
+        if (responseFacade.updateUserToAdminByNick(userNick))
+            QuickSender.message(user.getChatId(), String.format("User %s successfully updated to Admin.", userNick), false);
         else
-            QuickSender.message(chatId, String.format("User %s does not exist.", userNick), false);
+            QuickSender.message(user.getChatId(), String.format("User %s does not exist.", userNick), false);
     }
 
-    private void setNonAdmin(String userNick, String chatId) {
-        if (userService.updateUserToNonAdminByNick(userNick))
-            QuickSender.message(chatId, String.format("User %s successfully updated to Non-Admin.", userNick), false);
+    private void setNonAdmin() {
+        String userNick = removePrefix(user.getText());
+        if (responseFacade.updateUserToNonAdminByNick(userNick))
+            QuickSender.message(user.getChatId(), String.format("User %s successfully updated to Non-Admin.", userNick), false);
         else
-            QuickSender.message(chatId, String.format("User %s does not exist.", userNick), false);
+            QuickSender.message(user.getChatId(), String.format("User %s does not exist.", userNick), false);
     }
 
 
-    private void setCommand(String text, String chatId) {
-        String[] commandAndDescription = text.split(":");
+    private void setCommand() {
+        String[] commandAndDescription = user.getText().split(":");
 
         if (commandAndDescription[0] == null || commandAndDescription[0].isBlank()) {
-            QuickSender.message(chatId, "Command not found.", false);
+            QuickSender.message(user.getChatId(), "Command not found.", false);
             return;
         }
 
@@ -92,19 +97,19 @@ public class AdminResponse {
         SetMyCommands setMyCommands = new SetMyCommands(commandList);
         try {
             requestService.send(setMyCommands);
-            QuickSender.message(chatId, "Successfully add " + command + " command.", false);
+            QuickSender.message(user.getChatId(), "Successfully add " + command + " command.", false);
         } catch (Exception ex) {
-            QuickSender.message(chatId, "Something goes wrong, check your command and try again.", false);
+            QuickSender.message(user.getChatId(), "Something goes wrong, check your command and try again.", false);
         }
     }
 
-    private void removeCommand(String text, String chatId) {
-        if (text.isBlank()) {
-            QuickSender.message(chatId, "Command not found.", false);
+    private void removeCommand() {
+        if (user.getText().isBlank()) {
+            QuickSender.message(user.getChatId(), "Command not found.", false);
             return;
         }
 
-        String command = text.startsWith("/") ? text.substring(1) : text;
+        String command = user.getText().startsWith("/") ? user.getText().substring(1) : user.getText();
         List<BotCommand> commandList = requestService.sendRequestList(new GetMyCommands());
 
         for (BotCommand com : commandList) {
@@ -113,20 +118,20 @@ public class AdminResponse {
                 SetMyCommands setMyCommands = new SetMyCommands(commandList);
                 try {
                     requestService.send(setMyCommands);
-                    QuickSender.message(chatId, "Successfully remove " + command + " command.", false);
+                    QuickSender.message(user.getChatId(), "Successfully remove " + command + " command.", false);
                 } catch (Exception ex) {
-                    QuickSender.message(chatId, "Something goes wrong, check your command and try again.", false);
+                    QuickSender.message(user.getChatId(), "Something goes wrong, check your command and try again.", false);
                 }
                 return;
             }
         }
 
-        QuickSender.message(chatId, "Command not found.", false);
+        QuickSender.message(user.getChatId(), "Command not found.", false);
     }
 
-    private void removeAllCommands(String chatId) {
+    private void removeAllCommands() {
         requestService.send(new DeleteMyCommands());
-        QuickSender.message(chatId, "Successfully removed all commands.", false);
+        QuickSender.message(user.getChatId(), "Successfully removed all commands.", false);
     }
 
 

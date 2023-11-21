@@ -164,8 +164,8 @@ public class HebeScraper implements Scraper {
         long time = System.currentTimeMillis();
         while (getDescription(page).equals(description)) {
             Thread.sleep(30);
-            if (System.currentTimeMillis() - time > 5000) {
-                logger.warn("Timeout in waiting for price update after click: " + page.url());
+            if (System.currentTimeMillis() - time > 2000) {
+                logger.info("Timeout in waiting for price update after click, probably item was already chosen: " + page.url());
                 break;
             }
         }

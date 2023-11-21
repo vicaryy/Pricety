@@ -1,16 +1,12 @@
-package com.vicary.zalandoscraper.service.entity;
+package com.vicary.zalandoscraper.service.repository_services;
 
-import com.vicary.zalandoscraper.entity.UpdateHistoryEntity;
 import com.vicary.zalandoscraper.pattern.Pattern;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class UpdatesHistoryServiceTest {

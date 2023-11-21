@@ -1,114 +1,70 @@
 package com.vicary.zalandoscraper.service.response;
 
-import com.vicary.zalandoscraper.PrettyTime;
 import com.vicary.zalandoscraper.messages.Messages;
-import com.vicary.zalandoscraper.service.entity.UpdatesHistoryService;
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
 import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import org.springframework.stereotype.Component;
-import com.vicary.zalandoscraper.format.MarkdownV2;
 
-@Component
-@RequiredArgsConstructor
-public class CommandResponse {
+public class CommandResponse implements Responser {
+    private final ResponseFacade responseFacade;
+    private final ActiveUser user;
 
-    private final UpdatesHistoryService updatesHistoryService;
-
-    private final static String START = """
-            *Cześć %s* 👋
-                        
-            Jestem botem który potrafi obserwować ceny produktów na Zalando, wysyłać alerty cenowe na czacie i podany adres email.
-                        
-            *Jak mnie użyć?* 🎮
-            Wystarczy wkleić link do Zalando i wysłać go.
-            Ja się zajmę resztą 😉
-                        
-                        
-            Polecam skorzystać z poniższych komend:
-            */menu* - wyświetla tabele menu ⚙️
-            */update* - data ostatniej aktualizacji produktów 🔄
-            */limits* - informacja na temat limitów ⛔️
-            */help* - więcej pomocy 🛟
-            */tip* - jeśli chcesz mi dać napiwek ☕️""";
+    public CommandResponse(ResponseFacade responseFacade, ActiveUser user) {
+        this.responseFacade = responseFacade;
+        this.user = user;
+    }
 
 
-    private final static String HELP = """
-            *Help* 🛟
-                        
-            Jeśli potrzebujesz więcej pomocy, proszę skontaktuj się z administratorem: *@vicary1*""";
-
-    private final static String TIP = """
-            *Tip* ☕️
-                        
-            Jeśli chcesz mi dać napiwek skorzystaj z poniższych adresów:
-            Adres BTC: 17PkbNkE1FfCcyWwJLWMkthaHTRfvBbLtT
-            Adres ETH: 0x2ac2cc2fc09fcb051a928c7f7dcb6c332a2e73ac
-                        
-            Dzięki! 💞""";
-
-    private final static String LIMITS = """
-            *Limits* ⛔️
-                        
-            Użytkownik może obserwować maksymalnie 10 przedmiotów.
-            Jeśli potrzebujesz obserwować więcej niż 10 przedmiotów skontaktuj się z administratorem w zakładce */help*.""";
-
-    private final static String UPDATE = """
-            *Update* ⛔️
-                        
-            Ostatnia aktualizacja przedmiotów: %s""";
-
-    public void response(String text, String chatId, String nick) {
-        String message = null;
+    @Override
+    public void response() {
+        String text = user.getText();
         if (text.equals("/start"))
-            sendStart(chatId, nick);
+            sendStart();
 
         else if (text.equals("/menu"))
             sendMenuBlocks();
 
         else if (text.equals("/update"))
-            sendUpdate(chatId);
+            sendUpdate();
 
         else if (text.equals("/limits"))
-            sendLimits(chatId);
+            sendLimits();
 
         else if (text.equals("/help"))
-            sendHelp(chatId);
+            sendHelp();
 
         else if (text.equals("/tip"))
-            sendTip(chatId);
+            sendTip();
     }
 
-    public void sendStart(String chatId, String nick) {
-        if (nick == null)
-            nick = "";
+    public void sendStart() {
+        String displayedNick = user.getNick();
+        if (displayedNick == null)
+            displayedNick = "";
 
-        else
-            nick = " " + nick;
+        displayedNick = " " + displayedNick;
 
-        QuickSender.message(chatId, Messages.command("start").formatted(nick), true);
+        QuickSender.message(user.getChatId(), Messages.command("start").formatted(displayedNick), true);
     }
 
     public void sendMenuBlocks() {
         QuickSender.message(InlineBlock.getMenu());
     }
 
-    private void sendUpdate(String chatId) {
-        String message = Messages.command("update").formatted(PrettyTime.get(updatesHistoryService.getLastUpdateTime()));
-        QuickSender.message(chatId, message, true);
+    private void sendUpdate() {
+        String message = Messages.command("update").formatted(responseFacade.getLastUpdateTime());
+        QuickSender.message(user.getChatId(), message, true);
     }
 
-    private void sendLimits(String chatId) {
-        QuickSender.message(chatId, Messages.command("limits"), true);
+    private void sendLimits() {
+        QuickSender.message(user.getChatId(), Messages.command("limits"), true);
     }
 
-    private void sendHelp(String chatId) {
-        QuickSender.message(chatId, Messages.command("help"), true);
+    private void sendHelp() {
+        QuickSender.message(user.getChatId(), Messages.command("help"), true);
     }
 
-    private void sendTip(String chatId) {
-        QuickSender.message(chatId, Messages.command("tip"), true);
+    private void sendTip() {
+        QuickSender.message(user.getChatId(), Messages.command("tip"), true);
     }
 }
 

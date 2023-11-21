@@ -1,4 +1,4 @@
-package com.vicary.zalandoscraper.service.response.reply_markup;
+package com.vicary.zalandoscraper.service.response.inline_markup;
 
 import com.vicary.zalandoscraper.api_telegram.api_object.ParseMode;
 import com.vicary.zalandoscraper.api_telegram.api_object.keyboard.ReplyMarkup;
@@ -12,12 +12,13 @@ import lombok.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
-public class EditProductDisplay implements ProductDisplayer {
+class AllProductDisplay implements ProductDisplayer {
     private final String chatId;
     private final List<ProductDTO> productDTOList;
 
-    public EditProductDisplay(@NonNull List<ProductDTO> productDTOList, @NonNull String chatId) {
+    public AllProductDisplay(@NonNull List<ProductDTO> productDTOList, @NonNull String chatId) {
         this.productDTOList = productDTOList;
         this.chatId = chatId;
     }
@@ -78,7 +79,7 @@ public class EditProductDisplay implements ProductDisplayer {
 
 
     private void setTitle(StringBuilder sb) {
-        sb.append("*").append(Messages.editPriceAlert("yourProducts")).append("*\n\n");
+        sb.append("*").append(Messages.allProducts("yourProducts")).append("*\n\n");
     }
 
     private String getFullProductDescription(ProductDTO dto, int iterator) {
@@ -121,15 +122,22 @@ public class EditProductDisplay implements ProductDisplayer {
 
     private String getFormattedVariant(String v) {
         if (v.startsWith("-oneVariant"))
-            v = v.substring(12);
+            v = v.substring(11).trim();
         return v;
     }
 
     private String getSummaryMessage() {
-        return "\u200E \n\n\n*" + Messages.editPriceAlert("select") + "*\\.";
+        return """
+                
+                
+                
+                *%s*
+                %s""".formatted(
+                Messages.allProducts("didYouKnow"),
+                MarkdownV2.apply(Messages.allProducts("funFact" + ThreadLocalRandom.current().nextInt(1, 25))).get());
     }
 
     private ReplyMarkup getReplyMarkup() {
-        return InlineBlock.getProductChoice(productDTOList, "-edit");
+        return InlineBlock.getBack();
     }
 }

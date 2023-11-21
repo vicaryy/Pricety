@@ -1,16 +1,15 @@
 package com.vicary.zalandoscraper.updater;
 
-import com.vicary.zalandoscraper.BrowserType;
-import com.vicary.zalandoscraper.TerminalExecutor;
+import com.vicary.zalandoscraper.scraper.BrowserType;
+import com.vicary.zalandoscraper.utils.TerminalExecutor;
 import com.vicary.zalandoscraper.exception.TimeoutException;
 import com.vicary.zalandoscraper.scraper.HebeScraper;
 import com.vicary.zalandoscraper.scraper.Scraper;
 import com.vicary.zalandoscraper.scraper.ZalandoScraper;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;
-import com.vicary.zalandoscraper.service.entity.ProductService;
-import com.vicary.zalandoscraper.service.entity.UpdatesHistoryService;
+import com.vicary.zalandoscraper.service.repository_services.ProductService;
+import com.vicary.zalandoscraper.service.repository_services.UpdatesHistoryService;
 import com.vicary.zalandoscraper.service.map.ProductMapper;
-import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +22,6 @@ import java.util.Map;
 
 @Service
 public class AutoUpdater implements Runnable {
-
     private final static Logger logger = LoggerFactory.getLogger(AutoUpdater.class);
     private final static int DELAY_BEFORE_START = 5000;   // 5 seconds
     private final static int DELAY_BETWEEN_UPDATES = 1000 * 60 * 60; // 1 hour
@@ -36,7 +34,12 @@ public class AutoUpdater implements Runnable {
     private final Map<String, Scraper> scraperMap = new HashMap<>();
 
     @Autowired
-    public AutoUpdater(ProductService productService, UpdatesHistoryService updatesHistoryService, ProductMapper productMapper, NotificationManager notificationManager, ZalandoScraper zalandoScraper, HebeScraper hebeScraper) {
+    public AutoUpdater(ProductService productService,
+                       UpdatesHistoryService updatesHistoryService,
+                       ProductMapper productMapper,
+                       NotificationManager notificationManager,
+                       ZalandoScraper zalandoScraper,
+                       HebeScraper hebeScraper) {
         this.productService = productService;
         this.updatesHistoryService = updatesHistoryService;
         this.productMapper = productMapper;
@@ -45,7 +48,7 @@ public class AutoUpdater implements Runnable {
         scraperMap.put("zalando.pl", zalandoScraper);
         scraperMap.put("hebe.pl", hebeScraper);
 
-        updaterThread.start();
+//        updaterThread.start();
     }
 
     @Override
@@ -56,8 +59,8 @@ public class AutoUpdater implements Runnable {
             while (!Thread.currentThread().isInterrupted()) {
                 isActive = true;
                 update();
-                sleep(DELAY_BETWEEN_UPDATES);
                 isActive = false;
+                sleep(DELAY_BETWEEN_UPDATES);
             }
         } catch (Exception ex) {
             logger.error("[Auto Updater] Error: " + ex.getMessage());

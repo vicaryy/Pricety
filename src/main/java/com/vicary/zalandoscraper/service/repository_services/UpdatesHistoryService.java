@@ -1,4 +1,4 @@
-package com.vicary.zalandoscraper.service.entity;
+package com.vicary.zalandoscraper.service.repository_services;
 
 import com.vicary.zalandoscraper.entity.UpdateHistoryEntity;
 import com.vicary.zalandoscraper.repository.UpdateHistoryRepository;

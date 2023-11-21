@@ -95,7 +95,7 @@ public class ProductUpdater {
     }
 
     private void setUpdatesTimeout() {
-        updatesTimeout = System.currentTimeMillis() + (long) DTOs.size() * 2000;
+        updatesTimeout = System.currentTimeMillis() + (long) DTOs.size() * 4000;
     }
 
     private void sleep(long millis) {

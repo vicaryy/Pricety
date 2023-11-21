@@ -5,7 +5,7 @@ import com.vicary.zalandoscraper.entity.NotificationEntity;
 import com.vicary.zalandoscraper.entity.ProductEntity;
 import com.vicary.zalandoscraper.entity.UpdateHistoryEntity;
 import com.vicary.zalandoscraper.model.Product;
-import com.vicary.zalandoscraper.service.entity.UserService;
+import com.vicary.zalandoscraper.service.repository_services.UserService;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

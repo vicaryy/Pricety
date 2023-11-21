@@ -1,8 +1,8 @@
 package com.vicary.zalandoscraper.updater.sender;
 
-import com.vicary.zalandoscraper.EmailSender;
+import com.vicary.zalandoscraper.sender.EmailSender;
 import com.vicary.zalandoscraper.model.Email;
-import com.vicary.zalandoscraper.service.entity.NotificationEmailService;
+import com.vicary.zalandoscraper.service.repository_services.NotificationEmailService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

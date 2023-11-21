@@ -1,6 +1,6 @@
 package com.vicary.zalandoscraper.service.send;
 
-import com.vicary.zalandoscraper.EmailSender;
+import com.vicary.zalandoscraper.sender.EmailSender;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

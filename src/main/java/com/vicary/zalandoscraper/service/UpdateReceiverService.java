@@ -14,12 +14,10 @@ import com.vicary.zalandoscraper.exception.IllegalInputException;
 import com.vicary.zalandoscraper.exception.InvalidLinkException;
 import com.vicary.zalandoscraper.exception.ZalandoScraperBotException;
 import com.vicary.zalandoscraper.pattern.Pattern;
-import com.vicary.zalandoscraper.service.entity.ActiveRequestService;
 import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
 import com.vicary.zalandoscraper.service.response.*;
-import com.vicary.zalandoscraper.service.response.reply_markup.ReplyMarkupResponse;
+import com.vicary.zalandoscraper.service.response.inline_markup.InlineMarkupResponse;
 import com.vicary.zalandoscraper.updater.AutoUpdater;
-import com.vicary.zalandoscraper.updater.ProductUpdater;
 import lombok.RequiredArgsConstructor;
 
 import com.vicary.zalandoscraper.api_telegram.api_object.Update;
@@ -35,21 +33,9 @@ public class UpdateReceiverService implements UpdateReceiver {
 
     private final static Logger logger = LoggerFactory.getLogger(UpdateReceiverService.class);
 
-    private final CommandResponse commandResponse;
-
-    private final ReplyMarkupResponse replyMarkupResponse;
-
-    private final LinkResponse linkResponse;
-
     private final UserAuthentication userAuthentication;
 
-    private final ActiveRequestService activeRequestService;
-
-    private final AwaitedMessageResponse awaitedMessageResponse;
-
-    private final EmailVerificationResponse emailVerificationResponse;
-
-    private final AdminResponse adminResponse;
+    private final ResponseFacade facade;
     private final UpdateFetcher updateFetcher = new UpdateFetcher(this);
 
     @Override
@@ -70,33 +56,38 @@ public class UpdateReceiverService implements UpdateReceiver {
         String userId = user.getUserId();
         String chatId = user.getChatId();
         logger.info("Got message from user '{}'", userId);
-        try {
 
+        try {
             if (isUpdaterRunning())
                 handleProductUpdaterRunning(userId);
 
+            Responser responser = null;
 
-            if (user.isAdmin())
-                adminResponse.response(text, chatId);
+            if (user.isAdmin()) {
+                responser = new AdminResponse(facade, user);
+                responser.response();
+            }
 
             if (user.isAwaitedMessage())
-                awaitedMessageResponse.response();
+                responser = new AwaitedMessageResponse(facade, user);
 
             else if (Pattern.isReplyMarkup(update))
-                replyMarkupResponse.response(user);
+                responser = new InlineMarkupResponse(facade, user);
 
             else if (Pattern.isCommand(text))
-                commandResponse.response(text, chatId, user.getNick());
+                responser = new CommandResponse(facade, user);
 
             else if (Pattern.isEmailToken(text))
-                emailVerificationResponse.response(text);
+                responser = new EmailVerificationResponse(facade, user);
 
             else if (Pattern.isZalandoURL(text))
-                linkResponse.response(user, new ZalandoScraper());
+                responser = new LinkResponse(facade, user, new ZalandoScraper());
 
             else if (Pattern.isHebeURL(text))
-                linkResponse.response(user, new HebeScraper());
+                responser = new LinkResponse(facade, user, new HebeScraper());
 
+            if (responser != null)
+                responser.response();
 
         } catch (IllegalArgumentException ex) {
             logger.warn(ex.getMessage());
@@ -114,7 +105,7 @@ public class UpdateReceiverService implements UpdateReceiver {
             QuickSender.message(chatId, Messages.other("somethingGoesWrong"), false);
             ex.printStackTrace();
         } finally {
-            activeRequestService.deleteByUserId(userId);
+            facade.deleteActiveRequestById(userId);
             ActiveUser.remove();
             ActiveLanguage.remove();
         }

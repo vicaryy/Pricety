@@ -3,7 +3,7 @@ package com.vicary.zalandoscraper.updater;
 import com.vicary.zalandoscraper.model.Email;
 import com.vicary.zalandoscraper.model.ChatNotification;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;
-import com.vicary.zalandoscraper.service.entity.ProductService;
+import com.vicary.zalandoscraper.service.repository_services.ProductService;
 import com.vicary.zalandoscraper.updater.sender.EmailNotificationSender;
 import com.vicary.zalandoscraper.updater.sender.ChatNotificationSender;
 import lombok.RequiredArgsConstructor;

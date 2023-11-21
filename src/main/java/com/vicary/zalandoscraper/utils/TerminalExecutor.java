@@ -1,5 +1,6 @@
-package com.vicary.zalandoscraper;
+package com.vicary.zalandoscraper.utils;
 
+import com.vicary.zalandoscraper.scraper.BrowserType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

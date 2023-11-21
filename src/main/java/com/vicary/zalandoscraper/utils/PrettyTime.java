@@ -1,4 +1,4 @@
-package com.vicary.zalandoscraper;
+package com.vicary.zalandoscraper.utils;
 
 import com.vicary.zalandoscraper.messages.Messages;
 
@@ -34,6 +34,6 @@ public class PrettyTime {
         else
             when = String.format("%d %s", days, days < 2 ? Messages.pretty("day") : Messages.pretty("days"));
 
-        return "_" + when + Messages.pretty("ago") + "_";
+        return when + Messages.pretty("ago");
     }
 }

@@ -15,25 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-@Component
-@RequiredArgsConstructor
 public class InlineBlock {
-    private final static InlineKeyboardButton back = new InlineKeyboardButton("Back To Menu", "-back");
-
-    private final static InlineKeyboardButton enableOrDisable = new InlineKeyboardButton("", "");
-
-    private final static InlineKeyboardButton setEmail = new InlineKeyboardButton("", "");
-
-    private final static List<InlineKeyboardButton> listOfButtons4 = List.of(back);
-
-    private final static List<InlineKeyboardButton> listOfButtons7 = List.of(enableOrDisable);
-
-    private final static List<InlineKeyboardButton> listOfButtons8 = List.of(setEmail);
-
-    private final static InlineKeyboardMarkup backMarkup = new InlineKeyboardMarkup(List.of(listOfButtons4));
-
-    private final static InlineKeyboardMarkup notificationMarkup = new InlineKeyboardMarkup(List.of(listOfButtons7, listOfButtons8, listOfButtons4));
-
 
     public static SendMessage getMenu() {
         ActiveUser user = ActiveUser.get();
@@ -66,6 +48,21 @@ public class InlineBlock {
     }
 
     public static SendMessage getNotification(boolean isNotifyByEmail, boolean isVerifiedEmail, String email) {
+
+        final InlineKeyboardButton enableOrDisable = new InlineKeyboardButton();
+
+        final InlineKeyboardButton setEmail = new InlineKeyboardButton();
+
+        final InlineKeyboardButton back = new InlineKeyboardButton(Messages.notifications("back"), "-back");
+
+        final List<InlineKeyboardButton> listOfButtons1 = List.of(enableOrDisable);
+
+        final List<InlineKeyboardButton> listOfButtons2 = List.of(setEmail);
+
+        final List<InlineKeyboardButton> listOfButtons3 = List.of(back);
+
+        final InlineKeyboardMarkup notificationMarkup = new InlineKeyboardMarkup(List.of(listOfButtons1, listOfButtons2, listOfButtons3));
+
         String verified = "";
 
         if (email == null)
@@ -119,6 +116,8 @@ public class InlineBlock {
     }
 
     public static InlineKeyboardMarkup getBack() {
+        final InlineKeyboardButton back = new InlineKeyboardButton(Messages.notifications("back"), "-back");
+        final InlineKeyboardMarkup backMarkup = new InlineKeyboardMarkup(List.of(List.of(back)));
         return backMarkup;
     }
 

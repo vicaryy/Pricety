@@ -3,33 +3,29 @@ package com.vicary.zalandoscraper.service.response;
 import com.vicary.zalandoscraper.messages.Messages;
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
 import com.vicary.zalandoscraper.exception.IllegalInputException;
-import com.vicary.zalandoscraper.service.entity.EmailVerificationService;
-import com.vicary.zalandoscraper.service.entity.UserService;
 import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
-@Service
-@RequiredArgsConstructor
-public class EmailVerificationResponse {
+public class EmailVerificationResponse implements Responser {
+    private final ResponseFacade responseFacade;
+    private final ActiveUser user;
 
-    private final EmailVerificationService emailVerificationService;
+    public EmailVerificationResponse(ResponseFacade responseFacade, ActiveUser user) {
+        this.responseFacade = responseFacade;
+        this.user = user;
+    }
 
-    private final UserService userService;
-
-    public void response(String text) {
-        ActiveUser user = ActiveUser.get();
-
-        String token = text.substring(2);
+    @Override
+    public void response() {
+        String token = user.getText().substring(2);
 
         if (user.getEmail() == null || user.isVerifiedEmail())
             return;
 
-        if (!emailVerificationService.existsByUserIdAndToken(user.getUserId(), token))
+        if (!responseFacade.emailVerExistsByUserIdAndToken(user.getUserId(), token))
             throw new IllegalInputException(Messages.other("invalidEmailVerificationCode"), "User '%s' type wrong email verification code.".formatted(user.getUserId()));
 
-        userService.setVerifiedEmail(user.getUserId(), true);
-        emailVerificationService.deleteByToken(token);
+        responseFacade.setUserVerifiedEmail(user.getUserId(), true);
+        responseFacade.deleteEmailVerByToken(token);
 
         QuickSender.message(user.getChatId(), Messages.other("emailVerifiedSuccessfully"), false);
     }

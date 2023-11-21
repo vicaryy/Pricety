@@ -1,4 +1,4 @@
-package com.vicary.zalandoscraper;
+package com.vicary.zalandoscraper.sender;
 
 import com.vicary.zalandoscraper.model.Email;
 import jakarta.mail.internet.MimeMessage;

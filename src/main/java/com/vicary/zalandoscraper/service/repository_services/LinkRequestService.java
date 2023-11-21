@@ -1,7 +1,10 @@
-package com.vicary.zalandoscraper.service.entity;
+package com.vicary.zalandoscraper.service.repository_services;
 
 import com.vicary.zalandoscraper.entity.LinkRequestEntity;
+import com.vicary.zalandoscraper.exception.InvalidLinkException;
+import com.vicary.zalandoscraper.messages.Messages;
 import com.vicary.zalandoscraper.repository.LinkRequestRepository;
+import com.vicary.zalandoscraper.thread_local.ActiveUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,13 +18,13 @@ public class LinkRequestService {
 
     private final LinkRequestRepository repository;
 
-
     public void saveRequest(LinkRequestEntity entity) {
         repository.save(entity);
     }
 
     public LinkRequestEntity findByRequestId(String requestId) {
-        return repository.findByRequestId(requestId).orElse(null);
+        return repository.findByRequestId(requestId)
+                .orElseThrow(() -> new InvalidLinkException(Messages.other("sessionExpired"), "User '%s' session expired".formatted(ActiveUser.get().getUserId())));
     }
 
     @Transactional
