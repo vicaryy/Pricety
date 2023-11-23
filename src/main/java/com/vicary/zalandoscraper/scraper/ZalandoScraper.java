@@ -1,6 +1,7 @@
 package com.vicary.zalandoscraper.scraper;
 
 import com.microsoft.playwright.*;
+import com.microsoft.playwright.BrowserType;
 import com.microsoft.playwright.options.WaitUntilState;
 import com.vicary.zalandoscraper.messages.Messages;
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
@@ -261,7 +262,7 @@ public class ZalandoScraper implements Scraper {
         return page.getByText(Tag.Zalando.SOLD_OUT).count() == 1;
     }
 
-    private void clickSizeButton(Page page) {
+    void clickSizeButton(Page page) {
         page.getByTestId(Tag.Zalando.VARIANT_BUTTON).click();
         page.waitForSelector(Tag.Zalando.ALL_VARIANTS);
     }

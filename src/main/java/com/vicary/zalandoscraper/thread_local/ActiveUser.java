@@ -1,5 +1,6 @@
 package com.vicary.zalandoscraper.thread_local;
 
+import lombok.Builder;
 import lombok.Data;
 
 @Data

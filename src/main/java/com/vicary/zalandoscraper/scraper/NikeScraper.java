@@ -7,16 +7,20 @@ import com.vicary.zalandoscraper.exception.InvalidLinkException;
 import com.vicary.zalandoscraper.messages.Messages;
 import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;
+import com.vicary.zalandoscraper.thread_local.ActiveLanguage;
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
 import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
-public class HebeScraper implements Scraper {
-    private final static Logger logger = LoggerFactory.getLogger(HebeScraper.class);
+public class NikeScraper implements Scraper {
+    private final static Logger logger = LoggerFactory.getLogger(NikeScraper.class);
     private final Map<String, String> extraHeaders = Map.of("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36");
     private final BrowserType.LaunchOptions launchOptions = new DefaultLaunchOptions();
     private final Page.NavigateOptions navigateOptions = new Page.NavigateOptions().setWaitUntil(WaitUntilState.COMMIT);
@@ -117,29 +121,36 @@ public class HebeScraper implements Scraper {
         }
     }
 
-
     @Override
+    @SneakyThrows
     public List<String> getAllVariants(String link) {
+        System.out.println(ActiveLanguage.get().getResourceBundle());
         try (Playwright playwright = Playwright.create()) {
-            Browser browser = playwright.chromium().launch(launchOptions);
+            BrowserType.LaunchOptions l = new BrowserType.LaunchOptions();
+            l.setHeadless(false);
+            Browser browser = playwright.chromium().launch(l);
 
             Page page = browser.newPage();
             page.setDefaultTimeout(10000);
             page.setExtraHTTPHeaders(extraHeaders);
-            page.navigate(link, navigateOptions);
+            page.navigate(link);
 
-//            waitForContent(page);
-
-            if (!isLinkValid(page))
-                throw new InvalidLinkException(Messages.scraper("invalidLink"), "User %s specified wrong link: %s".formatted(ActiveUser.get().getUserId(), ActiveUser.get().getText()));
-
-
-            if (isMultiVariant(page))
-                return getAllVariantsAsString(page);
-
-            return List.of("-oneVariant One Variant");
+            return getAllVariants(page);
         }
     }
+
+    List<String> getAllVariants(Page page) {
+        if (!isLinkValid(page))
+            throw new InvalidLinkException(Messages.scraper("invalidLink"), "User %s specified wrong link: %s".formatted(ActiveUser.get().getUserId(), ActiveUser.get().getText()));
+//
+//
+//            if (isMultiVariant(page))
+//                return getAllVariantsAsString(page);
+
+//            Thread.sleep(500);
+        return List.of("-oneVariant One Variant");
+    }
+
 
     @Override
     public void setBugged(boolean bugged) {
@@ -177,7 +188,7 @@ public class HebeScraper implements Scraper {
         Locator.WaitForOptions waitForOptions = new Locator.WaitForOptions();
         waitForOptions.setTimeout(2000);
         try {
-            page.locator("div.product-summary__main-box").waitFor(waitForOptions);
+            page.locator("div.css-mso6zd").waitFor(waitForOptions);
             return true;
         } catch (Exception ex) {
             return false;
