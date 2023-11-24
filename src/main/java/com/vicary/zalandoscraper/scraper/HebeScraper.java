@@ -128,11 +128,8 @@ public class HebeScraper implements Scraper {
             page.setExtraHTTPHeaders(extraHeaders);
             page.navigate(link, navigateOptions);
 
-//            waitForContent(page);
-
             if (!isLinkValid(page))
                 throw new InvalidLinkException(Messages.scraper("invalidLink"), "User %s specified wrong link: %s".formatted(ActiveUser.get().getUserId(), ActiveUser.get().getText()));
-
 
             if (isMultiVariant(page))
                 return getAllVariantsAsString(page);
@@ -192,18 +189,18 @@ public class HebeScraper implements Scraper {
         return page.getByText("Produkt niedostępny online").isVisible();
     }
 
-    private static String getName(Page page) {
+    private String getName(Page page) {
         String name = page.locator("p.product-content__brand").innerText().replace("\n", " ");
         if (name.contains("\n"))
             name = name.replaceAll("\n", " ");
         return name;
     }
 
-    private static String getDescription(Page page) {
+    private String getDescription(Page page) {
         return page.locator("p.js-product-short-description").innerText();
     }
 
-    private static double getPrice(Page page) {
+    private double getPrice(Page page) {
         String price = page.locator("div.price-product__wrapper").innerText().trim();
 
         String[] priceArray = price.split("\n");

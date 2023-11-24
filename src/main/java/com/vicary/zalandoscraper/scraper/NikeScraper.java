@@ -7,15 +7,11 @@ import com.vicary.zalandoscraper.exception.InvalidLinkException;
 import com.vicary.zalandoscraper.messages.Messages;
 import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;
-import com.vicary.zalandoscraper.thread_local.ActiveLanguage;
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
 import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
@@ -45,35 +41,46 @@ public class NikeScraper implements Scraper {
         }
     }
 
-    private void updateProduct(Page page, ProductDTO dto) {
+    void updateProduct(Page page, ProductDTO dto) {
         try (page) {
-//            waitForContent(page);
+            boolean isSoldOut = false;
+            boolean isMultiVariant = false;
+            boolean isOneVariant = false;
 
-            if (!isLinkValid(page)) {
-                logger.warn("Product '{}' - link invalid, probably needs to be deleted.", dto.getProductId());
-                dto.setNewPrice(0);
-                return;
+            while (!isSoldOut && !isMultiVariant && !isOneVariant) {
+                isMultiVariant = isMultiVariantVisible(page);
+                isSoldOut = isSoldOutVisible(page);
+                isOneVariant = isOneVariant(page);
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
 
-            if (isItemSoldOut(page)) {
+            logger.warn("Sold out: " + isSoldOut);
+            logger.warn("Multi variant: " + isMultiVariant);
+            logger.warn("One Variant: " + isOneVariant);
+
+            if (isSoldOut) {
                 logger.debug("Product '{}' - item sold out", dto.getProductId());
                 dto.setNewPrice(0);
                 return;
             }
 
-            if (dto.getVariant().startsWith("-oneVariant")) {
+            if (isMultiVariant) {
+                if (isVariantAvailable(page, dto.getVariant()))
+                    dto.setNewPrice(getPrice(page));
+                else {
+                    dto.setNewPrice(0);
+                    logger.debug("Product '{}' - item variant not available", dto.getProductId());
+                }
+                return;
+            }
+
+            if (isOneVariant) {
                 dto.setNewPrice(getPrice(page));
-                return;
             }
-
-
-            if (!clickAvailableVariant(page, getAllAvailableVariants(page), dto.getVariant())) {
-                dto.setNewPrice(0);
-                logger.debug("Product '{}' - item variant not available", dto.getProductId());
-                return;
-            }
-
-            dto.setNewPrice(getPrice(page));
 
         } catch (PlaywrightException ex) {
             ex.printStackTrace();
@@ -81,16 +88,35 @@ public class NikeScraper implements Scraper {
         }
     }
 
+    private boolean isMultiVariantVisible(Page page) {
+        return page.isVisible("fieldset.mt5-sm.mb3-sm.body-2.css-1pj6y87");
+    }
+
+    private boolean isSoldOutVisible(Page page) {
+        return page.isVisible("div.sold-out");
+    }
+
+    private boolean isOneVariant(Page page) {
+        if (page.isVisible("span.prl0-sm.ta-sm-l.bg-transparent.sizeHeader"))
+            return !page.locator("span.prl0-sm.ta-sm-l.bg-transparent.sizeHeader").textContent().startsWith("Wybierz");
+
+        return false;
+    }
+
+
     @Override
+    @SneakyThrows
     public Product getProduct(String link, String variant) {
         try (Playwright playwright = Playwright.create()) {
-            Browser browser = playwright.chromium().launch();
+            BrowserType.LaunchOptions l = new BrowserType.LaunchOptions();
+            l.setHeadless(false);
+            Browser browser = playwright.chromium().launch(launchOptions);
             Page page = browser.newPage();
             page.setDefaultTimeout(10000);
             page.setExtraHTTPHeaders(extraHeaders);
             page.navigate(link, navigateOptions);
 
-            waitForContent(page);
+            waitForTitle(page);
 
             Product product = Product.builder()
                     .name(getName(page))
@@ -100,55 +126,49 @@ public class NikeScraper implements Scraper {
                     .link(page.url())
                     .build();
 
-
-            if (isItemSoldOut(page)) {
+            if (variant.equals("-oneVariant Unknown"))
                 return product;
-            }
 
-            if (variant.startsWith("-oneVariant")) {
+            if (variant.startsWith("-oneVariant ")) {
                 product.setPrice(getPrice(page));
                 return product;
             }
 
-            if (!clickAvailableVariant(page, getAllAvailableVariants(page), variant)) {
+            waitForSizes(page, 10000);
+
+            if (!isVariantAvailable(page, variant))
                 return product;
-            }
 
-            product.setDescription(getDescription(page));
             product.setPrice(getPrice(page));
-
             return product;
         }
     }
 
+
     @Override
     @SneakyThrows
     public List<String> getAllVariants(String link) {
-        System.out.println(ActiveLanguage.get().getResourceBundle());
         try (Playwright playwright = Playwright.create()) {
             BrowserType.LaunchOptions l = new BrowserType.LaunchOptions();
             l.setHeadless(false);
-            Browser browser = playwright.chromium().launch(l);
+            Browser browser = playwright.chromium().launch(launchOptions);
 
             Page page = browser.newPage();
             page.setDefaultTimeout(10000);
             page.setExtraHTTPHeaders(extraHeaders);
-            page.navigate(link);
+            page.navigate(link, navigateOptions);
 
-            return getAllVariants(page);
+            if (!isLinkValid(page))
+                throw new InvalidLinkException(Messages.scraper("invalidLink"), "User %s specified wrong link: %s".formatted(ActiveUser.get().getUserId(), ActiveUser.get().getText()));
+
+            if (waitForSizes(page, 3500))
+                return getAllVariantsAsString(page);
+
+            if (isItemSoldOut(page))
+                return List.of("-oneVariant Unknown");
+
+            return List.of("-oneVariant " + getVariant(page));
         }
-    }
-
-    List<String> getAllVariants(Page page) {
-        if (!isLinkValid(page))
-            throw new InvalidLinkException(Messages.scraper("invalidLink"), "User %s specified wrong link: %s".formatted(ActiveUser.get().getUserId(), ActiveUser.get().getText()));
-//
-//
-//            if (isMultiVariant(page))
-//                return getAllVariantsAsString(page);
-
-//            Thread.sleep(500);
-        return List.of("-oneVariant One Variant");
     }
 
 
@@ -157,38 +177,32 @@ public class NikeScraper implements Scraper {
         launchOptions.setHeadless(!bugged);
     }
 
-    @SneakyThrows
-    private boolean clickAvailableVariant(Page page, List<Locator> availableVariants, String variant) {
-        String description = getDescription(page);
-        for (Locator l : availableVariants) {
-            String locatorVariant = l.textContent().trim();
-            if (variant.equals(locatorVariant)) {
-                l.click();
-                waitForPriceUpdate(page, description);
-                return true;
-            }
-        }
-        return false;
+
+    private String getVariant(Page page) {
+        return page.locator("span.prl0-sm.ta-sm-l.bg-transparent.sizeHeader").textContent();
     }
 
-    @SneakyThrows
-    private void waitForPriceUpdate(Page page, String description) {
-        long time = System.currentTimeMillis();
-        while (getDescription(page).equals(description)) {
-            Thread.sleep(30);
-            if (System.currentTimeMillis() - time > 2000) {
-                logger.info("Timeout in waiting for price update after click, probably item was already chosen: " + page.url());
-                break;
-            }
+    private void clickCookiesButton(Page page) {
+        page.getByTestId("dialog-accept-button").click();
+    }
+
+    private boolean waitForSizes(Page page, int howLong) {
+        Page.WaitForSelectorOptions waitForOptions = new Page.WaitForSelectorOptions();
+        waitForOptions.setTimeout(howLong);
+        try {
+            page.waitForSelector("fieldset.mt5-sm.mb3-sm.body-2.css-1pj6y87", waitForOptions);
+            return true;
+        } catch (TimeoutError ex) {
+            return false;
         }
     }
 
 
     private boolean isLinkValid(Page page) {
         Locator.WaitForOptions waitForOptions = new Locator.WaitForOptions();
-        waitForOptions.setTimeout(2000);
+        waitForOptions.setTimeout(4000);
         try {
-            page.locator("div.css-mso6zd").waitFor(waitForOptions);
+            page.locator("div#RightRail").waitFor(waitForOptions);
             return true;
         } catch (Exception ex) {
             return false;
@@ -196,56 +210,63 @@ public class NikeScraper implements Scraper {
     }
 
     private boolean isMultiVariant(Page page) {
-        return page.isVisible(Tag.Hebe.IS_MULTI_VARIANT);
+        return page.isVisible("fieldset.mt5-sm.mb3-sm.body-2.css-1pj6y87");
     }
 
     private boolean isItemSoldOut(Page page) {
-        return page.getByText("Produkt niedostępny online").isVisible();
+        Locator.WaitForOptions waitForOptions = new Locator.WaitForOptions();
+        waitForOptions.setTimeout(1000);
+        try {
+            page.locator("div.sold-out").waitFor(waitForOptions);
+            return true;
+        } catch (Exception ex) {
+            return false;
+        }
     }
 
-    private static String getName(Page page) {
-        String name = page.locator("p.product-content__brand").innerText().replace("\n", " ");
-        if (name.contains("\n"))
-            name = name.replaceAll("\n", " ");
-        return name;
+    private String getName(Page page) {
+        return page.locator("h1#pdp_product_title").last().innerText();
     }
 
-    private static String getDescription(Page page) {
-        return page.locator("p.js-product-short-description").innerText();
+    private String getDescription(Page page) {
+        return page.locator("h2.headline-5.pb1-sm.d-sm-ib").last().innerText();
     }
 
-    private static double getPrice(Page page) {
-        String price = page.locator("div.price-product__wrapper").innerText().trim();
+    private double getPrice(Page page) {
+        String price = page.locator("div.product-price.is--current-price").first().innerText().trim();
+        String[] priceArray = price.split(" ");
 
-        String[] priceArray = price.split("\n");
+        if (priceArray[0].contains(","))
+            priceArray[0] = priceArray[0].replaceAll(",", ".");
 
-        if (priceArray[0].contains("."))
-            priceArray[0] = priceArray[0].replaceAll("\\.", "");
+        System.out.println(priceArray[0]);
 
-        return Double.parseDouble(priceArray[0] + "." + priceArray[1]);
-    }
-
-    private List<String> getAllAvailableVariantsAsString(Page page) {
-        return page.locator("div.swatch__item--selectable")
-                .all()
-                .stream()
-                .map(e -> e.textContent().trim())
-                .toList();
-    }
-
-    private List<Locator> getAllAvailableVariants(Page page) {
-        return page.locator("div.swatch__item--selectable").all();
+        return Double.parseDouble(priceArray[0]);
     }
 
     private List<String> getAllVariantsAsString(Page page) {
-        return page.locator(Tag.Hebe.GET_ALL_VARIANTS)
+        return page.locator("label.css-xf3ahq")
                 .all()
                 .stream()
                 .map(e -> e.textContent().trim())
                 .toList();
     }
 
-    private void waitForContent(Page page) {
-        page.waitForSelector(Tag.Hebe.WAIT_FOR_CONTENT);
+    @SneakyThrows
+    private boolean isVariantAvailable(Page page, String variant) {
+        List<Locator> locators = page.locator("label.css-xf3ahq").all();
+
+        for (Locator l : locators) {
+            if (l.textContent().trim().equals(variant)) {
+                return l.isEnabled();
+            }
+        }
+        return false;
+    }
+
+    private void waitForTitle(Page page) {
+        Locator.WaitForOptions waitForOptions = new Locator.WaitForOptions();
+        waitForOptions.setTimeout(10000);
+        page.locator("h1#pdp_product_title").last().waitFor(waitForOptions);
     }
 }
