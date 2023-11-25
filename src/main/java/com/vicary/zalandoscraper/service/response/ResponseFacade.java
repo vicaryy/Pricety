@@ -137,4 +137,8 @@ public class ResponseFacade {
     public void deleteActiveRequestById(String userId) {
         activeRequestService.deleteByUserId(userId);
     }
+
+    public void deleteAllActiveRequests() {
+        activeRequestService.deleteAllActiveUsers();
+    }
 }

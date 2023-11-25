@@ -52,10 +52,7 @@ public class UserService {
 
     public boolean isUserAdmin(String userId) {
         Optional<UserEntity> userEntity = findByUserId(userId);
-        if (userEntity.isPresent()) {
-            return userEntity.get().isAdmin();
-        }
-        return false;
+        return userEntity.map(UserEntity::isAdmin).orElse(false);
     }
 
     public boolean updateUserToPremiumByUserId(String userId) {
@@ -115,5 +112,10 @@ public class UserService {
 
     public void setVerifiedEmail(String userId, boolean verified) {
         repository.setVerifiedEmail(userId, verified);
+    }
+
+    public String getLanguageByUserId(String userId) {
+        UserEntity user = findByUserId(userId).orElseThrow();
+        return user.getNationality();
     }
 }

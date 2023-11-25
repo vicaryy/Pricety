@@ -28,6 +28,10 @@ public class Messages {
         return ActiveLanguage.get().getResourceBundle().getString(allProducts + key);
     }
 
+    public static String allProducts(String key, String language) {
+        return ResourceBundle.getBundle("messages", Locale.of(language)).getString(allProducts + key);
+    }
+
     public static String addProduct(String key) {
         return ActiveLanguage.get().getResourceBundle().getString(addProduct + key);
     }

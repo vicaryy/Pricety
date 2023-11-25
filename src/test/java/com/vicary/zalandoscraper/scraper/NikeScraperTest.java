@@ -100,6 +100,7 @@ class NikeScraperTest {
                 .variant("-oneVariant Unknown")
                 .link("https://www.nike.com/pl/t/bluza-z-kapturem-sportswear-club-fleece-tz1kGP/BV2654-591")
                 .build();
+
         Product actualProduct = scraper.getProduct(givenLink, "-oneVariant Unknown");
 
         assertEquals(expectedProduct, actualProduct);
@@ -119,22 +120,7 @@ class NikeScraperTest {
                 .newPrice(329.99)
                 .build();
 
-        Map<String, String> extraHeaders = Map.of("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36");
-        BrowserType.LaunchOptions launchOptions = new DefaultLaunchOptions();
-        Page.NavigateOptions navigateOptions = new Page.NavigateOptions().setWaitUntil(WaitUntilState.COMMIT);
-
-        try (Playwright playwright = Playwright.create()) {
-            com.microsoft.playwright.BrowserType.LaunchOptions l = new BrowserType.LaunchOptions();
-            l.setHeadless(false);
-            Browser browser = playwright.chromium().launch(l);
-            Page page = browser.newPage();
-            page.setDefaultTimeout(10000);
-            page.setExtraHTTPHeaders(extraHeaders);
-            page.navigate(link, navigateOptions);
-
-
-            scraper.updateProduct(page, givenDto);
-        }
+        runPlaywrightAndUpdateProduct(link, givenDto);
 
         assertEquals(givenDto, expectedDto);
     }
@@ -153,22 +139,7 @@ class NikeScraperTest {
                 .newPrice(0)
                 .build();
 
-        Map<String, String> extraHeaders = Map.of("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36");
-        BrowserType.LaunchOptions launchOptions = new DefaultLaunchOptions();
-        Page.NavigateOptions navigateOptions = new Page.NavigateOptions().setWaitUntil(WaitUntilState.COMMIT);
-
-        try (Playwright playwright = Playwright.create()) {
-            com.microsoft.playwright.BrowserType.LaunchOptions l = new BrowserType.LaunchOptions();
-            l.setHeadless(false);
-            Browser browser = playwright.chromium().launch(l);
-            Page page = browser.newPage();
-            page.setDefaultTimeout(10000);
-            page.setExtraHTTPHeaders(extraHeaders);
-            page.navigate(link, navigateOptions);
-
-
-            scraper.updateProduct(page, givenDto);
-        }
+        runPlaywrightAndUpdateProduct(link, givenDto);
 
         assertEquals(givenDto, expectedDto);
     }
@@ -187,16 +158,42 @@ class NikeScraperTest {
         ProductDTO expectedDto = ProductDTO.builder()
                 .price(500)
                 .newPrice(689.97)
+                .variant("EU 50.5")
                 .build();
 
+        runPlaywrightAndUpdateProduct(link, givenDto);
+
+        assertEquals(givenDto, expectedDto);
+    }
+
+    @Test
+    void updateProduct_expectEquals_ItemWithNotAvailableVariant() {
+        String link = "https://www.nike.com/pl/t/buty-meskie-air-jordan-7-retro-S3rkwk/CU9307-160";
+
+        ProductDTO givenDto = ProductDTO.builder()
+                .price(500)
+                .newPrice(500)
+                .variant("EU 40")
+                .build();
+
+        ProductDTO expectedDto = ProductDTO.builder()
+                .price(500)
+                .newPrice(0)
+                .variant("EU 40")
+                .build();
+
+        runPlaywrightAndUpdateProduct(link, givenDto);
+
+        assertEquals(givenDto, expectedDto);
+    }
+
+    void runPlaywrightAndUpdateProduct(String link, ProductDTO givenDto) {
         Map<String, String> extraHeaders = Map.of("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36");
         BrowserType.LaunchOptions launchOptions = new DefaultLaunchOptions();
         Page.NavigateOptions navigateOptions = new Page.NavigateOptions().setWaitUntil(WaitUntilState.COMMIT);
 
         try (Playwright playwright = Playwright.create()) {
-            com.microsoft.playwright.BrowserType.LaunchOptions l = new BrowserType.LaunchOptions();
-            l.setHeadless(false);
-            Browser browser = playwright.chromium().launch(l);
+            Browser browser = playwright.chromium().launch(launchOptions);
             Page page = browser.newPage();
             page.setDefaultTimeout(10000);
             page.setExtraHTTPHeaders(extraHeaders);
@@ -205,34 +202,6 @@ class NikeScraperTest {
 
             scraper.updateProduct(page, givenDto);
         }
-
-        assertEquals(givenDto, expectedDto);
-    }
-
-
-
-    // niedostepny - https://www.nike.com/pl/t/bluza-z-kapturem-sportswear-club-fleece-tz1kGP/BV2654-591
-    // one size - https://www.nike.com/pl/t/czapka-dla-peak-swoosh-6n8BrH/FB6492-010
-    @Test
-    @SneakyThrows
-    void getTextToFile() {
-//        String link = "https://www.zalando.pl/jack-and-jones-jpstmarco-bojowki-otter-ja222e0r9-o12.html";
-//        String locator = "";
-//
-//        final Map<String, String> extraHeaders = Map.of("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36");
-//        try (Playwright playwright = Playwright.create()) {
-//            com.microsoft.playwright.BrowserType.LaunchOptions l = new BrowserType.LaunchOptions();
-//            l.setHeadless(false);
-//            Browser browser = playwright.chromium().launch(l);
-//
-//            Page page = browser.newPage();
-//            page.setDefaultTimeout(10000);
-//            page.setExtraHTTPHeaders(extraHeaders);
-//            page.navigate(link);
-//            Thread.sleep(500);
-////            Files.writeString(Path.of("src/test/java/com/vicary/zalandoscraper/scraper/zalando.txt"), page.locator(locator).innerHTML());
-//            Files.writeString(Path.of("src/test/java/com/vicary/zalandoscraper/scraper/zalando.txt"), page.content());
-//        }
     }
 }
 

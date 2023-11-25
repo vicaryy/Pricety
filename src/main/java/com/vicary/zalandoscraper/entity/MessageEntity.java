@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -25,4 +27,7 @@ public class MessageEntity {
 
     @Column(name = "message")
     private String message;
+
+    @Column(name = "sent_date")
+    private LocalDateTime sentDate;
 }

@@ -78,7 +78,7 @@ class DeleteProductDisplay implements ProductDisplayer {
 
 
     private void setTitle(StringBuilder sb) {
-        sb.append("Products to delete 🗑️\n\n");
+        sb.append("*").append(Messages.deleteProduct("yourProducts")).append("*\n\n");
     }
 
     private String getFullProductDescription(ProductDTO dto, int iterator) {
@@ -120,8 +120,14 @@ class DeleteProductDisplay implements ProductDisplayer {
     }
 
     private String getFormattedVariant(String v) {
-        if (v.startsWith("-oneVariant"))
-            v = v.substring(12);
+        if (v.startsWith("-oneVariant")) {
+            String oneVariant = v.substring(11).trim();
+
+            if (oneVariant.equals("Unknown"))
+                return Messages.allProducts("unknown");
+
+            return oneVariant;
+        }
         return v;
     }
 

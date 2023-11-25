@@ -8,7 +8,6 @@ import com.vicary.zalandoscraper.messages.Messages;
 import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
-import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,13 +28,13 @@ public class NikeScraper implements Scraper {
                 browser.newPage();
                 browser.setDefaultTimeout(4000);
 
-                for (int i = 0; i < DTOs.size(); i++) {
+                for (ProductDTO dto : DTOs) {
                     Page newPage = browser.newPage();
                     newPage.setExtraHTTPHeaders(extraHeaders);
-                    newPage.navigate(DTOs.get(i).getLink(), navigateOptions);
+                    newPage.navigate(dto.getLink(), navigateOptions);
                     newPage.setDefaultTimeout(4000);
 
-                    updateProduct(newPage, DTOs.get(i));
+                    updateProduct(newPage, dto);
                 }
             }
         }
@@ -58,9 +57,6 @@ public class NikeScraper implements Scraper {
                 }
             }
 
-            logger.warn("Sold out: " + isSoldOut);
-            logger.warn("Multi variant: " + isMultiVariant);
-            logger.warn("One Variant: " + isOneVariant);
 
             if (isSoldOut) {
                 logger.debug("Product '{}' - item sold out", dto.getProductId());
@@ -78,9 +74,7 @@ public class NikeScraper implements Scraper {
                 return;
             }
 
-            if (isOneVariant) {
-                dto.setNewPrice(getPrice(page));
-            }
+            dto.setNewPrice(getPrice(page));
 
         } catch (PlaywrightException ex) {
             ex.printStackTrace();
@@ -105,11 +99,8 @@ public class NikeScraper implements Scraper {
 
 
     @Override
-    @SneakyThrows
     public Product getProduct(String link, String variant) {
         try (Playwright playwright = Playwright.create()) {
-            BrowserType.LaunchOptions l = new BrowserType.LaunchOptions();
-            l.setHeadless(false);
             Browser browser = playwright.chromium().launch(launchOptions);
             Page page = browser.newPage();
             page.setDefaultTimeout(10000);
@@ -146,7 +137,6 @@ public class NikeScraper implements Scraper {
 
 
     @Override
-    @SneakyThrows
     public List<String> getAllVariants(String link) {
         try (Playwright playwright = Playwright.create()) {
             BrowserType.LaunchOptions l = new BrowserType.LaunchOptions();
@@ -182,9 +172,6 @@ public class NikeScraper implements Scraper {
         return page.locator("span.prl0-sm.ta-sm-l.bg-transparent.sizeHeader").textContent();
     }
 
-    private void clickCookiesButton(Page page) {
-        page.getByTestId("dialog-accept-button").click();
-    }
 
     private boolean waitForSizes(Page page, int howLong) {
         Page.WaitForSelectorOptions waitForOptions = new Page.WaitForSelectorOptions();
@@ -209,9 +196,6 @@ public class NikeScraper implements Scraper {
         }
     }
 
-    private boolean isMultiVariant(Page page) {
-        return page.isVisible("fieldset.mt5-sm.mb3-sm.body-2.css-1pj6y87");
-    }
 
     private boolean isItemSoldOut(Page page) {
         Locator.WaitForOptions waitForOptions = new Locator.WaitForOptions();
@@ -239,8 +223,6 @@ public class NikeScraper implements Scraper {
         if (priceArray[0].contains(","))
             priceArray[0] = priceArray[0].replaceAll(",", ".");
 
-        System.out.println(priceArray[0]);
-
         return Double.parseDouble(priceArray[0]);
     }
 
@@ -252,7 +234,6 @@ public class NikeScraper implements Scraper {
                 .toList();
     }
 
-    @SneakyThrows
     private boolean isVariantAvailable(Page page, String variant) {
         List<Locator> locators = page.locator("label.css-xf3ahq").all();
 

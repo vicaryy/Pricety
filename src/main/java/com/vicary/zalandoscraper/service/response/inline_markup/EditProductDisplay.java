@@ -120,8 +120,14 @@ class EditProductDisplay implements ProductDisplayer {
     }
 
     private String getFormattedVariant(String v) {
-        if (v.startsWith("-oneVariant"))
-            v = v.substring(12);
+        if (v.startsWith("-oneVariant")) {
+            String oneVariant = v.substring(11).trim();
+
+            if (oneVariant.equals("Unknown"))
+                return Messages.allProducts("unknown");
+
+            return oneVariant;
+        }
         return v;
     }
 

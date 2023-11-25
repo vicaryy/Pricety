@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -95,10 +96,7 @@ public class UserAuthentication {
     }
 
     private void saveMessageToRepository(UserEntity user, String text) {
-        messageService.saveEntity(MessageEntity.builder()
-                .user(user)
-                .message(text)
-                .build());
+        messageService.saveEntity(user, text);
     }
 
     private ActiveUser setActiveUserInThread(UserEntity userEntity, String text, String chatId, int messageId, boolean awaitedMessage) {

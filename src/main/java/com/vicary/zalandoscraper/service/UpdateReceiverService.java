@@ -1,9 +1,13 @@
 package com.vicary.zalandoscraper.service;
 
 import com.microsoft.playwright.PlaywrightException;
+import com.vicary.zalandoscraper.entity.WaitingUserEntity;
 import com.vicary.zalandoscraper.messages.Messages;
 import com.vicary.zalandoscraper.scraper.HebeScraper;
+import com.vicary.zalandoscraper.scraper.NikeScraper;
+import com.vicary.zalandoscraper.scraper.ScraperFactory;
 import com.vicary.zalandoscraper.scraper.ZalandoScraper;
+import com.vicary.zalandoscraper.service.repository_services.WaitingUserService;
 import com.vicary.zalandoscraper.thread_local.ActiveLanguage;
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
 import com.vicary.zalandoscraper.api_telegram.service.UpdateFetcher;
@@ -18,6 +22,7 @@ import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
 import com.vicary.zalandoscraper.service.response.*;
 import com.vicary.zalandoscraper.service.response.inline_markup.InlineMarkupResponse;
 import com.vicary.zalandoscraper.updater.AutoUpdater;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 
 import com.vicary.zalandoscraper.api_telegram.api_object.Update;
@@ -36,7 +41,14 @@ public class UpdateReceiverService implements UpdateReceiver {
     private final UserAuthentication userAuthentication;
 
     private final ResponseFacade facade;
+
+    private final WaitingUserService waitingUserService;
     private final UpdateFetcher updateFetcher = new UpdateFetcher(this);
+
+    @PostConstruct
+    void setup() {
+        facade.deleteAllActiveRequests();
+    }
 
     @Override
     public void receive(Update update) {
@@ -63,7 +75,7 @@ public class UpdateReceiverService implements UpdateReceiver {
 
             Responser responser = null;
 
-            if (user.isAdmin()) {
+            if (Pattern.isAdminCommand(text, user.isAdmin())) {
                 responser = new AdminResponse(facade, user);
                 responser.response();
             }
@@ -71,7 +83,7 @@ public class UpdateReceiverService implements UpdateReceiver {
             if (user.isAwaitedMessage())
                 responser = new AwaitedMessageResponse(facade, user);
 
-            else if (Pattern.isReplyMarkup(update))
+            else if (Pattern.isInlineMarkup(update))
                 responser = new InlineMarkupResponse(facade, user);
 
             else if (Pattern.isCommand(text))
@@ -80,11 +92,8 @@ public class UpdateReceiverService implements UpdateReceiver {
             else if (Pattern.isEmailToken(text))
                 responser = new EmailVerificationResponse(facade, user);
 
-            else if (Pattern.isZalandoURL(text))
-                responser = new LinkResponse(facade, user, new ZalandoScraper());
-
-            else if (Pattern.isHebeURL(text))
-                responser = new LinkResponse(facade, user, new HebeScraper());
+            else if (Pattern.isURL(text))
+                responser = new LinkResponse(facade, user, ScraperFactory.getScraperFromLink(text));
 
             if (responser != null)
                 responser.response();
@@ -118,7 +127,13 @@ public class UpdateReceiverService implements UpdateReceiver {
     private void handleProductUpdaterRunning(String userId) {
         String message = Messages.other("updatingProducts");
         QuickSender.message(userId, message, true);
+        checkAndSaveWaitingUser(userId);
         throw new IllegalArgumentException("User '%s' interact with bot while product updater is running.".formatted(userId));
+    }
+
+    private void checkAndSaveWaitingUser(String userId) {
+        if (!waitingUserService.existsByUserId(userId))
+            waitingUserService.saveWaitingUser(new WaitingUserEntity(userId));
     }
 
     @Override

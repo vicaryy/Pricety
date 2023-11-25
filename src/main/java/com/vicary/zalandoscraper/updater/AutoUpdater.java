@@ -1,11 +1,8 @@
 package com.vicary.zalandoscraper.updater;
 
-import com.vicary.zalandoscraper.scraper.BrowserType;
+import com.vicary.zalandoscraper.scraper.*;
 import com.vicary.zalandoscraper.utils.TerminalExecutor;
 import com.vicary.zalandoscraper.exception.TimeoutException;
-import com.vicary.zalandoscraper.scraper.HebeScraper;
-import com.vicary.zalandoscraper.scraper.Scraper;
-import com.vicary.zalandoscraper.scraper.ZalandoScraper;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;
 import com.vicary.zalandoscraper.service.repository_services.ProductService;
 import com.vicary.zalandoscraper.service.repository_services.UpdatesHistoryService;
@@ -24,7 +21,7 @@ import java.util.Map;
 public class AutoUpdater implements Runnable {
     private final static Logger logger = LoggerFactory.getLogger(AutoUpdater.class);
     private final static int DELAY_BEFORE_START = 5000;   // 5 seconds
-    private final static int DELAY_BETWEEN_UPDATES = 1000 * 60 * 60; // 1 hour
+    private final static int DELAY_BETWEEN_UPDATES = 1000 * 60 * 60 * 2; // 2 hour
     private static boolean isActive;
     private final ProductService productService;
     private final UpdatesHistoryService updatesHistoryService;
@@ -39,7 +36,8 @@ public class AutoUpdater implements Runnable {
                        ProductMapper productMapper,
                        NotificationManager notificationManager,
                        ZalandoScraper zalandoScraper,
-                       HebeScraper hebeScraper) {
+                       HebeScraper hebeScraper,
+                       NikeScraper nikeScraper) {
         this.productService = productService;
         this.updatesHistoryService = updatesHistoryService;
         this.productMapper = productMapper;
@@ -47,8 +45,9 @@ public class AutoUpdater implements Runnable {
 
         scraperMap.put("zalando.pl", zalandoScraper);
         scraperMap.put("hebe.pl", hebeScraper);
+        scraperMap.put("nike.pl", nikeScraper);
 
-//        updaterThread.start();
+        updaterThread.start();
     }
 
     @Override
@@ -57,9 +56,7 @@ public class AutoUpdater implements Runnable {
             sleep(DELAY_BEFORE_START);
 
             while (!Thread.currentThread().isInterrupted()) {
-                isActive = true;
                 update();
-                isActive = false;
                 sleep(DELAY_BETWEEN_UPDATES);
             }
         } catch (Exception ex) {
@@ -78,7 +75,10 @@ public class AutoUpdater implements Runnable {
             return;
         }
 
+
+        isActive = true;
         updateProducts(splitListIntoScrapers(products));
+        isActive = false;
 
         updateProductsPriceInRepository(products);
 

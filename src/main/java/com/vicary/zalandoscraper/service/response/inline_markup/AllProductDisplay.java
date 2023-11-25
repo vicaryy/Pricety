@@ -121,16 +121,22 @@ class AllProductDisplay implements ProductDisplayer {
     }
 
     private String getFormattedVariant(String v) {
-        if (v.startsWith("-oneVariant"))
-            v = v.substring(11).trim();
+        if (v.startsWith("-oneVariant")) {
+            String oneVariant = v.substring(11).trim();
+
+            if (oneVariant.equals("Unknown"))
+                return Messages.allProducts("unknown");
+
+            return oneVariant;
+        }
         return v;
     }
 
     private String getSummaryMessage() {
         return """
-                
-                
-                
+                                
+                                
+                                
                 *%s*
                 %s""".formatted(
                 Messages.allProducts("didYouKnow"),

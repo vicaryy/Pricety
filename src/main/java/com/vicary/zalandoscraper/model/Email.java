@@ -33,9 +33,7 @@ public class Email {
         String newPrice = String.format("%.2f", p.getNewPrice());
         String oldPrice = String.format("%.2f", p.getPrice());
         String cheaper = String.format("%.2f", p.getPrice() - p.getNewPrice());
-        String variant = p.getVariant();
-        if (variant.startsWith("-oneVariant "))
-            variant = variant.substring(12);
+        String variant = getFormattedVariant(p);
         message = Messages.email("notificationMessage", p.getLanguage()).formatted(
                 cheaper,
                 p.getName(),
@@ -51,7 +49,7 @@ public class Email {
         mime = true;
         title = Messages.email("notificationTitle", p.getLanguage());
         String newPrice = String.format("%.2f", p.getNewPrice());
-        String variant = p.getVariant();
+        String variant = getFormattedVariant(p);
         if (variant.startsWith("-oneVariant "))
             variant = variant.substring(12);
         message = Messages.email("notificationMessageWhenPriceZero", p.getLanguage()).formatted(
@@ -68,6 +66,18 @@ public class Email {
         title = Messages.email("verificationTitle");
         message = Messages.email("verificationMessage")
                 .formatted(token);
+    }
+
+    private String getFormattedVariant(ProductDTO p) {
+        String variant = p.getVariant();
+        if (variant.startsWith("-oneVariant ")) {
+            variant = variant.substring(12).trim();
+            if (variant.equals("One Variant"))
+                variant = Messages.allProducts("oneVariant", p.getLanguage());
+            else if (variant.equals("Unknown"))
+                variant = Messages.allProducts("unknown", p.getLanguage());
+        }
+        return variant;
     }
 
     public void checkValidation() {

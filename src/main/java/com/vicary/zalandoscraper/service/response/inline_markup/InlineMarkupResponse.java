@@ -2,8 +2,8 @@ package com.vicary.zalandoscraper.service.response.inline_markup;
 
 import com.vicary.zalandoscraper.messages.Messages;
 import com.vicary.zalandoscraper.pattern.Pattern;
-import com.vicary.zalandoscraper.scraper.HebeScraper;
 import com.vicary.zalandoscraper.scraper.Scraper;
+import com.vicary.zalandoscraper.scraper.ScraperFactory;
 import com.vicary.zalandoscraper.service.response.ResponseFacade;
 import com.vicary.zalandoscraper.service.response.Responser;
 import com.vicary.zalandoscraper.thread_local.ActiveLanguage;
@@ -13,7 +13,6 @@ import com.vicary.zalandoscraper.entity.AwaitedMessageEntity;
 import com.vicary.zalandoscraper.entity.LinkRequestEntity;
 import com.vicary.zalandoscraper.exception.InvalidLinkException;
 import com.vicary.zalandoscraper.model.Product;
-import com.vicary.zalandoscraper.scraper.ZalandoScraper;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;
 import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
 import com.vicary.zalandoscraper.service.response.InlineBlock;
@@ -100,12 +99,7 @@ public class InlineMarkupResponse implements Responser {
         int messageId = QuickSender.messageWithReturn(user.getChatId(), Messages.other("adding"), false).getMessageId();
         QuickSender.chatAction(user.getChatId(), Action.TYPING);
 
-        Scraper scraper = null;
-
-        if (Pattern.isZalandoURL(link))
-            scraper = new ZalandoScraper();
-        else if (Pattern.isHebeURL(link))
-            scraper = new HebeScraper();
+        Scraper scraper = ScraperFactory.getScraperFromLink(link);
 
         Product product = scraper.getProduct(link, variant.toString().trim());
 
@@ -270,7 +264,7 @@ public class InlineMarkupResponse implements Responser {
         if (responseFacade.productExistsByUserIdAndLinkAndVariant(user.getChatId(), product.getLink(), product.getVariant()))
             throw new InvalidLinkException(Messages.other("alreadyHave"), "User try to add same product.");
 
-        if (responseFacade.countProductsByUserId(user.getUserId()) > 9)
+        if (responseFacade.countProductsByUserId(user.getUserId()) > 9 && !user.isAdmin())
             throw new InvalidLinkException(Messages.other("productLimit"), "User try to add more than 10 products.");
     }
 

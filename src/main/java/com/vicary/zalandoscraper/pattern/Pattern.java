@@ -1,6 +1,10 @@
 package com.vicary.zalandoscraper.pattern;
 
 import com.vicary.zalandoscraper.api_telegram.api_object.Update;
+import com.vicary.zalandoscraper.scraper.HebeScraper;
+import com.vicary.zalandoscraper.scraper.NikeScraper;
+import com.vicary.zalandoscraper.scraper.Scraper;
+import com.vicary.zalandoscraper.scraper.ZalandoScraper;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -17,6 +21,14 @@ public class Pattern {
         return text.startsWith("https://www.hebe.pl/") || text.startsWith("https://hebe.pl/");
     }
 
+    public static boolean isNikeURL(String text) {
+        return text.startsWith("https://www.nike.com/pl/") || text.startsWith("https://nike.com/pl/");
+    }
+
+    public static boolean isURL(String text) {
+        return isZalandoURL(text) || isHebeURL(text) || isNikeURL(text);
+    }
+
     public static boolean isZalandoURLWithPrefix(String text) {
         String[] arrayText = text.split(" ");
         return arrayText[arrayText.length - 1].startsWith("https://www.zalando.pl/");
@@ -31,7 +43,7 @@ public class Pattern {
         return text.startsWith("/");
     }
 
-    public static boolean isReplyMarkup(Update update) {
+    public static boolean isInlineMarkup(Update update) {
         return update.getCallbackQuery() != null;
     }
 
@@ -50,5 +62,9 @@ public class Pattern {
 
     public static boolean isEmailToken(String text) {
         return text.startsWith("v-");
+    }
+
+    public static boolean isAdminCommand(String text, boolean isAdmin) {
+        return isAdmin && text.startsWith("/");
     }
 }

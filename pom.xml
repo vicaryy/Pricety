@@ -10,9 +10,9 @@
 	</parent>
 	<groupId>com.vicary</groupId>
 	<artifactId>zalando-scraper</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0-STABLE</version>
 	<name>zalando-scraper</name>
-	<description>Zalando scraper bot</description>
+	<description>Scraper Bot</description>
 
 
 	<properties>
@@ -126,7 +126,7 @@
 								<transformers>
 									<transformer implementation=
 														 "org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-										<mainClass>org.vicary.Main</mainClass>
+										<mainClass>com.vicary.zalandoscraper.Main</mainClass>
 									</transformer>
 								</transformers>
 							</configuration>
