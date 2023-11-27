@@ -1,9 +1,12 @@
 package com.vicary.zalandoscraper.messages;
 
+import com.vicary.zalandoscraper.format.MarkdownV2;
 import com.vicary.zalandoscraper.thread_local.ActiveLanguage;
+import com.vicary.zalandoscraper.thread_local.ActiveUser;
 
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Messages {
     private final static String menu = "menu-";
@@ -21,6 +24,9 @@ public class Messages {
 
 
     public static String menu(String key) {
+        if (key.equals("welcome"))
+            return "*Menu* ⚙️\n\n" + Messages.menu("how" + ThreadLocalRandom.current().nextInt(1, 10));
+
         return ActiveLanguage.get().getResourceBundle().getString(menu + key);
     }
 
@@ -46,6 +52,25 @@ public class Messages {
 
     public static String notifications(String key) {
         return ActiveLanguage.get().getResourceBundle().getString(notification + key);
+    }
+
+    public static String notifications(ActiveUser user) {
+        String email = user.getEmail();
+        String verified = "";
+        if (email == null)
+            email = Messages.notifications("notSpecified");
+
+        else if (user.isVerifiedEmail())
+            verified = "\n\n" + Messages.notifications("emailVerified");
+
+        else
+            verified = "\n\n" + Messages.notifications("emailNotVerified");
+
+        return ActiveLanguage.get().getResourceBundle().getString(notification + "message")
+                .formatted(
+                        user.isNotifyByEmail() ? Messages.notifications("enabled") : Messages.notifications("disabled"),
+                        MarkdownV2.apply(email).get(),
+                        verified);
     }
 
     public static String other(String key) {

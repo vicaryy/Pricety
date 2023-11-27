@@ -14,10 +14,18 @@ public class AdminResponse implements Responser {
     private final RequestService requestService = new RequestService();
     private final ResponseFacade responseFacade;
     private final ActiveUser user;
+    private final QuickSender quickSender;
 
     public AdminResponse(ResponseFacade responseFacade, ActiveUser activeUser) {
         this.responseFacade = responseFacade;
         this.user = activeUser;
+        this.quickSender = new QuickSender();
+    }
+
+    public AdminResponse(ResponseFacade responseFacade, ActiveUser activeUser, QuickSender quickSender) {
+        this.responseFacade = responseFacade;
+        this.user = activeUser;
+        this.quickSender = quickSender;
     }
 
     public void response() {
@@ -46,33 +54,33 @@ public class AdminResponse implements Responser {
     private void setPremium() {
         String userNick = removePrefix(user.getText());
         if (responseFacade.updateUserToPremiumByNick(userNick))
-            QuickSender.message(user.getChatId(), String.format("User %s successfully updated to Premium.", userNick), false);
+            quickSender.message(user.getChatId(), String.format("User %s successfully updated to Premium.", userNick), false);
         else
-            QuickSender.message(user.getChatId(), String.format("User %s does not exist.", userNick), false);
+            quickSender.message(user.getChatId(), String.format("User %s does not exist.", userNick), false);
     }
 
     private void setStandard() {
         String userNick = removePrefix(user.getText());
         if (responseFacade.updateUserToStandardByNick(userNick))
-            QuickSender.message(user.getChatId(), String.format("User %s successfully updated to Standard.", userNick), false);
+            quickSender.message(user.getChatId(), String.format("User %s successfully updated to Standard.", userNick), false);
         else
-            QuickSender.message(user.getChatId(), String.format("User %s does not exist.", userNick), false);
+            quickSender.message(user.getChatId(), String.format("User %s does not exist.", userNick), false);
     }
 
     private void setAdmin() {
         String userNick = removePrefix(user.getText());
         if (responseFacade.updateUserToAdminByNick(userNick))
-            QuickSender.message(user.getChatId(), String.format("User %s successfully updated to Admin.", userNick), false);
+            quickSender.message(user.getChatId(), String.format("User %s successfully updated to Admin.", userNick), false);
         else
-            QuickSender.message(user.getChatId(), String.format("User %s does not exist.", userNick), false);
+            quickSender.message(user.getChatId(), String.format("User %s does not exist.", userNick), false);
     }
 
     private void setNonAdmin() {
         String userNick = removePrefix(user.getText());
         if (responseFacade.updateUserToNonAdminByNick(userNick))
-            QuickSender.message(user.getChatId(), String.format("User %s successfully updated to Non-Admin.", userNick), false);
+            quickSender.message(user.getChatId(), String.format("User %s successfully updated to Non-Admin.", userNick), false);
         else
-            QuickSender.message(user.getChatId(), String.format("User %s does not exist.", userNick), false);
+            quickSender.message(user.getChatId(), String.format("User %s does not exist.", userNick), false);
     }
 
 
@@ -80,7 +88,7 @@ public class AdminResponse implements Responser {
         String[] commandAndDescription = user.getText().split(":");
 
         if (commandAndDescription[0] == null || commandAndDescription[0].isBlank()) {
-            QuickSender.message(user.getChatId(), "Command not found.", false);
+            quickSender.message(user.getChatId(), "Command not found.", false);
             return;
         }
 
@@ -97,15 +105,15 @@ public class AdminResponse implements Responser {
         SetMyCommands setMyCommands = new SetMyCommands(commandList);
         try {
             requestService.send(setMyCommands);
-            QuickSender.message(user.getChatId(), "Successfully add " + command + " command.", false);
+            quickSender.message(user.getChatId(), "Successfully add " + command + " command.", false);
         } catch (Exception ex) {
-            QuickSender.message(user.getChatId(), "Something goes wrong, check your command and try again.", false);
+            quickSender.message(user.getChatId(), "Something goes wrong, check your command and try again.", false);
         }
     }
 
     private void removeCommand() {
         if (user.getText().isBlank()) {
-            QuickSender.message(user.getChatId(), "Command not found.", false);
+            quickSender.message(user.getChatId(), "Command not found.", false);
             return;
         }
 
@@ -118,20 +126,20 @@ public class AdminResponse implements Responser {
                 SetMyCommands setMyCommands = new SetMyCommands(commandList);
                 try {
                     requestService.send(setMyCommands);
-                    QuickSender.message(user.getChatId(), "Successfully remove " + command + " command.", false);
+                    quickSender.message(user.getChatId(), "Successfully remove " + command + " command.", false);
                 } catch (Exception ex) {
-                    QuickSender.message(user.getChatId(), "Something goes wrong, check your command and try again.", false);
+                    quickSender.message(user.getChatId(), "Something goes wrong, check your command and try again.", false);
                 }
                 return;
             }
         }
 
-        QuickSender.message(user.getChatId(), "Command not found.", false);
+        quickSender.message(user.getChatId(), "Command not found.", false);
     }
 
     private void removeAllCommands() {
         requestService.send(new DeleteMyCommands());
-        QuickSender.message(user.getChatId(), "Successfully removed all commands.", false);
+        quickSender.message(user.getChatId(), "Successfully removed all commands.", false);
     }
 
 

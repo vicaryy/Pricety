@@ -47,7 +47,7 @@ public class AutoUpdater implements Runnable {
         scraperMap.put("hebe.pl", hebeScraper);
         scraperMap.put("nike.pl", nikeScraper);
 
-        updaterThread.start();
+//        updaterThread.start();
     }
 
     @Override

@@ -10,10 +10,19 @@ import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
 public class AwaitedMessageResponse implements Responser {
     private final ResponseFacade responseFacade;
     private final ActiveUser user;
+    private final QuickSender quickSender;
+
 
     public AwaitedMessageResponse(ResponseFacade responseFacade, ActiveUser user) {
         this.responseFacade = responseFacade;
         this.user = user;
+        this.quickSender = new QuickSender();
+    }
+
+    public AwaitedMessageResponse(ResponseFacade responseFacade, ActiveUser user, QuickSender quickSender) {
+        this.responseFacade = responseFacade;
+        this.user = user;
+        this.quickSender = quickSender;
     }
 
     @Override
@@ -27,7 +36,7 @@ public class AwaitedMessageResponse implements Responser {
             updateUserEmail();
     }
 
-    public void updateProductPriceAlert(String request) {
+    private void updateProductPriceAlert(String request) {
         Long productId = Long.parseLong(request.split(" ")[1]);
         String priceAlert = getPriceAlertFromText(user.getText());
 
@@ -42,7 +51,7 @@ public class AwaitedMessageResponse implements Responser {
         displayMenu();
     }
 
-    public void updateUserEmail() {
+    private void updateUserEmail() {
         String email = user.getText();
 
         if (!Pattern.isEmail(email))
@@ -61,11 +70,11 @@ public class AwaitedMessageResponse implements Responser {
         responseFacade.updateEmailAndSendToken(user.getUserId(), email);
 
         String verificationMessage = Messages.other("verificationCodeMessage");
-        QuickSender.message(user.getChatId(), verificationMessage, true);
+        quickSender.message(user.getChatId(), verificationMessage, true);
     }
 
 
-    public String getPriceAlertFromText(String text) {
+    private String getPriceAlertFromText(String text) {
         double priceAlert;
         if (text.equalsIgnoreCase("AUTO") || text.equalsIgnoreCase("OFF"))
             return text.toUpperCase();
@@ -92,7 +101,7 @@ public class AwaitedMessageResponse implements Responser {
         return String.format("%.2f", priceAlert).replaceFirst(",", ".");
     }
 
-    public boolean isPriceAlertHigherThanPrice(String priceAlert, double price) {
+    private boolean isPriceAlertHigherThanPrice(String priceAlert, double price) {
         if (priceAlert.equalsIgnoreCase("AUTO") || priceAlert.equalsIgnoreCase("OFF") || price == 0)
             return false;
 
@@ -100,12 +109,16 @@ public class AwaitedMessageResponse implements Responser {
         return Double.parseDouble(priceAlert.replaceFirst(" zł", "")) >= price;
     }
 
-    public void popupMessage(String message) {
-        QuickSender.popupMessage(user.getChatId(), message);
+    private void popupMessage(String message) {
+        quickSender.popupMessage(user.getChatId(), message);
     }
 
-    public void displayMenu() {
-        QuickSender.message(InlineBlock.getMenu());
+    private void displayMenu() {
+        quickSender.inlineMarkup(
+                user.getChatId(),
+                Messages.menu("welcome"),
+                InlineKeyboardMarkupFactory.getMenu(),
+                true);
     }
 }
 

@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.vicary</groupId>
 	<artifactId>zalando-scraper</artifactId>
-	<version>1.0.0-STABLE</version>
+	<version>1.0.1-STABLE</version>
 	<name>zalando-scraper</name>
 	<description>Scraper Bot</description>
 

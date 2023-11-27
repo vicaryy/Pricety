@@ -2,23 +2,16 @@ package com.vicary.zalandoscraper.service.response;
 
 import com.vicary.zalandoscraper.messages.Messages;
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
-import com.vicary.zalandoscraper.api_telegram.api_object.ParseMode;
 import com.vicary.zalandoscraper.api_telegram.api_object.keyboard.InlineKeyboardButton;
 import com.vicary.zalandoscraper.api_telegram.api_object.keyboard.InlineKeyboardMarkup;
-import com.vicary.zalandoscraper.api_telegram.api_request.send.SendMessage;
-import com.vicary.zalandoscraper.format.MarkdownV2;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
-public class InlineBlock {
+public class InlineKeyboardMarkupFactory {
 
-    public static SendMessage getMenu() {
-        ActiveUser user = ActiveUser.get();
+    public static InlineKeyboardMarkup getMenu() {
         String language = Messages.menu("language");
 
         final InlineKeyboardButton allProducts = new InlineKeyboardButton(Messages.menu("allProducts"), "-allProducts");
@@ -29,53 +22,24 @@ public class InlineBlock {
         final InlineKeyboardButton exit = new InlineKeyboardButton(Messages.menu("exit"), "-exit");
         final InlineKeyboardButton changeLanguage = new InlineKeyboardButton(language, "-lang " + (language.equals("\uD83C\uDDFA\uD83C\uDDF8") ? "en" : "pl"));
 
-        final InlineKeyboardMarkup menu = new InlineKeyboardMarkup(
+        return new InlineKeyboardMarkup(
                 List.of(
                         List.of(allProducts, addProduct),
                         List.of(editPriceProduct, deleteProduct),
                         List.of(notification),
                         List.of(exit),
                         List.of(changeLanguage)));
-
-        String menuMessage = "*Menu* ⚙️\n\n" + Messages.menu("how" + ThreadLocalRandom.current().nextInt(1, 10));
-
-        return SendMessage.builder()
-                .chatId(user.getUserId())
-                .text(menuMessage)
-                .replyMarkup(menu)
-                .parseMode(ParseMode.MarkdownV2)
-                .build();
     }
 
-    public static SendMessage getNotification(boolean isNotifyByEmail, boolean isVerifiedEmail, String email) {
-
+    public static InlineKeyboardMarkup getNotification(ActiveUser user) {
         final InlineKeyboardButton enableOrDisable = new InlineKeyboardButton();
-
         final InlineKeyboardButton setEmail = new InlineKeyboardButton();
-
         final InlineKeyboardButton back = new InlineKeyboardButton(Messages.notifications("back"), "-back");
-
         final List<InlineKeyboardButton> listOfButtons1 = List.of(enableOrDisable);
-
         final List<InlineKeyboardButton> listOfButtons2 = List.of(setEmail);
-
         final List<InlineKeyboardButton> listOfButtons3 = List.of(back);
 
-        final InlineKeyboardMarkup notificationMarkup = new InlineKeyboardMarkup(List.of(listOfButtons1, listOfButtons2, listOfButtons3));
-
-        String verified = "";
-
-        if (email == null)
-            email = Messages.notifications("notSpecified");
-
-        else if (isVerifiedEmail)
-            verified = "\n\n" + Messages.notifications("emailVerified");
-
-        else
-            verified = "\n\n" + Messages.notifications("emailNotVerified");
-
-
-        if (isNotifyByEmail && isVerifiedEmail) {
+        if (user.isNotifyByEmail() && user.isVerifiedEmail()) {
             enableOrDisable.setText(Messages.notifications("disable"));
             enableOrDisable.setCallbackData("-disableEmail");
         } else {
@@ -83,7 +47,7 @@ public class InlineBlock {
             enableOrDisable.setCallbackData("-enableEmail");
         }
 
-        if (email.equals(Messages.notifications("notSpecified"))) {
+        if (user.getEmail() == null) {
             setEmail.setText(Messages.notifications("setEmail"));
             setEmail.setCallbackData("-setEmail");
         } else {
@@ -91,50 +55,18 @@ public class InlineBlock {
             setEmail.setCallbackData("-setEmail");
         }
 
-        String message = """
-                *%s* 📧
-                            
-                %s
-                                
-                *%s:* %s
-                *%s:* %s%s"""
-                .formatted(
-                        Messages.notifications("notifications"),
-                        Messages.notifications("able"),
-                        Messages.notifications("status"),
-                        isNotifyByEmail ? Messages.notifications("enabled") : Messages.notifications("disabled"),
-                        Messages.notifications("yourEmail"),
-                        MarkdownV2.apply(email).get(),
-                        verified);
-
-        return SendMessage.builder()
-                .text(message)
-                .chatId(ActiveUser.get().getChatId())
-                .replyMarkup(notificationMarkup)
-                .parseMode(ParseMode.MarkdownV2)
-                .build();
+        return new InlineKeyboardMarkup(List.of(listOfButtons1, listOfButtons2, listOfButtons3));
     }
 
     public static InlineKeyboardMarkup getBack() {
         final InlineKeyboardButton back = new InlineKeyboardButton(Messages.notifications("back"), "-back");
-        final InlineKeyboardMarkup backMarkup = new InlineKeyboardMarkup(List.of(List.of(back)));
-        return backMarkup;
+        return new InlineKeyboardMarkup(List.of(List.of(back)));
     }
 
-    public static SendMessage getDeleteYesOrNo() {
-        ActiveUser user = ActiveUser.get();
-
+    public static InlineKeyboardMarkup getDeleteYesOrNo() {
         final InlineKeyboardButton deleteAllYes = new InlineKeyboardButton(Messages.deleteProduct("yes"), "-deleteAllYes");
         final InlineKeyboardButton deleteAllNo = new InlineKeyboardButton(Messages.deleteProduct("no"), "-deleteAllNo");
-        final InlineKeyboardMarkup yesOrNoMarkup = new InlineKeyboardMarkup(List.of(List.of(deleteAllYes, deleteAllNo)));
-
-        String yesOrNoMessage = Messages.deleteProduct("areYouSure");
-
-        return SendMessage.builder()
-                .chatId(user.getChatId())
-                .text(yesOrNoMessage)
-                .replyMarkup(yesOrNoMarkup)
-                .build();
+        return new InlineKeyboardMarkup(List.of(List.of(deleteAllYes, deleteAllNo)));
     }
 
     public static InlineKeyboardMarkup getProductChoice(List<ProductDTO> productDTOList, String callbackDataType) {
@@ -196,13 +128,3 @@ public class InlineBlock {
         return new InlineKeyboardMarkup(listOfListsOfButtons);
     }
 }
-
-
-
-
-
-
-
-
-
-

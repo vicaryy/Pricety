@@ -7,7 +7,7 @@ import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
 import com.vicary.zalandoscraper.format.MarkdownV2;
 import com.vicary.zalandoscraper.messages.Messages;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;
-import com.vicary.zalandoscraper.service.response.InlineBlock;
+import com.vicary.zalandoscraper.service.response.InlineKeyboardMarkupFactory;
 import lombok.NonNull;
 
 import java.util.ArrayList;
@@ -16,11 +16,20 @@ import java.util.List;
 class DeleteProductDisplay implements ProductDisplayer {
     private final String chatId;
     private final List<ProductDTO> productDTOList;
+    private final QuickSender quickSender;
 
     public DeleteProductDisplay(@NonNull List<ProductDTO> productDTOList, @NonNull String chatId) {
         this.productDTOList = productDTOList;
         this.chatId = chatId;
+        this.quickSender = new QuickSender();
     }
+
+    public DeleteProductDisplay(@NonNull List<ProductDTO> productDTOList, @NonNull String chatId, QuickSender quickSender) {
+        this.productDTOList = productDTOList;
+        this.chatId = chatId;
+        this.quickSender = quickSender;
+    }
+
 
     @Override
     public void display() {
@@ -59,13 +68,13 @@ class DeleteProductDisplay implements ProductDisplayer {
             message.setReplyMarkup(getReplyMarkup());
 
             message.setText(sb.toString());
-            QuickSender.message(message);
+            quickSender.message(message);
             return;
         }
 
 
         for (StringBuilder s : stringBuilders)
-            QuickSender.message(chatId, s.toString(), true);
+            quickSender.message(chatId, s.toString(), true);
 
         sb.setLength(0);
 
@@ -73,7 +82,7 @@ class DeleteProductDisplay implements ProductDisplayer {
         message.setReplyMarkup(getReplyMarkup());
 
         message.setText(sb.toString());
-        QuickSender.message(message);
+        quickSender.message(message);
     }
 
 
@@ -136,6 +145,6 @@ class DeleteProductDisplay implements ProductDisplayer {
     }
 
     private ReplyMarkup getReplyMarkup() {
-        return InlineBlock.getProductChoice(productDTOList, "-delete");
+        return InlineKeyboardMarkupFactory.getProductChoice(productDTOList, "-delete");
     }
 }

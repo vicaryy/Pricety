@@ -1,16 +1,24 @@
 package com.vicary.zalandoscraper.service.response;
 
+import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
 import com.vicary.zalandoscraper.messages.Messages;
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
-import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
 
 public class CommandResponse implements Responser {
     private final ResponseFacade responseFacade;
     private final ActiveUser user;
+    private final QuickSender quickSender;
 
     public CommandResponse(ResponseFacade responseFacade, ActiveUser user) {
         this.responseFacade = responseFacade;
         this.user = user;
+        this.quickSender = new QuickSender();
+    }
+
+    public CommandResponse(ResponseFacade responseFacade, ActiveUser user, QuickSender quickSender) {
+        this.responseFacade = responseFacade;
+        this.user = user;
+        this.quickSender = quickSender;
     }
 
 
@@ -21,7 +29,7 @@ public class CommandResponse implements Responser {
             sendStart();
 
         else if (text.equals("/menu"))
-            sendMenuBlocks();
+            sendMenu();
 
         else if (text.equals("/update"))
             sendUpdate();
@@ -36,35 +44,39 @@ public class CommandResponse implements Responser {
             sendTip();
     }
 
-    public void sendStart() {
+    private void sendStart() {
         String displayedNick = user.getNick();
         if (displayedNick == null)
             displayedNick = "";
 
         displayedNick = " " + displayedNick;
 
-        QuickSender.message(user.getChatId(), Messages.command("start").formatted(displayedNick), true);
+        quickSender.message(user.getChatId(), Messages.command("start").formatted(displayedNick), true);
     }
 
-    public void sendMenuBlocks() {
-        QuickSender.message(InlineBlock.getMenu());
+    private void sendMenu() {
+        quickSender.inlineMarkup(
+                user.getChatId(),
+                Messages.menu("welcome"),
+                InlineKeyboardMarkupFactory.getMenu(),
+                true);
     }
 
     private void sendUpdate() {
         String message = Messages.command("update").formatted(responseFacade.getLastUpdateTime());
-        QuickSender.message(user.getChatId(), message, true);
+        quickSender.message(user.getChatId(), message, true);
     }
 
     private void sendLimits() {
-        QuickSender.message(user.getChatId(), Messages.command("limits"), true);
+        quickSender.message(user.getChatId(), Messages.command("limits"), true);
     }
 
     private void sendHelp() {
-        QuickSender.message(user.getChatId(), Messages.command("help"), true);
+        quickSender.message(user.getChatId(), Messages.command("help"), true);
     }
 
     private void sendTip() {
-        QuickSender.message(user.getChatId(), Messages.command("tip"), true);
+        quickSender.message(user.getChatId(), Messages.command("tip"), true);
     }
 }
 

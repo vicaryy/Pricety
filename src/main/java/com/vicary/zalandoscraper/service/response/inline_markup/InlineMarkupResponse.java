@@ -1,7 +1,7 @@
 package com.vicary.zalandoscraper.service.response.inline_markup;
 
+import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
 import com.vicary.zalandoscraper.messages.Messages;
-import com.vicary.zalandoscraper.pattern.Pattern;
 import com.vicary.zalandoscraper.scraper.Scraper;
 import com.vicary.zalandoscraper.scraper.ScraperFactory;
 import com.vicary.zalandoscraper.service.response.ResponseFacade;
@@ -14,8 +14,7 @@ import com.vicary.zalandoscraper.entity.LinkRequestEntity;
 import com.vicary.zalandoscraper.exception.InvalidLinkException;
 import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;
-import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
-import com.vicary.zalandoscraper.service.response.InlineBlock;
+import com.vicary.zalandoscraper.service.response.InlineKeyboardMarkupFactory;
 import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,10 +27,18 @@ public class InlineMarkupResponse implements Responser {
     private final static Logger logger = LoggerFactory.getLogger(InlineMarkupResponse.class);
     private final ResponseFacade responseFacade;
     private final ActiveUser user;
+    private final QuickSender quickSender;
 
     public InlineMarkupResponse(ResponseFacade responseFacade, ActiveUser user) {
         this.responseFacade = responseFacade;
         this.user = user;
+        this.quickSender = new QuickSender();
+    }
+
+    public InlineMarkupResponse(ResponseFacade responseFacade, ActiveUser user, QuickSender quickSender) {
+        this.responseFacade = responseFacade;
+        this.user = user;
+        this.quickSender = quickSender;
     }
 
     @Override
@@ -96,19 +103,19 @@ public class InlineMarkupResponse implements Responser {
             variant.append(arrayText[i]).append(" ");
 
         deletePreviousMessage();
-        int messageId = QuickSender.messageWithReturn(user.getChatId(), Messages.other("adding"), false).getMessageId();
-        QuickSender.chatAction(user.getChatId(), Action.TYPING);
+        int messageId = quickSender.messageWithReturn(user.getChatId(), Messages.other("adding"), false).getMessageId();
+        quickSender.chatAction(user.getChatId(), Action.TYPING);
 
         Scraper scraper = ScraperFactory.getScraperFromLink(link);
 
         Product product = scraper.getProduct(link, variant.toString().trim());
 
-        QuickSender.deleteMessage(user.getChatId(), messageId);
+        quickSender.deleteMessage(user.getChatId(), messageId);
 
         checkProductValidation(product);
 
         responseFacade.saveProduct(product);
-        QuickSender.message(user.getChatId(), Messages.other("productAdded"), false);
+        quickSender.message(user.getChatId(), Messages.other("productAdded"), false);
     }
 
     public void displayAllProducts() {
@@ -158,7 +165,7 @@ public class InlineMarkupResponse implements Responser {
 
         String message = Messages.other("sendNewAlert");
 
-        QuickSender.message(user.getChatId(), message, true);
+        quickSender.message(user.getChatId(), message, true);
     }
 
     public void displayDeleteProduct() {
@@ -203,7 +210,7 @@ public class InlineMarkupResponse implements Responser {
 
     private void backToMenu(boolean deletePreviousMessage) {
         if (deletePreviousMessage)
-            QuickSender.deleteMessage(user.getChatId(), user.getMessageId());
+            quickSender.deleteMessage(user.getChatId(), user.getMessageId());
 
         backToMenu();
     }
@@ -231,7 +238,7 @@ public class InlineMarkupResponse implements Responser {
 
         String message = Messages.other("sendNewEmail");
 
-        QuickSender.message(user.getChatId(), message, true);
+        quickSender.message(user.getChatId(), message, true);
     }
 
 
@@ -283,7 +290,11 @@ public class InlineMarkupResponse implements Responser {
 
 
     public void displayMenu() {
-        QuickSender.message(InlineBlock.getMenu());
+        quickSender.inlineMarkup(
+                user.getChatId(),
+                Messages.menu("welcome"),
+                InlineKeyboardMarkupFactory.getMenu(),
+                true);
     }
 
     public void displayMenu(boolean deletePreviousMessage) {
@@ -294,7 +305,7 @@ public class InlineMarkupResponse implements Responser {
     }
 
     public void deletePreviousMessage() {
-        QuickSender.deleteMessage(user.getChatId(), user.getMessageId());
+        quickSender.deleteMessage(user.getChatId(), user.getMessageId());
     }
 
     @SneakyThrows
@@ -311,34 +322,41 @@ public class InlineMarkupResponse implements Responser {
     }
 
     public void displayNotification() {
-        QuickSender.message(InlineBlock.getNotification(user.isNotifyByEmail(), user.isVerifiedEmail(), user.getEmail()));
+        quickSender.inlineMarkup(
+                user.getChatId(),
+                Messages.notifications(user),
+                InlineKeyboardMarkupFactory.getNotification(user),
+                true);
     }
 
     @SneakyThrows
     public void displayDeleteYesOrNo() {
-        QuickSender.message(InlineBlock.getDeleteYesOrNo());
+        quickSender.inlineMarkup(
+                user.getChatId(),
+                Messages.deleteProduct("areYouSure"),
+                InlineKeyboardMarkupFactory.getDeleteYesOrNo());
         Thread.sleep(1500);
     }
 
     @SneakyThrows
     private void backToMenu() {
-        QuickSender.message(InlineBlock.getMenu());
+        displayMenu();
         Thread.sleep(1500);
     }
 
     private void displayNoProducts() {
-        QuickSender.popupMessage(user.getChatId(), "You don't have any products.");
+        quickSender.popupMessage(user.getChatId(), "You don't have any products.");
     }
 
     public void displayNoProducts(boolean deletePreviousMessage) {
         if (deletePreviousMessage)
-            QuickSender.deleteMessage(user.getChatId(), user.getMessageId());
+            quickSender.deleteMessage(user.getChatId(), user.getMessageId());
 
         displayNoProducts();
     }
 
     public void popupMessage(String message) {
-        QuickSender.popupMessage(user.getChatId(), message);
+        quickSender.popupMessage(user.getChatId(), message);
     }
 
     public void popupMessage(String message, boolean deletePreviousMessage) {
@@ -356,6 +374,6 @@ public class InlineMarkupResponse implements Responser {
     }
 
     public void popupMessage(String message, long popupTime) {
-        QuickSender.popupMessage(user.getChatId(), message, popupTime);
+        quickSender.popupMessage(user.getChatId(), message, popupTime);
     }
 }

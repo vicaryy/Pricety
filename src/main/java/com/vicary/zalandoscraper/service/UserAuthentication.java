@@ -6,7 +6,6 @@ import com.vicary.zalandoscraper.api_telegram.api_object.Update;
 import com.vicary.zalandoscraper.api_telegram.api_object.User;
 import com.vicary.zalandoscraper.api_telegram.api_object.message.Message;
 import com.vicary.zalandoscraper.entity.ActiveRequestEntity;
-import com.vicary.zalandoscraper.entity.MessageEntity;
 import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.exception.ActiveUserException;
 import com.vicary.zalandoscraper.exception.ZalandoScraperBotException;
@@ -23,7 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -42,6 +40,9 @@ public class UserAuthentication {
     private final UserMapper userMapper;
 
     private final MessageService messageService;
+
+    private final QuickSender quickSender;
+
 
     public ActiveUser authenticate(Update update) {
         Message message = update.getCallbackQuery() == null
@@ -80,7 +81,7 @@ public class UserAuthentication {
     private void checkActiveUser(String chatId) {
         if (activeRequestService.existsByUserId(chatId)) {
             logger.info("User %s is trying to do more than one request".formatted(chatId));
-            QuickSender.popupMessage(chatId, Messages.other("oneRequest"));
+            quickSender.popupMessage(chatId, Messages.other("oneRequest"));
             throw new ActiveUserException();
         }
         activeRequestService.saveActiveUser(new ActiveRequestEntity(chatId));

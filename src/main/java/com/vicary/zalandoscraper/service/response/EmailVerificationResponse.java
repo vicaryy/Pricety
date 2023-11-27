@@ -8,10 +8,18 @@ import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
 public class EmailVerificationResponse implements Responser {
     private final ResponseFacade responseFacade;
     private final ActiveUser user;
+    private final QuickSender quickSender;
 
     public EmailVerificationResponse(ResponseFacade responseFacade, ActiveUser user) {
         this.responseFacade = responseFacade;
         this.user = user;
+        this.quickSender = new QuickSender();
+    }
+
+    public EmailVerificationResponse(ResponseFacade responseFacade, ActiveUser user, QuickSender quickSender) {
+        this.responseFacade = responseFacade;
+        this.user = user;
+        this.quickSender = quickSender;
     }
 
     @Override
@@ -27,6 +35,6 @@ public class EmailVerificationResponse implements Responser {
         responseFacade.setUserVerifiedEmail(user.getUserId(), true);
         responseFacade.deleteEmailVerByToken(token);
 
-        QuickSender.message(user.getChatId(), Messages.other("emailVerifiedSuccessfully"), false);
+        quickSender.message(user.getChatId(), Messages.other("emailVerifiedSuccessfully"), false);
     }
 }

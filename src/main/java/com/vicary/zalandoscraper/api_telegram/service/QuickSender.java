@@ -2,6 +2,7 @@ package com.vicary.zalandoscraper.api_telegram.service;
 
 import com.vicary.zalandoscraper.api_telegram.api_object.Action;
 import com.vicary.zalandoscraper.api_telegram.api_object.ParseMode;
+import com.vicary.zalandoscraper.api_telegram.api_object.keyboard.InlineKeyboardMarkup;
 import com.vicary.zalandoscraper.api_telegram.api_object.message.Message;
 import com.vicary.zalandoscraper.api_telegram.api_request.edit_message.DeleteMessage;
 import com.vicary.zalandoscraper.api_telegram.api_request.edit_message.EditMessageText;
@@ -12,14 +13,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class QuickSender {
-    private static final Logger logger = LoggerFactory.getLogger(QuickSender.class);
+    private final Logger logger = LoggerFactory.getLogger(QuickSender.class);
 
     private final static RequestService requestService = new RequestService();
 
-    private QuickSender(){
-    }
 
-    public static void message(String chatId, String text, boolean markdownV2) {
+    public void message(String chatId, String text, boolean markdownV2) {
         try {
             SendMessage sendMessage = SendMessage.builder()
                     .chatId(chatId)
@@ -34,7 +33,54 @@ public class QuickSender {
         }
     }
 
-    public static void notification(ChatNotification notification) throws Exception {
+    public void inlineMarkup(String chatId, String text, InlineKeyboardMarkup replyMarkup, boolean markdownV2) {
+        try {
+            SendMessage sendMessage = SendMessage.builder()
+                    .chatId(chatId)
+                    .text(text)
+                    .replyMarkup(replyMarkup)
+                    .disableWebPagePreview(true)
+                    .build();
+            if (markdownV2)
+                sendMessage.setParseMode(ParseMode.MarkdownV2);
+            requestService.sendAsync(sendMessage);
+        } catch (Exception ex) {
+            logger.warn("Error in sending message request, message: {}", ex.getMessage());
+        }
+    }
+
+    public void inlineMarkup(String chatId, InlineKeyboardMarkup replyMarkup, boolean markdownV2) {
+        try {
+            SendMessage sendMessage = SendMessage.builder()
+                    .chatId(chatId)
+                    .text("")
+                    .replyMarkup(replyMarkup)
+                    .disableWebPagePreview(true)
+                    .build();
+            if (markdownV2)
+                sendMessage.setParseMode(ParseMode.MarkdownV2);
+            requestService.sendAsync(sendMessage);
+        } catch (Exception ex) {
+            logger.warn("Error in sending message request, message: {}", ex.getMessage());
+        }
+    }
+
+    public void inlineMarkup(String chatId, String text, InlineKeyboardMarkup replyMarkup) {
+        try {
+            SendMessage sendMessage = SendMessage.builder()
+                    .chatId(chatId)
+                    .text(text)
+                    .replyMarkup(replyMarkup)
+                    .disableWebPagePreview(true)
+                    .build();
+            requestService.sendAsync(sendMessage);
+        } catch (Exception ex) {
+            logger.warn("Error in sending message request, message: {}", ex.getMessage());
+        }
+    }
+
+
+    public void notification(ChatNotification notification) throws Exception {
         requestService.sendAsync(SendMessage.builder()
                 .chatId(notification.getChatId())
                 .text(notification.getMessage())
@@ -43,7 +89,7 @@ public class QuickSender {
     }
 
 
-    public static void message(SendMessage sendMessage) {
+    public void message(SendMessage sendMessage) {
         try {
             requestService.sendAsync(sendMessage);
         } catch (Exception ex) {
@@ -51,7 +97,7 @@ public class QuickSender {
         }
     }
 
-    public static void deleteMessage(String chatId, int messageId) {
+    public void deleteMessage(String chatId, int messageId) {
         try {
             DeleteMessage deleteMessage = DeleteMessage.builder()
                     .chatId(chatId)
@@ -63,7 +109,7 @@ public class QuickSender {
         }
     }
 
-    public static void popupMessage(String chatId, String text) {
+    public void popupMessage(String chatId, String text) {
         int messageId = messageWithReturn(chatId, text, false).getMessageId();
         try {
             Thread.sleep(2000);
@@ -72,7 +118,7 @@ public class QuickSender {
         deleteMessage(chatId, messageId);
     }
 
-    public static void popupMessage(String chatId, String text, long popupTime) {
+    public void popupMessage(String chatId, String text, long popupTime) {
         int messageId = messageWithReturn(chatId, text, false).getMessageId();
         try {
             Thread.sleep(popupTime);
@@ -81,7 +127,7 @@ public class QuickSender {
         deleteMessage(chatId, messageId);
     }
 
-    public static Message messageWithReturn(String chatId, String text, boolean markdownV2) {
+    public Message messageWithReturn(String chatId, String text, boolean markdownV2) {
         try {
             SendMessage sendMessage = SendMessage.builder()
                     .chatId(chatId)
@@ -96,7 +142,7 @@ public class QuickSender {
         }
     }
 
-    public static void editMessageText(EditMessageText editMessageText, String text) {
+    public void editMessageText(EditMessageText editMessageText, String text) {
         try {
             editMessageText.setText(text);
             requestService.sendAsync(editMessageText);
@@ -105,7 +151,7 @@ public class QuickSender {
         }
     }
 
-    public static void chatAction(String chatId, Action action) {
+    public void chatAction(String chatId, Action action) {
         try {
             SendChatAction sendChatAction = SendChatAction.builder()
                     .chatId(chatId)

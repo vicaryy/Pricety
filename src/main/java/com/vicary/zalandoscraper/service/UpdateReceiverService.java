@@ -43,6 +43,8 @@ public class UpdateReceiverService implements UpdateReceiver {
     private final ResponseFacade facade;
 
     private final WaitingUserService waitingUserService;
+
+    private final QuickSender quickSender;
     private final UpdateFetcher updateFetcher = new UpdateFetcher(this);
 
     @PostConstruct
@@ -102,16 +104,16 @@ public class UpdateReceiverService implements UpdateReceiver {
             logger.warn(ex.getMessage());
         } catch (InvalidLinkException | IllegalInputException ex) {
             logger.warn(ex.getLoggerMessage());
-            QuickSender.message(chatId, ex.getMessage(), false);
+            quickSender.message(chatId, ex.getMessage(), false);
         } catch (WebDriverException | PlaywrightException ex) {
             logger.error("Web Driver exception: " + ex.getMessage());
-            QuickSender.message(chatId, Messages.other("somethingGoesWrong"), false);
+            quickSender.message(chatId, Messages.other("somethingGoesWrong"), false);
         } catch (ZalandoScraperBotException ex) {
             logger.error(ex.getLoggerMessage());
-            QuickSender.message(chatId, ex.getMessage(), false);
+            quickSender.message(chatId, ex.getMessage(), false);
         } catch (Exception ex) {
             logger.error("Unexpected exception: " + ex.getMessage());
-            QuickSender.message(chatId, Messages.other("somethingGoesWrong"), false);
+            quickSender.message(chatId, Messages.other("somethingGoesWrong"), false);
             ex.printStackTrace();
         } finally {
             facade.deleteActiveRequestById(userId);
@@ -126,7 +128,7 @@ public class UpdateReceiverService implements UpdateReceiver {
 
     private void handleProductUpdaterRunning(String userId) {
         String message = Messages.other("updatingProducts");
-        QuickSender.message(userId, message, true);
+        quickSender.message(userId, message, true);
         checkAndSaveWaitingUser(userId);
         throw new IllegalArgumentException("User '%s' interact with bot while product updater is running.".formatted(userId));
     }
