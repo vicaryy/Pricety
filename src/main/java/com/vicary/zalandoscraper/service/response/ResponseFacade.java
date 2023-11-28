@@ -43,6 +43,13 @@ public class ResponseFacade {
         awaitedMessageService.saveAwaitedMessage(awaitedMessageEntity);
     }
 
+    public void createAndSaveAwaitedMessage(String userId, String request) {
+        awaitedMessageService.saveAwaitedMessage(AwaitedMessageEntity.builder()
+                .userId(userId)
+                .request(request)
+                .build());
+    }
+
     public void deleteProductById(long productId) {
         productService.deleteProductById(productId);
     }

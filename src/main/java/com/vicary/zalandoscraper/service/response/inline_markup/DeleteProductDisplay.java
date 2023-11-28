@@ -14,8 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 class DeleteProductDisplay implements ProductDisplayer {
-    private final String chatId;
-    private final List<ProductDTO> productDTOList;
+    private String chatId;
+    private List<ProductDTO> productDTOList;
     private final QuickSender quickSender;
 
     public DeleteProductDisplay(@NonNull List<ProductDTO> productDTOList, @NonNull String chatId) {
@@ -28,6 +28,10 @@ class DeleteProductDisplay implements ProductDisplayer {
         this.productDTOList = productDTOList;
         this.chatId = chatId;
         this.quickSender = quickSender;
+    }
+
+    public DeleteProductDisplay() {
+        this.quickSender = new QuickSender();
     }
 
 
@@ -83,6 +87,16 @@ class DeleteProductDisplay implements ProductDisplayer {
 
         message.setText(sb.toString());
         quickSender.message(message);
+    }
+
+    @Override
+    public void setProductDTOList(List<ProductDTO> DTOs) {
+        this.productDTOList = DTOs;
+    }
+
+    @Override
+    public void setChatId(String chatId) {
+        this.chatId = chatId;
     }
 
 

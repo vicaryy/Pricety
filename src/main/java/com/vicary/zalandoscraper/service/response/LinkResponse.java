@@ -68,7 +68,7 @@ public class LinkResponse implements Responser {
         if (responseFacade.productExistsByUserIdAndLinkAndVariant(user.getChatId(), product.getLink(), product.getVariant()))
             throw new InvalidLinkException(Messages.other("alreadyHave"), "User try to add same product.");
 
-        if (responseFacade.countProductsByUserId(user.getUserId()) >= MAX_PRODUCT_LIMIT && !user.isAdmin())
+        if (responseFacade.countProductsByUserId(user.getUserId()) >= MAX_PRODUCT_LIMIT && !user.isPremium())
             throw new InvalidLinkException(Messages.other("productLimit"), "User try to add more than 10 products.");
     }
 

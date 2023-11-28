@@ -63,11 +63,11 @@ class LinkResponseTest {
         linkResponse = new LinkResponse(responseFacade, givenUser, scraper, quickSender);
         linkResponse.response();
 
-        verify(quickSender, atMostOnce()).messageWithReturn(givenUser.getChatId(), Messages.other("processing"), false);
-        verify(responseFacade, atMostOnce()).saveProduct(givenProduct);
-        verify(quickSender, atMostOnce()).chatAction(givenUser.getChatId(), Action.TYPING);
-        verify(quickSender, atMostOnce()).deleteMessage(givenUser.getChatId(), givenUser.getMessageId());
-        verify(quickSender, atMostOnce()).message(givenUser.getChatId(), Messages.other("productAdded"), false);
+        verify(quickSender, times(1)).messageWithReturn(givenUser.getChatId(), Messages.other("processing"), false);
+        verify(responseFacade, times(1)).saveProduct(givenProduct);
+        verify(quickSender, times(1)).chatAction(givenUser.getChatId(), Action.TYPING);
+        verify(quickSender, times(1)).deleteMessage(givenUser.getChatId(), givenUser.getMessageId());
+        verify(quickSender, times(1)).message(givenUser.getChatId(), Messages.other("productAdded"), false);
     }
 
     @Test
@@ -156,10 +156,10 @@ class LinkResponseTest {
     }
 
     @Test
-    void response_expectNotThrow_MaxProductLimitButUserIsAdmin() {
+    void response_expectNotThrow_MaxProductLimitButUserIsPremium() {
         //given
         ActiveUser givenUser = getDefaultActiveUser();
-        givenUser.setAdmin(true);
+        givenUser.setPremium(true);
         List<String> givenListOfVariants = List.of("-oneVariant One Variant");
         Product givenProduct = getDefaultProduct();
         Message givenMessage = getDefaultMessage();

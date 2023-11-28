@@ -69,12 +69,11 @@ public class AwaitedMessageResponse implements Responser {
 
         responseFacade.updateEmailAndSendToken(user.getUserId(), email);
 
-        String verificationMessage = Messages.other("verificationCodeMessage");
-        quickSender.message(user.getChatId(), verificationMessage, true);
+        quickSender.message(user.getChatId(), Messages.other("verificationCodeMessage"), true);
     }
 
 
-    private String getPriceAlertFromText(String text) {
+    String getPriceAlertFromText(String text) {
         double priceAlert;
         if (text.equalsIgnoreCase("AUTO") || text.equalsIgnoreCase("OFF"))
             return text.toUpperCase();
@@ -101,12 +100,11 @@ public class AwaitedMessageResponse implements Responser {
         return String.format("%.2f", priceAlert).replaceFirst(",", ".");
     }
 
-    private boolean isPriceAlertHigherThanPrice(String priceAlert, double price) {
+    boolean isPriceAlertHigherThanPrice(String priceAlert, double price) {
         if (priceAlert.equalsIgnoreCase("AUTO") || priceAlert.equalsIgnoreCase("OFF") || price == 0)
             return false;
 
-
-        return Double.parseDouble(priceAlert.replaceFirst(" zł", "")) >= price;
+        return Double.parseDouble(priceAlert) >= price;
     }
 
     private void popupMessage(String message) {

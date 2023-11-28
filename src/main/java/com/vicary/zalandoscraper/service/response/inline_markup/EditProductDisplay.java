@@ -14,8 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 class EditProductDisplay implements ProductDisplayer {
-    private final String chatId;
-    private final List<ProductDTO> productDTOList;
+    private String chatId;
+    private List<ProductDTO> productDTOList;
     private final QuickSender quickSender;
 
     public EditProductDisplay(@NonNull List<ProductDTO> productDTOList, @NonNull String chatId) {
@@ -28,6 +28,10 @@ class EditProductDisplay implements ProductDisplayer {
         this.productDTOList = productDTOList;
         this.chatId = chatId;
         this.quickSender = quickSender;
+    }
+
+    public EditProductDisplay() {
+        this.quickSender = new QuickSender();
     }
 
     @Override
@@ -84,6 +88,16 @@ class EditProductDisplay implements ProductDisplayer {
         quickSender.message(message);
     }
 
+    @Override
+    public void setProductDTOList(List<ProductDTO> DTOs) {
+        this.productDTOList = DTOs;
+    }
+
+    @Override
+    public void setChatId(String chatId) {
+        this.chatId = chatId;
+    }
+
 
     private void setTitle(StringBuilder sb) {
         sb.append("*").append(Messages.editPriceAlert("yourProducts")).append("*\n\n");
@@ -123,11 +137,11 @@ class EditProductDisplay implements ProductDisplayer {
         return p == 0 ? Messages.allProducts("soldOut") : String.format("%.2f zł", p).replaceFirst(",", ".");
     }
 
-    private String getFormattedPriceAlert(String p) {
+    String getFormattedPriceAlert(String p) {
         return (!p.equals("OFF") && !p.equals("AUTO")) ? p + " zł" : p;
     }
 
-    private String getFormattedVariant(String v) {
+    String getFormattedVariant(String v) {
         if (v.startsWith("-oneVariant")) {
             String oneVariant = v.substring(11).trim();
 

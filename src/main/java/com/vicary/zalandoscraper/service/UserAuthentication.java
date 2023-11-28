@@ -105,7 +105,7 @@ public class UserAuthentication {
         activeUser.setUserId(userEntity.getUserId());
         activeUser.setChatId(chatId);
         activeUser.setMessageId(messageId);
-        activeUser.setText(text);
+        activeUser.setText(text.trim());
         activeUser.setPremium(userEntity.isPremium());
         activeUser.setNick(userEntity.getNick());
         activeUser.setNotifyByEmail(userEntity.isNotifyByEmail());

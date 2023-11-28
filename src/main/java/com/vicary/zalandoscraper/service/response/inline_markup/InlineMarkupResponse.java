@@ -16,15 +16,15 @@ import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;
 import com.vicary.zalandoscraper.service.response.InlineKeyboardMarkupFactory;
 import lombok.SneakyThrows;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
+
 public class InlineMarkupResponse implements Responser {
-    private final static Logger logger = LoggerFactory.getLogger(InlineMarkupResponse.class);
+    private static final int MAX_PRODUCT_LIMIT = 10;
     private final ResponseFacade responseFacade;
     private final ActiveUser user;
     private final QuickSender quickSender;
@@ -46,22 +46,22 @@ public class InlineMarkupResponse implements Responser {
         String text = user.getText();
 
         if (text.startsWith("-l "))
-            addProduct();
+            addProduct(Objects.requireNonNull(ScraperFactory.getScraperFromLink(getLinkFromText())));
 
         else if (text.equals("-allProducts"))
-            displayAllProducts();
+            displayAllProducts(new AllProductDisplay());
 
         else if (text.equals("-addProduct"))
             displayAddProduct();
 
         else if (text.equals("-editPriceAlert"))
-            displayEditPriceAlert();
+            displayEditPriceAlert(new EditProductDisplay());
 
         else if (text.equals("-notification"))
             displayNotification(true);
 
         else if (text.equals("-deleteProduct"))
-            displayDeleteProduct();
+            displayDeleteProduct(new DeleteProductDisplay());
 
         else if (text.startsWith("-edit "))
             displayEditPriceAlertMessage();
@@ -94,21 +94,12 @@ public class InlineMarkupResponse implements Responser {
             backToMenu(true);
     }
 
-    public void addProduct() {
-        String[] arrayText = user.getText().split(" ");
-        String requestId = arrayText[1];
-        String link = getLink(requestId);
-        StringBuilder variant = new StringBuilder();
-        for (int i = 2; i < arrayText.length; i++)
-            variant.append(arrayText[i]).append(" ");
-
+    void addProduct(Scraper scraper) {
         deletePreviousMessage();
         int messageId = quickSender.messageWithReturn(user.getChatId(), Messages.other("adding"), false).getMessageId();
         quickSender.chatAction(user.getChatId(), Action.TYPING);
 
-        Scraper scraper = ScraperFactory.getScraperFromLink(link);
-
-        Product product = scraper.getProduct(link, variant.toString().trim());
+        Product product = scraper.getProduct(getLinkFromText(), getVariantFromText());
 
         quickSender.deleteMessage(user.getChatId(), messageId);
 
@@ -118,8 +109,31 @@ public class InlineMarkupResponse implements Responser {
         quickSender.message(user.getChatId(), Messages.other("productAdded"), false);
     }
 
-    public void displayAllProducts() {
-        ActiveUser user = ActiveUser.get();
+    private String getLinkFromText() {
+        String[] arrayText = user.getText().split(" ");
+        String requestId = arrayText[1];
+
+        LinkRequestEntity linkRequest = responseFacade.getLinkRequestByIdAndDelete(requestId);
+
+        checkExpiration(linkRequest.getExpiration());
+        return linkRequest.getLink();
+    }
+
+    private String getVariantFromText() {
+        String[] arrayText = user.getText().split(" ");
+        StringBuilder variant = new StringBuilder();
+        for (int i = 2; i < arrayText.length; i++)
+            variant.append(arrayText[i]).append(" ");
+
+        return variant.toString().trim();
+    }
+
+    private void checkExpiration(long expiration) {
+        if (System.currentTimeMillis() > expiration)
+            throw new InvalidLinkException(Messages.other("sessionExpired"), "User '%s' session expired".formatted(user.getUserId()));
+    }
+
+    void displayAllProducts(ProductDisplayer displayer) {
         List<ProductDTO> productDTOList = responseFacade.getAllProductsByUserId(user.getUserId());
 
         deletePreviousMessage();
@@ -130,16 +144,17 @@ public class InlineMarkupResponse implements Responser {
             return;
         }
 
-        ProductDisplayer displayer = new AllProductDisplay(productDTOList, user.getChatId());
+        displayer.setProductDTOList(productDTOList);
+        displayer.setChatId(user.getChatId());
         displayer.display();
     }
 
-    public void displayAddProduct() {
+    void displayAddProduct() {
         popupMessage(Messages.addProduct("justPaste"), 3000, true);
         displayMenu();
     }
 
-    public void displayEditPriceAlert() {
+    void displayEditPriceAlert(ProductDisplayer displayer) {
         deletePreviousMessage();
 
         List<ProductDTO> productDTOList = responseFacade.getAllProductsByUserId(user.getUserId());
@@ -150,25 +165,20 @@ public class InlineMarkupResponse implements Responser {
             return;
         }
 
-        ProductDisplayer displayer = new EditProductDisplay(productDTOList, user.getChatId());
+        displayer.setProductDTOList(productDTOList);
+        displayer.setChatId(user.getChatId());
         displayer.display();
     }
 
-    public void displayEditPriceAlertMessage() {
-        var awaitedMessageEntity = AwaitedMessageEntity.builder()
-                .userId(user.getUserId())
-                .request(user.getText())
-                .build();
-        responseFacade.saveAwaitedMessage(awaitedMessageEntity);
+    void displayEditPriceAlertMessage() {
+        responseFacade.createAndSaveAwaitedMessage(user.getUserId(), user.getText());
 
         deletePreviousMessage(1500);
 
-        String message = Messages.other("sendNewAlert");
-
-        quickSender.message(user.getChatId(), message, true);
+        quickSender.message(user.getChatId(), Messages.other("sendNewAlert"), true);
     }
 
-    public void displayDeleteProduct() {
+    void displayDeleteProduct(ProductDisplayer displayer) {
         List<ProductDTO> productDTOList = responseFacade.getAllProductsByUserId(user.getUserId());
 
         deletePreviousMessage();
@@ -179,11 +189,12 @@ public class InlineMarkupResponse implements Responser {
             return;
         }
 
-        ProductDisplayer displayer = new DeleteProductDisplay(productDTOList, user.getChatId());
+        displayer.setProductDTOList(productDTOList);
+        displayer.setChatId(user.getChatId());
         displayer.display();
     }
 
-    public void deleteProduct() {
+    void deleteProduct() {
         long productId = Long.parseLong(user.getText().split(" ")[1]);
 
         responseFacade.deleteProductById(productId);
@@ -200,7 +211,7 @@ public class InlineMarkupResponse implements Responser {
         displayDeleteYesOrNo();
     }
 
-    public void deleteAllProducts() {
+    private void deleteAllProducts() {
         responseFacade.deleteAllProductsByUserId(user.getUserId());
 
         popupMessage(Messages.other("allDeleted"), true);
@@ -226,24 +237,17 @@ public class InlineMarkupResponse implements Responser {
         displayMenu();
     }
 
-    public void displaySetEmailMessage() {
+    private void displaySetEmailMessage() {
         deletePreviousMessage(1500);
 
-        var awaitedMessageEntity = AwaitedMessageEntity.builder()
-                .userId(ActiveUser.get().getUserId())
-                .request(user.getText())
-                .build();
+        responseFacade.createAndSaveAwaitedMessage(user.getUserId(), user.getText());
 
-        responseFacade.saveAwaitedMessage(awaitedMessageEntity);
-
-        String message = Messages.other("sendNewEmail");
-
-        quickSender.message(user.getChatId(), message, true);
+        quickSender.message(user.getChatId(), Messages.other("sendNewEmail"), true);
     }
 
 
     @SneakyThrows
-    public void updateNotifyByEmail() {
+    private void updateNotifyByEmail() {
         deletePreviousMessage();
 
         if (user.getEmail() == null) {
@@ -258,7 +262,6 @@ public class InlineMarkupResponse implements Responser {
             return;
         }
 
-
         boolean notifyByEmail = user.getText().equals("-enableEmail");
         responseFacade.updateNotifyByEmailById(user.getUserId(), notifyByEmail);
         user.setNotifyByEmail(notifyByEmail);
@@ -271,25 +274,13 @@ public class InlineMarkupResponse implements Responser {
         if (responseFacade.productExistsByUserIdAndLinkAndVariant(user.getChatId(), product.getLink(), product.getVariant()))
             throw new InvalidLinkException(Messages.other("alreadyHave"), "User try to add same product.");
 
-        if (responseFacade.countProductsByUserId(user.getUserId()) > 9 && !user.isAdmin())
+        if (responseFacade.countProductsByUserId(user.getUserId()) >= MAX_PRODUCT_LIMIT && !user.isPremium())
             throw new InvalidLinkException(Messages.other("productLimit"), "User try to add more than 10 products.");
     }
 
 
-    private String getLink(String requestId) {
-        LinkRequestEntity linkRequest = responseFacade.getLinkRequestByIdAndDelete(requestId);
 
-        checkExpiration(linkRequest.getExpiration());
-        return linkRequest.getLink();
-    }
-
-    private void checkExpiration(long expiration) {
-        if (System.currentTimeMillis() > expiration)
-            throw new InvalidLinkException(Messages.other("sessionExpired"), "User '%s' session expired".formatted(user.getUserId()));
-    }
-
-
-    public void displayMenu() {
+    private void displayMenu() {
         quickSender.inlineMarkup(
                 user.getChatId(),
                 Messages.menu("welcome"),
@@ -297,31 +288,31 @@ public class InlineMarkupResponse implements Responser {
                 true);
     }
 
-    public void displayMenu(boolean deletePreviousMessage) {
+    private void displayMenu(boolean deletePreviousMessage) {
         if (deletePreviousMessage)
             deletePreviousMessage();
 
         displayMenu();
     }
 
-    public void deletePreviousMessage() {
+    private void deletePreviousMessage() {
         quickSender.deleteMessage(user.getChatId(), user.getMessageId());
     }
 
     @SneakyThrows
-    public void deletePreviousMessage(long waitAfterDelete) {
+    private void deletePreviousMessage(long waitAfterDelete) {
         deletePreviousMessage();
         Thread.sleep(waitAfterDelete);
     }
 
-    public void displayNotification(boolean deletePreviousMessage) {
+    private void displayNotification(boolean deletePreviousMessage) {
         if (deletePreviousMessage)
             deletePreviousMessage();
 
         displayNotification();
     }
 
-    public void displayNotification() {
+    void displayNotification() {
         quickSender.inlineMarkup(
                 user.getChatId(),
                 Messages.notifications(user),
@@ -330,7 +321,7 @@ public class InlineMarkupResponse implements Responser {
     }
 
     @SneakyThrows
-    public void displayDeleteYesOrNo() {
+    private void displayDeleteYesOrNo() {
         quickSender.inlineMarkup(
                 user.getChatId(),
                 Messages.deleteProduct("areYouSure"),
@@ -348,32 +339,32 @@ public class InlineMarkupResponse implements Responser {
         quickSender.popupMessage(user.getChatId(), "You don't have any products.");
     }
 
-    public void displayNoProducts(boolean deletePreviousMessage) {
+    private void displayNoProducts(boolean deletePreviousMessage) {
         if (deletePreviousMessage)
             quickSender.deleteMessage(user.getChatId(), user.getMessageId());
 
         displayNoProducts();
     }
 
-    public void popupMessage(String message) {
+    private void popupMessage(String message) {
         quickSender.popupMessage(user.getChatId(), message);
     }
 
-    public void popupMessage(String message, boolean deletePreviousMessage) {
+    private void popupMessage(String message, boolean deletePreviousMessage) {
         if (deletePreviousMessage)
             deletePreviousMessage();
 
         popupMessage(message);
     }
 
-    public void popupMessage(String message, long popupTime, boolean deletePreviousMessage) {
+    private void popupMessage(String message, long popupTime, boolean deletePreviousMessage) {
         if (deletePreviousMessage)
             deletePreviousMessage();
 
         popupMessage(message, popupTime);
     }
 
-    public void popupMessage(String message, long popupTime) {
+    private void popupMessage(String message, long popupTime) {
         quickSender.popupMessage(user.getChatId(), message, popupTime);
     }
 }
