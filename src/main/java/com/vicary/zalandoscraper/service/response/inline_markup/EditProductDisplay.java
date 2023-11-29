@@ -76,8 +76,9 @@ class EditProductDisplay implements ProductDisplayer {
         }
 
 
-        for (StringBuilder s : stringBuilders)
+        for (StringBuilder s : stringBuilders) {
             quickSender.message(chatId, s.toString(), true);
+        }
 
         sb.setLength(0);
 
@@ -137,11 +138,11 @@ class EditProductDisplay implements ProductDisplayer {
         return p == 0 ? Messages.allProducts("soldOut") : String.format("%.2f zł", p).replaceFirst(",", ".");
     }
 
-    String getFormattedPriceAlert(String p) {
+    private String getFormattedPriceAlert(String p) {
         return (!p.equals("OFF") && !p.equals("AUTO")) ? p + " zł" : p;
     }
 
-    String getFormattedVariant(String v) {
+    private String getFormattedVariant(String v) {
         if (v.startsWith("-oneVariant")) {
             String oneVariant = v.substring(11).trim();
 

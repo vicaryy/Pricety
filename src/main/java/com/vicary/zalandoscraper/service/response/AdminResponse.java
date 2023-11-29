@@ -6,12 +6,13 @@ import com.vicary.zalandoscraper.api_telegram.api_request.commands.GetMyCommands
 import com.vicary.zalandoscraper.api_telegram.api_request.commands.SetMyCommands;
 import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
 import com.vicary.zalandoscraper.api_telegram.service.RequestService;
+import com.vicary.zalandoscraper.exception.IllegalInputException;
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
 
 import java.util.List;
 
 public class AdminResponse implements Responser {
-    private final RequestService requestService = new RequestService();
+    private final RequestService requestService;
     private final ResponseFacade responseFacade;
     private final ActiveUser user;
     private final QuickSender quickSender;
@@ -20,12 +21,14 @@ public class AdminResponse implements Responser {
         this.responseFacade = responseFacade;
         this.user = activeUser;
         this.quickSender = new QuickSender();
+        this.requestService = new RequestService();
     }
 
-    public AdminResponse(ResponseFacade responseFacade, ActiveUser activeUser, QuickSender quickSender) {
+    public AdminResponse(ResponseFacade responseFacade, ActiveUser activeUser, QuickSender quickSender, RequestService requestService) {
         this.responseFacade = responseFacade;
         this.user = activeUser;
         this.quickSender = quickSender;
+        this.requestService = requestService;
     }
 
     public void response() {
@@ -56,7 +59,9 @@ public class AdminResponse implements Responser {
         if (responseFacade.updateUserToPremiumByNick(userNick))
             quickSender.message(user.getChatId(), String.format("User %s successfully updated to Premium.", userNick), false);
         else
-            quickSender.message(user.getChatId(), String.format("User %s does not exist.", userNick), false);
+            throw new IllegalInputException(
+                    String.format("User %s does not exist.", userNick),
+                    String.format("Admin typed invalid user nick %s.", userNick));
     }
 
     private void setStandard() {
@@ -64,7 +69,9 @@ public class AdminResponse implements Responser {
         if (responseFacade.updateUserToStandardByNick(userNick))
             quickSender.message(user.getChatId(), String.format("User %s successfully updated to Standard.", userNick), false);
         else
-            quickSender.message(user.getChatId(), String.format("User %s does not exist.", userNick), false);
+            throw new IllegalInputException(
+                    String.format("User %s does not exist.", userNick),
+                    String.format("Admin typed invalid user nick %s.", userNick));
     }
 
     private void setAdmin() {
@@ -72,28 +79,34 @@ public class AdminResponse implements Responser {
         if (responseFacade.updateUserToAdminByNick(userNick))
             quickSender.message(user.getChatId(), String.format("User %s successfully updated to Admin.", userNick), false);
         else
-            quickSender.message(user.getChatId(), String.format("User %s does not exist.", userNick), false);
+            throw new IllegalInputException(
+                    String.format("User %s does not exist.", userNick),
+                    String.format("Admin typed invalid user nick %s.", userNick));
     }
 
-    private void setNonAdmin() {
+    void setNonAdmin() {
         String userNick = removePrefix(user.getText());
         if (responseFacade.updateUserToNonAdminByNick(userNick))
             quickSender.message(user.getChatId(), String.format("User %s successfully updated to Non-Admin.", userNick), false);
         else
-            quickSender.message(user.getChatId(), String.format("User %s does not exist.", userNick), false);
+            throw new IllegalInputException(
+                    String.format("User %s does not exist.", userNick),
+                    String.format("Admin typed invalid user nick %s.", userNick));
     }
 
 
     private void setCommand() {
-        String[] commandAndDescription = user.getText().split(":");
+        String textWithoutPrefix = removePrefix(user.getText());
+        String[] commandAndDescription = textWithoutPrefix.split(":");
 
-        if (commandAndDescription[0] == null || commandAndDescription[0].isBlank()) {
-            quickSender.message(user.getChatId(), "Command not found.", false);
-            return;
-        }
+        if (commandAndDescription.length < 2 || commandAndDescription[0].isBlank() || commandAndDescription[1].isBlank())
+            throw new IllegalInputException(
+                    "Invalid command, make sure you are using this pattern: command:description",
+                    "Admin typed invalid command.");
+
 
         String command = commandAndDescription[0];
-        String description = commandAndDescription.length > 1 ? commandAndDescription[1] : command;
+        String description = commandAndDescription[1];
         BotCommand botCommand = BotCommand.builder()
                 .command(command)
                 .description(description)
@@ -107,17 +120,20 @@ public class AdminResponse implements Responser {
             requestService.send(setMyCommands);
             quickSender.message(user.getChatId(), "Successfully add " + command + " command.", false);
         } catch (Exception ex) {
-            quickSender.message(user.getChatId(), "Something goes wrong, check your command and try again.", false);
+            throw new IllegalInputException(
+                    "Something goes wrong, check your command and try again.",
+                    "Fail in setting a command - " + command);
         }
     }
 
     private void removeCommand() {
-        if (user.getText().isBlank()) {
-            quickSender.message(user.getChatId(), "Command not found.", false);
-            return;
-        }
+        String textWithoutPrefix = removePrefix(user.getText());
+        if (textWithoutPrefix.isBlank())
+            throw new IllegalInputException(
+                    "I don't see command.",
+                    "Admin don't typed command to remove.");
 
-        String command = user.getText().startsWith("/") ? user.getText().substring(1) : user.getText();
+        String command = textWithoutPrefix.startsWith("/") ? textWithoutPrefix.substring(1) : textWithoutPrefix;
         List<BotCommand> commandList = requestService.sendRequestList(new GetMyCommands());
 
         for (BotCommand com : commandList) {
@@ -126,15 +142,19 @@ public class AdminResponse implements Responser {
                 SetMyCommands setMyCommands = new SetMyCommands(commandList);
                 try {
                     requestService.send(setMyCommands);
-                    quickSender.message(user.getChatId(), "Successfully remove " + command + " command.", false);
+                    quickSender.message(user.getChatId(), "Successfully removed " + command + " command.", false);
                 } catch (Exception ex) {
-                    quickSender.message(user.getChatId(), "Something goes wrong, check your command and try again.", false);
+                    throw new IllegalInputException(
+                            "Something goes wrong.",
+                            "Fail to send remove command.");
                 }
                 return;
             }
         }
 
-        quickSender.message(user.getChatId(), "Command not found.", false);
+        throw new IllegalInputException(
+                "Command does not exist.",
+                "Admin don't typed command to remove.");
     }
 
     private void removeAllCommands() {

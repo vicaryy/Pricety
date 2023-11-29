@@ -12,27 +12,30 @@ import lombok.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
 class AllProductDisplay implements ProductDisplayer {
     private String chatId;
     private List<ProductDTO> productDTOList;
     private final QuickSender quickSender;
+    private final ThreadRandom threadRandom;
 
     public AllProductDisplay(@NonNull List<ProductDTO> productDTOList, @NonNull String chatId) {
         this.productDTOList = productDTOList;
         this.chatId = chatId;
         this.quickSender = new QuickSender();
+        this.threadRandom = new ThreadRandom();
     }
 
-    public AllProductDisplay(@NonNull List<ProductDTO> productDTOList, @NonNull String chatId, QuickSender quickSender) {
+    public AllProductDisplay(@NonNull List<ProductDTO> productDTOList, @NonNull String chatId, QuickSender quickSender, ThreadRandom threadRandom) {
         this.productDTOList = productDTOList;
         this.chatId = chatId;
         this.quickSender = quickSender;
+        this.threadRandom = threadRandom;
     }
 
     public AllProductDisplay() {
         this.quickSender = new QuickSender();
+        this.threadRandom = new ThreadRandom();
     }
 
     @Override
@@ -162,7 +165,7 @@ class AllProductDisplay implements ProductDisplayer {
                 *%s*
                 %s""".formatted(
                 Messages.allProducts("didYouKnow"),
-                MarkdownV2.apply(Messages.allProducts("funFact" + ThreadLocalRandom.current().nextInt(1, 25))).get());
+                MarkdownV2.apply(Messages.allProducts("funFact" + threadRandom.generate(1, 25))).get());
     }
 
     private ReplyMarkup getReplyMarkup() {
