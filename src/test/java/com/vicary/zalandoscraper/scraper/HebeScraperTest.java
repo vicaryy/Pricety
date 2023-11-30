@@ -13,6 +13,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -21,18 +22,18 @@ import java.util.concurrent.ThreadLocalRandom;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Disabled
-class NikeScraperTest {
+class HebeScraperTest {
 
     /**
      * These tests should only be run manually.
      * Internet connection required and user have to update the links.
      */
 
-    private final static String INVALID_LINK = "https://www.nike.com/pl";
-    private final static String ONE_VARIANT_LINK = "https://www.nike.com/pl/t/torba-treningowa-one-1TGt0K/CV0063-010";
-    private final static String MULTI_VARIANTS_ENABLED_AND_DISABLED_LINK = "https://www.nike.com/pl/t/buty-meskie-air-force-1-07-VJhk3P/DV0788-001";
-    private final static String SOLD_OUT_LINK = "https://www.nike.com/pl/t/meska-bluza-z-kapturem-i-zamkiem-calej-dlugosci-sportswear-tech-fleece-p545Hj/CU4489-016";
-    private final NikeScraper scraper = new NikeScraper();
+    private final static String INVALID_LINK = "https://www.hebe.pl/";
+    private final static String ONE_VARIANT_LINK = "https://www.hebe.pl/nacomi-niacinamide-15-30-ml-000000000000381750.html";
+    private final static String MULTI_VARIANTS_ENABLED_AND_DISABLED_LINK = "https://www.hebe.pl/essence-blyszczyk-do-ust-104-10-ml-000000000000437262.html";
+    private final static String SOLD_OUT_LINK = "https://www.hebe.pl/by-hebe-kosmetyczka-caffe-latte-000000000000358461.html";
+    private final HebeScraper scraper = new HebeScraper();
 
     @BeforeAll
     static void beforeAll() {
@@ -71,13 +72,11 @@ class NikeScraperTest {
     @Test
     void getAllVariants_expectEquals_NotAvailable() {
         //given
-        int expectedSizeOfList = 1;
         //when
         List<String> actualList = scraper.getAllVariants(SOLD_OUT_LINK);
 
         //then
-        assertEquals(expectedSizeOfList, actualList.size());
-        assertTrue(actualList.get(0).startsWith("-oneVariant Unknown"));
+        assertNotEquals(Collections.emptyList(), actualList);
     }
 
 
@@ -118,10 +117,10 @@ class NikeScraperTest {
     }
 
     @Test
-    void getProduct_expectEquals_VariantUnknown() {
+    void getProduct_expectEquals_SoldOut() {
         //given
         String givenLink = SOLD_OUT_LINK;
-        String givenVariant = "-oneVariant Unknown";
+        String givenVariant = "givenVariant";
 
         //when
         Product actualProduct = scraper.getProduct(givenLink, givenVariant);
@@ -140,6 +139,7 @@ class NikeScraperTest {
         ProductDTO givenDto = ProductDTO.builder()
                 .price(500)
                 .newPrice(0)
+                .variant("-oneVariant oneVariant")
                 .build();
 
         //when

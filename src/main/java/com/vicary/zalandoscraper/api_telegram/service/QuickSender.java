@@ -34,6 +34,7 @@ public class QuickSender {
     }
 
     public void inlineMarkup(String chatId, String text, InlineKeyboardMarkup replyMarkup, boolean markdownV2) {
+        logger.warn("Wszedłem TUTAJ");
         try {
             SendMessage sendMessage = SendMessage.builder()
                     .chatId(chatId)

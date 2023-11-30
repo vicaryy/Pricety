@@ -41,9 +41,9 @@ public class HebeScraper implements Scraper {
         }
     }
 
-    private void updateProduct(Page page, ProductDTO dto) {
+    void updateProduct(Page page, ProductDTO dto) {
         try (page) {
-//            waitForContent(page);
+            waitForContent(page);
 
             if (!isLinkValid(page)) {
                 logger.warn("Product '{}' - link invalid, probably needs to be deleted.", dto.getProductId());
@@ -51,7 +51,7 @@ public class HebeScraper implements Scraper {
                 return;
             }
 
-            if (isItemSoldOut(page)) {
+            if (isSoldOut(page)) {
                 logger.debug("Product '{}' - item sold out", dto.getProductId());
                 dto.setNewPrice(0);
                 return;
@@ -63,7 +63,7 @@ public class HebeScraper implements Scraper {
             }
 
 
-            if (!clickAvailableVariant(page, getAllAvailableVariants(page), dto.getVariant())) {
+            if (!clickAvailableVariant(page, getAvailableVariants(page), dto.getVariant())) {
                 dto.setNewPrice(0);
                 logger.debug("Product '{}' - item variant not available", dto.getProductId());
                 return;
@@ -71,10 +71,12 @@ public class HebeScraper implements Scraper {
 
             dto.setNewPrice(getPrice(page));
 
-        } catch (PlaywrightException ex) {
+        } catch (
+                PlaywrightException ex) {
             ex.printStackTrace();
             logger.warn("Failed to update productId '{}'", dto.getProductId());
         }
+
     }
 
     @Override
@@ -97,7 +99,7 @@ public class HebeScraper implements Scraper {
                     .build();
 
 
-            if (isItemSoldOut(page)) {
+            if (isSoldOut(page)) {
                 return product;
             }
 
@@ -106,7 +108,7 @@ public class HebeScraper implements Scraper {
                 return product;
             }
 
-            if (!clickAvailableVariant(page, getAllAvailableVariants(page), variant)) {
+            if (!clickAvailableVariant(page, getAvailableVariants(page), variant)) {
                 return product;
             }
 
@@ -128,11 +130,52 @@ public class HebeScraper implements Scraper {
             page.setExtraHTTPHeaders(extraHeaders);
             page.navigate(link, navigateOptions);
 
+
+            if (!isLinkValid(page))
+                throw new InvalidLinkException(Messages.scraper("invalidLink"), "User %s specified wrong link: %s".formatted(ActiveUser.get().getUserId(), ActiveUser.get().getText()));
+
+            waitForContent(page);
+
+            if (isMultiVariant(page))
+                return getAllVariantsAsString(page);
+
+            return List.of("-oneVariant One Variant");
+        }
+    }
+
+    List<String> getAvailableVariants(String link) {
+        try (Playwright playwright = Playwright.create()) {
+            Browser browser = playwright.chromium().launch(launchOptions);
+
+            Page page = browser.newPage();
+            page.setDefaultTimeout(10000);
+            page.setExtraHTTPHeaders(extraHeaders);
+            page.navigate(link, navigateOptions);
+
             if (!isLinkValid(page))
                 throw new InvalidLinkException(Messages.scraper("invalidLink"), "User %s specified wrong link: %s".formatted(ActiveUser.get().getUserId(), ActiveUser.get().getText()));
 
             if (isMultiVariant(page))
-                return getAllVariantsAsString(page);
+                return getAvailableVariantsAsString(page);
+
+            return List.of("-oneVariant One Variant");
+        }
+    }
+
+    List<String> getNonAvailableVariants(String link) {
+        try (Playwright playwright = Playwright.create()) {
+            Browser browser = playwright.chromium().launch(launchOptions);
+
+            Page page = browser.newPage();
+            page.setDefaultTimeout(10000);
+            page.setExtraHTTPHeaders(extraHeaders);
+            page.navigate(link, navigateOptions);
+
+            if (!isLinkValid(page))
+                throw new InvalidLinkException(Messages.scraper("invalidLink"), "User %s specified wrong link: %s".formatted(ActiveUser.get().getUserId(), ActiveUser.get().getText()));
+
+            if (isMultiVariant(page))
+                return getNonAvailableVariantsAsString(page);
 
             return List.of("-oneVariant One Variant");
         }
@@ -185,7 +228,7 @@ public class HebeScraper implements Scraper {
         return page.isVisible(Tag.Hebe.IS_MULTI_VARIANT);
     }
 
-    private boolean isItemSoldOut(Page page) {
+    private boolean isSoldOut(Page page) {
         return page.getByText("Produkt niedostępny online").isVisible();
     }
 
@@ -219,13 +262,32 @@ public class HebeScraper implements Scraper {
                 .toList();
     }
 
-    private List<Locator> getAllAvailableVariants(Page page) {
+    private List<Locator> getAvailableVariants(Page page) {
         return page.locator("div.swatch__item--selectable").all();
     }
+
+    private List<Locator> getNonAvailableVariants(Page page) {
+        return page.locator("div.swatch__item--unselectable").all();
+    }
+
 
     private List<String> getAllVariantsAsString(Page page) {
         return page.locator(Tag.Hebe.GET_ALL_VARIANTS)
                 .all()
+                .stream()
+                .map(e -> e.textContent().trim())
+                .toList();
+    }
+
+    private List<String> getAvailableVariantsAsString(Page page) {
+        return getAvailableVariants(page)
+                .stream()
+                .map(e -> e.textContent().trim())
+                .toList();
+    }
+
+    private List<String> getNonAvailableVariantsAsString(Page page) {
+        return getNonAvailableVariants(page)
                 .stream()
                 .map(e -> e.textContent().trim())
                 .toList();

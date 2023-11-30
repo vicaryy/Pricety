@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,77 +19,74 @@ class AutoUpdaterTest {
     private AutoUpdater autoUpdater;
 
     @Test
-    void divideListIntoScrapers() {
-        ProductDTO productDTO = ProductDTO.builder()
-                .link("https://www.zalando.pl/zalando1")
-                .build();
-        ProductDTO productDTO1 = ProductDTO.builder()
-                .link("https://www.zalando.pl/zalando2")
-                .build();
-        ProductDTO productDTO2 = ProductDTO.builder()
-                .link("https://www.zalando.pl/zalando3")
-                .build();
-        ProductDTO productDTO3 = ProductDTO.builder()
-                .link("https://www.zalando.pl/zalando4")
-                .build();
-        ProductDTO productDTO4 = ProductDTO.builder()
-                .link("https://www.zalando.pl/zalando5")
-                .build();
-        ProductDTO productDTO5 = ProductDTO.builder()
-                .link("https://www.zalando.pl/zalando6")
-                .build();
-        ProductDTO productDTO6 = ProductDTO.builder()
-                .link("https://www.zalando.pl/zalando7")
-                .build();
-        ProductDTO productDTO7 = ProductDTO.builder()
-                .link("https://www.zalando.pl/zalando8")
-                .build();
+    void splitListIntoScrapers() {
+        //given
+        List<ProductDTO> givenList = getListOfDTOs();
+        //when
+        List<List<ProductDTO>> actualList = autoUpdater.splitListIntoScrapers(givenList);
 
-        ProductDTO productDTO8 = ProductDTO.builder()
-                .link("https://www.hebe.pl/hebe1")
-                .build();
-        ProductDTO productDTO9 = ProductDTO.builder()
-                .link("https://www.hebe.pl/hebe2")
-                .build();
-        ProductDTO productDTO10 = ProductDTO.builder()
-                .link("https://www.something.pl/something1")
-                .build();
-        ProductDTO productDTO11 = ProductDTO.builder()
-                .link("https://www.allegro.pl/allegro1")
-                .build();
-        ProductDTO productDTO12 = ProductDTO.builder()
-                .link("https://www.hebe.pl/hebe3")
-                .build();
-        ProductDTO productDTO13 = ProductDTO.builder()
-                .link("https://www.hebe.pl/hebe4")
-                .build();
-
-        List<ProductDTO> productDTOList = new ArrayList<>();
-        productDTOList.add(productDTO);
-        productDTOList.add(productDTO1);
-        productDTOList.add(productDTO2);
-        productDTOList.add(productDTO3);
-        productDTOList.add(productDTO4);
-        productDTOList.add(productDTO5);
-        productDTOList.add(productDTO6);
-        productDTOList.add(productDTO7);
-        productDTOList.add(productDTO8);
-        productDTOList.add(productDTO9);
-        productDTOList.add(productDTO10);
-        productDTOList.add(productDTO11);
-        productDTOList.add(productDTO12);
-        productDTOList.add(productDTO13);
+        //then
+        int i = 0;
+        for (List<ProductDTO> dto : actualList) {
+            System.out.println("Name: " + dto.get(i).getName());
+            System.out.println("Link: " + dto.get(i).getLink());
+            System.out.println("-------");
+            i++;
+        }
+    }
 
 
-//        long time = System.currentTimeMillis();
-//        List<List<ProductDTO>> ppp = autoUpdater.divideListIntoScrapers(productDTOList);
-//        System.out.println("Time: " + (System.currentTimeMillis() - time));
-//        System.out.println("List size: " + ppp.size());
-//
-//        for (List<ProductDTO> p : ppp) {
-//            System.out.println(p);
-//            System.out.println();
-//            System.out.println();
-//        }
+    private List<ProductDTO> getListOfDTOs() {
+        List<ProductDTO> DTOs =  new ArrayList<>(Arrays.asList(
+                getDto("zalando1", "https://www.zalando.pl/something123"),
+                getDto("nike1", "https://www.nike.pl/something123"),
+                getDto("hebe1", "https://www.hebe.pl/something123"),
+                getDto("allegro1", "https://www.allegro.pl/something123"),
+                getDto("olx1", "https://www.olx.pl/something123"),
+                getDto("zalando2", "https://www.zalando.pl/something123"),
+                getDto("zalando3", "https://www.zalando.pl/something123"),
+                getDto("zalando4", "https://www.zalando.pl/something123"),
+                getDto("zalando5", "https://www.zalando.pl/something123"),
+                getDto("zalando6", "https://www.zalando.pl/something123"),
+                getDto("zalando7", "https://www.zalando.pl/something123"),
+                getDto("nike2", "https://www.nike.pl/something123"),
+                getDto("nike3", "https://www.nike.pl/something123"),
+                getDto("nike4", "https://www.nike.pl/something123"),
+                getDto("nike5", "https://www.nike.pl/something123"),
+                getDto("nike6", "https://www.nike.pl/something123"),
+                getDto("nike7", "https://www.nike.pl/something123"),
+                getDto("nike8", "https://www.nike.pl/something123"),
+                getDto("nike9", "https://www.nike.pl/something123"),
+                getDto("hebe2", "https://www.hebe.pl/something123"),
+                getDto("hebe3", "https://www.hebe.pl/something123"),
+                getDto("hebe4", "https://www.hebe.pl/something123"),
+                getDto("hebe5", "https://www.hebe.pl/something123"),
+                getDto("allegro2", "https://www.allegro.pl/something123"),
+                getDto("allegro3", "https://www.allegro.pl/something123"),
+                getDto("allegro4", "https://www.allegro.pl/something123"),
+                getDto("allegro5", "https://www.allegro.pl/something123"),
+                getDto("allegro6", "https://www.allegro.pl/something123"),
+                getDto("allegro7", "https://www.allegro.pl/something123"),
+                getDto("allegro8", "https://www.allegro.pl/something123"),
+                getDto("olx2", "https://www.olx.pl/something123"),
+                getDto("olx3", "https://www.olx.pl/something123"),
+                getDto("olx4", "https://www.olx.pl/something123"),
+                getDto("olx5", "https://www.olx.pl/something123"),
+                getDto("olx6", "https://www.olx.pl/something123")
+        ));
+
+//        Collections.shuffle(DTOs);
+        return DTOs;
+    }
+
+    private List<List<ProductDTO>> expectedListOfDTOs() {
+        List<ProductDTO> zalandoList = Arrays.asList();
+    }
+
+    private ProductDTO getDto(String name, String link) {
+        return ProductDTO.builder()
+                .name(name)
+                .link(link)
+                .build();
     }
 }

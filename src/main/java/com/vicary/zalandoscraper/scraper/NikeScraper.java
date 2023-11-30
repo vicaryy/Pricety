@@ -11,6 +11,7 @@ import com.vicary.zalandoscraper.thread_local.ActiveUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -162,6 +163,57 @@ public class NikeScraper implements Scraper {
     }
 
 
+    List<String> getAvailableVariants(String link) {
+        try (Playwright playwright = Playwright.create()) {
+            BrowserType.LaunchOptions l = new BrowserType.LaunchOptions();
+            l.setHeadless(false);
+            Browser browser = playwright.chromium().launch(launchOptions);
+
+            Page page = browser.newPage();
+            page.setDefaultTimeout(10000);
+            page.setExtraHTTPHeaders(extraHeaders);
+            page.navigate(link, navigateOptions);
+
+            if (!isLinkValid(page))
+                throw new InvalidLinkException(Messages.scraper("invalidLink"), "User %s specified wrong link: %s".formatted(ActiveUser.get().getUserId(), ActiveUser.get().getText()));
+
+            if (waitForSizes(page, 3500))
+                return getAvailableVariantsAsString(page);
+
+            if (isItemSoldOut(page))
+                return List.of("-oneVariant Unknown");
+
+            return List.of("-oneVariant " + getVariant(page));
+        }
+    }
+
+    List<String> getNonAvailableVariants(String link) {
+        try (Playwright playwright = Playwright.create()) {
+            BrowserType.LaunchOptions l = new BrowserType.LaunchOptions();
+            l.setHeadless(false);
+            Browser browser = playwright.chromium().launch(launchOptions);
+
+            Page page = browser.newPage();
+            page.setDefaultTimeout(10000);
+            page.setExtraHTTPHeaders(extraHeaders);
+            page.navigate(link, navigateOptions);
+
+            if (!isLinkValid(page))
+                throw new InvalidLinkException(Messages.scraper("invalidLink"), "User %s specified wrong link: %s".formatted(ActiveUser.get().getUserId(), ActiveUser.get().getText()));
+
+            if (waitForSizes(page, 3500))
+                return getNonAvailableVariantsAsString(page);
+
+            if (isItemSoldOut(page))
+                return List.of("-oneVariant Unknown");
+
+            return List.of("-oneVariant " + getVariant(page));
+        }
+    }
+
+
+
+
     @Override
     public void setBugged(boolean bugged) {
         launchOptions.setHeadless(!bugged);
@@ -232,6 +284,26 @@ public class NikeScraper implements Scraper {
                 .stream()
                 .map(e -> e.textContent().trim())
                 .toList();
+    }
+
+    private List<String> getAvailableVariantsAsString(Page page) {
+        List<Locator> locators = page.locator("label.css-xf3ahq").all();
+        List<String> sizes = new ArrayList<>();
+        for (Locator l : locators)
+            if (l.isEnabled())
+                sizes.add(l.textContent().trim());
+
+        return sizes;
+    }
+
+    private List<String> getNonAvailableVariantsAsString(Page page) {
+        List<Locator> locators = page.locator("label.css-xf3ahq").all();
+        List<String> sizes = new ArrayList<>();
+        for (Locator l : locators)
+            if (!l.isEnabled())
+                sizes.add(l.textContent().trim());
+
+        return sizes;
     }
 
     private boolean isVariantAvailable(Page page, String variant) {

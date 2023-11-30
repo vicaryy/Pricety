@@ -12,6 +12,7 @@ class Tag {
         static final String COOKIES_BUTTON = "button.uc-btn";
         static final String ALL_VARIANTS = "span.hDNRPv.r9BRio.qXofat.ZkIJC-.pMa0tB.JCuRr_ > div._0xLoFW.FCIprz > span.sDq_FX._2kjxJ6.dgII7d";
         static final String AVAILABLE_VARIANTS = "span.hDNRPv.r9BRio.qXofat.ZkIJC-.pMa0tB.JCuRr_ > div._0xLoFW.FCIprz > span.sDq_FX._2kjxJ6.dgII7d.HlZ_Tf";
+        static final String NON_AVAILABLE_VARIANTS = "span.hDNRPv.r9BRio.qXofat.ZkIJC-.pMa0tB.JCuRr_ > div._0xLoFW.FCIprz > span.sDq_FX._2kjxJ6.dgII7d.Yb63TQ";
     }
 
     static class Hebe {

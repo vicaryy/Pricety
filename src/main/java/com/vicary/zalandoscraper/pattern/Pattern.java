@@ -47,10 +47,6 @@ public class Pattern {
         return update.getCallbackQuery() != null;
     }
 
-    public static String getDatePattern() {
-        return "yyyy-MM-dd HH:mm:ss";
-    }
-
     public static boolean isEmail(String text) {
         if (text.equalsIgnoreCase("delete"))
             return true;

@@ -12,10 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class AutoUpdater implements Runnable {
@@ -87,16 +84,8 @@ public class AutoUpdater implements Runnable {
         sendNotificationsToUsers(products);
     }
 
-    private void sleep(long millis) {
-        try {
-            Thread.sleep(millis);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private List<List<ProductDTO>> splitListIntoScrapers(List<ProductDTO> DTOs) {
-        Map<String, List<ProductDTO>> serviceMap = new HashMap<>();
+    List<List<ProductDTO>> splitListIntoScrapers(List<ProductDTO> DTOs) {
+        Map<String, List<ProductDTO>> serviceMap = new LinkedHashMap<>();
 
         for (ProductDTO dto : DTOs) {
             String service = dto.getServiceName();
@@ -145,6 +134,14 @@ public class AutoUpdater implements Runnable {
 
     public static boolean isActive() {
         return isActive;
+    }
+
+    private void sleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
 

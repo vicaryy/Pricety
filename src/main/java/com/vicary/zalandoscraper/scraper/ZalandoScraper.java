@@ -46,7 +46,7 @@ public class ZalandoScraper implements Scraper {
         }
     }
 
-    private void updateProduct(Page page, ProductDTO dto) {
+    void updateProduct(Page page, ProductDTO dto) {
         try (page) {
             waitForMainPage(page);
 
@@ -215,6 +215,84 @@ public class ZalandoScraper implements Scraper {
         }
     }
 
+    List<String> getAvailableVariants(String link) {
+        try (Playwright playwright = Playwright.create()) {
+            try (Browser browser = playwright.chromium().launch()) {
+                Page page = browser.newPage();
+                page.setDefaultTimeout(10000);
+                page.setExtraHTTPHeaders(extraHeaders);
+                page.navigate(link);
+
+                try {
+                    if (!isLinkValid(page))
+                        throw new InvalidLinkException(Messages.scraper("invalidLink"), "User %s specified wrong link: %s".formatted(ActiveUser.get().getUserId(), ActiveUser.get().getText()));
+
+                    if (isItemOneVariant(page)) {
+                        return List.of("-oneVariant " + getOneVariantName(page));
+                    }
+
+                    clickSizeButton(page);
+
+                    return getAvailableVariants(page);
+
+                } catch (PlaywrightException ex) {
+
+                    clickCookiesButton(page);
+
+                    if (!isLinkValid(page))
+                        throw new InvalidLinkException(Messages.scraper("invalidLink"), "User %s specified wrong link: %s".formatted(ActiveUser.get().getUserId(), ActiveUser.get().getText()));
+
+                    if (isItemOneVariant(page)) {
+                        return List.of("-oneVariant " + getOneVariantName(page));
+                    }
+
+                    clickSizeButton(page);
+
+                    return getAvailableVariants(page);
+                }
+            }
+        }
+    }
+
+    List<String> getNonAvailableVariants(String link) {
+        try (Playwright playwright = Playwright.create()) {
+            try (Browser browser = playwright.chromium().launch()) {
+                Page page = browser.newPage();
+                page.setDefaultTimeout(10000);
+                page.setExtraHTTPHeaders(extraHeaders);
+                page.navigate(link);
+
+                try {
+                    if (!isLinkValid(page))
+                        throw new InvalidLinkException(Messages.scraper("invalidLink"), "User %s specified wrong link: %s".formatted(ActiveUser.get().getUserId(), ActiveUser.get().getText()));
+
+                    if (isItemOneVariant(page)) {
+                        return List.of("-oneVariant " + getOneVariantName(page));
+                    }
+
+                    clickSizeButton(page);
+
+                    return getNonAvailableVariants(page);
+
+                } catch (PlaywrightException ex) {
+
+                    clickCookiesButton(page);
+
+                    if (!isLinkValid(page))
+                        throw new InvalidLinkException(Messages.scraper("invalidLink"), "User %s specified wrong link: %s".formatted(ActiveUser.get().getUserId(), ActiveUser.get().getText()));
+
+                    if (isItemOneVariant(page)) {
+                        return List.of("-oneVariant " + getOneVariantName(page));
+                    }
+
+                    clickSizeButton(page);
+
+                    return getNonAvailableVariants(page);
+                }
+            }
+        }
+    }
+
     private void waitForMainPage(Page page) {
         page.waitForSelector(Tag.Zalando.LINK_VALID);
     }
@@ -288,9 +366,22 @@ public class ZalandoScraper implements Scraper {
                 .collect(Collectors.toList());
     }
 
+    private List<String> getNonAvailableVariants(Page page) {
+        return getNonAvailableVariantsAsLocators(page)
+                .stream()
+                .map(Locator::textContent)
+                .collect(Collectors.toList());
+    }
+
     private List<Locator> getAvailableVariantsAsLocators(Page page) {
         return page
                 .locator(Tag.Zalando.AVAILABLE_VARIANTS)
+                .all();
+    }
+
+    private List<Locator> getNonAvailableVariantsAsLocators(Page page) {
+        return page
+                .locator(Tag.Zalando.NON_AVAILABLE_VARIANTS)
                 .all();
     }
 
