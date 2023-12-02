@@ -1,6 +1,8 @@
 package com.vicary.zalandoscraper.updater;
 
 import com.vicary.zalandoscraper.scraper.*;
+import com.vicary.zalandoscraper.service.repository_services.WaitingUserService;
+import com.vicary.zalandoscraper.updater.sender.NotificationManager;
 import com.vicary.zalandoscraper.utils.TerminalExecutor;
 import com.vicary.zalandoscraper.exception.TimeoutException;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;
@@ -24,6 +26,7 @@ public class AutoUpdater implements Runnable {
     private final UpdatesHistoryService updatesHistoryService;
     private final ProductMapper productMapper;
     private final NotificationManager notificationManager;
+    private final WaitingUserService waitingUserService;
     private final Thread updaterThread = new Thread(this);
     private final Map<String, Scraper> scraperMap = new HashMap<>();
 
@@ -32,19 +35,21 @@ public class AutoUpdater implements Runnable {
                        UpdatesHistoryService updatesHistoryService,
                        ProductMapper productMapper,
                        NotificationManager notificationManager,
+                       WaitingUserService waitingUserService,
                        ZalandoScraper zalandoScraper,
                        HebeScraper hebeScraper,
                        NikeScraper nikeScraper) {
         this.productService = productService;
         this.updatesHistoryService = updatesHistoryService;
         this.productMapper = productMapper;
+        this.waitingUserService = waitingUserService;
         this.notificationManager = notificationManager;
 
         scraperMap.put("zalando.pl", zalandoScraper);
         scraperMap.put("hebe.pl", hebeScraper);
         scraperMap.put("nike.pl", nikeScraper);
 
-//        updaterThread.start();
+        updaterThread.start();
     }
 
     @Override
@@ -72,9 +77,9 @@ public class AutoUpdater implements Runnable {
             return;
         }
 
-
+        List<List<ProductDTO>> splittedListIntoScrapers = divideListIntoServices(products);
         isActive = true;
-        updateProducts(splitListIntoScrapers(products));
+        updateProducts(splittedListIntoScrapers);
         isActive = false;
 
         updateProductsPriceInRepository(products);
@@ -84,7 +89,7 @@ public class AutoUpdater implements Runnable {
         sendNotificationsToUsers(products);
     }
 
-    List<List<ProductDTO>> splitListIntoScrapers(List<ProductDTO> DTOs) {
+    List<List<ProductDTO>> divideListIntoServices(List<ProductDTO> DTOs) {
         Map<String, List<ProductDTO>> serviceMap = new LinkedHashMap<>();
 
         for (ProductDTO dto : DTOs) {
@@ -125,7 +130,8 @@ public class AutoUpdater implements Runnable {
     }
 
     private void sendNotificationsToUsers(List<ProductDTO> DTOs) {
-        notificationManager.send(DTOs);
+        notificationManager.sendPriceNotifications(DTOs);
+        notificationManager.sendWaitingUserNotifications(waitingUserService.getAllAndDeleteWaitingUsers());
     }
 
     private void updateProductsPriceInRepository(List<ProductDTO> updatedDTOs) {

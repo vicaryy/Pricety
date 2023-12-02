@@ -12,7 +12,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class EmailNotificationSender {
+class EmailNotificationSender {
 
     private final static Logger logger = LoggerFactory.getLogger(EmailNotificationSender.class);
     private int emailsSent;

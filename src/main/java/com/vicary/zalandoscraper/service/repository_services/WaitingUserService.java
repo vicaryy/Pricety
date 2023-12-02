@@ -1,5 +1,6 @@
 package com.vicary.zalandoscraper.service.repository_services;
 
+import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.entity.WaitingUserEntity;
 import com.vicary.zalandoscraper.repository.WaitingUserRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +26,8 @@ public class WaitingUserService {
         return waitingUserEntities;
     }
 
-    public boolean existsByUserId(String userId) {
-        return repository.existsByUserId(userId);
+    public boolean existsByUserId(UserEntity user) {
+        return repository.existsByUser(user);
     }
 }
 

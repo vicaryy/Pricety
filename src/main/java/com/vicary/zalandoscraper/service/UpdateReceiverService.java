@@ -134,8 +134,8 @@ public class UpdateReceiverService implements UpdateReceiver {
     }
 
     private void checkAndSaveWaitingUser(String userId) {
-        if (!waitingUserService.existsByUserId(userId))
-            waitingUserService.saveWaitingUser(new WaitingUserEntity(userId));
+        if (!waitingUserService.existsByUserId(facade.getUserByUserId(userId)))
+            waitingUserService.saveWaitingUser(new WaitingUserEntity(facade.getUserByUserId(userId)));
     }
 
     @Override

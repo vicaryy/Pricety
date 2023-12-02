@@ -46,11 +46,13 @@ public class NikeScraper implements Scraper {
             boolean isSoldOut = false;
             boolean isMultiVariant = false;
             boolean isOneVariant = false;
+            boolean isItemNotAvailable = false;
 
-            while (!isSoldOut && !isMultiVariant && !isOneVariant) {
+            while (!isSoldOut && !isMultiVariant && !isOneVariant && !isItemNotAvailable) {
                 isMultiVariant = isMultiVariantVisible(page);
                 isSoldOut = isSoldOutVisible(page);
                 isOneVariant = isOneVariant(page);
+                isItemNotAvailable = isItemNotAvailableVisible(page);
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
@@ -58,6 +60,11 @@ public class NikeScraper implements Scraper {
                 }
             }
 
+            if (isItemNotAvailable) {
+                logger.debug("Product '{}' - is not longer available, delete it", dto.getProductId());
+                dto.setNewPrice(0);
+                return;
+            }
 
             if (isSoldOut) {
                 logger.debug("Product '{}' - item sold out", dto.getProductId());
@@ -96,6 +103,10 @@ public class NikeScraper implements Scraper {
             return !page.locator("span.prl0-sm.ta-sm-l.bg-transparent.sizeHeader").textContent().startsWith("Wybierz");
 
         return false;
+    }
+
+    private boolean isItemNotAvailableVisible(Page page) {
+        return page.isVisible("h1.headline-2.not-found");
     }
 
 

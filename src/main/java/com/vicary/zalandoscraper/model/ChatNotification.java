@@ -20,7 +20,6 @@ public class ChatNotification {
 
     private boolean markdownV2;
 
-
     public void setWaitingUserMessage(String language) {
         message = Messages.chat("waitingUser", language);
     }

@@ -1,5 +1,6 @@
 package com.vicary.zalandoscraper.service.response;
 
+import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.format.MarkdownV2;
 import com.vicary.zalandoscraper.utils.PrettyTime;
 import com.vicary.zalandoscraper.entity.AwaitedMessageEntity;
@@ -37,10 +38,6 @@ public class ResponseFacade {
 
     public List<ProductDTO> getAllProductsByUserId(String userId) {
         return productService.getAllProductsDtoByUserId(userId);
-    }
-
-    public void saveAwaitedMessage(AwaitedMessageEntity awaitedMessageEntity) {
-        awaitedMessageService.saveAwaitedMessage(awaitedMessageEntity);
     }
 
     public void createAndSaveAwaitedMessage(String userId, String request) {
@@ -147,5 +144,9 @@ public class ResponseFacade {
 
     public void deleteAllActiveRequests() {
         activeRequestService.deleteAllActiveUsers();
+    }
+
+    public UserEntity getUserByUserId(String userId) {
+        return userService.findByUserId(userId).orElseThrow();
     }
 }

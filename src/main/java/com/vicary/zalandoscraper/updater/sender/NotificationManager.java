@@ -1,20 +1,17 @@
-package com.vicary.zalandoscraper.updater;
+package com.vicary.zalandoscraper.updater.sender;
 
 import com.vicary.zalandoscraper.entity.WaitingUserEntity;
+import com.vicary.zalandoscraper.model.ChatNotificationFactory;
 import com.vicary.zalandoscraper.model.Email;
 import com.vicary.zalandoscraper.model.ChatNotification;
+import com.vicary.zalandoscraper.model.EmailNotificationFactory;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;
 import com.vicary.zalandoscraper.service.repository_services.ProductService;
-import com.vicary.zalandoscraper.service.repository_services.UserService;
-import com.vicary.zalandoscraper.service.repository_services.WaitingUserService;
-import com.vicary.zalandoscraper.updater.sender.EmailNotificationSender;
-import com.vicary.zalandoscraper.updater.sender.ChatNotificationSender;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -30,16 +27,7 @@ public class NotificationManager {
 
     private final EmailNotificationSender emailSender;
 
-    private final WaitingUserService waitingUserService;
-
-    private final UserService userService;
-
-    public void send(List<ProductDTO> DTOs) {
-        sendPriceNotifications(DTOs);
-        sendWaitingUserNotifications();
-    }
-
-    private void sendPriceNotifications(List<ProductDTO> DTOs) {
+    public void sendPriceNotifications(List<ProductDTO> DTOs) {
         List<ProductDTO> listThatNeedsToBeSend = DTOs.stream()
                 .filter(this::isUserNeedsNotify)
                 .toList();
@@ -61,19 +49,19 @@ public class NotificationManager {
         displayLogsAfterSendPriceNotifications();
     }
 
-    private void sendWaitingUserNotifications() {
-        List<ChatNotification> waitingUserNotifications = getWaitingUserNotifications();
-        if (waitingUserNotifications.isEmpty()) {
+    public void sendWaitingUserNotifications(List<WaitingUserEntity> waitingUsers) {
+        if (waitingUsers.isEmpty()) {
             logger.info("[Notification Manager] No waiting user notifications to send.");
             return;
         }
+        List<ChatNotification> waitingUserNotifications = getWaitingUserNotifications(waitingUsers);
 
         displayLogsBeforeSendWaitingUser(waitingUserNotifications.size());
         chatSender.send(waitingUserNotifications);
         displayLogsAfterSendWaitingUser();
     }
 
-    private boolean isUserNeedsNotify(ProductDTO p) {
+    boolean isUserNeedsNotify(ProductDTO p) {
         if (p.getPriceAlert().equals("OFF") || p.getNewPrice() == 0)
             return false;
 
@@ -85,7 +73,7 @@ public class NotificationManager {
         return p.getNewPrice() <= priceAlert;
     }
 
-    private void updatePriceAlertInRepository(ProductDTO p) {
+    void updatePriceAlertInRepository(ProductDTO p) {
         if (p.getPriceAlert().equals("OFF") || p.getPriceAlert().equals("AUTO"))
             return;
 
@@ -95,43 +83,30 @@ public class NotificationManager {
     }
 
     private List<ChatNotification> getChatNotifications(List<ProductDTO> DTOs) {
-        List<ChatNotification> chatNotifications = new ArrayList<>();
-        for (ProductDTO p : DTOs) {
-            ChatNotification notification = new ChatNotification();
-            notification.setChatId(p.getUserId());
-            notification.setMarkdownV2(true);
-            notification.setDefaultPriceAlertMessage(p);
-            chatNotifications.add(notification);
-        }
-        return chatNotifications.isEmpty() ? Collections.emptyList() : chatNotifications;
+        if (DTOs.isEmpty())
+            return Collections.emptyList();
+
+        return DTOs.stream()
+                .map(ChatNotificationFactory::getPriceAlertNotification)
+                .toList();
     }
 
     private List<Email> getEmailNotifications(List<ProductDTO> DTOs) {
-        List<Email> emails = new ArrayList<>();
-        for (ProductDTO p : DTOs) {
-            if (p.isNotifyByEmail()) {
-                Email notification = new Email(p.getEmail());
-                notification.setPriceAlertMessageAndTitle(p);
-                emails.add(notification);
-            }
-        }
-        return emails.isEmpty() ? Collections.emptyList() : emails;
-    }
-
-    private List<ChatNotification> getWaitingUserNotifications() {
-        List<WaitingUserEntity> waitingUserEntities = waitingUserService.getAllAndDeleteWaitingUsers();
-        if (waitingUserEntities.isEmpty())
+        List<ProductDTO> listWithEnabledEmailNotifies = DTOs.stream()
+                .filter(ProductDTO::isNotifyByEmail)
+                .toList();
+        if (listWithEnabledEmailNotifies.isEmpty())
             return Collections.emptyList();
 
-        List<ChatNotification> chatNotifications = new ArrayList<>();
-        for (WaitingUserEntity w : waitingUserEntities) {
-            ChatNotification notification = new ChatNotification();
-            notification.setChatId(w.getUserId());
-            notification.setWaitingUserMessage(userService.getLanguageByUserId(w.getUserId()));
-            notification.setMarkdownV2(true);
-            chatNotifications.add(notification);
-        }
-        return chatNotifications;
+        return listWithEnabledEmailNotifies.stream()
+                .map(EmailNotificationFactory::getPriceAlertNotification)
+                .toList();
+    }
+
+    private List<ChatNotification> getWaitingUserNotifications(List<WaitingUserEntity> waitingUsers) {
+        return waitingUsers.stream()
+                .map(w -> ChatNotificationFactory.getWaitingUserNotification(w.getUser().getUserId(), w.getUser().getNationality()))
+                .toList();
     }
 
     private void displayLogsBeforeSendWaitingUser(int waitingUserSize) {

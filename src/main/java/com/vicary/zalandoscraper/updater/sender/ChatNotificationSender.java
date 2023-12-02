@@ -11,7 +11,7 @@ import java.util.List;
 
 
 @Component
-public class ChatNotificationSender {
+class ChatNotificationSender {
 
     private final static Logger logger = LoggerFactory.getLogger(ChatNotificationSender.class);
     private int messagesSent;

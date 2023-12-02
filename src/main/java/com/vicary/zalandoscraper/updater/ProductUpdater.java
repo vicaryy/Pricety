@@ -17,8 +17,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ProductUpdater {
-
-    private final static Logger logger = LoggerFactory.getLogger(ProductUpdater.class);
     private long updatesTimeout;
     private int amountOfThreads;
     private final List<Future<?>> activeThreads = new ArrayList<>();
