@@ -294,11 +294,11 @@ public class ZalandoScraper implements Scraper {
     }
 
     private void waitForMainPage(Page page) {
-        page.waitForSelector(Tag.Zalando.LINK_VALID);
+        page.waitForSelector(Tag.Zalando.MAIN_TAB);
     }
 
     private String getOneVariantName(Page page) {
-        return page.locator(Tag.Zalando.ONE_VARIANT_NAME).innerText();
+        return page.locator(Tag.Zalando.ONE_VARIANT_TAB).innerText();
     }
 
     private String getName(Page page) {
@@ -328,7 +328,7 @@ public class ZalandoScraper implements Scraper {
 
 
     private boolean isLinkValid(Page page) {
-        return page.locator(Tag.Zalando.LINK_VALID).count() > 0;
+        return page.locator(Tag.Zalando.MAIN_TAB).count() > 0;
     }
 
 
@@ -337,7 +337,7 @@ public class ZalandoScraper implements Scraper {
     }
 
     private boolean isItemSoldOut(Page page) {
-        return page.getByText(Tag.Zalando.SOLD_OUT).count() == 1;
+        return page.getByText(Tag.Zalando.SOLD_OUT_TAB).count() == 1;
     }
 
     void clickSizeButton(Page page) {

@@ -54,6 +54,8 @@ public class UpdateFetcher {
                 break;
             } catch (WebClientRequestException ex) {
                 handleWebClientRequestException();
+            } catch (Exception ex) {
+                handleException(ex);
             }
             checkUpdatesDelay();
             executeUpdates();
@@ -186,6 +188,11 @@ public class UpdateFetcher {
         logger.warn("Trying to reconnect...");
         logger.warn("---------------------------");
         sleep(options.getTryingToReconnectFrequency());
+    }
+
+    private static void handleException(Exception ex) {
+        logger.error("Unexpected error: " + ex.getMessage());
+        ex.printStackTrace();
     }
 
     private void sleep(int milliseconds) {

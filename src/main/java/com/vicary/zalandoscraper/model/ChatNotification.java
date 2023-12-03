@@ -39,7 +39,7 @@ public class ChatNotification {
                 MarkdownV2.apply(p.getName()).get(),
                 MarkdownV2.apply(p.getDescription()).get(),
                 MarkdownV2.apply(variant).get(),
-                MarkdownV2.apply(p.getLink()).toURL().get(),
+                MarkdownV2.apply(p.getLink()).toURL(p.getServiceName()).get(),
                 MarkdownV2.apply(oldPrice).get(),
                 MarkdownV2.apply(newPrice).get()
         );
@@ -52,7 +52,7 @@ public class ChatNotification {
                 MarkdownV2.apply(p.getName()).get(),
                 MarkdownV2.apply(p.getDescription()).get(),
                 MarkdownV2.apply(variant).get(),
-                MarkdownV2.apply(p.getLink()).toURL().get(),
+                MarkdownV2.apply(p.getLink()).toURL(p.getServiceName()).get(),
                 MarkdownV2.apply(newPrice).get(),
                 MarkdownV2.apply(p.getPriceAlert()).get()
         );

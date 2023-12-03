@@ -13,9 +13,6 @@ import com.vicary.zalandoscraper.api_telegram.api_object.poll.Poll;
 import com.vicary.zalandoscraper.api_telegram.api_object.poll.PollAnswer;
 import lombok.*;
 
-@Getter
-@ToString
-@EqualsAndHashCode
 @Data
 @Builder
 @NoArgsConstructor

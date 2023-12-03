@@ -8,19 +8,19 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "LINK_REQUESTS")
+@Table(name = "link_requests")
 public class LinkRequestEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID")
+    @Column(name = "id")
     private Long id;
 
-    @Column(name = "REQUEST_ID")
+    @Column(name = "request_id")
     private String requestId;
 
-    @Column(name = "LINK")
+    @Column(name = "link")
     private String link;
 
-    @Column(name = "EXPIRATION")
+    @Column(name = "expiration")
     private long expiration;
 }

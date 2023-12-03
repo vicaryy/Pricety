@@ -26,7 +26,7 @@ class HebeScraperTest {
 
     /**
      * These tests should only be run manually.
-     * Internet connection required and user have to update the links.
+     * Internet connection required and user have to update the links before.
      */
 
     private final static String INVALID_LINK = "https://www.hebe.pl/";

@@ -25,11 +25,11 @@ class ZalandoScraperTest {
 
     /**
      * These tests should only be run manually.
-     * Internet connection required and user have to update the links.
+     * Internet connection required and user have to update the links before.
      */
 
     private final static String INVALID_LINK = "https://www.zalando.pl/";
-    private final static String ONE_VARIANT_LINK = "https://www.zalando.pl/versace-jeans-couture-baseball-with-pences-unisex-czapka-z-daszkiem-blackgold-vei54q01l-q11.html";
+    private final static String ONE_VARIANT_LINK = "https://www.zalando.pl/new-era-new-york-yankees-czapki-i-kapelusze-niebieski-ne344a07t-502.html";
     private final static String MULTI_VARIANTS_ENABLED_AND_DISABLED_LINK = "https://www.zalando.pl/puma-shuffle-mid-unisex-sneakersy-wysokie-whiteblackteam-gold-pu115n01n-a12.html";
     private final static String SOLD_OUT_LINK = "https://www.zalando.pl/vans-t-shirt-z-nadrukiem-black-va222o0p4-q11.html";
     private final ZalandoScraper scraper = new ZalandoScraper();

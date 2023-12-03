@@ -22,20 +22,18 @@ public class LinkRequestService {
         repository.save(entity);
     }
 
-    public LinkRequestEntity findByRequestId(String requestId) {
-        return repository.findByRequestId(requestId)
-                .orElseThrow(() -> new InvalidLinkException(Messages.other("sessionExpired"), "User '%s' session expired".formatted(ActiveUser.get().getUserId())));
-    }
-
     @Transactional
-    public LinkRequestEntity findByRequestIdAndDelete(String requestId) {
-        LinkRequestEntity linkRequest = findByRequestId(requestId);
-        deleteByRequestId(linkRequest.getRequestId());
+    public LinkRequestEntity getAndDeleteByRequestId(String requestId) {
+        LinkRequestEntity linkRequest = repository.findByRequestId(requestId)
+                .orElseThrow(() -> new InvalidLinkException(Messages.other("sessionExpired"), "User '%s' session expired".formatted(ActiveUser.get().getUserId())));
+        repository.deleteByRequestId(requestId);
+        checkExpiration(linkRequest.getExpiration());
         return linkRequest;
     }
 
-    public void deleteByRequestId(String requestId) {
-        repository.deleteByRequestId(requestId);
+    private void checkExpiration(long expiration) {
+        if (System.currentTimeMillis() > expiration)
+            throw new InvalidLinkException(Messages.other("sessionExpired"), "User '%s' session expired".formatted(ActiveUser.get().getUserId()));
     }
 
     public String generateAndSaveRequest(String link) {

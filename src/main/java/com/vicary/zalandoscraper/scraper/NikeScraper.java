@@ -91,22 +91,22 @@ public class NikeScraper implements Scraper {
     }
 
     private boolean isMultiVariantVisible(Page page) {
-        return page.isVisible("fieldset.mt5-sm.mb3-sm.body-2.css-1pj6y87");
+        return page.isVisible(Tag.Nike.MULTI_VARIANT_TAB);
     }
 
     private boolean isSoldOutVisible(Page page) {
-        return page.isVisible("div.sold-out");
+        return page.isVisible(Tag.Nike.SOLD_OUT_TAB);
     }
 
     private boolean isOneVariant(Page page) {
-        if (page.isVisible("span.prl0-sm.ta-sm-l.bg-transparent.sizeHeader"))
-            return !page.locator("span.prl0-sm.ta-sm-l.bg-transparent.sizeHeader").textContent().startsWith("Wybierz");
+        if (page.isVisible(Tag.Nike.ONE_VARIANT_TAB))
+            return !page.locator(Tag.Nike.ONE_VARIANT_TAB).textContent().startsWith("Wybierz");
 
         return false;
     }
 
     private boolean isItemNotAvailableVisible(Page page) {
-        return page.isVisible("h1.headline-2.not-found");
+        return page.isVisible(Tag.Nike.NOT_AVAILABLE_TAB);
     }
 
 
@@ -232,7 +232,7 @@ public class NikeScraper implements Scraper {
 
 
     private String getVariant(Page page) {
-        return page.locator("span.prl0-sm.ta-sm-l.bg-transparent.sizeHeader").textContent();
+        return page.locator(Tag.Nike.ONE_VARIANT_TAB).textContent();
     }
 
 
@@ -240,7 +240,7 @@ public class NikeScraper implements Scraper {
         Page.WaitForSelectorOptions waitForOptions = new Page.WaitForSelectorOptions();
         waitForOptions.setTimeout(howLong);
         try {
-            page.waitForSelector("fieldset.mt5-sm.mb3-sm.body-2.css-1pj6y87", waitForOptions);
+            page.waitForSelector(Tag.Nike.MULTI_VARIANT_TAB, waitForOptions);
             return true;
         } catch (TimeoutError ex) {
             return false;
@@ -252,7 +252,7 @@ public class NikeScraper implements Scraper {
         Locator.WaitForOptions waitForOptions = new Locator.WaitForOptions();
         waitForOptions.setTimeout(4000);
         try {
-            page.locator("div#RightRail").waitFor(waitForOptions);
+            page.locator(Tag.Nike.MAIN_TAB).waitFor(waitForOptions);
             return true;
         } catch (Exception ex) {
             return false;
@@ -264,7 +264,7 @@ public class NikeScraper implements Scraper {
         Locator.WaitForOptions waitForOptions = new Locator.WaitForOptions();
         waitForOptions.setTimeout(1000);
         try {
-            page.locator("div.sold-out").waitFor(waitForOptions);
+            page.locator(Tag.Nike.SOLD_OUT_TAB).waitFor(waitForOptions);
             return true;
         } catch (Exception ex) {
             return false;
@@ -272,15 +272,15 @@ public class NikeScraper implements Scraper {
     }
 
     private String getName(Page page) {
-        return page.locator("h1#pdp_product_title").last().innerText();
+        return page.locator(Tag.Nike.NAME).last().innerText();
     }
 
     private String getDescription(Page page) {
-        return page.locator("h2.headline-5.pb1-sm.d-sm-ib").last().innerText();
+        return page.locator(Tag.Nike.DESCRIPTION).last().innerText();
     }
 
     private double getPrice(Page page) {
-        String price = page.locator("div.product-price.is--current-price").first().innerText().trim();
+        String price = page.locator(Tag.Nike.PRICE).first().innerText().trim();
         String[] priceArray = price.split(" ");
 
         if (priceArray[0].contains(","))
@@ -290,7 +290,7 @@ public class NikeScraper implements Scraper {
     }
 
     private List<String> getAllVariantsAsString(Page page) {
-        return page.locator("label.css-xf3ahq")
+        return page.locator(Tag.Nike.VARIANT_TAB)
                 .all()
                 .stream()
                 .map(e -> e.textContent().trim())
@@ -298,7 +298,7 @@ public class NikeScraper implements Scraper {
     }
 
     private List<String> getAvailableVariantsAsString(Page page) {
-        List<Locator> locators = page.locator("label.css-xf3ahq").all();
+        List<Locator> locators = page.locator(Tag.Nike.VARIANT_TAB).all();
         List<String> sizes = new ArrayList<>();
         for (Locator l : locators)
             if (l.isEnabled())
@@ -308,7 +308,7 @@ public class NikeScraper implements Scraper {
     }
 
     private List<String> getNonAvailableVariantsAsString(Page page) {
-        List<Locator> locators = page.locator("label.css-xf3ahq").all();
+        List<Locator> locators = page.locator(Tag.Nike.VARIANT_TAB).all();
         List<String> sizes = new ArrayList<>();
         for (Locator l : locators)
             if (!l.isEnabled())
@@ -318,7 +318,7 @@ public class NikeScraper implements Scraper {
     }
 
     private boolean isVariantAvailable(Page page, String variant) {
-        List<Locator> locators = page.locator("label.css-xf3ahq").all();
+        List<Locator> locators = page.locator(Tag.Nike.VARIANT_TAB).all();
 
         for (Locator l : locators) {
             if (l.textContent().trim().equals(variant)) {
@@ -331,6 +331,6 @@ public class NikeScraper implements Scraper {
     private void waitForTitle(Page page) {
         Locator.WaitForOptions waitForOptions = new Locator.WaitForOptions();
         waitForOptions.setTimeout(10000);
-        page.locator("h1#pdp_product_title").last().waitFor(waitForOptions);
+        page.locator(Tag.Nike.NAME).last().waitFor(waitForOptions);
     }
 }

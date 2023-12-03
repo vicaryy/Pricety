@@ -42,12 +42,32 @@ public class RequestService {
         return (ReturnObject) response.getResult();
     }
 
-    public synchronized <Request extends ApiRequest> void sendAsync(Request request) throws RestClientException {
+    public synchronized <Request extends ApiRequest> void sendWithoutResponse(Request request) throws RestClientException {
         request.checkValidation();
         String url = getRequestURL() + request.getEndPoint();
 
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.postForEntity(url, request, null);
+        WebClient.builder()
+                .build()
+                .post()
+                .uri(url)
+                .bodyValue(request)
+                .retrieve()
+                .toBodilessEntity()
+                .block();
+    }
+
+    public <Request extends ApiRequest> void sendWithoutResponseAsync(Request request) throws RestClientException {
+        request.checkValidation();
+        String url = getRequestURL() + request.getEndPoint();
+
+        WebClient.builder()
+                .build()
+                .post()
+                .uri(url)
+                .bodyValue(request)
+                .retrieve()
+                .toBodilessEntity()
+                .subscribe();
     }
 
     public Message send(SendPhoto sendPhoto) {
@@ -435,6 +455,7 @@ public class RequestService {
     }
 
     private String getRequestURL() {
+//        return "https://api.telegram.org/bot6889892570:AAHer1RJ_VxrkMCK7tDA0OA2dbm2j48bvIA";
         if (requestURL == null) {
             String botToken = UpdateFetcher.getBotToken();
             if (botToken == null) {

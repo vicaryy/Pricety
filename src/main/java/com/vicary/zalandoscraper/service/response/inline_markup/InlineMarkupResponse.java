@@ -18,7 +18,6 @@ import lombok.SneakyThrows;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.ResourceBundle;
 
 
@@ -44,9 +43,12 @@ public class InlineMarkupResponse implements Responser {
     public void response() {
         String text = user.getText();
 
-        if (text.startsWith("-l "))
-            addProduct(Objects.requireNonNull(ScraperFactory.getScraperFromLink(getLinkFromText())));
-
+        if (text.startsWith("-l ")) {
+            String link = getLinkFromText();
+            String variant = getVariantFromText();
+            Scraper scraper = ScraperFactory.getScraperFromLink(link).orElseThrow();
+            addProduct(link, variant, scraper);
+        }
         else if (text.equals("-allProducts"))
             displayAllProducts(new AllProductDisplay());
 
@@ -93,16 +95,16 @@ public class InlineMarkupResponse implements Responser {
             backToMenu(true);
     }
 
-    void addProduct(Scraper scraper) {
+    void addProduct(String link, String variant, Scraper scraper) {
         deletePreviousMessage();
         int messageId = quickSender.messageWithReturn(user.getChatId(), Messages.other("adding"), false).getMessageId();
         quickSender.chatAction(user.getChatId(), Action.TYPING);
 
-        Product product = scraper.getProduct(getLinkFromText(), getVariantFromText());
+        Product product = scraper.getProduct(link, variant);
 
         quickSender.deleteMessage(user.getChatId(), messageId);
 
-        checkProductValidation(product);
+        checkIfUserHaveProduct(product);
 
         responseFacade.saveProduct(product);
         quickSender.message(user.getChatId(), Messages.other("productAdded"), false);
@@ -114,7 +116,6 @@ public class InlineMarkupResponse implements Responser {
 
         LinkRequestEntity linkRequest = responseFacade.getLinkRequestByIdAndDelete(requestId);
 
-        checkExpiration(linkRequest.getExpiration());
         return linkRequest.getLink();
     }
 
@@ -125,11 +126,6 @@ public class InlineMarkupResponse implements Responser {
             variant.append(arrayText[i]).append(" ");
 
         return variant.toString().trim();
-    }
-
-    private void checkExpiration(long expiration) {
-        if (System.currentTimeMillis() > expiration)
-            throw new InvalidLinkException(Messages.other("sessionExpired"), "User '%s' session expired".formatted(user.getUserId()));
     }
 
     void displayAllProducts(ProductDisplayer displayer) {
@@ -269,14 +265,10 @@ public class InlineMarkupResponse implements Responser {
     }
 
 
-    private void checkProductValidation(Product product) {
+    private void checkIfUserHaveProduct(Product product) {
         if (responseFacade.productExistsByUserIdAndLinkAndVariant(user.getChatId(), product.getLink(), product.getVariant()))
             throw new InvalidLinkException(Messages.other("alreadyHave"), "User try to add same product.");
-
-        if (responseFacade.countProductsByUserId(user.getUserId()) >= MAX_PRODUCT_LIMIT && !user.isPremium())
-            throw new InvalidLinkException(Messages.other("productLimit"), "User try to add more than 10 products.");
     }
-
 
 
     private void displayMenu() {

@@ -66,7 +66,7 @@ class InlineMarkupResponseTest {
         when(responseFacade.countProductsByUserId(givenUser.getChatId())).thenReturn(0);
         when(responseFacade.getLinkRequestByIdAndDelete(givenRequestId)).thenReturn(givenLinkRequest);
         inlineMarkupResponse = new InlineMarkupResponse(responseFacade, givenUser, quickSender);
-        inlineMarkupResponse.addProduct(scraper);
+        inlineMarkupResponse.addProduct(givenLink, givenVariant, scraper);
 
         //then
         verify(quickSender, times(1)).deleteMessage(givenUser.getChatId(), givenUser.getMessageId());
@@ -77,41 +77,6 @@ class InlineMarkupResponseTest {
         verify(responseFacade, times(1)).countProductsByUserId(givenUser.getChatId());
         verify(responseFacade, times(1)).saveProduct(givenProduct);
         verify(quickSender, times(1)).message(givenUser.getChatId(), Messages.other("productAdded"), false);
-    }
-
-    @Test
-    void addProduct_expectThrow_RequestExpired() {
-        //given
-        String givenRequestId = "123456789";
-        String givenVariant = "-oneVariant One Size";
-        ActiveUser givenUser = getDefaultActiveUser();
-        givenUser.setText("-l " + givenRequestId + " " + givenVariant);
-        Message givenMessage = getDefaultMessage();
-        Product givenProduct = getDefaultProduct();
-        LinkRequestEntity givenLinkRequest = getExpiredLinkRequestEntity();
-
-        //when
-        when(quickSender.messageWithReturn(givenUser.getChatId(), Messages.other("adding"), false)).thenReturn(givenMessage);
-        when(responseFacade.productExistsByUserIdAndLinkAndVariant(
-                givenUser.getChatId(),
-                givenProduct.getLink(),
-                givenProduct.getVariant()))
-                .thenReturn(false);
-        when(responseFacade.countProductsByUserId(givenUser.getChatId())).thenReturn(0);
-        when(responseFacade.getLinkRequestByIdAndDelete(givenRequestId)).thenReturn(givenLinkRequest);
-
-        //then
-        inlineMarkupResponse = new InlineMarkupResponse(responseFacade, givenUser, quickSender);
-        assertThrows(InvalidLinkException.class, () -> inlineMarkupResponse.addProduct(scraper));
-
-        verify(quickSender, times(1)).deleteMessage(givenUser.getChatId(), givenUser.getMessageId());
-        verify(quickSender, times(1)).messageWithReturn(givenUser.getChatId(), Messages.other("adding"), false);
-        verify(quickSender, times(1)).chatAction(givenUser.getChatId(), Action.TYPING);
-        verify(responseFacade, times(0)).productExistsByUserIdAndLinkAndVariant(anyString(), anyString(), anyString());
-        verify(responseFacade, times(0)).countProductsByUserId(givenUser.getChatId());
-        verify(responseFacade, times(0)).saveProduct(givenProduct);
-        verify(quickSender, times(0)).deleteMessage(givenUser.getChatId(), givenMessage.getMessageId());
-        verify(quickSender, times(0)).message(givenUser.getChatId(), Messages.other("productAdded"), false);
     }
 
     @Test
@@ -140,7 +105,7 @@ class InlineMarkupResponseTest {
 
         //then
         inlineMarkupResponse = new InlineMarkupResponse(responseFacade, givenUser, quickSender);
-        assertThrows(InvalidLinkException.class, () -> inlineMarkupResponse.addProduct(scraper));
+        assertThrows(InvalidLinkException.class, () -> inlineMarkupResponse.addProduct(givenLink, givenVariant, scraper));
 
         verify(quickSender, times(1)).deleteMessage(givenUser.getChatId(), givenUser.getMessageId());
         verify(quickSender, times(1)).deleteMessage(givenUser.getChatId(), givenMessage.getMessageId());
@@ -178,7 +143,7 @@ class InlineMarkupResponseTest {
 
         //then
         inlineMarkupResponse = new InlineMarkupResponse(responseFacade, givenUser, quickSender);
-        assertThrows(InvalidLinkException.class, () -> inlineMarkupResponse.addProduct(scraper));
+        assertThrows(InvalidLinkException.class, () -> inlineMarkupResponse.addProduct(givenLink, givenVariant, scraper));
 
         verify(quickSender, times(1)).deleteMessage(givenUser.getChatId(), givenUser.getMessageId());
         verify(quickSender, times(1)).deleteMessage(givenUser.getChatId(), givenMessage.getMessageId());
@@ -217,7 +182,7 @@ class InlineMarkupResponseTest {
 
         //then
         inlineMarkupResponse = new InlineMarkupResponse(responseFacade, givenUser, quickSender);
-        assertDoesNotThrow(() -> inlineMarkupResponse.addProduct(scraper));
+        assertDoesNotThrow(() -> inlineMarkupResponse.addProduct(givenLink, givenVariant, scraper));
 
         verify(quickSender, times(1)).deleteMessage(givenUser.getChatId(), givenUser.getMessageId());
         verify(quickSender, times(1)).deleteMessage(givenUser.getChatId(), givenMessage.getMessageId());

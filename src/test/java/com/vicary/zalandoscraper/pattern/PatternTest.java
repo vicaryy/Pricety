@@ -18,6 +18,11 @@ class PatternTest {
         getValidEmails().forEach(e -> assertTrue(Pattern.isEmail(e)));
     }
 
+    @Test
+    void isURL() {
+        System.out.println(Pattern.isURL1(".pl/asd"));
+    }
+
     private List<String> getInvalidEmails() {
         return List.of(
                 "vicary@asd.",

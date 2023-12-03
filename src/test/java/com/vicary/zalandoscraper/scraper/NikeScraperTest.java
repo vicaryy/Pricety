@@ -25,13 +25,15 @@ class NikeScraperTest {
 
     /**
      * These tests should only be run manually.
-     * Internet connection required and user have to update the links.
+     * Internet connection required and user have to update the links before.
      */
 
     private final static String INVALID_LINK = "https://www.nike.com/pl";
     private final static String ONE_VARIANT_LINK = "https://www.nike.com/pl/t/torba-treningowa-one-1TGt0K/CV0063-010";
     private final static String MULTI_VARIANTS_ENABLED_AND_DISABLED_LINK = "https://www.nike.com/pl/t/buty-meskie-air-force-1-07-VJhk3P/DV0788-001";
     private final static String SOLD_OUT_LINK = "https://www.nike.com/pl/t/meska-bluza-z-kapturem-i-zamkiem-calej-dlugosci-sportswear-tech-fleece-p545Hj/CU4489-016";
+    private final static String NOT_AVAILABLE_LINK = "https://www.nike.com/pl/t/dres-meski-nba-courtside-boston-celtics-starting-5-city-edition-mpTvVL/FB4382-133";
+    private final static String MOBILE_AVAILABLE_LINK = "https://nike.sng.link/Astn5/6tbz/r_01ad125340";
     private final NikeScraper scraper = new NikeScraper();
 
     @BeforeAll
@@ -135,6 +137,23 @@ class NikeScraperTest {
     }
 
     @Test
+    void getProduct_expectEquals_MobileLink() {
+        //given
+        String givenLink = MOBILE_AVAILABLE_LINK;
+        String givenVariant = "-oneVariant Unknown";
+
+        //when
+        Product actualProduct = scraper.getProduct(givenLink, givenVariant);
+
+        //then
+        assertEquals(0, actualProduct.getPrice());
+        assertNotNull(actualProduct.getName());
+        assertNotNull(actualProduct.getDescription());
+        assertEquals(givenVariant, actualProduct.getVariant());
+        assertNotEquals(givenLink, actualProduct.getLink());
+    }
+
+    @Test
     void updateProduct_expectTrue_OneVariantItem() {
         //given
         ProductDTO givenDto = ProductDTO.builder()
@@ -202,6 +221,23 @@ class NikeScraperTest {
 
         //when
         runPlaywrightAndUpdateProduct(givenLink, givenDto);
+
+        assertEquals(expectedPrice, givenDto.getNewPrice());
+    }
+
+    @Test
+    void updateProduct_expectEquals_ItemNotLongerAvailable() {
+        //given
+        int expectedPrice = 0;
+
+        ProductDTO givenDto = ProductDTO.builder()
+                .price(500)
+                .newPrice(500)
+                .variant("variant")
+                .build();
+
+        //when
+        runPlaywrightAndUpdateProduct(NOT_AVAILABLE_LINK, givenDto);
 
         assertEquals(expectedPrice, givenDto.getNewPrice());
     }

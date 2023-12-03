@@ -2,22 +2,24 @@ package com.vicary.zalandoscraper.scraper;
 
 import com.vicary.zalandoscraper.pattern.Pattern;
 
+import java.util.Optional;
+
 public class ScraperFactory {
 
     private ScraperFactory() {
     }
 
-    public static Scraper getScraperFromLink(String link) {
+    public static Optional<Scraper> getScraperFromLink(String link) {
         if (Pattern.isZalandoURL(link))
-            return new ZalandoScraper();
+            return Optional.of(new ZalandoScraper());
 
         else if (Pattern.isHebeURL(link))
-            return new HebeScraper();
+            return Optional.of(new HebeScraper());
 
         else if (Pattern.isNikeURL(link))
-            return new NikeScraper();
+            return Optional.of(new NikeScraper());
 
-        return null;
+        return Optional.empty();
     }
 
     public static Scraper getScraperFromServiceName(String serviceName) {

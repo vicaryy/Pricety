@@ -112,7 +112,6 @@ public class SendMessage implements ApiRequest<Message> {
 
     @Override
     public void checkValidation() {
-
         if (parseMode != null)
             parseModeToSend = parseMode.toString();
 

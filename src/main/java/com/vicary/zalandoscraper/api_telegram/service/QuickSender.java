@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 
 public class QuickSender {
     private final Logger logger = LoggerFactory.getLogger(QuickSender.class);
-
     private final static RequestService requestService = new RequestService();
 
 
@@ -27,14 +26,13 @@ public class QuickSender {
                     .build();
             if (markdownV2)
                 sendMessage.setParseMode(ParseMode.MarkdownV2);
-            requestService.sendAsync(sendMessage);
+            requestService.sendWithoutResponse(sendMessage);
         } catch (Exception ex) {
             logger.warn("Error in sending message request, message: {}", ex.getMessage());
         }
     }
 
     public void inlineMarkup(String chatId, String text, InlineKeyboardMarkup replyMarkup, boolean markdownV2) {
-        logger.warn("Wszedłem TUTAJ");
         try {
             SendMessage sendMessage = SendMessage.builder()
                     .chatId(chatId)
@@ -44,7 +42,7 @@ public class QuickSender {
                     .build();
             if (markdownV2)
                 sendMessage.setParseMode(ParseMode.MarkdownV2);
-            requestService.sendAsync(sendMessage);
+            requestService.sendWithoutResponse(sendMessage);
         } catch (Exception ex) {
             logger.warn("Error in sending message request, message: {}", ex.getMessage());
         }
@@ -60,7 +58,7 @@ public class QuickSender {
                     .build();
             if (markdownV2)
                 sendMessage.setParseMode(ParseMode.MarkdownV2);
-            requestService.sendAsync(sendMessage);
+            requestService.sendWithoutResponse(sendMessage);
         } catch (Exception ex) {
             logger.warn("Error in sending message request, message: {}", ex.getMessage());
         }
@@ -74,7 +72,7 @@ public class QuickSender {
                     .replyMarkup(replyMarkup)
                     .disableWebPagePreview(true)
                     .build();
-            requestService.sendAsync(sendMessage);
+            requestService.sendWithoutResponse(sendMessage);
         } catch (Exception ex) {
             logger.warn("Error in sending message request, message: {}", ex.getMessage());
         }
@@ -82,7 +80,7 @@ public class QuickSender {
 
 
     public void notification(ChatNotification notification) throws Exception {
-        requestService.sendAsync(SendMessage.builder()
+        requestService.sendWithoutResponse(SendMessage.builder()
                 .chatId(notification.getChatId())
                 .text(notification.getMessage())
                 .parseMode(notification.isMarkdownV2() ? ParseMode.MarkdownV2 : null)
@@ -92,7 +90,7 @@ public class QuickSender {
 
     public void message(SendMessage sendMessage) {
         try {
-            requestService.sendAsync(sendMessage);
+            requestService.sendWithoutResponse(sendMessage);
         } catch (Exception ex) {
             logger.warn("Error in sending message request, message: {}", ex.getMessage());
         }
@@ -104,7 +102,7 @@ public class QuickSender {
                     .chatId(chatId)
                     .messageId(messageId)
                     .build();
-            requestService.sendAsync(deleteMessage);
+            requestService.sendWithoutResponse(deleteMessage);
         } catch (Exception ex) {
             logger.warn("Error in deleting message request, message: {}", ex.getMessage());
         }
@@ -146,7 +144,7 @@ public class QuickSender {
     public void editMessageText(EditMessageText editMessageText, String text) {
         try {
             editMessageText.setText(text);
-            requestService.sendAsync(editMessageText);
+            requestService.sendWithoutResponse(editMessageText);
         } catch (Exception ex) {
             logger.warn("Error in sending editMessageText request, message: {}", ex.getMessage());
         }
@@ -158,7 +156,7 @@ public class QuickSender {
                     .chatId(chatId)
                     .action(action)
                     .build();
-            requestService.sendAsync(sendChatAction);
+            requestService.sendWithoutResponse(sendChatAction);
         } catch (Exception ex) {
             logger.warn("Error in sending chatAction request, message: {}", ex.getMessage());
         }

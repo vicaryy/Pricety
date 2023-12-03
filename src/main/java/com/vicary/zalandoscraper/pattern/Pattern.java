@@ -13,6 +13,8 @@ public class Pattern {
     private static final java.util.regex.Pattern emailPattern = java.util.regex.Pattern.compile("^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@"
             + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$");
 
+    private static final java.util.regex.Pattern urlPattern = java.util.regex.Pattern.compile(".+\\.(pl|com)/.+");
+
     public static boolean isZalandoURL(String text) {
         return text.startsWith("https://www.zalando.pl/") || text.startsWith("https://zalando.pl/");
     }
@@ -22,7 +24,13 @@ public class Pattern {
     }
 
     public static boolean isNikeURL(String text) {
-        return text.startsWith("https://www.nike.com/pl/") || text.startsWith("https://nike.com/pl/");
+        return text.startsWith("https://www.nike.com/pl/")
+                || text.startsWith("https://nike.com/pl/")
+                || text.startsWith("https://nike.sng.link/");
+    }
+
+    public static boolean isURL1(String text) {
+        return urlPattern.matcher(text).matches();
     }
 
     public static boolean isURL(String text) {
@@ -51,9 +59,7 @@ public class Pattern {
         if (text.equalsIgnoreCase("delete"))
             return true;
 
-        return emailPattern
-                .matcher(text)
-                .matches();
+        return emailPattern.matcher(text).matches();
     }
 
     public static boolean isEmailToken(String text) {

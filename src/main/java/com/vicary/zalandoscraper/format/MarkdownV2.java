@@ -23,6 +23,12 @@ public class MarkdownV2 {
         return this;
     }
 
+    public MarkdownV2 toURL(String serviceName) {
+        serviceName = serviceName.split("\\.")[0];
+        sb.insert(0, "[" + serviceName + "](").insert(sb.length(), ")");
+        return this;
+    }
+
     public MarkdownV2 toBold() {
         sb.insert(0, "*").insert(sb.length(), "*");
         return this;

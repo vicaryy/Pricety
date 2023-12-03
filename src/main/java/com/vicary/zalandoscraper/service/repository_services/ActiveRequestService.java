@@ -20,7 +20,6 @@ public class ActiveRequestService {
         return repository.existsByUserId(userId);
     }
 
-    @Transactional
     public void deleteByUserId(String userId) {
         repository.deleteByUserId(userId);
     }

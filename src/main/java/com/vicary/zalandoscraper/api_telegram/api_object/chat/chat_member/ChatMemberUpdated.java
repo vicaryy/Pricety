@@ -1,17 +1,15 @@
 package com.vicary.zalandoscraper.api_telegram.api_object.chat.chat_member;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 import com.vicary.zalandoscraper.api_telegram.api_object.ApiObject;
 import com.vicary.zalandoscraper.api_telegram.api_object.chat.Chat;
 import com.vicary.zalandoscraper.api_telegram.api_object.User;
 import com.vicary.zalandoscraper.api_telegram.api_object.chat.ChatInviteLink;
 
-@Getter
-@ToString
-@EqualsAndHashCode
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class ChatMemberUpdated implements ApiObject {
     @JsonProperty("chat")
     private Chat chat;
@@ -34,6 +32,4 @@ public class ChatMemberUpdated implements ApiObject {
     @JsonProperty("via_chat_folder_invite_link")
     private Boolean viaChatFolderInviteLink;
 
-    private ChatMemberUpdated() {
-    }
 }

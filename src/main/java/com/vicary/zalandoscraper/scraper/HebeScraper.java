@@ -217,7 +217,7 @@ public class HebeScraper implements Scraper {
         Locator.WaitForOptions waitForOptions = new Locator.WaitForOptions();
         waitForOptions.setTimeout(2000);
         try {
-            page.locator("div.product-summary__main-box").waitFor(waitForOptions);
+            page.locator(Tag.Hebe.MAIN_TAB).waitFor(waitForOptions);
             return true;
         } catch (Exception ex) {
             return false;
@@ -225,26 +225,26 @@ public class HebeScraper implements Scraper {
     }
 
     private boolean isMultiVariant(Page page) {
-        return page.isVisible(Tag.Hebe.IS_MULTI_VARIANT);
+        return page.isVisible(Tag.Hebe.MULTI_VARIANT_TAB);
     }
 
     private boolean isSoldOut(Page page) {
-        return page.getByText("Produkt niedostępny online").isVisible();
+        return page.getByText(Tag.Hebe.SOLD_OUT_TAB).isVisible();
     }
 
     private String getName(Page page) {
-        String name = page.locator("p.product-content__brand").innerText().replace("\n", " ");
+        String name = page.locator(Tag.Hebe.NAME).innerText().replace("\n", " ");
         if (name.contains("\n"))
             name = name.replaceAll("\n", " ");
         return name;
     }
 
     private String getDescription(Page page) {
-        return page.locator("p.js-product-short-description").innerText();
+        return page.locator(Tag.Hebe.DESCRIPTION).innerText();
     }
 
     private double getPrice(Page page) {
-        String price = page.locator("div.price-product__wrapper").innerText().trim();
+        String price = page.locator(Tag.Hebe.PRICE).innerText().trim();
 
         String[] priceArray = price.split("\n");
 
@@ -254,25 +254,18 @@ public class HebeScraper implements Scraper {
         return Double.parseDouble(priceArray[0] + "." + priceArray[1]);
     }
 
-    private List<String> getAllAvailableVariantsAsString(Page page) {
-        return page.locator("div.swatch__item--selectable")
-                .all()
-                .stream()
-                .map(e -> e.textContent().trim())
-                .toList();
-    }
 
     private List<Locator> getAvailableVariants(Page page) {
-        return page.locator("div.swatch__item--selectable").all();
+        return page.locator(Tag.Hebe.AVAILABLE_VARIANTS).all();
     }
 
     private List<Locator> getNonAvailableVariants(Page page) {
-        return page.locator("div.swatch__item--unselectable").all();
+        return page.locator(Tag.Hebe.NON_AVAILABLE_VARIANTS).all();
     }
 
 
     private List<String> getAllVariantsAsString(Page page) {
-        return page.locator(Tag.Hebe.GET_ALL_VARIANTS)
+        return page.locator(Tag.Hebe.ALL_VARIANTS)
                 .all()
                 .stream()
                 .map(e -> e.textContent().trim())

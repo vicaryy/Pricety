@@ -105,7 +105,7 @@ class AllProductDisplayTest {
         DTOs.add(ProductDTO.builder()
                 .name("example name")
                 .description("example description")
-                .link("example link")
+                .link("https://www.link.pl/")
                 .variant("example variant")
                 .price(200.55)
                 .priceAlert("150.00")
@@ -113,7 +113,7 @@ class AllProductDisplayTest {
         DTOs.add(ProductDTO.builder()
                 .name("example name")
                 .description("example description")
-                .link("example link")
+                .link("https://www.link.pl/")
                 .variant("example variant")
                 .price(0)
                 .priceAlert("AUTO")
@@ -121,7 +121,7 @@ class AllProductDisplayTest {
         DTOs.add(ProductDTO.builder()
                 .name("example name")
                 .description("example description")
-                .link("example link")
+                .link("https://www.link.pl/")
                 .variant("-oneVariant One Sizer")
                 .price(200.55)
                 .priceAlert("AUTO")
@@ -129,7 +129,7 @@ class AllProductDisplayTest {
         DTOs.add(ProductDTO.builder()
                 .name("example name")
                 .description("example description")
-                .link("example link")
+                .link("https://www.link.pl/")
                 .variant("-oneVariant Unknown")
                 .price(200.55)
                 .priceAlert("OFF")
@@ -137,7 +137,7 @@ class AllProductDisplayTest {
         DTOs.add(ProductDTO.builder()
                 .name("example name")
                 .description("example description")
-                .link("example link")
+                .link("https://www.link.pl/")
                 .variant("example variant")
                 .price(200.55)
                 .priceAlert("AUTO")
@@ -152,7 +152,7 @@ class AllProductDisplayTest {
             DTOs.add(ProductDTO.builder()
                     .name("example name")
                     .description("example description")
-                    .link("example link")
+                    .link("https://www.link.pl/")
                     .variant("example variant")
                     .price(200.55)
                     .priceAlert("AUTO")
@@ -168,7 +168,7 @@ class AllProductDisplayTest {
                 "\n" +
                 "*Name:* example name\n" +
                 "*Description:* example description\n" +
-                "*Link:* [link](example link)\n" +
+                "*Link:* [link](https://www\\.link\\.pl/)\n" +
                 "*Variant:* example variant\n" +
                 "*Price:* 200\\.55 zł\n" +
                 "*Price Alert:* 150\\.00 zł\n" +
@@ -179,7 +179,7 @@ class AllProductDisplayTest {
                 "\n" +
                 "*Name:* example name\n" +
                 "*Description:* example description\n" +
-                "*Link:* [link](example link)\n" +
+                "*Link:* [link](https://www\\.link\\.pl/)\n" +
                 "*Variant:* example variant\n" +
                 "*Price:* Sold Out\n" +
                 "*Price Alert:* AUTO\n" +
@@ -190,7 +190,7 @@ class AllProductDisplayTest {
                 "\n" +
                 "*Name:* example name\n" +
                 "*Description:* example description\n" +
-                "*Link:* [link](example link)\n" +
+                "*Link:* [link](https://www\\.link\\.pl/)\n" +
                 "*Variant:* One Sizer\n" +
                 "*Price:* 200\\.55 zł\n" +
                 "*Price Alert:* AUTO\n" +
@@ -201,7 +201,7 @@ class AllProductDisplayTest {
                 "\n" +
                 "*Name:* example name\n" +
                 "*Description:* example description\n" +
-                "*Link:* [link](example link)\n" +
+                "*Link:* [link](https://www\\.link\\.pl/)\n" +
                 "*Variant:* Undefined\n" +
                 "*Price:* 200\\.55 zł\n" +
                 "*Price Alert:* OFF\n" +
@@ -212,7 +212,7 @@ class AllProductDisplayTest {
                 "\n" +
                 "*Name:* example name\n" +
                 "*Description:* example description\n" +
-                "*Link:* [link](example link)\n" +
+                "*Link:* [link](https://www\\.link\\.pl/)\n" +
                 "*Variant:* example variant\n" +
                 "*Price:* 200\\.55 zł\n" +
                 "*Price Alert:* AUTO\n" +
@@ -229,7 +229,7 @@ class AllProductDisplayTest {
                 "\n" +
                 "*Name:* example name\n" +
                 "*Description:* example description\n" +
-                "*Link:* [link](example link)\n" +
+                "*Link:* [link](https://www\\.link\\.pl/)\n" +
                 "*Variant:* example variant\n" +
                 "*Price:* 200\\.55 zł\n" +
                 "*Price Alert:* AUTO\n" +
@@ -240,7 +240,7 @@ class AllProductDisplayTest {
                 "\n" +
                 "*Name:* example name\n" +
                 "*Description:* example description\n" +
-                "*Link:* [link](example link)\n" +
+                "*Link:* [link](https://www\\.link\\.pl/)\n" +
                 "*Variant:* example variant\n" +
                 "*Price:* 200\\.55 zł\n" +
                 "*Price Alert:* AUTO\n" +
@@ -251,7 +251,7 @@ class AllProductDisplayTest {
                 "\n" +
                 "*Name:* example name\n" +
                 "*Description:* example description\n" +
-                "*Link:* [link](example link)\n" +
+                "*Link:* [link](https://www\\.link\\.pl/)\n" +
                 "*Variant:* example variant\n" +
                 "*Price:* 200\\.55 zł\n" +
                 "*Price Alert:* AUTO\n" +
@@ -262,7 +262,7 @@ class AllProductDisplayTest {
                 "\n" +
                 "*Name:* example name\n" +
                 "*Description:* example description\n" +
-                "*Link:* [link](example link)\n" +
+                "*Link:* [link](https://www\\.link\\.pl/)\n" +
                 "*Variant:* example variant\n" +
                 "*Price:* 200\\.55 zł\n" +
                 "*Price Alert:* AUTO\n" +
@@ -273,7 +273,7 @@ class AllProductDisplayTest {
                 "\n" +
                 "*Name:* example name\n" +
                 "*Description:* example description\n" +
-                "*Link:* [link](example link)\n" +
+                "*Link:* [link](https://www\\.link\\.pl/)\n" +
                 "*Variant:* example variant\n" +
                 "*Price:* 200\\.55 zł\n" +
                 "*Price Alert:* AUTO\n" +
@@ -284,7 +284,7 @@ class AllProductDisplayTest {
                 "\n" +
                 "*Name:* example name\n" +
                 "*Description:* example description\n" +
-                "*Link:* [link](example link)\n" +
+                "*Link:* [link](https://www\\.link\\.pl/)\n" +
                 "*Variant:* example variant\n" +
                 "*Price:* 200\\.55 zł\n" +
                 "*Price Alert:* AUTO\n" +
@@ -295,7 +295,7 @@ class AllProductDisplayTest {
                 "\n" +
                 "*Name:* example name\n" +
                 "*Description:* example description\n" +
-                "*Link:* [link](example link)\n" +
+                "*Link:* [link](https://www\\.link\\.pl/)\n" +
                 "*Variant:* example variant\n" +
                 "*Price:* 200\\.55 zł\n" +
                 "*Price Alert:* AUTO\n" +
@@ -306,7 +306,7 @@ class AllProductDisplayTest {
                 "\n" +
                 "*Name:* example name\n" +
                 "*Description:* example description\n" +
-                "*Link:* [link](example link)\n" +
+                "*Link:* [link](https://www\\.link\\.pl/)\n" +
                 "*Variant:* example variant\n" +
                 "*Price:* 200\\.55 zł\n" +
                 "*Price Alert:* AUTO\n" +
@@ -317,7 +317,7 @@ class AllProductDisplayTest {
                 "\n" +
                 "*Name:* example name\n" +
                 "*Description:* example description\n" +
-                "*Link:* [link](example link)\n" +
+                "*Link:* [link](https://www\\.link\\.pl/)\n" +
                 "*Variant:* example variant\n" +
                 "*Price:* 200\\.55 zł\n" +
                 "*Price Alert:* AUTO\n" +
@@ -328,7 +328,7 @@ class AllProductDisplayTest {
                 "\n" +
                 "*Name:* example name\n" +
                 "*Description:* example description\n" +
-                "*Link:* [link](example link)\n" +
+                "*Link:* [link](https://www\\.link\\.pl/)\n" +
                 "*Variant:* example variant\n" +
                 "*Price:* 200\\.55 zł\n" +
                 "*Price Alert:* AUTO\n" +
@@ -339,7 +339,7 @@ class AllProductDisplayTest {
                 "\n" +
                 "*Name:* example name\n" +
                 "*Description:* example description\n" +
-                "*Link:* [link](example link)\n" +
+                "*Link:* [link](https://www\\.link\\.pl/)\n" +
                 "*Variant:* example variant\n" +
                 "*Price:* 200\\.55 zł\n" +
                 "*Price Alert:* AUTO\n" +
@@ -351,7 +351,7 @@ class AllProductDisplayTest {
                 "\n" +
                 "*Name:* example name\n" +
                 "*Description:* example description\n" +
-                "*Link:* [link](example link)\n" +
+                "*Link:* [link](https://www\\.link\\.pl/)\n" +
                 "*Variant:* example variant\n" +
                 "*Price:* 200\\.55 zł\n" +
                 "*Price Alert:* AUTO\n" +
@@ -362,7 +362,7 @@ class AllProductDisplayTest {
                 "\n" +
                 "*Name:* example name\n" +
                 "*Description:* example description\n" +
-                "*Link:* [link](example link)\n" +
+                "*Link:* [link](https://www\\.link\\.pl/)\n" +
                 "*Variant:* example variant\n" +
                 "*Price:* 200\\.55 zł\n" +
                 "*Price Alert:* AUTO\n" +
@@ -373,7 +373,7 @@ class AllProductDisplayTest {
                 "\n" +
                 "*Name:* example name\n" +
                 "*Description:* example description\n" +
-                "*Link:* [link](example link)\n" +
+                "*Link:* [link](https://www\\.link\\.pl/)\n" +
                 "*Variant:* example variant\n" +
                 "*Price:* 200\\.55 zł\n" +
                 "*Price Alert:* AUTO\n" +
@@ -384,7 +384,7 @@ class AllProductDisplayTest {
                 "\n" +
                 "*Name:* example name\n" +
                 "*Description:* example description\n" +
-                "*Link:* [link](example link)\n" +
+                "*Link:* [link](https://www\\.link\\.pl/)\n" +
                 "*Variant:* example variant\n" +
                 "*Price:* 200\\.55 zł\n" +
                 "*Price Alert:* AUTO\n" +
@@ -395,7 +395,7 @@ class AllProductDisplayTest {
                 "\n" +
                 "*Name:* example name\n" +
                 "*Description:* example description\n" +
-                "*Link:* [link](example link)\n" +
+                "*Link:* [link](https://www\\.link\\.pl/)\n" +
                 "*Variant:* example variant\n" +
                 "*Price:* 200\\.55 zł\n" +
                 "*Price Alert:* AUTO\n" +
@@ -406,7 +406,7 @@ class AllProductDisplayTest {
                 "\n" +
                 "*Name:* example name\n" +
                 "*Description:* example description\n" +
-                "*Link:* [link](example link)\n" +
+                "*Link:* [link](https://www\\.link\\.pl/)\n" +
                 "*Variant:* example variant\n" +
                 "*Price:* 200\\.55 zł\n" +
                 "*Price Alert:* AUTO\n" +
@@ -417,7 +417,7 @@ class AllProductDisplayTest {
                 "\n" +
                 "*Name:* example name\n" +
                 "*Description:* example description\n" +
-                "*Link:* [link](example link)\n" +
+                "*Link:* [link](https://www\\.link\\.pl/)\n" +
                 "*Variant:* example variant\n" +
                 "*Price:* 200\\.55 zł\n" +
                 "*Price Alert:* AUTO\n" +
@@ -428,7 +428,7 @@ class AllProductDisplayTest {
                 "\n" +
                 "*Name:* example name\n" +
                 "*Description:* example description\n" +
-                "*Link:* [link](example link)\n" +
+                "*Link:* [link](https://www\\.link\\.pl/)\n" +
                 "*Variant:* example variant\n" +
                 "*Price:* 200\\.55 zł\n" +
                 "*Price Alert:* AUTO\n" +
@@ -439,7 +439,7 @@ class AllProductDisplayTest {
                 "\n" +
                 "*Name:* example name\n" +
                 "*Description:* example description\n" +
-                "*Link:* [link](example link)\n" +
+                "*Link:* [link](https://www\\.link\\.pl/)\n" +
                 "*Variant:* example variant\n" +
                 "*Price:* 200\\.55 zł\n" +
                 "*Price Alert:* AUTO\n" +
@@ -450,7 +450,7 @@ class AllProductDisplayTest {
                 "\n" +
                 "*Name:* example name\n" +
                 "*Description:* example description\n" +
-                "*Link:* [link](example link)\n" +
+                "*Link:* [link](https://www\\.link\\.pl/)\n" +
                 "*Variant:* example variant\n" +
                 "*Price:* 200\\.55 zł\n" +
                 "*Price Alert:* AUTO\n" +
@@ -462,7 +462,7 @@ class AllProductDisplayTest {
                 "\n" +
                 "*Name:* example name\n" +
                 "*Description:* example description\n" +
-                "*Link:* [link](example link)\n" +
+                "*Link:* [link](https://www\\.link\\.pl/)\n" +
                 "*Variant:* example variant\n" +
                 "*Price:* 200\\.55 zł\n" +
                 "*Price Alert:* AUTO\n" +
@@ -473,7 +473,7 @@ class AllProductDisplayTest {
                 "\n" +
                 "*Name:* example name\n" +
                 "*Description:* example description\n" +
-                "*Link:* [link](example link)\n" +
+                "*Link:* [link](https://www\\.link\\.pl/)\n" +
                 "*Variant:* example variant\n" +
                 "*Price:* 200\\.55 zł\n" +
                 "*Price Alert:* AUTO\n" +
@@ -484,7 +484,7 @@ class AllProductDisplayTest {
                 "\n" +
                 "*Name:* example name\n" +
                 "*Description:* example description\n" +
-                "*Link:* [link](example link)\n" +
+                "*Link:* [link](https://www\\.link\\.pl/)\n" +
                 "*Variant:* example variant\n" +
                 "*Price:* 200\\.55 zł\n" +
                 "*Price Alert:* AUTO\n" +
@@ -495,7 +495,7 @@ class AllProductDisplayTest {
                 "\n" +
                 "*Name:* example name\n" +
                 "*Description:* example description\n" +
-                "*Link:* [link](example link)\n" +
+                "*Link:* [link](https://www\\.link\\.pl/)\n" +
                 "*Variant:* example variant\n" +
                 "*Price:* 200\\.55 zł\n" +
                 "*Price Alert:* AUTO\n" +
@@ -506,7 +506,7 @@ class AllProductDisplayTest {
                 "\n" +
                 "*Name:* example name\n" +
                 "*Description:* example description\n" +
-                "*Link:* [link](example link)\n" +
+                "*Link:* [link](https://www\\.link\\.pl/)\n" +
                 "*Variant:* example variant\n" +
                 "*Price:* 200\\.55 zł\n" +
                 "*Price Alert:* AUTO\n" +
@@ -517,7 +517,7 @@ class AllProductDisplayTest {
                 "\n" +
                 "*Name:* example name\n" +
                 "*Description:* example description\n" +
-                "*Link:* [link](example link)\n" +
+                "*Link:* [link](https://www\\.link\\.pl/)\n" +
                 "*Variant:* example variant\n" +
                 "*Price:* 200\\.55 zł\n" +
                 "*Price Alert:* AUTO\n" +
@@ -528,7 +528,7 @@ class AllProductDisplayTest {
                 "\n" +
                 "*Name:* example name\n" +
                 "*Description:* example description\n" +
-                "*Link:* [link](example link)\n" +
+                "*Link:* [link](https://www\\.link\\.pl/)\n" +
                 "*Variant:* example variant\n" +
                 "*Price:* 200\\.55 zł\n" +
                 "*Price Alert:* AUTO\n" +
@@ -539,7 +539,7 @@ class AllProductDisplayTest {
                 "\n" +
                 "*Name:* example name\n" +
                 "*Description:* example description\n" +
-                "*Link:* [link](example link)\n" +
+                "*Link:* [link](https://www\\.link\\.pl/)\n" +
                 "*Variant:* example variant\n" +
                 "*Price:* 200\\.55 zł\n" +
                 "*Price Alert:* AUTO\n" +
@@ -550,7 +550,7 @@ class AllProductDisplayTest {
                 "\n" +
                 "*Name:* example name\n" +
                 "*Description:* example description\n" +
-                "*Link:* [link](example link)\n" +
+                "*Link:* [link](https://www\\.link\\.pl/)\n" +
                 "*Variant:* example variant\n" +
                 "*Price:* 200\\.55 zł\n" +
                 "*Price Alert:* AUTO\n" +
@@ -561,7 +561,7 @@ class AllProductDisplayTest {
                 "\n" +
                 "*Name:* example name\n" +
                 "*Description:* example description\n" +
-                "*Link:* [link](example link)\n" +
+                "*Link:* [link](https://www\\.link\\.pl/)\n" +
                 "*Variant:* example variant\n" +
                 "*Price:* 200\\.55 zł\n" +
                 "*Price Alert:* AUTO\n" +
@@ -573,7 +573,7 @@ class AllProductDisplayTest {
                 "\n" +
                 "*Name:* example name\n" +
                 "*Description:* example description\n" +
-                "*Link:* [link](example link)\n" +
+                "*Link:* [link](https://www\\.link\\.pl/)\n" +
                 "*Variant:* example variant\n" +
                 "*Price:* 200\\.55 zł\n" +
                 "*Price Alert:* AUTO\n" +
@@ -584,7 +584,7 @@ class AllProductDisplayTest {
                 "\n" +
                 "*Name:* example name\n" +
                 "*Description:* example description\n" +
-                "*Link:* [link](example link)\n" +
+                "*Link:* [link](https://www\\.link\\.pl/)\n" +
                 "*Variant:* example variant\n" +
                 "*Price:* 200\\.55 zł\n" +
                 "*Price Alert:* AUTO\n" +
@@ -595,7 +595,7 @@ class AllProductDisplayTest {
                 "\n" +
                 "*Name:* example name\n" +
                 "*Description:* example description\n" +
-                "*Link:* [link](example link)\n" +
+                "*Link:* [link](https://www\\.link\\.pl/)\n" +
                 "*Variant:* example variant\n" +
                 "*Price:* 200\\.55 zł\n" +
                 "*Price Alert:* AUTO\n" +
@@ -606,7 +606,7 @@ class AllProductDisplayTest {
                 "\n" +
                 "*Name:* example name\n" +
                 "*Description:* example description\n" +
-                "*Link:* [link](example link)\n" +
+                "*Link:* [link](https://www\\.link\\.pl/)\n" +
                 "*Variant:* example variant\n" +
                 "*Price:* 200\\.55 zł\n" +
                 "*Price Alert:* AUTO";

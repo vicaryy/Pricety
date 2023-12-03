@@ -7,6 +7,5 @@ import java.util.Optional;
 
 public interface LinkRequestRepository extends JpaRepository<LinkRequestEntity, Long> {
     Optional<LinkRequestEntity> findByRequestId(String requestId);
-
     void deleteByRequestId(String requestId);
 }

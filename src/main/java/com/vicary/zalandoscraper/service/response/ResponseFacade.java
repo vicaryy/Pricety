@@ -72,7 +72,7 @@ public class ResponseFacade {
     }
 
     public LinkRequestEntity getLinkRequestByIdAndDelete(String requestId) {
-        return linkRequestService.findByRequestIdAndDelete(requestId);
+        return linkRequestService.getAndDeleteByRequestId(requestId);
     }
 
     public boolean updateUserToPremiumByNick(String userNick) {

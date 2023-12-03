@@ -22,6 +22,7 @@ import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
 import com.vicary.zalandoscraper.service.response.*;
 import com.vicary.zalandoscraper.service.response.inline_markup.InlineMarkupResponse;
 import com.vicary.zalandoscraper.updater.AutoUpdater;
+import com.vicary.zalandoscraper.utils.ObjectDisplayer;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 
@@ -35,6 +36,8 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class UpdateReceiverService implements UpdateReceiver {
+
+    // TODO change waitingUser database in original database
 
     private final static Logger logger = LoggerFactory.getLogger(UpdateReceiverService.class);
 
@@ -95,7 +98,7 @@ public class UpdateReceiverService implements UpdateReceiver {
                 responser = new EmailVerificationResponse(facade, user);
 
             else if (Pattern.isURL(text))
-                responser = new LinkResponse(facade, user, ScraperFactory.getScraperFromLink(text));
+                responser = new LinkResponse(facade, user, ScraperFactory.getScraperFromLink(text).orElseThrow());
 
             if (responser != null)
                 responser.response();

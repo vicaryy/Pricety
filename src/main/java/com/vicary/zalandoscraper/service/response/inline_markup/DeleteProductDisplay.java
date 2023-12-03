@@ -125,7 +125,7 @@ class DeleteProductDisplay implements ProductDisplayer {
                         Messages.allProducts("description"),
                         MarkdownV2.apply(dto.getDescription()).get(),
                         Messages.allProducts("link"),
-                        MarkdownV2.apply(dto.getLink()).toURL().get(),
+                        MarkdownV2.apply(dto.getLink()).toURL(dto.getServiceName()).get(),
                         Messages.allProducts("variant"),
                         MarkdownV2.apply(variant).get(),
                         Messages.allProducts("price"),

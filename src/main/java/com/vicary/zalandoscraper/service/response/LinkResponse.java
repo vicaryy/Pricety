@@ -13,6 +13,7 @@ import java.util.List;
 
 public class LinkResponse implements Responser {
     private static final int MAX_PRODUCT_LIMIT = 10;
+    private int currentMessageId;
     private final ResponseFacade responseFacade;
     private final ActiveUser user;
     private final Scraper scraper;
@@ -39,37 +40,43 @@ public class LinkResponse implements Responser {
 
     @Override
     public void response() {
-        int messageId = quickSender.messageWithReturn(user.getChatId(), Messages.other("processing"), false).getMessageId();
+        currentMessageId = quickSender.messageWithReturn(user.getChatId(), Messages.other("processing"), false).getMessageId();
         quickSender.chatAction(user.getChatId(), Action.TYPING);
+
+        checkUserLimit();
 
         List<String> variants = scraper.getAllVariants(user.getText());
 
         if (isItemOneVariant(variants)) {
+            checkIfUserHaveProduct(user.getText(), variants.get(0));
             getAndSaveOneVariantProduct(variants.get(0), scraper);
-            quickSender.deleteMessage(user.getChatId(), messageId);
+            quickSender.deleteMessage(user.getChatId(), currentMessageId);
             quickSender.message(user.getUserId(), Messages.other("productAdded"), false);
         } else {
             String requestId = responseFacade.generateAndSaveRequest(user.getText());
+            quickSender.deleteMessage(user.getChatId(), currentMessageId);
             sendVariantMessage(variants, requestId);
-            quickSender.deleteMessage(user.getChatId(), messageId);
         }
     }
 
 
     private void getAndSaveOneVariantProduct(String variant, Scraper scraper) {
         Product product = scraper.getProduct(user.getText(), variant);
-
-        checkProductValidation(product);
-
         responseFacade.saveProduct(product);
     }
 
-    private void checkProductValidation(Product product) {
-        if (responseFacade.productExistsByUserIdAndLinkAndVariant(user.getChatId(), product.getLink(), product.getVariant()))
+    private void checkIfUserHaveProduct(String link, String variant) {
+        if (responseFacade.productExistsByUserIdAndLinkAndVariant(user.getChatId(), link, variant)) {
+            quickSender.deleteMessage(user.getChatId(), currentMessageId);
             throw new InvalidLinkException(Messages.other("alreadyHave"), "User try to add same product.");
+        }
+    }
 
-        if (responseFacade.countProductsByUserId(user.getUserId()) >= MAX_PRODUCT_LIMIT && !user.isPremium())
+    private void checkUserLimit() {
+        if (responseFacade.countProductsByUserId(user.getUserId()) >= MAX_PRODUCT_LIMIT && !user.isPremium()) {
+            quickSender.deleteMessage(user.getChatId(), currentMessageId);
             throw new InvalidLinkException(Messages.other("productLimit"), "User try to add more than 10 products.");
+        }
     }
 
     private void sendVariantMessage(List<String> variants, String requestId) {
