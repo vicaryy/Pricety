@@ -2,27 +2,22 @@ package com.vicary.zalandoscraper.service;
 
 import com.microsoft.playwright.PlaywrightException;
 import com.vicary.zalandoscraper.entity.WaitingUserEntity;
+import com.vicary.zalandoscraper.exception.*;
 import com.vicary.zalandoscraper.messages.Messages;
-import com.vicary.zalandoscraper.scraper.HebeScraper;
-import com.vicary.zalandoscraper.scraper.NikeScraper;
+import com.vicary.zalandoscraper.scraper.Scraper;
 import com.vicary.zalandoscraper.scraper.ScraperFactory;
-import com.vicary.zalandoscraper.scraper.ZalandoScraper;
 import com.vicary.zalandoscraper.service.repository_services.WaitingUserService;
 import com.vicary.zalandoscraper.thread_local.ActiveLanguage;
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
 import com.vicary.zalandoscraper.api_telegram.service.UpdateFetcher;
 import com.vicary.zalandoscraper.api_telegram.service.UpdateReceiver;
 import com.vicary.zalandoscraper.configuration.BotInfo;
-import com.vicary.zalandoscraper.exception.ActiveUserException;
-import com.vicary.zalandoscraper.exception.IllegalInputException;
-import com.vicary.zalandoscraper.exception.InvalidLinkException;
-import com.vicary.zalandoscraper.exception.ZalandoScraperBotException;
 import com.vicary.zalandoscraper.pattern.Pattern;
 import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
 import com.vicary.zalandoscraper.service.response.*;
 import com.vicary.zalandoscraper.service.response.inline_markup.InlineMarkupResponse;
 import com.vicary.zalandoscraper.updater.AutoUpdater;
-import com.vicary.zalandoscraper.utils.ObjectDisplayer;
+import com.vicary.zalandoscraper.utils.url.UrlParser;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 
@@ -48,6 +43,8 @@ public class UpdateReceiverService implements UpdateReceiver {
     private final WaitingUserService waitingUserService;
 
     private final QuickSender quickSender;
+
+    private final UrlParser urlParser;
     private final UpdateFetcher updateFetcher = new UpdateFetcher(this);
 
     @PostConstruct
@@ -69,7 +66,6 @@ public class UpdateReceiverService implements UpdateReceiver {
             return;
         }
 
-        String text = user.getText();
         String userId = user.getUserId();
         String chatId = user.getChatId();
         logger.info("Got message from user '{}'", userId);
@@ -80,7 +76,7 @@ public class UpdateReceiverService implements UpdateReceiver {
 
             Responser responser = null;
 
-            if (Pattern.isAdminCommand(text, user.isAdmin())) {
+            if (Pattern.isAdminCommand(user.getText(), user.isAdmin())) {
                 responser = new AdminResponse(facade, user);
                 responser.response();
             }
@@ -91,19 +87,22 @@ public class UpdateReceiverService implements UpdateReceiver {
             else if (Pattern.isInlineMarkup(update))
                 responser = new InlineMarkupResponse(facade, user);
 
-            else if (Pattern.isCommand(text))
+            else if (Pattern.isCommand(user.getText()))
                 responser = new CommandResponse(facade, user);
 
-            else if (Pattern.isEmailToken(text))
+            else if (Pattern.isEmailToken(user.getText()))
                 responser = new EmailVerificationResponse(facade, user);
 
-            else if (Pattern.isURL(text))
-                responser = new LinkResponse(facade, user, ScraperFactory.getScraperFromLink(text).orElseThrow());
+            else if (Pattern.isURL(user.getText())) {
+                user.setText(urlParser.parse(user.getText()));
+                Scraper scraper = ScraperFactory.getScraperFromLink(user.getText()).orElseThrow(() -> new UrlParserException("Cannot find Scraper for URL: " + user.getText()));
+                responser = new LinkResponse(facade, user, scraper);
+            }
 
             if (responser != null)
                 responser.response();
 
-        } catch (IllegalArgumentException ex) {
+        } catch (IllegalArgumentException | UrlParserException ex) {
             logger.warn(ex.getMessage());
         } catch (InvalidLinkException | IllegalInputException ex) {
             logger.warn(ex.getLoggerMessage());

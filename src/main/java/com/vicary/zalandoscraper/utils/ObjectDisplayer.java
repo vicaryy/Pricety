@@ -8,4 +8,8 @@ public class ObjectDisplayer {
     public static void display(Object ob) {
         System.out.println(gson.toJson(ob));
     }
+
+    public static String getString(Object ob) {
+        return gson.toJson(ob);
+    }
 }

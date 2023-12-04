@@ -78,12 +78,6 @@
 			<version>1.39.0</version>
 		</dependency>
 
-<!--		<dependency>-->
-<!--			<groupId>org.seleniumhq.selenium</groupId>-->
-<!--			<artifactId>htmlunit3-driver</artifactId>-->
-<!--			<version>4.13.0</version>-->
-<!--		</dependency>-->
-
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
@@ -95,10 +89,16 @@
 			<artifactId>logback-classic</artifactId>
 			<version>${logback.version}</version>
 		</dependency>
+
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.5.14</version>
+		</dependency>
 	</dependencies>
 
 
-		<build>
+	<build>
 
 			<resources>
 				<resource>
