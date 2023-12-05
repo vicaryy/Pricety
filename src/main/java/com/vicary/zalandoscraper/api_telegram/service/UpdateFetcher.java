@@ -32,6 +32,15 @@ public class UpdateFetcher {
         this.options = new FetcherOptions();
 
         logger.info("[Api Telegram] Telegram Bot API started successfully.");
+        logger.info("[Api Telegram] Telegram Bot API started successfully.");
+        logger.info("[Api Telegram] Telegram Bot API started successfully.");
+        logger.info("[Api Telegram] Telegram Bot API started successfully.");
+        logger.info("[Api Telegram] Telegram Bot API started successfully.");
+        logger.info("[Api Telegram] Telegram Bot API started successfully.");
+        logger.info("[Api Telegram] Telegram Bot API started successfully.");
+        logger.info("[Api Telegram] Telegram Bot API started successfully.");
+        logger.info("[Api Telegram] Telegram Bot API started successfully.");
+        logger.info("[Api Telegram] Telegram Bot API started successfully.");
         new Thread(this::run).start();
     }
 

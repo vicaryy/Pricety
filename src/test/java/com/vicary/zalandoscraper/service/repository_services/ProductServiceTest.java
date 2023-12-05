@@ -3,6 +3,7 @@ package com.vicary.zalandoscraper.service.repository_services;
 import com.vicary.zalandoscraper.entity.ProductEntity;
 import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.repository.ProductRepository;
+import com.vicary.zalandoscraper.service.UpdateReceiverService;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;
 import com.vicary.zalandoscraper.service.map.ProductMapper;
 import org.junit.jupiter.api.Test;
@@ -20,7 +21,6 @@ import static org.mockito.Mockito.*;
 
 @SpringBootTest
 class ProductServiceTest {
-
     @Autowired
     private ProductService productService;
 
@@ -32,6 +32,9 @@ class ProductServiceTest {
 
     @MockBean
     private ProductMapper mapper;
+
+    @MockBean
+    private UpdateReceiverService updateReceiverService;
 
 
     @Test

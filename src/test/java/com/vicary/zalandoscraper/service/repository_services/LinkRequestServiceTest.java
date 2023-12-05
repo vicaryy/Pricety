@@ -1,8 +1,10 @@
 package com.vicary.zalandoscraper.service.repository_services;
 
+import com.vicary.zalandoscraper.api_telegram.service.UpdateFetcher;
 import com.vicary.zalandoscraper.entity.LinkRequestEntity;
 import com.vicary.zalandoscraper.exception.InvalidLinkException;
 import com.vicary.zalandoscraper.repository.LinkRequestRepository;
+import com.vicary.zalandoscraper.service.UpdateReceiverService;
 import com.vicary.zalandoscraper.thread_local.ActiveLanguage;
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
 import org.junit.jupiter.api.BeforeAll;
@@ -11,6 +13,8 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 
 import java.util.Locale;
 import java.util.Optional;
@@ -25,6 +29,9 @@ class LinkRequestServiceTest {
     private LinkRequestService service;
     @MockBean
     private LinkRequestRepository repository;
+
+    @MockBean
+    private UpdateReceiverService updateReceiverService;
 
 
     @BeforeAll
