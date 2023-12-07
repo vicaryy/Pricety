@@ -1,12 +1,10 @@
 package com.vicary.zalandoscraper.service;
 
 import com.microsoft.playwright.PlaywrightException;
-import com.vicary.zalandoscraper.entity.WaitingUserEntity;
 import com.vicary.zalandoscraper.exception.*;
 import com.vicary.zalandoscraper.messages.Messages;
 import com.vicary.zalandoscraper.scraper.Scraper;
 import com.vicary.zalandoscraper.scraper.ScraperFactory;
-import com.vicary.zalandoscraper.service.repository_services.WaitingUserService;
 import com.vicary.zalandoscraper.thread_local.ActiveLanguage;
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
 import com.vicary.zalandoscraper.api_telegram.service.UpdateFetcher;
@@ -40,11 +38,13 @@ public class UpdateReceiverService implements UpdateReceiver {
 
     private final ResponseFacade facade;
 
-    private final WaitingUserService waitingUserService;
-
     private final QuickSender quickSender;
 
     private final UrlParser urlParser;
+
+    private final AdminResponse adminResponse;
+
+    private final AutoUpdater autoUpdater;
     private final UpdateFetcher updateFetcher = new UpdateFetcher(this);
 
     @PostConstruct
@@ -71,15 +71,17 @@ public class UpdateReceiverService implements UpdateReceiver {
         logger.info("Got message from user '{}'", userId);
 
         try {
-            if (isUpdaterRunning())
+            if (Pattern.isAdminCommand(user.getText(), user.isAdmin())) {
+                adminResponse.setActiveUser(user);
+                adminResponse.response();
+                return;
+            }
+
+            if (autoUpdater.isRunning())
                 handleProductUpdaterRunning(userId);
 
-            Responser responser = null;
 
-            if (Pattern.isAdminCommand(user.getText(), user.isAdmin())) {
-                responser = new AdminResponse(facade, user);
-                responser.response();
-            }
+            Responser responser = null;
 
             if (user.isAwaitedMessage())
                 responser = new AwaitedMessageResponse(facade, user);
@@ -124,20 +126,11 @@ public class UpdateReceiverService implements UpdateReceiver {
         }
     }
 
-    private boolean isUpdaterRunning() {
-        return AutoUpdater.isActive();
-    }
-
     private void handleProductUpdaterRunning(String userId) {
         String message = Messages.other("updatingProducts");
         quickSender.message(userId, message, true);
-        checkAndSaveWaitingUser(userId);
+        facade.checkAndSaveWaitingUser(userId);
         throw new IllegalArgumentException("User '%s' interact with bot while product updater is running.".formatted(userId));
-    }
-
-    private void checkAndSaveWaitingUser(String userId) {
-        if (!waitingUserService.existsByUserId(facade.getUserByUserId(userId)))
-            waitingUserService.saveWaitingUser(new WaitingUserEntity(facade.getUserByUserId(userId)));
     }
 
     @Override

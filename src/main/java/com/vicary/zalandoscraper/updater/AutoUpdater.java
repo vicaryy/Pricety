@@ -1,5 +1,6 @@
 package com.vicary.zalandoscraper.updater;
 
+import com.vicary.zalandoscraper.exception.ZalandoScraperBotException;
 import com.vicary.zalandoscraper.scraper.*;
 import com.vicary.zalandoscraper.service.repository_services.WaitingUserService;
 import com.vicary.zalandoscraper.updater.sender.NotificationManager;
@@ -15,20 +16,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
-public class AutoUpdater implements Runnable {
+public class AutoUpdater {
     private final static Logger logger = LoggerFactory.getLogger(AutoUpdater.class);
-    private final static int DELAY_BEFORE_START = 5000;   // 5 seconds
-    private final static int DELAY_BETWEEN_UPDATES = 1000 * 60 * 60 * 2; // 2 hour
-    private static boolean isActive;
+    private final static int DELAY_BETWEEN_UPDATES = 2000; // 2 hour
+//    private final static int DELAY_BETWEEN_UPDATES = 1000 * 60 * 60 * 2; // 2 hour
     private final ProductService productService;
     private final UpdatesHistoryService updatesHistoryService;
     private final ProductMapper productMapper;
     private final NotificationManager notificationManager;
     private final WaitingUserService waitingUserService;
-    private final Thread updaterThread = new Thread(this);
     private final Map<String, Scraper> scraperMap = new HashMap<>();
+    private Thread runningThread;
+    private UpdaterState state;
 
     @Autowired
     public AutoUpdater(ProductService productService,
@@ -48,24 +50,50 @@ public class AutoUpdater implements Runnable {
         scraperMap.put("zalando.pl", zalandoScraper);
         scraperMap.put("hebe.pl", hebeScraper);
         scraperMap.put("nike.pl", nikeScraper);
-
-//        updaterThread.start();
+        state = new StopState(this);
     }
 
-    @Override
-    public void run() {
-        try {
-            sleep(DELAY_BEFORE_START);
+    public void start() {
+        state.start();
+    }
 
+    public void startOnce() {
+        state.startOnce();
+    }
+
+    public void stop() {
+        state.stop();
+    }
+
+    public boolean isRunning() {
+        return state.isRunning();
+    }
+
+    void run() {
+        logger.info("[Auto Updater] Auto Updater started successfully.");
+        try {
             while (!Thread.currentThread().isInterrupted()) {
+                state = new UpdatingState(this);
                 update();
+                state = new RunningState(this);
                 sleep(DELAY_BETWEEN_UPDATES);
+                System.out.println("Jestem aktywny");
             }
+        } catch (InterruptedException ex) {
+            logger.info("[Auto Updater] Auto Updater stopped.");
         } catch (Exception ex) {
-            logger.error("[Auto Updater] Error: " + ex.getMessage());
-            logger.error("[Auto Updater] Interrupting thread...");
-            updaterThread.interrupt();
-            ex.printStackTrace();
+            String message = "Auto Updater stopped due to error: " + ex.getMessage();
+            throw new ZalandoScraperBotException(message, message);
+        }
+    }
+
+    void runOnce() {
+        logger.info("[Auto Updater] Auto Updater Once started successfully.");
+        try {
+            update();
+        } catch (Exception ex) {
+            String message = "Auto Updater Once stopped due to error: " + ex.getMessage();
+            throw new ZalandoScraperBotException(message, message);
         }
     }
 
@@ -78,15 +106,14 @@ public class AutoUpdater implements Runnable {
         }
 
         List<List<ProductDTO>> splittedListIntoScrapers = divideListIntoServices(products);
-        isActive = true;
+
         updateProducts(splittedListIntoScrapers);
-        isActive = false;
 
         updateProductsPriceInRepository(products);
 
         saveToUpdatesHistoryRepository(products);
 
-        sendNotificationsToUsers(products);
+//        sendNotificationsToUsers(products);
     }
 
     List<List<ProductDTO>> divideListIntoServices(List<ProductDTO> DTOs) {
@@ -138,39 +165,20 @@ public class AutoUpdater implements Runnable {
         productService.updateProductPrices(updatedDTOs);
     }
 
-    public static boolean isActive() {
-        return isActive;
+    private void sleep(long millis) throws InterruptedException {
+        Thread.sleep(millis);
     }
 
-    private void sleep(long millis) {
-        try {
-            Thread.sleep(millis);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+    void startRunningThread(Runnable task) {
+        runningThread = new Thread(task);
+        runningThread.start();
+    }
+
+    Thread getRunningThread() {
+        return runningThread;
+    }
+
+    void setState(UpdaterState state) {
+        this.state = state;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

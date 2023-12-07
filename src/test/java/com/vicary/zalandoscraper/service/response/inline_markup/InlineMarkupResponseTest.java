@@ -74,7 +74,6 @@ class InlineMarkupResponseTest {
         verify(quickSender, times(1)).messageWithReturn(givenUser.getChatId(), Messages.other("adding"), false);
         verify(quickSender, times(1)).chatAction(givenUser.getChatId(), Action.TYPING);
         verify(responseFacade, times(1)).productExistsByUserIdAndLinkAndVariant(anyString(), anyString(), anyString());
-        verify(responseFacade, times(1)).countProductsByUserId(givenUser.getChatId());
         verify(responseFacade, times(1)).saveProduct(givenProduct);
         verify(quickSender, times(1)).message(givenUser.getChatId(), Messages.other("productAdded"), false);
     }
@@ -118,44 +117,6 @@ class InlineMarkupResponseTest {
     }
 
     @Test
-    void addProduct_expectThrow_UserHaveMaxLimit() {
-        //given
-        String givenLink = "https://www.zalando.pl/123";
-        String givenRequestId = "123456789";
-        String givenVariant = "-oneVariant One Size";
-        ActiveUser givenUser = getDefaultActiveUser();
-        givenUser.setText("-l " + givenRequestId + " " + givenVariant);
-        Message givenMessage = getDefaultMessage();
-        Product givenProduct = getDefaultProduct();
-        LinkRequestEntity givenLinkRequest = getDefaultLinkRequestEntity();
-
-        //when
-        when(quickSender.messageWithReturn(givenUser.getChatId(), Messages.other("adding"), false)).thenReturn(givenMessage);
-        when(scraper.getProduct(givenLink, givenVariant)).thenReturn(givenProduct);
-        when(responseFacade.productExistsByUserIdAndLinkAndVariant(
-                givenUser.getChatId(),
-                givenProduct.getLink(),
-                givenProduct.getVariant()))
-                .thenReturn(false);
-        when(responseFacade.productExistsByUserIdAndLinkAndVariant(givenUser.getChatId(), givenProduct.getLink(), givenProduct.getVariant())).thenReturn(false);
-        when(responseFacade.countProductsByUserId(givenUser.getChatId())).thenReturn(11);
-        when(responseFacade.getLinkRequestByIdAndDelete(givenRequestId)).thenReturn(givenLinkRequest);
-
-        //then
-        inlineMarkupResponse = new InlineMarkupResponse(responseFacade, givenUser, quickSender);
-        assertThrows(InvalidLinkException.class, () -> inlineMarkupResponse.addProduct(givenLink, givenVariant, scraper));
-
-        verify(quickSender, times(1)).deleteMessage(givenUser.getChatId(), givenUser.getMessageId());
-        verify(quickSender, times(1)).deleteMessage(givenUser.getChatId(), givenMessage.getMessageId());
-        verify(quickSender, times(1)).messageWithReturn(givenUser.getChatId(), Messages.other("adding"), false);
-        verify(quickSender, times(1)).chatAction(givenUser.getChatId(), Action.TYPING);
-        verify(responseFacade, times(1)).productExistsByUserIdAndLinkAndVariant(anyString(), anyString(), anyString());
-        verify(responseFacade, times(1)).countProductsByUserId(givenUser.getChatId());
-        verify(responseFacade, times(0)).saveProduct(givenProduct);
-        verify(quickSender, times(0)).message(givenUser.getChatId(), Messages.other("productAdded"), false);
-    }
-
-    @Test
     void addProduct_expectNotThrow_UserHaveMaxLimitButHeIsPremium() {
         //given
         String givenLink = "https://www.zalando.pl/123";
@@ -189,7 +150,6 @@ class InlineMarkupResponseTest {
         verify(quickSender, times(1)).messageWithReturn(givenUser.getChatId(), Messages.other("adding"), false);
         verify(quickSender, times(1)).chatAction(givenUser.getChatId(), Action.TYPING);
         verify(responseFacade, times(1)).productExistsByUserIdAndLinkAndVariant(anyString(), anyString(), anyString());
-        verify(responseFacade, times(1)).countProductsByUserId(givenUser.getChatId());
         verify(responseFacade, times(1)).saveProduct(givenProduct);
         verify(quickSender, times(1)).message(givenUser.getChatId(), Messages.other("productAdded"), false);
     }

@@ -5,12 +5,19 @@ import com.vicary.zalandoscraper.api_telegram.api_request.ApiRequest;
 import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
 import com.vicary.zalandoscraper.api_telegram.service.RequestService;
 import com.vicary.zalandoscraper.exception.IllegalInputException;
+import com.vicary.zalandoscraper.exception.ZalandoScraperBotException;
+import com.vicary.zalandoscraper.service.UpdateReceiverService;
 import com.vicary.zalandoscraper.thread_local.ActiveLanguage;
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
+import com.vicary.zalandoscraper.updater.AutoUpdater;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,24 +27,28 @@ import java.util.ResourceBundle;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@SpringBootTest
 class AdminResponseTest {
 
-    private static AdminResponse adminResponse;
-    private static ResponseFacade responseFacade;
-    private static QuickSender quickSender;
-    private static RequestService requestService;
+    @Autowired
+    private AdminResponse adminResponse;
+    @MockBean
+    private ResponseFacade responseFacade;
+    @MockBean
+    private QuickSender quickSender;
+    @MockBean
+    private RequestService requestService;
+    @MockBean
+    private UpdateReceiverService updateReceiverService;
+    @MockBean
+    private AutoUpdater autoUpdater;
+
 
     @BeforeAll
     static void beforeAll() {
         ActiveLanguage.get().setResourceBundle(ResourceBundle.getBundle("messages", Locale.of("en")));
     }
 
-    @BeforeEach
-    void beforeEach() {
-        responseFacade = mock(ResponseFacade.class);
-        quickSender = mock(QuickSender.class);
-        requestService = mock(RequestService.class);
-    }
 
     @Test
     void response_setPremium_ValidUser() {
@@ -48,7 +59,7 @@ class AdminResponseTest {
 
         //when
         when(responseFacade.updateUserToPremiumByNick(givenNick)).thenReturn(true);
-        adminResponse = new AdminResponse(responseFacade, givenUser, quickSender, requestService);
+        adminResponse.setActiveUser(givenUser);
         adminResponse.response();
 
         //then
@@ -66,7 +77,7 @@ class AdminResponseTest {
 
         //when
         when(responseFacade.updateUserToPremiumByNick(givenNick)).thenReturn(false);
-        adminResponse = new AdminResponse(responseFacade, givenUser, quickSender, requestService);
+        adminResponse.setActiveUser(givenUser);
 
         //then
         assertThrows(IllegalInputException.class, () -> adminResponse.response());
@@ -83,7 +94,7 @@ class AdminResponseTest {
 
         //when
         when(responseFacade.updateUserToStandardByNick(givenNick)).thenReturn(true);
-        adminResponse = new AdminResponse(responseFacade, givenUser, quickSender, requestService);
+        adminResponse.setActiveUser(givenUser);
         adminResponse.response();
 
         //then
@@ -101,7 +112,7 @@ class AdminResponseTest {
 
         //when
         when(responseFacade.updateUserToStandardByNick(givenNick)).thenReturn(false);
-        adminResponse = new AdminResponse(responseFacade, givenUser, quickSender, requestService);
+        adminResponse.setActiveUser(givenUser);
 
         //then
         assertThrows(IllegalInputException.class, () -> adminResponse.response());
@@ -118,7 +129,7 @@ class AdminResponseTest {
 
         //when
         when(responseFacade.updateUserToAdminByNick(givenNick)).thenReturn(true);
-        adminResponse = new AdminResponse(responseFacade, givenUser, quickSender, requestService);
+        adminResponse.setActiveUser(givenUser);
         adminResponse.response();
 
         //then
@@ -136,10 +147,10 @@ class AdminResponseTest {
 
         //when
         when(responseFacade.updateUserToAdminByNick(givenNick)).thenReturn(false);
-        adminResponse = new AdminResponse(responseFacade, givenUser, quickSender, requestService);
+        adminResponse.setActiveUser(givenUser);
 
         //then
-        assertThrows(IllegalInputException.class ,() -> adminResponse.response());
+        assertThrows(IllegalInputException.class, () -> adminResponse.response());
         verify(responseFacade, times(1)).updateUserToAdminByNick(givenNick);
         verify(quickSender, times(0)).message(givenUser.getChatId(), String.format("User %s successfully updated to Admin.", givenNick), false);
     }
@@ -153,7 +164,7 @@ class AdminResponseTest {
 
         //when
         when(responseFacade.updateUserToNonAdminByNick(givenNick)).thenReturn(true);
-        adminResponse = new AdminResponse(responseFacade, givenUser, quickSender, requestService);
+        adminResponse.setActiveUser(givenUser);
         adminResponse.response();
 
         //then
@@ -171,10 +182,10 @@ class AdminResponseTest {
 
         //when
         when(responseFacade.updateUserToNonAdminByNick(givenNick)).thenReturn(false);
-        adminResponse = new AdminResponse(responseFacade, givenUser, quickSender, requestService);
+        adminResponse.setActiveUser(givenUser);
 
         //then
-        assertThrows(IllegalInputException.class ,() -> adminResponse.response());
+        assertThrows(IllegalInputException.class, () -> adminResponse.response());
         verify(responseFacade, times(1)).updateUserToNonAdminByNick(givenNick);
         verify(quickSender, times(0)).message(givenUser.getChatId(), String.format("User %s successfully updated to Non-Admin.", givenNick), false);
     }
@@ -187,7 +198,7 @@ class AdminResponseTest {
         givenUser.setText("/set command " + givenCommand);
 
         //when
-        adminResponse = new AdminResponse(responseFacade, givenUser, quickSender, requestService);
+        adminResponse.setActiveUser(givenUser);
         adminResponse.response();
 
         //then
@@ -204,7 +215,7 @@ class AdminResponseTest {
         givenUser.setText("/set command " + givenCommand);
 
         //when
-        adminResponse = new AdminResponse(responseFacade, givenUser, quickSender, requestService);
+        adminResponse.setActiveUser(givenUser);
 
         //then
         assertThrows(IllegalInputException.class, () -> adminResponse.response());
@@ -221,7 +232,7 @@ class AdminResponseTest {
         givenUser.setText("/set command " + givenCommand);
 
         //when
-        adminResponse = new AdminResponse(responseFacade, givenUser, quickSender, requestService);
+        adminResponse.setActiveUser(givenUser);
 
         //then
         assertThrows(IllegalInputException.class, () -> adminResponse.response());
@@ -238,7 +249,7 @@ class AdminResponseTest {
         givenUser.setText("/set command " + givenCommand);
 
         //when
-        adminResponse = new AdminResponse(responseFacade, givenUser, quickSender, requestService);
+        adminResponse.setActiveUser(givenUser);
 
         //then
         assertThrows(IllegalInputException.class, () -> adminResponse.response());
@@ -255,7 +266,7 @@ class AdminResponseTest {
         givenUser.setText("/set command " + givenCommand);
 
         //when
-        adminResponse = new AdminResponse(responseFacade, givenUser, quickSender, requestService);
+        adminResponse.setActiveUser(givenUser);
 
         //then
         assertThrows(IllegalInputException.class, () -> adminResponse.response());
@@ -273,7 +284,7 @@ class AdminResponseTest {
 
         //when
         when(requestService.send((ApiRequest<?>) any())).thenThrow(IllegalInputException.class);
-        adminResponse = new AdminResponse(responseFacade, givenUser, quickSender, requestService);
+        adminResponse.setActiveUser(givenUser);
 
         //then
         assertThrows(IllegalInputException.class, () -> adminResponse.response());
@@ -292,7 +303,7 @@ class AdminResponseTest {
 
         //when
         when(requestService.sendRequestList(any())).thenReturn((List<Object>) givenBotCommands);
-        adminResponse = new AdminResponse(responseFacade, givenUser, quickSender, requestService);
+        adminResponse.setActiveUser(givenUser);
         adminResponse.response();
 
         //then
@@ -310,7 +321,7 @@ class AdminResponseTest {
 
         //when
         when(requestService.sendRequestList(any())).thenReturn((List<Object>) givenBotCommands);
-        adminResponse = new AdminResponse(responseFacade, givenUser, quickSender, requestService);
+        adminResponse.setActiveUser(givenUser);
         adminResponse.response();
 
         //then
@@ -329,7 +340,7 @@ class AdminResponseTest {
 
         //when
         when(requestService.sendRequestList(any())).thenReturn((List<Object>) givenBotCommands);
-        adminResponse = new AdminResponse(responseFacade, givenUser, quickSender, requestService);
+        adminResponse.setActiveUser(givenUser);
 
         //then
         assertThrows(IllegalInputException.class, () -> adminResponse.response());
@@ -345,7 +356,7 @@ class AdminResponseTest {
         givenUser.setText("/remove commands all");
 
         //when
-        adminResponse = new AdminResponse(responseFacade, givenUser, quickSender, requestService);
+        adminResponse.setActiveUser(givenUser);
         adminResponse.response();
 
         //then
@@ -360,13 +371,110 @@ class AdminResponseTest {
         givenUser.setText("/wrong command");
 
         //when
-        adminResponse = new AdminResponse(responseFacade, givenUser, quickSender, requestService);
+        adminResponse.setActiveUser(givenUser);
         adminResponse.response();
 
         //then
         verify(quickSender, times(0)).message(anyString(), anyString(), anyBoolean());
         verify(requestService, times(0)).send((ApiRequest<?>) any());
     }
+
+    @Test
+    void response_startUpdated_JustStart() {
+        //given
+        ActiveUser givenUser = getDefaultActiveUser();
+        givenUser.setText("/update start");
+
+        //when
+        adminResponse.setActiveUser(givenUser);
+        adminResponse.response();
+
+        //then
+        verify(quickSender, times(1)).message(givenUser.getChatId(), "Auto Updater started successfully.", false);
+
+        verify(autoUpdater, times(1)).start();
+    }
+
+    @Test
+    void response_startUpdated_ThrowsException() {
+        //given
+        ActiveUser givenUser = getDefaultActiveUser();
+        givenUser.setText("/update start");
+
+        //when
+        doThrow(new ZalandoScraperBotException("asd", "dsa")).when(autoUpdater).start();
+        adminResponse.setActiveUser(givenUser);
+        adminResponse.response();
+
+        //then
+        verify(autoUpdater, times(1)).start();
+        verify(quickSender, times(1)).message(givenUser.getChatId(), "asd", false);
+    }
+
+    @Test
+    void response_stopUpdated_JustStop() {
+        //given
+        ActiveUser givenUser = getDefaultActiveUser();
+        givenUser.setText("/update stop");
+
+        //when
+        adminResponse.setActiveUser(givenUser);
+        adminResponse.response();
+
+        //then
+        verify(quickSender, times(1)).message(givenUser.getChatId(), "Auto Updater stopped.", false);
+
+        verify(autoUpdater, times(1)).stop();
+    }
+
+    @Test
+    void response_stopUpdated_ThrowsException() {
+        //given
+        ActiveUser givenUser = getDefaultActiveUser();
+        givenUser.setText("/update stop");
+
+        //when
+        doThrow(new ZalandoScraperBotException("asd", "dsa")).when(autoUpdater).stop();
+        adminResponse.setActiveUser(givenUser);
+        adminResponse.response();
+
+        //then
+        verify(autoUpdater, times(1)).stop();
+        verify(quickSender, times(1)).message(givenUser.getChatId(), "asd", false);
+    }
+
+    @Test
+    void response_startOnceUpdated_JustStart() {
+        //given
+        ActiveUser givenUser = getDefaultActiveUser();
+        givenUser.setText("/update start once");
+
+        //when
+        adminResponse.setActiveUser(givenUser);
+        adminResponse.response();
+
+        //then
+        verify(quickSender, times(1)).message(givenUser.getChatId(), "Auto Updater Once started successfully.", false);
+        verify(autoUpdater, times(1)).startOnce();
+    }
+
+    @Test
+    void response_startOnceUpdated_ThrowsException() {
+        //given
+        ActiveUser givenUser = getDefaultActiveUser();
+        givenUser.setText("/update start once");
+
+        //when
+        doThrow(new ZalandoScraperBotException("asd", "dsa")).when(autoUpdater).startOnce();
+        adminResponse.setActiveUser(givenUser);
+        adminResponse.response();
+
+        //then
+        verify(autoUpdater, times(1)).startOnce();
+        verify(quickSender, times(1)).message(givenUser.getChatId(), "asd", false);
+    }
+
+
 
     private List<BotCommand> getDefaultBotCommands() {
         List<BotCommand> commands = new ArrayList<>();

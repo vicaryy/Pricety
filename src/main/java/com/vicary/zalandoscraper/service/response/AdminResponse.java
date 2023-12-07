@@ -7,28 +7,33 @@ import com.vicary.zalandoscraper.api_telegram.api_request.commands.SetMyCommands
 import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
 import com.vicary.zalandoscraper.api_telegram.service.RequestService;
 import com.vicary.zalandoscraper.exception.IllegalInputException;
+import com.vicary.zalandoscraper.exception.ZalandoScraperBotException;
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
+import com.vicary.zalandoscraper.updater.AutoUpdater;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class AdminResponse implements Responser {
+    private final static Logger logger = LoggerFactory.getLogger(AdminResponse.class);
+    private ActiveUser user;
     private final RequestService requestService;
     private final ResponseFacade responseFacade;
-    private final ActiveUser user;
     private final QuickSender quickSender;
+    private final AutoUpdater autoUpdater;
 
-    public AdminResponse(ResponseFacade responseFacade, ActiveUser activeUser) {
+    public AdminResponse(RequestService requestService, ResponseFacade responseFacade, QuickSender quickSender, AutoUpdater autoUpdater) {
+        this.requestService = requestService;
         this.responseFacade = responseFacade;
-        this.user = activeUser;
-        this.quickSender = new QuickSender();
-        this.requestService = new RequestService();
+        this.quickSender = quickSender;
+        this.autoUpdater = autoUpdater;
     }
 
-    public AdminResponse(ResponseFacade responseFacade, ActiveUser activeUser, QuickSender quickSender, RequestService requestService) {
-        this.responseFacade = responseFacade;
+    public void setActiveUser(ActiveUser activeUser) {
         this.user = activeUser;
-        this.quickSender = quickSender;
-        this.requestService = requestService;
     }
 
     public void response() {
@@ -52,6 +57,45 @@ public class AdminResponse implements Responser {
 
         else if (user.getText().startsWith("/remove commands all"))
             removeAllCommands();
+
+        else if (user.getText().equals("/update start"))
+            updateStart();
+
+        else if (user.getText().equals("/update start once"))
+            updateStartOnce();
+
+        else if (user.getText().equals("/update stop"))
+            updateStop();
+    }
+
+    private void updateStart() {
+        try {
+            autoUpdater.start();
+            quickSender.message(user.getChatId(), "Auto Updater started successfully.", false);
+        } catch (ZalandoScraperBotException ex) {
+            quickSender.message(user.getChatId(), ex.getMessage(), false);
+            logger.info(ex.getLoggerMessage());
+        }
+    }
+
+    private void updateStartOnce() {
+        try {
+            autoUpdater.startOnce();
+            quickSender.message(user.getChatId(), "Auto Updater Once started successfully.", false);
+        } catch (ZalandoScraperBotException ex) {
+            quickSender.message(user.getChatId(), ex.getMessage(), false);
+            logger.info(ex.getLoggerMessage());
+        }
+    }
+
+    private void updateStop() {
+        try {
+            autoUpdater.stop();
+            quickSender.message(user.getChatId(), "Auto Updater stopped.", false);
+        } catch (ZalandoScraperBotException ex) {
+            quickSender.message(user.getChatId(), ex.getMessage(), false);
+            logger.info(ex.getLoggerMessage());
+        }
     }
 
     private void setPremium() {

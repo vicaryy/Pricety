@@ -9,10 +9,12 @@ import com.vicary.zalandoscraper.api_telegram.api_object.Update;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class UpdateFetcher {
     private static final Logger logger = LoggerFactory.getLogger(UpdateFetcher.class);
@@ -20,8 +22,10 @@ public class UpdateFetcher {
     private static String fetchURL;
     private static String deleteURL;
     private long fastModeDuration;
+    private final AtomicBoolean isRunning = new AtomicBoolean(false);
     private Mode mode = Mode.FAST;
-    private List<Update> updates;
+    private List<Update> updates = new ArrayList<>();
+    private final Thread thread;
     private final WebClient client = WebClient.create();
     private final ExecutorService cachedExecutor = Executors.newCachedThreadPool();
     private final UpdateReceiver updateReceiver;
@@ -32,16 +36,8 @@ public class UpdateFetcher {
         this.options = new FetcherOptions();
 
         logger.info("[Api Telegram] Telegram Bot API started successfully.");
-        logger.info("[Api Telegram] Telegram Bot API started successfully.");
-        logger.info("[Api Telegram] Telegram Bot API started successfully.");
-        logger.info("[Api Telegram] Telegram Bot API started successfully.");
-        logger.info("[Api Telegram] Telegram Bot API started successfully.");
-        logger.info("[Api Telegram] Telegram Bot API started successfully.");
-        logger.info("[Api Telegram] Telegram Bot API started successfully.");
-        logger.info("[Api Telegram] Telegram Bot API started successfully.");
-        logger.info("[Api Telegram] Telegram Bot API started successfully.");
-        logger.info("[Api Telegram] Telegram Bot API started successfully.");
-        new Thread(this::run).start();
+        thread = new Thread(this::run);
+        thread.start();
     }
 
     public UpdateFetcher(UpdateReceiver updateReceiver, FetcherOptions options) {
@@ -49,18 +45,19 @@ public class UpdateFetcher {
         this.options = options;
 
         logger.info("[Api Telegram] Telegram Bot API started successfully.");
-        new Thread(this::run).start();
+        thread = new Thread(this::run);
+        thread.start();
     }
 
     private void run() {
+        isRunning.set(true);
         configBotInfo();
         sleep(options.getBreakBeforeStart());
-        while (!Thread.currentThread().isInterrupted()) {
+        while (isRunning.get()) {
             try {
                 updates = getUpdates();
             } catch (WebClientResponseException ex) {
                 handleWebClientResponseException(ex);
-                break;
             } catch (WebClientRequestException ex) {
                 handleWebClientRequestException();
             } catch (Exception ex) {
@@ -184,11 +181,12 @@ public class UpdateFetcher {
 
     private void handleWebClientResponseException(WebClientResponseException ex) {
         logger.error("---------------------------");
+        logger.error("Telegram API Bot stopped.");
         logger.error("Status code: " + ex.getStatusCode());
         logger.error("Description: " + ex.getStatusText());
         logger.error("Check your bot token etc. and try again.");
         logger.error("---------------------------");
-        System.exit(2);
+        isRunning.set(false);
     }
 
     private void handleWebClientRequestException() {
@@ -199,9 +197,11 @@ public class UpdateFetcher {
         sleep(options.getTryingToReconnectFrequency());
     }
 
-    private static void handleException(Exception ex) {
+    private void handleException(Exception ex) {
+        logger.error("Telegram API Bot stopped.");
         logger.error("Unexpected error: " + ex.getMessage());
         ex.printStackTrace();
+        isRunning.set(false);
     }
 
     private void sleep(int milliseconds) {

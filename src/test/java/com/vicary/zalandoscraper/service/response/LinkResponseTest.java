@@ -119,7 +119,7 @@ class LinkResponseTest {
 
         verify(quickSender, times(1)).messageWithReturn(givenUser.getChatId(), Messages.other("processing"), false);
         verify(quickSender, times(1)).chatAction(givenUser.getChatId(), Action.TYPING);
-        verify(quickSender, times(0)).deleteMessage(givenUser.getChatId(), givenUser.getMessageId());
+        verify(quickSender, times(1)).deleteMessage(givenUser.getChatId(), givenUser.getMessageId());
         verify(responseFacade, times(0)).saveProduct(givenProduct);
         verify(quickSender, times(0)).message(givenUser.getChatId(), Messages.other("productAdded"), false);
     }
@@ -150,7 +150,7 @@ class LinkResponseTest {
 
         verify(quickSender, times(1)).messageWithReturn(givenUser.getChatId(), Messages.other("processing"), false);
         verify(quickSender, times(1)).chatAction(givenUser.getChatId(), Action.TYPING);
-        verify(quickSender, times(0)).deleteMessage(givenUser.getChatId(), givenUser.getMessageId());
+        verify(quickSender, times(1)).deleteMessage(givenUser.getChatId(), givenUser.getMessageId());
         verify(responseFacade, times(0)).saveProduct(givenProduct);
         verify(quickSender, times(0)).message(givenUser.getChatId(), Messages.other("productAdded"), false);
     }
