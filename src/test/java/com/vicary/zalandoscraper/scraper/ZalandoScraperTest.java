@@ -39,6 +39,17 @@ class ZalandoScraperTest {
         ActiveLanguage.get().setResourceBundle(ResourceBundle.getBundle("messages"));
     }
 
+
+    @Test
+    void test() {
+        //given
+        String givenLink = "https://www.zalando.es/nike-sportswear-air-max-90-gtx-unisex-zapatillas-blackhoneydewmica-green-ni112o0xk-q11.html";
+        String givenVariant = "55";
+
+        Product product = scraper.getProduct(givenLink, givenVariant);
+        System.out.println(product);
+    }
+
     @Test
     void getAllVariants_expectThrow_InvalidLink() {
         assertThrows(InvalidLinkException.class, () -> scraper.getAllVariants(INVALID_LINK));
@@ -219,6 +230,57 @@ class ZalandoScraperTest {
 
             scraper.updateProduct(page, givenDto);
         }
+    }
+
+    @Test
+    void getServiceName_expectEquals_ZalandoPL() {
+        //given
+        String givenLink = "https://www.zalando.pl/asdasd-asd/asd.html";
+        String expectedServiceName = "zalando.pl";
+
+        //when
+        String actualServiceName = scraper.getServiceName(givenLink);
+
+        //then
+        assertEquals(expectedServiceName, actualServiceName);
+    }
+
+    @Test
+    void getServiceName_expectEquals_ZalandoCZ() {
+        //given
+        String givenLink = "https://www.zalando.cz/asdasd-asd/asd.html";
+        String expectedServiceName = "zalando.cz";
+
+        //when
+        String actualServiceName = scraper.getServiceName(givenLink);
+
+        //then
+        assertEquals(expectedServiceName, actualServiceName);
+    }
+
+    @Test
+    void getServiceName_expectEquals_ZalandoWHATEVER() {
+        //given
+        String givenLink = "https://www.zalando.whatever123/asdasd-asd/asd.html";
+        String expectedServiceName = "zalando.whatever123";
+
+        //when
+        String actualServiceName = scraper.getServiceName(givenLink);
+
+        //then
+        assertEquals(expectedServiceName, actualServiceName);
+    }
+
+    @Test
+    void getProduct() {
+        //given
+        String givenLink = "https://www.zalando.pl/timberland-killington-half-cab-sznurowane-sportowe-ti112d05s-q11.html";
+        String givenVariant = "40";
+        //when
+        Product actualProduct = scraper.getProduct(givenLink, givenVariant);
+
+        //then
+        System.out.println(actualProduct);
     }
 }
 

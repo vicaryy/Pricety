@@ -1,10 +1,10 @@
 package com.vicary.zalandoscraper.updater.sender;
 
 import com.vicary.zalandoscraper.entity.WaitingUserEntity;
-import com.vicary.zalandoscraper.model.ChatNotificationFactory;
+import com.vicary.zalandoscraper.factory.ChatNotificationFactory;
 import com.vicary.zalandoscraper.model.Email;
 import com.vicary.zalandoscraper.model.ChatNotification;
-import com.vicary.zalandoscraper.model.EmailNotificationFactory;
+import com.vicary.zalandoscraper.factory.EmailNotificationFactory;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;
 import com.vicary.zalandoscraper.service.repository_services.ProductService;
 import lombok.RequiredArgsConstructor;

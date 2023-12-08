@@ -8,10 +8,14 @@ import org.springframework.stereotype.Component;
 public class UserMapper {
 
     public UserEntity map(User user) {
+        String nationality = "en";
+        if (user.getLanguageCode() != null)
+            nationality = user.getLanguageCode().equals("pl") ? "pl" : "en";
+
         return UserEntity.builder()
                 .userId(user.getId().toString())
                 .nick(user.getUsername())
-                .nationality("pl")
+                .nationality(nationality)
                 .premium(false)
                 .admin(false)
                 .notifyByEmail(false)

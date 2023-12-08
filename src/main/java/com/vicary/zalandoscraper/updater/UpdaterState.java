@@ -11,4 +11,5 @@ public abstract class UpdaterState {
     public abstract void startOnce();
     public abstract void stop();
     public abstract boolean isRunning();
+    public abstract String getState();
 }

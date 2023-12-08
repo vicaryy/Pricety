@@ -474,6 +474,35 @@ class AdminResponseTest {
         verify(quickSender, times(1)).message(givenUser.getChatId(), "asd", false);
     }
 
+    @Test
+    void response_getState_JustGetState() {
+        //given
+        ActiveUser givenUser = getDefaultActiveUser();
+        givenUser.setText("/update state");
+
+        //when
+        adminResponse.setActiveUser(givenUser);
+        adminResponse.response();
+
+        //then
+        verify(autoUpdater, times(1)).getCurrentState();
+        verify(quickSender, times(1)).message(eq(givenUser.getChatId()), anyString(), eq(false));
+    }
+
+    @Test
+    void response_getAll_JustGetAllCommands() {
+        //given
+        ActiveUser givenUser = getDefaultActiveUser();
+        givenUser.setText("/get all");
+
+        //when
+        adminResponse.setActiveUser(givenUser);
+        adminResponse.response();
+
+        //then
+        verify(quickSender, times(1)).message(eq(givenUser.getChatId()), anyString(), eq(true));
+    }
+
 
 
     private List<BotCommand> getDefaultBotCommands() {

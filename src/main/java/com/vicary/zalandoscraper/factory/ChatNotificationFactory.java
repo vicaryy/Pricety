@@ -1,5 +1,6 @@
-package com.vicary.zalandoscraper.model;
+package com.vicary.zalandoscraper.factory;
 
+import com.vicary.zalandoscraper.model.ChatNotification;
 import com.vicary.zalandoscraper.service.dto.ProductDTO;
 
 public class ChatNotificationFactory {

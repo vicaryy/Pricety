@@ -66,6 +66,39 @@ public class AdminResponse implements Responser {
 
         else if (user.getText().equals("/update stop"))
             updateStop();
+
+        else if (user.getText().equals("/update state"))
+            updateGetState();
+
+        else if (user.getText().equals("/get all"))
+            getAllCommands();
+    }
+
+    private void getAllCommands() {
+        String commands = """
+                List of commands:
+                
+                *Set:*
+                /set premium \\+ nick
+                /set standard \\+ nick
+                /set admin \\+ nick
+                /set non\\-admin \\+ nick
+                /set command \\+ command
+               
+                *Remove:*
+                /remove command \\+ command
+                /remove commands all
+                
+                *Update:*
+                /update start
+                /update start once
+                /update stop
+                /update state
+                
+                *Get:*
+                /get all \\- getting all commands
+                """;
+        quickSender.message(user.getChatId(), commands, true);
     }
 
     private void updateStart() {
@@ -96,6 +129,10 @@ public class AdminResponse implements Responser {
             quickSender.message(user.getChatId(), ex.getMessage(), false);
             logger.info(ex.getLoggerMessage());
         }
+    }
+
+    private void updateGetState() {
+            quickSender.message(user.getChatId(), "Current state: " + autoUpdater.getCurrentState(), false);
     }
 
     private void setPremium() {

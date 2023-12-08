@@ -92,8 +92,11 @@ public class ProductUpdater {
         return cuttedList;
     }
 
-    private void setUpdatesTimeout() {
-        updatesTimeout = System.currentTimeMillis() + (long) DTOs.size() * 4000;
+    void setUpdatesTimeout() {
+        if (DTOs.size() < 7)
+            updatesTimeout = System.currentTimeMillis() + (12_000 - (DTOs.size() * 1000L)) * DTOs.size();
+        else
+            updatesTimeout = System.currentTimeMillis() + (long) DTOs.size() * 3500;
     }
 
     private void sleep(long millis) {
@@ -114,5 +117,9 @@ public class ProductUpdater {
 
     public int getAmountOfThreads() {
         return amountOfThreads;
+    }
+
+    long getUpdatesTimeout() {
+        return updatesTimeout;
     }
 }

@@ -105,10 +105,14 @@ public class ZalandoScraper implements Scraper {
                         .price(0)
                         .variant(variant)
                         .link(page.url())
+                        .serviceName(getServiceName(link))
+                        .currency(getCurrency(page))
                         .build();
 
-                if (isItemSoldOut(page))
+                if (isItemSoldOut(page)) {
+                    logger.info("Wyprzedany");
                     return product;
+                }
 
                 if (variant.startsWith("-oneVariant")) {
                     product.setPrice(getPrice(page));
@@ -310,20 +314,27 @@ public class ZalandoScraper implements Scraper {
     }
 
     private double getPrice(Page page) {
-        String price = page.locator(Tag.Zalando.PRICE).textContent();
+        String price = page.locator(Tag.Zalando.PRICE).first().textContent();
 
-        if (price.contains(" "))
-            price = price.replaceAll(" ", "");
+        System.out.println(price);
 
-        if (price.contains(" "))
-            price = price.replaceAll(" ", "");
+        StringBuilder finalPrice = new StringBuilder();
+        for (char c : price.toCharArray())
+            if (Character.isDigit(c) || c == ',')
+                finalPrice.append(c);
 
-        if (price.startsWith("od"))
-            price = price.substring(2);
+        return Double.parseDouble(finalPrice.toString().replaceFirst(",", "."));
+    }
 
-        price = price.substring(0, price.length() - 2);
+    String getCurrency(Page page) {
+        String price = page.locator(Tag.Zalando.PRICE).first().textContent();
 
-        return Double.parseDouble(price.replaceFirst(",", "."));
+        String[] priceArray = price.split(" ");
+        return priceArray[priceArray.length - 1];
+    }
+
+    String getServiceName(String link) {
+        return link.replaceFirst("https://www.", "").split("/")[0];
     }
 
 

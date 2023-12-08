@@ -32,4 +32,9 @@ public class RunningOnceState extends UpdaterState {
     public boolean isRunning() {
         return true;
     }
+
+    @Override
+    public String getState() {
+        return "Running Once";
+    }
 }

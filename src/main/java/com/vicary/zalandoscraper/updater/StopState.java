@@ -34,4 +34,9 @@ public class StopState extends UpdaterState {
     public boolean isRunning() {
         return false;
     }
+
+    @Override
+    public String getState() {
+        return "Stopped";
+    }
 }

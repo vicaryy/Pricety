@@ -32,4 +32,9 @@ public class UpdatingState extends UpdaterState {
     public boolean isRunning() {
         return true;
     }
+
+    @Override
+    public String getState() {
+        return "Updating Products";
+    }
 }

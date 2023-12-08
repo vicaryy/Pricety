@@ -36,6 +36,12 @@ public class ProductEntity {
     @Column(name = "price_alert")
     private String priceAlert;
 
+    @Column(name = "service_name")
+    private String serviceName;
+
+    @Column(name = "currency")
+    private String currency;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private UserEntity user;

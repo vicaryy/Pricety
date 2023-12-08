@@ -7,7 +7,8 @@ class Tag {
         static final String DESCRIPTION = "span.EKabf7.R_QwOV";
         static final String PRICE = "span.sDq_FX._4sa1cA";
         static final String MAIN_TAB = "div._5qdMrS.VHXqc_.rceRmQ._4NtqZU.mIlIve";
-        static final String SOLD_OUT_TAB = "Artykuł wyprzedany";
+//        static final String SOLD_OUT_TAB = "Artykuł wyprzedany";
+        static final String SOLD_OUT_TAB = "h2#pdp_size-reminder-dialog_title";
         static final String VARIANT_BUTTON = "pdp-size-picker-trigger";
         static final String COOKIES_BUTTON = "button.uc-btn";
         static final String ALL_VARIANTS = "span.hDNRPv.r9BRio.qXofat.ZkIJC-.pMa0tB.JCuRr_ > div._0xLoFW.FCIprz > span.sDq_FX._2kjxJ6.dgII7d";

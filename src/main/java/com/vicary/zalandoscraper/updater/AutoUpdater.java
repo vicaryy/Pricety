@@ -21,8 +21,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Service
 public class AutoUpdater {
     private final static Logger logger = LoggerFactory.getLogger(AutoUpdater.class);
-    private final static int DELAY_BETWEEN_UPDATES = 2000; // 2 hour
-//    private final static int DELAY_BETWEEN_UPDATES = 1000 * 60 * 60 * 2; // 2 hour
+//    private final static int DELAY_BETWEEN_UPDATES = 2000; // 2 sec
+    private final static int DELAY_BETWEEN_UPDATES = 1000 * 60 * 60 * 2; // 2 hour
     private final ProductService productService;
     private final UpdatesHistoryService updatesHistoryService;
     private final ProductMapper productMapper;
@@ -69,6 +69,10 @@ public class AutoUpdater {
         return state.isRunning();
     }
 
+    public String getCurrentState() {
+        return state.getState();
+    }
+
     void run() {
         logger.info("[Auto Updater] Auto Updater started successfully.");
         try {
@@ -97,6 +101,7 @@ public class AutoUpdater {
         }
     }
 
+
     private void update() {
         List<ProductDTO> products = productService.getAllProductsDtoSortById();
 
@@ -113,7 +118,7 @@ public class AutoUpdater {
 
         saveToUpdatesHistoryRepository(products);
 
-//        sendNotificationsToUsers(products);
+        sendNotificationsToUsers(products);
     }
 
     List<List<ProductDTO>> divideListIntoServices(List<ProductDTO> DTOs) {
