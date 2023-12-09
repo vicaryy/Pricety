@@ -94,7 +94,7 @@ class UrlParserTest {
     void parse_expectEquals_Nothing() {
         //given
         String givenURL = "asd.pl/example";
-        String expectedURL = ("https://www.asd.pl/example");
+        String expectedURL = "https://www.asd.pl/example";
 
         //when
         String actualURL = parser.parse(givenURL);
@@ -105,7 +105,7 @@ class UrlParserTest {
     }
 
     @Test
-    void parse_expectEquals_ExceptionalURL() {
+    void parse_expectEquals_ShortenURL() {
         //given
         String givenURL = "https://nike.sng.link/asd";
         String expectedURL = "https://www.nike.com/pl/asd";
@@ -121,7 +121,7 @@ class UrlParserTest {
     }
 
     @Test
-    void parse_expectThrow_ExceptionalURLButItCannotBeExtended() {
+    void parse_expectThrow_ShortenURLButItCannotBeExtended() {
         //given
         String givenURL = "https://nike.sng.link/asd";
         Optional<String> givenOptionalURL = Optional.empty();
@@ -153,6 +153,20 @@ class UrlParserTest {
         //given
         String givenURL = "";
         String expectedURL = "https://www.";
+
+        //when
+        String actualURL = parser.parse(givenURL);
+
+        //then
+        assertEquals(expectedURL, actualURL);
+        verify(expander, times(0)).expand(anyString());
+    }
+
+    @Test
+    void parse_expectEquals_ExceptionalURL() {
+        //given
+        String givenURL = "https://en.zalando.de/asd";
+        String expectedURL = "https://en.zalando.de/asd";
 
         //when
         String actualURL = parser.parse(givenURL);

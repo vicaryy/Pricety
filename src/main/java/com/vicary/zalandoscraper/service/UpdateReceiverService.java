@@ -1,6 +1,7 @@
 package com.vicary.zalandoscraper.service;
 
 import com.microsoft.playwright.PlaywrightException;
+import com.microsoft.playwright.Response;
 import com.vicary.zalandoscraper.exception.*;
 import com.vicary.zalandoscraper.messages.Messages;
 import com.vicary.zalandoscraper.scraper.Scraper;
@@ -96,7 +97,9 @@ public class UpdateReceiverService implements UpdateReceiver {
             else if (Pattern.isEmailToken(user.getText()))
                 responser = new EmailVerificationResponse(facade, user);
 
-            else if (Pattern.isURL(user.getText())) {
+            if (Pattern.isPrefixedURL(user.getText()))
+                user.setText(Pattern.removePrefix(user.getText()));
+            if (Pattern.isURL(user.getText())) {
                 user.setText(urlParser.parse(user.getText()));
                 Scraper scraper = ScraperFactory.getScraperFromLink(user.getText()).orElseThrow(() -> new UrlParserException("Cannot find Scraper for URL: " + user.getText()));
                 responser = new LinkResponse(facade, user, scraper);

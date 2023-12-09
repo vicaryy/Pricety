@@ -58,9 +58,6 @@ public class UserAuthentication {
                 ? update.getMessage().getText()
                 : update.getCallbackQuery().getData();
 
-        if (Pattern.isZalandoURLWithPrefix(text))
-            text = Pattern.removeZalandoPrefix(text);
-
         boolean awaitedMessage = isAwaitedMessage(chatId);
 
 

@@ -9,6 +9,66 @@ import static org.junit.jupiter.api.Assertions.*;
 class PatternTest {
 
     @Test
+    void isZalandoURL_expectTrue_ZalandoPL() {
+        //given
+        String givenLink = "https://www.zalando.pl/asd";
+
+        //when
+        //then
+        assertTrue(Pattern.isZalandoURL(givenLink));
+    }
+
+    @Test
+    void isZalandoURL_expectTrue_ZalandoCZ() {
+        //given
+        String givenLink = "https://www.zalando.cz/asd";
+
+        //when
+        //then
+        assertTrue(Pattern.isZalandoURL(givenLink));
+    }
+
+    @Test
+    void isZalandoURL_expectTrue_ZalandoCOUK() {
+        //given
+        String givenLink = "https://www.zalando.co.uk/asd";
+
+        //when
+        //then
+        assertTrue(Pattern.isZalandoURL(givenLink));
+    }
+
+    @Test
+    void isZalandoURL_expectFalse_WrongCountry() {
+        //given
+        String givenLink = "https://www.zalando.wrong/asd";
+
+        //when
+        //then
+        assertFalse(Pattern.isZalandoURL(givenLink));
+    }
+
+    @Test
+    void isZalandoURL_expectFalse_MainPage() {
+        //given
+        String givenLink = "https://www.zalando.pl/";
+
+        //when
+        //then
+        assertFalse(Pattern.isZalandoURL(givenLink));
+    }
+
+    @Test
+    void isZalandoURL_expectFalse_NoHttps() {
+        //given
+        String givenLink = "www.zalando.pl/asd";
+
+        //when
+        //then
+        assertFalse(Pattern.isZalandoURL(givenLink));
+    }
+
+    @Test
     void isEmail_expectFalse_InvalidEmails() {
         getInvalidEmails().forEach(e -> assertFalse(Pattern.isEmail(e)));
     }
@@ -29,10 +89,41 @@ class PatternTest {
     }
 
 
+    @Test
+    void isPrefixedURL_expectTrue_ValidPrefixedAtTheEnd() {
+        //given
+        String givenURL = "Sprawdź ten przedmiot na zalando: https://www.zalando.pl/asd";
+
+        //when
+        //then
+        assertTrue(Pattern.isPrefixedURL(givenURL));
+    }
+
+    @Test
+    void isPrefixedURL_expectFalse_ValidPrefixedInTheMiddle() {
+        //given
+        String givenURL = "Sprawdź ten https://www.zalando.pl/asd przedmiot na zalando.";
+
+        //when
+        //then
+        assertFalse(Pattern.isPrefixedURL(givenURL));
+    }
+
+    @Test
+    void isPrefixedURL_expectTrue_ValidPrefixedAtTheBeginning() {
+        //given
+        String givenURL = "https://www.zalando.pl/asd sprawdź ten przedmiot na zalando.";
+
+        //when
+        //then
+        assertTrue(Pattern.isPrefixedURL(givenURL));
+    }
+
 
     private List<String> getValidURLs() {
         return List.of(
                 "https://www.asd.pl/asd",
+                "https://www.asd.co.uk/asd",
                 "https://www.asd.link/asd",
                 "https://www.asd.com/asd",
                 "https://www.asd-asd.com/asd",
@@ -55,6 +146,8 @@ class PatternTest {
 
     private List<String> getInvalidURLs() {
         return List.of(
+                "https://www.asd.lengthMoreThanFour/asd",
+                "https://www.asd.123/asd",
                 "-.pl/asd",
                 "asd.pl",
                 "4893759813HADFIJGB32929/';;;;d.com/asd",

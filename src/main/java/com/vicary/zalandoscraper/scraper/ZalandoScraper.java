@@ -106,11 +106,10 @@ public class ZalandoScraper implements Scraper {
                         .variant(variant)
                         .link(page.url())
                         .serviceName(getServiceName(link))
-                        .currency(getCurrency(page))
+                        .currency(getCurrency(link))
                         .build();
 
                 if (isItemSoldOut(page)) {
-                    logger.info("Wyprzedany");
                     return product;
                 }
 
@@ -314,27 +313,43 @@ public class ZalandoScraper implements Scraper {
     }
 
     private double getPrice(Page page) {
-        String price = page.locator(Tag.Zalando.PRICE).first().textContent();
+        String price = "";
+
+        if (page.isVisible(Tag.Zalando.PRICE_SPAN))
+            price = page.locator(Tag.Zalando.PRICE_SPAN).first().textContent();
+        else if (page.isVisible(Tag.Zalando.PRICE_P))
+            price = page.locator(Tag.Zalando.PRICE_P).first().textContent();
 
         System.out.println(price);
 
         StringBuilder finalPrice = new StringBuilder();
         for (char c : price.toCharArray())
-            if (Character.isDigit(c) || c == ',')
+            if (Character.isDigit(c) || c == ',' || c == '.')
                 finalPrice.append(c);
 
         return Double.parseDouble(finalPrice.toString().replaceFirst(",", "."));
     }
 
-    String getCurrency(Page page) {
-        String price = page.locator(Tag.Zalando.PRICE).first().textContent();
-
-        String[] priceArray = price.split(" ");
-        return priceArray[priceArray.length - 1];
+    private String getCurrency(String link) {
+        if (link.startsWith("https://www.zalando.pl/"))
+            return "zł";
+        if (link.startsWith("https://www.zalando.cz/"))
+            return "Kč";
+        if (link.startsWith("https://www.zalando.no/") || link.startsWith("https://www,zalando.se/"))
+            return "kr";
+        if (link.startsWith("https://www.zalando.ro/"))
+            return "lei";
+        if (link.startsWith("https://www.it.zalando.ch/"))
+            return "CHF";
+        if (link.startsWith("https://www.zalando.co.uk/"))
+            return "£";
+        return "€";
     }
 
     String getServiceName(String link) {
         return link.replaceFirst("https://www.", "").split("/")[0];
+
+        //https://it.zalando.ch/uomo-home/
     }
 
 
@@ -348,7 +363,7 @@ public class ZalandoScraper implements Scraper {
     }
 
     private boolean isItemSoldOut(Page page) {
-        return page.getByText(Tag.Zalando.SOLD_OUT_TAB).count() == 1;
+        return page.locator(Tag.Zalando.SOLD_OUT_TAB).count() == 1;
     }
 
     void clickSizeButton(Page page) {

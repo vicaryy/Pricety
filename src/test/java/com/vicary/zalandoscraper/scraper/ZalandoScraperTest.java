@@ -272,14 +272,12 @@ class ZalandoScraperTest {
     }
 
     @Test
-    void getProduct() {
+    void getProduct_NotAvailableVariant_UK() {
         //given
-        String givenLink = "https://www.zalando.pl/timberland-killington-half-cab-sznurowane-sportowe-ti112d05s-q11.html";
-        String givenVariant = "40";
+        String givenLink = "https://it.zalando.ch/hugo-t-shirt-basic-blackwhite-hu722o05k-q11.html";
+        String givenVariant = "XL";
         //when
         Product actualProduct = scraper.getProduct(givenLink, givenVariant);
-
-        //then
         System.out.println(actualProduct);
     }
 }

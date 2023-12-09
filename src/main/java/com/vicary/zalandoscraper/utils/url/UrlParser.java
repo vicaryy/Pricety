@@ -9,8 +9,13 @@ import java.util.Set;
 
 @Component
 public class UrlParser {
+    private final static Set<String> urlShortens = new HashSet<>(Arrays.asList(
+            "nike.sng.link/"));
+    private final static Set<String> zalandoExceptions = new HashSet<>(Arrays.asList(
+            "https://en.zalando.de/",
+            "https://fr.zalando.ch/",
+            "https://it.zalando.ch/"));
 
-    private final Set<String> urlExceptions = new HashSet<>(Arrays.asList("nike.sng.link/"));
     private final UrlExpander urlExpander;
 
     public UrlParser(UrlExpander urlExpander) {
@@ -18,11 +23,18 @@ public class UrlParser {
     }
 
     public String parse(String URL) {
-        if (isExceptional(URL))
+        if (isShortener(URL))
             URL = expandURL(URL);
 
-        if (URL.startsWith("https://www."))
+        if (checkExceptions(URL))
             return URL;
+
+        if (URL.startsWith("https://en.")
+                || URL.startsWith("https://fr.")
+                || URL.startsWith("https://it."))
+
+            if (URL.startsWith("https://www."))
+                return URL;
 
         if (URL.startsWith("http://www."))
             return URL.replaceFirst("http", "https");
@@ -39,8 +51,8 @@ public class UrlParser {
         return "https://www." + URL;
     }
 
-    private boolean isExceptional(String URL) {
-        for (var u : urlExceptions)
+    private boolean isShortener(String URL) {
+        for (var u : urlShortens)
             if (URL.contains(u))
                 return true;
         return false;
@@ -50,7 +62,27 @@ public class UrlParser {
         return urlExpander.expand(URL).orElseThrow(() -> new UrlParserException("Cannot expand URL: " + URL));
     }
 
-    public void setUrlException(String exception) {
-        urlExceptions.add(exception);
+    private boolean checkExceptions(String URL) {
+        checkZalandoExceptions(URL);
+        for (var u : zalandoExceptions)
+            if (URL.startsWith(u))
+                return true;
+        return false;
+    }
+
+    public void setShortener(String shortener) {
+        urlShortens.add(shortener);
+    }
+
+    public static Set<String> getAllShortens() {
+        return urlShortens;
+    }
+
+    public static Set<String> getAllExceptions() {
+        return zalandoExceptions;
+    }
+
+    public static void setException(String exception) {
+        zalandoExceptions.add(exception);
     }
 }

@@ -9,10 +9,11 @@ public class Pattern {
     private static final java.util.regex.Pattern emailPattern = java.util.regex.Pattern.compile("^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@"
             + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$");
 
-    private static final java.util.regex.Pattern urlPattern = java.util.regex.Pattern.compile("^[a-zA-Z0-9\\./:_-]*[a-zA-Z]\\.(pl|com|link)/.*");
+    private static final java.util.regex.Pattern urlPattern = java.util.regex.Pattern.compile("^[a-zA-Z0-9\\./:_-]*[a-zA-Z]\\.([a-z]{0,4})/.*");
+    private static final java.util.regex.Pattern zalandoPattern = java.util.regex.Pattern.compile(".+\\.zalando\\.(pl|cz|no|se|ro|ch|co.uk|es|sk|nl|at|fi|ie|it|be|lt|si|de|fr)/.+");
 
     public static boolean isZalandoURL(String text) {
-        return text.startsWith("https://www.zalando.pl/");
+        return zalandoPattern.matcher(text).matches();
     }
 
     public static boolean isHebeURL(String text) {
@@ -27,14 +28,22 @@ public class Pattern {
         return urlPattern.matcher(text).matches();
     }
 
-    public static boolean isZalandoURLWithPrefix(String text) {
-        String[] arrayText = text.split(" ");
-        return arrayText[arrayText.length - 1].startsWith("https://www.zalando.pl/");
+    public static boolean isPrefixedURL(String text) {
+        String[] textArray = text.split(" ");
+        if (textArray.length > 1)
+            return urlPattern.matcher(textArray[0]).matches() || urlPattern.matcher(textArray[textArray.length - 1]).matches();
+        return false;
     }
 
-    public static String removeZalandoPrefix(String text) {
-        String[] arrayText = text.split(" ");
-        return arrayText[arrayText.length - 1];
+    public static String removePrefix(String text) {
+        String[] textArray = text.split(" ");
+        if (text.length() > 1) {
+            if (urlPattern.matcher(textArray[0]).matches())
+                return textArray[0];
+            if (urlPattern.matcher(textArray[textArray.length - 1]).matches())
+                return textArray[1];
+        }
+        return text;
     }
 
     public static boolean isCommand(String text) {
