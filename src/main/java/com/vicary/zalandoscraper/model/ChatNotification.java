@@ -2,7 +2,6 @@ package com.vicary.zalandoscraper.model;
 
 import com.vicary.zalandoscraper.format.MarkdownV2;
 import com.vicary.zalandoscraper.messages.Messages;
-import com.vicary.zalandoscraper.service.dto.ProductDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,7 +23,7 @@ public class ChatNotification {
         message = Messages.chat("waitingUser", language);
     }
 
-    public void setDefaultPriceAlertMessage(ProductDTO p) {
+    public void setDefaultPriceAlertMessage(Product p) {
         if (p.getPrice() == 0) {
             setMessageWhenOldPriceIsZero(p);
             return;
@@ -34,38 +33,43 @@ public class ChatNotification {
         String cheaper = String.format("%.2f", p.getPrice() - p.getNewPrice());
         String variant = getFormattedVariant(p);
 
-        message = Messages.chat("notificationMessage", p.getLanguage()).formatted(
+        message = Messages.chat("notificationMessage", p.getUser().getLanguage()).formatted(
                 MarkdownV2.apply(cheaper).get(),
+                MarkdownV2.apply(p.getCurrency()).get(),
                 MarkdownV2.apply(p.getName()).get(),
                 MarkdownV2.apply(p.getDescription()).get(),
                 MarkdownV2.apply(variant).get(),
                 MarkdownV2.apply(p.getLink()).toURL(p.getServiceName()).get(),
                 MarkdownV2.apply(oldPrice).get(),
-                MarkdownV2.apply(newPrice).get()
+                MarkdownV2.apply(p.getCurrency()).get(),
+                MarkdownV2.apply(newPrice).get(),
+                MarkdownV2.apply(p.getCurrency()).get()
         );
     }
 
-    private void setMessageWhenOldPriceIsZero(ProductDTO p) {
+    private void setMessageWhenOldPriceIsZero(Product p) {
         String newPrice = String.format("%.2f", p.getNewPrice());
         String variant = getFormattedVariant(p);
-        message = Messages.chat("notificationMessageWhenPriceZero", p.getLanguage()).formatted(
+        message = Messages.chat("notificationMessageWhenPriceZero", p.getUser().getLanguage()).formatted(
                 MarkdownV2.apply(p.getName()).get(),
                 MarkdownV2.apply(p.getDescription()).get(),
                 MarkdownV2.apply(variant).get(),
                 MarkdownV2.apply(p.getLink()).toURL(p.getServiceName()).get(),
                 MarkdownV2.apply(newPrice).get(),
-                MarkdownV2.apply(p.getPriceAlert()).get()
+                MarkdownV2.apply(p.getCurrency()).get(),
+                MarkdownV2.apply(p.getPriceAlert()).get(),
+                MarkdownV2.apply(p.getCurrency()).get()
         );
     }
 
-    private String getFormattedVariant(ProductDTO p) {
+    private String getFormattedVariant(Product p) {
         String variant = p.getVariant();
         if (variant.startsWith("-oneVariant ")) {
             variant = variant.substring(12).trim();
             if (variant.equals("One Variant"))
-                variant = Messages.allProducts("oneVariant", p.getLanguage());
+                variant = Messages.allProducts("oneVariant", p.getUser().getLanguage());
             else if (variant.equals("Unknown"))
-                variant = Messages.allProducts("unknown", p.getLanguage());
+                variant = Messages.allProducts("unknown", p.getUser().getLanguage());
         }
         return variant;
     }

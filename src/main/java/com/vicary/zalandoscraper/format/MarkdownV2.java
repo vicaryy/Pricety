@@ -1,10 +1,14 @@
 package com.vicary.zalandoscraper.format;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Arrays;
 import java.util.List;
 
 public class MarkdownV2 {
-    private StringBuilder sb;
+    private final static Logger logger = LoggerFactory.getLogger(MarkdownV2.class);
+    private final StringBuilder sb;
     private static final List<Character> markdownV2Characters = Arrays.asList('_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!');
 
     private MarkdownV2(StringBuilder sb) {
@@ -24,7 +28,7 @@ public class MarkdownV2 {
     }
 
     public MarkdownV2 toURL(String serviceName) {
-        serviceName = serviceName.split("\\.")[0];
+        serviceName = serviceName.replace(".", "․");
         sb.insert(0, "[" + serviceName + "](").insert(sb.length(), ")");
         return this;
     }

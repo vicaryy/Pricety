@@ -1,12 +1,11 @@
 package com.vicary.zalandoscraper.scraper;
 
 import com.vicary.zalandoscraper.model.Product;
-import com.vicary.zalandoscraper.service.dto.ProductDTO;
 
 import java.util.List;
 
 public interface Scraper {
-    void updateProducts(List<ProductDTO> DTOs);
+    void updateProducts(List<Product> products);
 
     Product getProduct(String link, String variant);
 

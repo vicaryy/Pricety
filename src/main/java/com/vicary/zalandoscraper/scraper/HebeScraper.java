@@ -6,7 +6,6 @@ import com.microsoft.playwright.options.WaitUntilState;
 import com.vicary.zalandoscraper.exception.InvalidLinkException;
 import com.vicary.zalandoscraper.messages.Messages;
 import com.vicary.zalandoscraper.model.Product;
-import com.vicary.zalandoscraper.service.dto.ProductDTO;
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
 import lombok.SneakyThrows;
 import org.slf4j.Logger;
@@ -22,14 +21,14 @@ public class HebeScraper implements Scraper {
     private final Page.NavigateOptions navigateOptions = new Page.NavigateOptions().setWaitUntil(WaitUntilState.COMMIT);
 
     @Override
-    public void updateProducts(List<ProductDTO> DTOs) {
+    public void updateProducts(List<Product> products) {
         try (Playwright playwright = Playwright.create()) {
 
             try (BrowserContext browser = playwright.chromium().launch(launchOptions).newContext()) {
                 browser.newPage();
                 browser.setDefaultTimeout(4000);
 
-                for (ProductDTO dto : DTOs) {
+                for (Product dto : products) {
                     Page newPage = browser.newPage();
                     newPage.setExtraHTTPHeaders(extraHeaders);
                     newPage.navigate(dto.getLink(), navigateOptions);
@@ -41,40 +40,40 @@ public class HebeScraper implements Scraper {
         }
     }
 
-    void updateProduct(Page page, ProductDTO dto) {
+    void updateProduct(Page page, Product product) {
         try (page) {
             waitForContent(page);
 
             if (!isLinkValid(page)) {
-                logger.warn("Product '{}' - link invalid, probably needs to be deleted.", dto.getProductId());
-                dto.setNewPrice(0);
+                logger.warn("Product '{}' - link invalid, probably needs to be deleted.", product.getProductId());
+                product.setNewPrice(0);
                 return;
             }
 
             if (isSoldOut(page)) {
-                logger.debug("Product '{}' - item sold out", dto.getProductId());
-                dto.setNewPrice(0);
+                logger.debug("Product '{}' - item sold out", product.getProductId());
+                product.setNewPrice(0);
                 return;
             }
 
-            if (dto.getVariant().startsWith("-oneVariant")) {
-                dto.setNewPrice(getPrice(page));
+            if (product.getVariant().startsWith("-oneVariant")) {
+                product.setNewPrice(getPrice(page));
                 return;
             }
 
 
-            if (!clickAvailableVariant(page, getAvailableVariants(page), dto.getVariant())) {
-                dto.setNewPrice(0);
-                logger.debug("Product '{}' - item variant not available", dto.getProductId());
+            if (!clickAvailableVariant(page, getAvailableVariants(page), product.getVariant())) {
+                product.setNewPrice(0);
+                logger.debug("Product '{}' - item variant not available", product.getProductId());
                 return;
             }
 
-            dto.setNewPrice(getPrice(page));
+            product.setNewPrice(getPrice(page));
 
         } catch (
                 PlaywrightException ex) {
             ex.printStackTrace();
-            logger.warn("Failed to update productId '{}'", dto.getProductId());
+            logger.warn("Failed to update productId '{}'", product.getProductId());
         }
 
     }
@@ -96,6 +95,8 @@ public class HebeScraper implements Scraper {
                     .price(0)
                     .variant(variant)
                     .link(page.url())
+                    .serviceName("hebe.pl")
+                    .currency("pl")
                     .build();
 
 

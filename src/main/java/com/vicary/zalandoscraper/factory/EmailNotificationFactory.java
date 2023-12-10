@@ -1,7 +1,7 @@
 package com.vicary.zalandoscraper.factory;
 
 import com.vicary.zalandoscraper.model.Email;
-import com.vicary.zalandoscraper.service.dto.ProductDTO;
+import com.vicary.zalandoscraper.model.Product;
 
 public class EmailNotificationFactory {
 
@@ -9,9 +9,9 @@ public class EmailNotificationFactory {
     }
 
 
-    public static Email getPriceAlertNotification(ProductDTO dto) {
-        Email notification = new Email(dto.getEmail());
-        notification.setPriceAlertMessageAndTitle(dto);
+    public static Email getPriceAlertNotification(Product product) {
+        Email notification = new Email(product.getUser().getEmail());
+        notification.setPriceAlertMessageAndTitle(product);
         return notification;
     }
 }

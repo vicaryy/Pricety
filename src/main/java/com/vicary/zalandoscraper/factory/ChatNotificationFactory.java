@@ -1,17 +1,17 @@
 package com.vicary.zalandoscraper.factory;
 
 import com.vicary.zalandoscraper.model.ChatNotification;
-import com.vicary.zalandoscraper.service.dto.ProductDTO;
+import com.vicary.zalandoscraper.model.Product;
 
 public class ChatNotificationFactory {
     private ChatNotificationFactory() {
     }
 
-    public static ChatNotification getPriceAlertNotification(ProductDTO dto) {
+    public static ChatNotification getPriceAlertNotification(Product product) {
         ChatNotification notification = new ChatNotification();
-        notification.setChatId(dto.getUserId());
+        notification.setChatId(product.getUser().getUserId());
         notification.setMarkdownV2(true);
-        notification.setDefaultPriceAlertMessage(dto);
+        notification.setDefaultPriceAlertMessage(product);
         return notification;
     }
 

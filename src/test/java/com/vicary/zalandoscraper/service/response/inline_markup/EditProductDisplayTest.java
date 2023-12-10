@@ -4,7 +4,7 @@ import com.vicary.zalandoscraper.api_telegram.api_object.ParseMode;
 import com.vicary.zalandoscraper.api_telegram.api_object.keyboard.InlineKeyboardMarkup;
 import com.vicary.zalandoscraper.api_telegram.api_request.send.SendMessage;
 import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
-import com.vicary.zalandoscraper.service.dto.ProductDTO;
+import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.service.response.InlineKeyboardMarkupFactory;
 import com.vicary.zalandoscraper.thread_local.ActiveLanguage;
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
@@ -38,8 +38,8 @@ class EditProductDisplayTest {
     void display_expectEquals_DisplayFiveProducts() {
         //given
         ActiveUser givenUser = getDefaultActiveUser();
-        List<ProductDTO> givenDTOs = getFiveDifferentItems();
-        InlineKeyboardMarkup expectedReplyMarkup = InlineKeyboardMarkupFactory.getProductChoice(givenDTOs, "-edit");
+        List<Product> givenProducts = getFiveDifferentItems();
+        InlineKeyboardMarkup expectedReplyMarkup = InlineKeyboardMarkupFactory.getProductChoice(givenProducts, "-edit");
         String expectedMessage = getExpectedMessageForFiveProducts();
         SendMessage expectedSendMessage = SendMessage.builder()
                 .chatId(givenUser.getChatId())
@@ -50,7 +50,7 @@ class EditProductDisplayTest {
                 .build();
 
         //when
-        editProductDisplay = new EditProductDisplay(givenDTOs, givenUser.getChatId(), quickSender);
+        editProductDisplay = new EditProductDisplay(givenProducts, givenUser.getChatId(), quickSender);
         editProductDisplay.display();
 
         //then
@@ -61,8 +61,8 @@ class EditProductDisplayTest {
     void display_expectEquals_MoreThanTenProducts() {
         //given
         ActiveUser givenUser = getDefaultActiveUser();
-        List<ProductDTO> givenDTOs = getDefaultListOfDTOs(35);
-        InlineKeyboardMarkup expectedReplyMarkup = InlineKeyboardMarkupFactory.getProductChoice(givenDTOs, "-edit");
+        List<Product> givenProducts = getDefaultListOfDTOs(35);
+        InlineKeyboardMarkup expectedReplyMarkup = InlineKeyboardMarkupFactory.getProductChoice(givenProducts, "-edit");
         List<String> expectedMessages = getFiveExpectedMessagesForThirtyFiveProducts();
 
         SendMessage expectedLastSendMessage = SendMessage.builder()
@@ -74,7 +74,7 @@ class EditProductDisplayTest {
                 .build();
 
         //when
-        editProductDisplay = new EditProductDisplay(givenDTOs, givenUser.getChatId(), quickSender);
+        editProductDisplay = new EditProductDisplay(givenProducts, givenUser.getChatId(), quickSender);
         editProductDisplay.display();
 
         //then
@@ -95,10 +95,10 @@ class EditProductDisplayTest {
         return givenUser;
     }
 
-    private List<ProductDTO> getFiveDifferentItems() {
-        List<ProductDTO> DTOs = new ArrayList<>();
+    private List<Product> getFiveDifferentItems() {
+        List<Product> DTOs = new ArrayList<>();
 
-        DTOs.add(ProductDTO.builder()
+        DTOs.add(Product.builder()
                 .name("example name")
                 .description("example description")
                 .link("https://www.link.pl/")
@@ -106,7 +106,7 @@ class EditProductDisplayTest {
                 .price(200.55)
                 .priceAlert("150.00")
                 .build());
-        DTOs.add(ProductDTO.builder()
+        DTOs.add(Product.builder()
                 .name("example name")
                 .description("example description")
                 .link("https://www.link.pl/")
@@ -114,7 +114,7 @@ class EditProductDisplayTest {
                 .price(0)
                 .priceAlert("AUTO")
                 .build());
-        DTOs.add(ProductDTO.builder()
+        DTOs.add(Product.builder()
                 .name("example name")
                 .description("example description")
                 .link("https://www.link.pl/")
@@ -122,7 +122,7 @@ class EditProductDisplayTest {
                 .price(200.55)
                 .priceAlert("AUTO")
                 .build());
-        DTOs.add(ProductDTO.builder()
+        DTOs.add(Product.builder()
                 .name("example name")
                 .description("example description")
                 .link("https://www.link.pl/")
@@ -130,7 +130,7 @@ class EditProductDisplayTest {
                 .price(200.55)
                 .priceAlert("OFF")
                 .build());
-        DTOs.add(ProductDTO.builder()
+        DTOs.add(Product.builder()
                 .name("example name")
                 .description("example description")
                 .link("https://www.link.pl/")
@@ -142,10 +142,10 @@ class EditProductDisplayTest {
         return DTOs;
     }
 
-    private List<ProductDTO> getDefaultListOfDTOs(int howMuch) {
-        List<ProductDTO> DTOs = new ArrayList<>();
+    private List<Product> getDefaultListOfDTOs(int howMuch) {
+        List<Product> DTOs = new ArrayList<>();
         for (int i = 0; i < howMuch; i++) {
-            DTOs.add(ProductDTO.builder()
+            DTOs.add(Product.builder()
                     .name("example name")
                     .description("example description")
                     .link("https://www.link.pl/")
@@ -158,453 +158,461 @@ class EditProductDisplayTest {
     }
 
     private String getExpectedMessageForFiveProducts() {
-        return "*Products to edit ⚙\uFE0F*\n" +
-                "\n" +
-                "*Product nr 1*\n" +
-                "\n" +
-                "*Name:* example name\n" +
-                "*Description:* example description\n" +
-                "*Link:* [link](https://www\\.link\\.pl/)\n" +
-                "*Variant:* example variant\n" +
-                "*Price:* 200\\.55 zł\n" +
-                "*Price Alert:* 150\\.00 zł\n" +
-                "\n" +
-                "\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\n" +
-                "\n" +
-                "*Product nr 2*\n" +
-                "\n" +
-                "*Name:* example name\n" +
-                "*Description:* example description\n" +
-                "*Link:* [link](https://www\\.link\\.pl/)\n" +
-                "*Variant:* example variant\n" +
-                "*Price:* Sold Out\n" +
-                "*Price Alert:* AUTO\n" +
-                "\n" +
-                "\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\n" +
-                "\n" +
-                "*Product nr 3*\n" +
-                "\n" +
-                "*Name:* example name\n" +
-                "*Description:* example description\n" +
-                "*Link:* [link](https://www\\.link\\.pl/)\n" +
-                "*Variant:* One Sizer\n" +
-                "*Price:* 200\\.55 zł\n" +
-                "*Price Alert:* AUTO\n" +
-                "\n" +
-                "\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\n" +
-                "\n" +
-                "*Product nr 4*\n" +
-                "\n" +
-                "*Name:* example name\n" +
-                "*Description:* example description\n" +
-                "*Link:* [link](https://www\\.link\\.pl/)\n" +
-                "*Variant:* Undefined\n" +
-                "*Price:* 200\\.55 zł\n" +
-                "*Price Alert:* OFF\n" +
-                "\n" +
-                "\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\n" +
-                "\n" +
-                "*Product nr 5*\n" +
-                "\n" +
-                "*Name:* example name\n" +
-                "*Description:* example description\n" +
-                "*Link:* [link](https://www\\.link\\.pl/)\n" +
-                "*Variant:* example variant\n" +
-                "*Price:* 200\\.55 zł\n" +
-                "*Price Alert:* AUTO\u200E \n" +
-                "\n" +
-                "\n" +
-                "*Please select the item you want to edit price alert*\\.";
+        return """
+                *Products to edit ⚙️*
+
+                *Product nr 1*
+
+                *Name:* example name
+                *Description:* example description
+                *Link:* [link](https://www\\.link\\.pl/)
+                *Variant:* example variant
+                *Price:* 200\\.55 zł
+                *Price Alert:* 150\\.00 zł
+
+                \\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-
+
+                *Product nr 2*
+
+                *Name:* example name
+                *Description:* example description
+                *Link:* [link](https://www\\.link\\.pl/)
+                *Variant:* example variant
+                *Price:* Sold Out
+                *Price Alert:* AUTO
+
+                \\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-
+
+                *Product nr 3*
+
+                *Name:* example name
+                *Description:* example description
+                *Link:* [link](https://www\\.link\\.pl/)
+                *Variant:* One Sizer
+                *Price:* 200\\.55 zł
+                *Price Alert:* AUTO
+
+                \\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-
+
+                *Product nr 4*
+
+                *Name:* example name
+                *Description:* example description
+                *Link:* [link](https://www\\.link\\.pl/)
+                *Variant:* Undefined
+                *Price:* 200\\.55 zł
+                *Price Alert:* OFF
+
+                \\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-
+
+                *Product nr 5*
+
+                *Name:* example name
+                *Description:* example description
+                *Link:* [link](https://www\\.link\\.pl/)
+                *Variant:* example variant
+                *Price:* 200\\.55 zł
+                *Price Alert:* AUTO\u200E\s
+
+
+                *Please select the item you want to edit price alert*\\.""";
     }
 
     private List<String> getFiveExpectedMessagesForThirtyFiveProducts() {
-        String first = "*Products to edit ⚙\uFE0F*\n" +
-                "\n" +
-                "*Product nr 1*\n" +
-                "\n" +
-                "*Name:* example name\n" +
-                "*Description:* example description\n" +
-                "*Link:* [link](https://www\\.link\\.pl/)\n" +
-                "*Variant:* example variant\n" +
-                "*Price:* 200\\.55 zł\n" +
-                "*Price Alert:* AUTO\n" +
-                "\n" +
-                "\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\n" +
-                "\n" +
-                "*Product nr 2*\n" +
-                "\n" +
-                "*Name:* example name\n" +
-                "*Description:* example description\n" +
-                "*Link:* [link](https://www\\.link\\.pl/)\n" +
-                "*Variant:* example variant\n" +
-                "*Price:* 200\\.55 zł\n" +
-                "*Price Alert:* AUTO\n" +
-                "\n" +
-                "\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\n" +
-                "\n" +
-                "*Product nr 3*\n" +
-                "\n" +
-                "*Name:* example name\n" +
-                "*Description:* example description\n" +
-                "*Link:* [link](https://www\\.link\\.pl/)\n" +
-                "*Variant:* example variant\n" +
-                "*Price:* 200\\.55 zł\n" +
-                "*Price Alert:* AUTO\n" +
-                "\n" +
-                "\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\n" +
-                "\n" +
-                "*Product nr 4*\n" +
-                "\n" +
-                "*Name:* example name\n" +
-                "*Description:* example description\n" +
-                "*Link:* [link](https://www\\.link\\.pl/)\n" +
-                "*Variant:* example variant\n" +
-                "*Price:* 200\\.55 zł\n" +
-                "*Price Alert:* AUTO\n" +
-                "\n" +
-                "\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\n" +
-                "\n" +
-                "*Product nr 5*\n" +
-                "\n" +
-                "*Name:* example name\n" +
-                "*Description:* example description\n" +
-                "*Link:* [link](https://www\\.link\\.pl/)\n" +
-                "*Variant:* example variant\n" +
-                "*Price:* 200\\.55 zł\n" +
-                "*Price Alert:* AUTO\n" +
-                "\n" +
-                "\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\n" +
-                "\n" +
-                "*Product nr 6*\n" +
-                "\n" +
-                "*Name:* example name\n" +
-                "*Description:* example description\n" +
-                "*Link:* [link](https://www\\.link\\.pl/)\n" +
-                "*Variant:* example variant\n" +
-                "*Price:* 200\\.55 zł\n" +
-                "*Price Alert:* AUTO\n" +
-                "\n" +
-                "\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\n" +
-                "\n" +
-                "*Product nr 7*\n" +
-                "\n" +
-                "*Name:* example name\n" +
-                "*Description:* example description\n" +
-                "*Link:* [link](https://www\\.link\\.pl/)\n" +
-                "*Variant:* example variant\n" +
-                "*Price:* 200\\.55 zł\n" +
-                "*Price Alert:* AUTO\n" +
-                "\n" +
-                "\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\n" +
-                "\n" +
-                "*Product nr 8*\n" +
-                "\n" +
-                "*Name:* example name\n" +
-                "*Description:* example description\n" +
-                "*Link:* [link](https://www\\.link\\.pl/)\n" +
-                "*Variant:* example variant\n" +
-                "*Price:* 200\\.55 zł\n" +
-                "*Price Alert:* AUTO\n" +
-                "\n" +
-                "\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\n" +
-                "\n" +
-                "*Product nr 9*\n" +
-                "\n" +
-                "*Name:* example name\n" +
-                "*Description:* example description\n" +
-                "*Link:* [link](https://www\\.link\\.pl/)\n" +
-                "*Variant:* example variant\n" +
-                "*Price:* 200\\.55 zł\n" +
-                "*Price Alert:* AUTO\n" +
-                "\n" +
-                "\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\n" +
-                "\n" +
-                "*Product nr 10*\n" +
-                "\n" +
-                "*Name:* example name\n" +
-                "*Description:* example description\n" +
-                "*Link:* [link](https://www\\.link\\.pl/)\n" +
-                "*Variant:* example variant\n" +
-                "*Price:* 200\\.55 zł\n" +
-                "*Price Alert:* AUTO\n" +
-                "\n" +
-                "\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\n" +
-                "\n" +
-                "*Product nr 11*\n" +
-                "\n" +
-                "*Name:* example name\n" +
-                "*Description:* example description\n" +
-                "*Link:* [link](https://www\\.link\\.pl/)\n" +
-                "*Variant:* example variant\n" +
-                "*Price:* 200\\.55 zł\n" +
-                "*Price Alert:* AUTO\n" +
-                "\n" +
-                "\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\n" +
-                "\n";
+        String first = """
+                *Products to edit ⚙️*
 
-        String second = "*Product nr 12*\n" +
-                "\n" +
-                "*Name:* example name\n" +
-                "*Description:* example description\n" +
-                "*Link:* [link](https://www\\.link\\.pl/)\n" +
-                "*Variant:* example variant\n" +
-                "*Price:* 200\\.55 zł\n" +
-                "*Price Alert:* AUTO\n" +
-                "\n" +
-                "\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\n" +
-                "\n" +
-                "*Product nr 13*\n" +
-                "\n" +
-                "*Name:* example name\n" +
-                "*Description:* example description\n" +
-                "*Link:* [link](https://www\\.link\\.pl/)\n" +
-                "*Variant:* example variant\n" +
-                "*Price:* 200\\.55 zł\n" +
-                "*Price Alert:* AUTO\n" +
-                "\n" +
-                "\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\n" +
-                "\n" +
-                "*Product nr 14*\n" +
-                "\n" +
-                "*Name:* example name\n" +
-                "*Description:* example description\n" +
-                "*Link:* [link](https://www\\.link\\.pl/)\n" +
-                "*Variant:* example variant\n" +
-                "*Price:* 200\\.55 zł\n" +
-                "*Price Alert:* AUTO\n" +
-                "\n" +
-                "\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\n" +
-                "\n" +
-                "*Product nr 15*\n" +
-                "\n" +
-                "*Name:* example name\n" +
-                "*Description:* example description\n" +
-                "*Link:* [link](https://www\\.link\\.pl/)\n" +
-                "*Variant:* example variant\n" +
-                "*Price:* 200\\.55 zł\n" +
-                "*Price Alert:* AUTO\n" +
-                "\n" +
-                "\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\n" +
-                "\n" +
-                "*Product nr 16*\n" +
-                "\n" +
-                "*Name:* example name\n" +
-                "*Description:* example description\n" +
-                "*Link:* [link](https://www\\.link\\.pl/)\n" +
-                "*Variant:* example variant\n" +
-                "*Price:* 200\\.55 zł\n" +
-                "*Price Alert:* AUTO\n" +
-                "\n" +
-                "\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\n" +
-                "\n" +
-                "*Product nr 17*\n" +
-                "\n" +
-                "*Name:* example name\n" +
-                "*Description:* example description\n" +
-                "*Link:* [link](https://www\\.link\\.pl/)\n" +
-                "*Variant:* example variant\n" +
-                "*Price:* 200\\.55 zł\n" +
-                "*Price Alert:* AUTO\n" +
-                "\n" +
-                "\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\n" +
-                "\n" +
-                "*Product nr 18*\n" +
-                "\n" +
-                "*Name:* example name\n" +
-                "*Description:* example description\n" +
-                "*Link:* [link](https://www\\.link\\.pl/)\n" +
-                "*Variant:* example variant\n" +
-                "*Price:* 200\\.55 zł\n" +
-                "*Price Alert:* AUTO\n" +
-                "\n" +
-                "\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\n" +
-                "\n" +
-                "*Product nr 19*\n" +
-                "\n" +
-                "*Name:* example name\n" +
-                "*Description:* example description\n" +
-                "*Link:* [link](https://www\\.link\\.pl/)\n" +
-                "*Variant:* example variant\n" +
-                "*Price:* 200\\.55 zł\n" +
-                "*Price Alert:* AUTO\n" +
-                "\n" +
-                "\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\n" +
-                "\n" +
-                "*Product nr 20*\n" +
-                "\n" +
-                "*Name:* example name\n" +
-                "*Description:* example description\n" +
-                "*Link:* [link](https://www\\.link\\.pl/)\n" +
-                "*Variant:* example variant\n" +
-                "*Price:* 200\\.55 zł\n" +
-                "*Price Alert:* AUTO\n" +
-                "\n" +
-                "\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\n" +
-                "\n" +
-                "*Product nr 21*\n" +
-                "\n" +
-                "*Name:* example name\n" +
-                "*Description:* example description\n" +
-                "*Link:* [link](https://www\\.link\\.pl/)\n" +
-                "*Variant:* example variant\n" +
-                "*Price:* 200\\.55 zł\n" +
-                "*Price Alert:* AUTO\n" +
-                "\n" +
-                "\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\n" +
-                "\n";
+                *Product nr 1*
 
-        String third = "*Product nr 22*\n" +
-                "\n" +
-                "*Name:* example name\n" +
-                "*Description:* example description\n" +
-                "*Link:* [link](https://www\\.link\\.pl/)\n" +
-                "*Variant:* example variant\n" +
-                "*Price:* 200\\.55 zł\n" +
-                "*Price Alert:* AUTO\n" +
-                "\n" +
-                "\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\n" +
-                "\n" +
-                "*Product nr 23*\n" +
-                "\n" +
-                "*Name:* example name\n" +
-                "*Description:* example description\n" +
-                "*Link:* [link](https://www\\.link\\.pl/)\n" +
-                "*Variant:* example variant\n" +
-                "*Price:* 200\\.55 zł\n" +
-                "*Price Alert:* AUTO\n" +
-                "\n" +
-                "\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\n" +
-                "\n" +
-                "*Product nr 24*\n" +
-                "\n" +
-                "*Name:* example name\n" +
-                "*Description:* example description\n" +
-                "*Link:* [link](https://www\\.link\\.pl/)\n" +
-                "*Variant:* example variant\n" +
-                "*Price:* 200\\.55 zł\n" +
-                "*Price Alert:* AUTO\n" +
-                "\n" +
-                "\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\n" +
-                "\n" +
-                "*Product nr 25*\n" +
-                "\n" +
-                "*Name:* example name\n" +
-                "*Description:* example description\n" +
-                "*Link:* [link](https://www\\.link\\.pl/)\n" +
-                "*Variant:* example variant\n" +
-                "*Price:* 200\\.55 zł\n" +
-                "*Price Alert:* AUTO\n" +
-                "\n" +
-                "\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\n" +
-                "\n" +
-                "*Product nr 26*\n" +
-                "\n" +
-                "*Name:* example name\n" +
-                "*Description:* example description\n" +
-                "*Link:* [link](https://www\\.link\\.pl/)\n" +
-                "*Variant:* example variant\n" +
-                "*Price:* 200\\.55 zł\n" +
-                "*Price Alert:* AUTO\n" +
-                "\n" +
-                "\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\n" +
-                "\n" +
-                "*Product nr 27*\n" +
-                "\n" +
-                "*Name:* example name\n" +
-                "*Description:* example description\n" +
-                "*Link:* [link](https://www\\.link\\.pl/)\n" +
-                "*Variant:* example variant\n" +
-                "*Price:* 200\\.55 zł\n" +
-                "*Price Alert:* AUTO\n" +
-                "\n" +
-                "\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\n" +
-                "\n" +
-                "*Product nr 28*\n" +
-                "\n" +
-                "*Name:* example name\n" +
-                "*Description:* example description\n" +
-                "*Link:* [link](https://www\\.link\\.pl/)\n" +
-                "*Variant:* example variant\n" +
-                "*Price:* 200\\.55 zł\n" +
-                "*Price Alert:* AUTO\n" +
-                "\n" +
-                "\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\n" +
-                "\n" +
-                "*Product nr 29*\n" +
-                "\n" +
-                "*Name:* example name\n" +
-                "*Description:* example description\n" +
-                "*Link:* [link](https://www\\.link\\.pl/)\n" +
-                "*Variant:* example variant\n" +
-                "*Price:* 200\\.55 zł\n" +
-                "*Price Alert:* AUTO\n" +
-                "\n" +
-                "\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\n" +
-                "\n" +
-                "*Product nr 30*\n" +
-                "\n" +
-                "*Name:* example name\n" +
-                "*Description:* example description\n" +
-                "*Link:* [link](https://www\\.link\\.pl/)\n" +
-                "*Variant:* example variant\n" +
-                "*Price:* 200\\.55 zł\n" +
-                "*Price Alert:* AUTO\n" +
-                "\n" +
-                "\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\n" +
-                "\n" +
-                "*Product nr 31*\n" +
-                "\n" +
-                "*Name:* example name\n" +
-                "*Description:* example description\n" +
-                "*Link:* [link](https://www\\.link\\.pl/)\n" +
-                "*Variant:* example variant\n" +
-                "*Price:* 200\\.55 zł\n" +
-                "*Price Alert:* AUTO\n" +
-                "\n" +
-                "\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\n" +
-                "\n";
+                *Name:* example name
+                *Description:* example description
+                *Link:* [link](https://www\\.link\\.pl/)
+                *Variant:* example variant
+                *Price:* 200\\.55 zł
+                *Price Alert:* AUTO
 
-        String fourth = "*Product nr 32*\n" +
-                "\n" +
-                "*Name:* example name\n" +
-                "*Description:* example description\n" +
-                "*Link:* [link](https://www\\.link\\.pl/)\n" +
-                "*Variant:* example variant\n" +
-                "*Price:* 200\\.55 zł\n" +
-                "*Price Alert:* AUTO\n" +
-                "\n" +
-                "\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\n" +
-                "\n" +
-                "*Product nr 33*\n" +
-                "\n" +
-                "*Name:* example name\n" +
-                "*Description:* example description\n" +
-                "*Link:* [link](https://www\\.link\\.pl/)\n" +
-                "*Variant:* example variant\n" +
-                "*Price:* 200\\.55 zł\n" +
-                "*Price Alert:* AUTO\n" +
-                "\n" +
-                "\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\n" +
-                "\n" +
-                "*Product nr 34*\n" +
-                "\n" +
-                "*Name:* example name\n" +
-                "*Description:* example description\n" +
-                "*Link:* [link](https://www\\.link\\.pl/)\n" +
-                "*Variant:* example variant\n" +
-                "*Price:* 200\\.55 zł\n" +
-                "*Price Alert:* AUTO\n" +
-                "\n" +
-                "\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\n" +
-                "\n" +
-                "*Product nr 35*\n" +
-                "\n" +
-                "*Name:* example name\n" +
-                "*Description:* example description\n" +
-                "*Link:* [link](https://www\\.link\\.pl/)\n" +
-                "*Variant:* example variant\n" +
-                "*Price:* 200\\.55 zł\n" +
-                "*Price Alert:* AUTO";
+                \\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-
+
+                *Product nr 2*
+
+                *Name:* example name
+                *Description:* example description
+                *Link:* [link](https://www\\.link\\.pl/)
+                *Variant:* example variant
+                *Price:* 200\\.55 zł
+                *Price Alert:* AUTO
+
+                \\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-
+
+                *Product nr 3*
+
+                *Name:* example name
+                *Description:* example description
+                *Link:* [link](https://www\\.link\\.pl/)
+                *Variant:* example variant
+                *Price:* 200\\.55 zł
+                *Price Alert:* AUTO
+
+                \\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-
+
+                *Product nr 4*
+
+                *Name:* example name
+                *Description:* example description
+                *Link:* [link](https://www\\.link\\.pl/)
+                *Variant:* example variant
+                *Price:* 200\\.55 zł
+                *Price Alert:* AUTO
+
+                \\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-
+
+                *Product nr 5*
+
+                *Name:* example name
+                *Description:* example description
+                *Link:* [link](https://www\\.link\\.pl/)
+                *Variant:* example variant
+                *Price:* 200\\.55 zł
+                *Price Alert:* AUTO
+
+                \\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-
+
+                *Product nr 6*
+
+                *Name:* example name
+                *Description:* example description
+                *Link:* [link](https://www\\.link\\.pl/)
+                *Variant:* example variant
+                *Price:* 200\\.55 zł
+                *Price Alert:* AUTO
+
+                \\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-
+
+                *Product nr 7*
+
+                *Name:* example name
+                *Description:* example description
+                *Link:* [link](https://www\\.link\\.pl/)
+                *Variant:* example variant
+                *Price:* 200\\.55 zł
+                *Price Alert:* AUTO
+
+                \\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-
+
+                *Product nr 8*
+
+                *Name:* example name
+                *Description:* example description
+                *Link:* [link](https://www\\.link\\.pl/)
+                *Variant:* example variant
+                *Price:* 200\\.55 zł
+                *Price Alert:* AUTO
+
+                \\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-
+
+                *Product nr 9*
+
+                *Name:* example name
+                *Description:* example description
+                *Link:* [link](https://www\\.link\\.pl/)
+                *Variant:* example variant
+                *Price:* 200\\.55 zł
+                *Price Alert:* AUTO
+
+                \\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-
+
+                *Product nr 10*
+
+                *Name:* example name
+                *Description:* example description
+                *Link:* [link](https://www\\.link\\.pl/)
+                *Variant:* example variant
+                *Price:* 200\\.55 zł
+                *Price Alert:* AUTO
+
+                \\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-
+
+                *Product nr 11*
+
+                *Name:* example name
+                *Description:* example description
+                *Link:* [link](https://www\\.link\\.pl/)
+                *Variant:* example variant
+                *Price:* 200\\.55 zł
+                *Price Alert:* AUTO
+
+                \\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-
+
+                """;
+
+        String second = """
+                *Product nr 12*
+
+                *Name:* example name
+                *Description:* example description
+                *Link:* [link](https://www\\.link\\.pl/)
+                *Variant:* example variant
+                *Price:* 200\\.55 zł
+                *Price Alert:* AUTO
+
+                \\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-
+
+                *Product nr 13*
+
+                *Name:* example name
+                *Description:* example description
+                *Link:* [link](https://www\\.link\\.pl/)
+                *Variant:* example variant
+                *Price:* 200\\.55 zł
+                *Price Alert:* AUTO
+
+                \\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-
+
+                *Product nr 14*
+
+                *Name:* example name
+                *Description:* example description
+                *Link:* [link](https://www\\.link\\.pl/)
+                *Variant:* example variant
+                *Price:* 200\\.55 zł
+                *Price Alert:* AUTO
+
+                \\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-
+
+                *Product nr 15*
+
+                *Name:* example name
+                *Description:* example description
+                *Link:* [link](https://www\\.link\\.pl/)
+                *Variant:* example variant
+                *Price:* 200\\.55 zł
+                *Price Alert:* AUTO
+
+                \\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-
+
+                *Product nr 16*
+
+                *Name:* example name
+                *Description:* example description
+                *Link:* [link](https://www\\.link\\.pl/)
+                *Variant:* example variant
+                *Price:* 200\\.55 zł
+                *Price Alert:* AUTO
+
+                \\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-
+
+                *Product nr 17*
+
+                *Name:* example name
+                *Description:* example description
+                *Link:* [link](https://www\\.link\\.pl/)
+                *Variant:* example variant
+                *Price:* 200\\.55 zł
+                *Price Alert:* AUTO
+
+                \\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-
+
+                *Product nr 18*
+
+                *Name:* example name
+                *Description:* example description
+                *Link:* [link](https://www\\.link\\.pl/)
+                *Variant:* example variant
+                *Price:* 200\\.55 zł
+                *Price Alert:* AUTO
+
+                \\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-
+
+                *Product nr 19*
+
+                *Name:* example name
+                *Description:* example description
+                *Link:* [link](https://www\\.link\\.pl/)
+                *Variant:* example variant
+                *Price:* 200\\.55 zł
+                *Price Alert:* AUTO
+
+                \\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-
+
+                *Product nr 20*
+
+                *Name:* example name
+                *Description:* example description
+                *Link:* [link](https://www\\.link\\.pl/)
+                *Variant:* example variant
+                *Price:* 200\\.55 zł
+                *Price Alert:* AUTO
+
+                \\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-
+
+                *Product nr 21*
+
+                *Name:* example name
+                *Description:* example description
+                *Link:* [link](https://www\\.link\\.pl/)
+                *Variant:* example variant
+                *Price:* 200\\.55 zł
+                *Price Alert:* AUTO
+
+                \\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-
+
+                """;
+
+        String third = """
+                *Product nr 22*
+
+                *Name:* example name
+                *Description:* example description
+                *Link:* [link](https://www\\.link\\.pl/)
+                *Variant:* example variant
+                *Price:* 200\\.55 zł
+                *Price Alert:* AUTO
+
+                \\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-
+
+                *Product nr 23*
+
+                *Name:* example name
+                *Description:* example description
+                *Link:* [link](https://www\\.link\\.pl/)
+                *Variant:* example variant
+                *Price:* 200\\.55 zł
+                *Price Alert:* AUTO
+
+                \\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-
+
+                *Product nr 24*
+
+                *Name:* example name
+                *Description:* example description
+                *Link:* [link](https://www\\.link\\.pl/)
+                *Variant:* example variant
+                *Price:* 200\\.55 zł
+                *Price Alert:* AUTO
+
+                \\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-
+
+                *Product nr 25*
+
+                *Name:* example name
+                *Description:* example description
+                *Link:* [link](https://www\\.link\\.pl/)
+                *Variant:* example variant
+                *Price:* 200\\.55 zł
+                *Price Alert:* AUTO
+
+                \\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-
+
+                *Product nr 26*
+
+                *Name:* example name
+                *Description:* example description
+                *Link:* [link](https://www\\.link\\.pl/)
+                *Variant:* example variant
+                *Price:* 200\\.55 zł
+                *Price Alert:* AUTO
+
+                \\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-
+
+                *Product nr 27*
+
+                *Name:* example name
+                *Description:* example description
+                *Link:* [link](https://www\\.link\\.pl/)
+                *Variant:* example variant
+                *Price:* 200\\.55 zł
+                *Price Alert:* AUTO
+
+                \\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-
+
+                *Product nr 28*
+
+                *Name:* example name
+                *Description:* example description
+                *Link:* [link](https://www\\.link\\.pl/)
+                *Variant:* example variant
+                *Price:* 200\\.55 zł
+                *Price Alert:* AUTO
+
+                \\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-
+
+                *Product nr 29*
+
+                *Name:* example name
+                *Description:* example description
+                *Link:* [link](https://www\\.link\\.pl/)
+                *Variant:* example variant
+                *Price:* 200\\.55 zł
+                *Price Alert:* AUTO
+
+                \\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-
+
+                *Product nr 30*
+
+                *Name:* example name
+                *Description:* example description
+                *Link:* [link](https://www\\.link\\.pl/)
+                *Variant:* example variant
+                *Price:* 200\\.55 zł
+                *Price Alert:* AUTO
+
+                \\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-
+
+                *Product nr 31*
+
+                *Name:* example name
+                *Description:* example description
+                *Link:* [link](https://www\\.link\\.pl/)
+                *Variant:* example variant
+                *Price:* 200\\.55 zł
+                *Price Alert:* AUTO
+
+                \\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-
+
+                """;
+
+        String fourth = """
+                *Product nr 32*
+
+                *Name:* example name
+                *Description:* example description
+                *Link:* [link](https://www\\.link\\.pl/)
+                *Variant:* example variant
+                *Price:* 200\\.55 zł
+                *Price Alert:* AUTO
+
+                \\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-
+
+                *Product nr 33*
+
+                *Name:* example name
+                *Description:* example description
+                *Link:* [link](https://www\\.link\\.pl/)
+                *Variant:* example variant
+                *Price:* 200\\.55 zł
+                *Price Alert:* AUTO
+
+                \\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-
+
+                *Product nr 34*
+
+                *Name:* example name
+                *Description:* example description
+                *Link:* [link](https://www\\.link\\.pl/)
+                *Variant:* example variant
+                *Price:* 200\\.55 zł
+                *Price Alert:* AUTO
+
+                \\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-
+
+                *Product nr 35*
+
+                *Name:* example name
+                *Description:* example description
+                *Link:* [link](https://www\\.link\\.pl/)
+                *Variant:* example variant
+                *Price:* 200\\.55 zł
+                *Price Alert:* AUTO""";
 
         String fifth = "\u200E \n\n\n*Please select the item you want to edit price alert*\\.";
 

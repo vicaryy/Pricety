@@ -1,12 +1,12 @@
 package com.vicary.zalandoscraper.updater;
 
 import com.vicary.zalandoscraper.exception.ZalandoScraperBotException;
+import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.scraper.*;
 import com.vicary.zalandoscraper.service.repository_services.WaitingUserService;
 import com.vicary.zalandoscraper.updater.sender.NotificationManager;
 import com.vicary.zalandoscraper.utils.TerminalExecutor;
 import com.vicary.zalandoscraper.exception.TimeoutException;
-import com.vicary.zalandoscraper.service.dto.ProductDTO;
 import com.vicary.zalandoscraper.service.repository_services.ProductService;
 import com.vicary.zalandoscraper.service.repository_services.UpdatesHistoryService;
 import com.vicary.zalandoscraper.service.map.ProductMapper;
@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 public class AutoUpdater {
@@ -81,7 +80,6 @@ public class AutoUpdater {
                 update();
                 state = new RunningState(this);
                 sleep(DELAY_BETWEEN_UPDATES);
-                System.out.println("Jestem aktywny");
             }
         } catch (InterruptedException ex) {
             logger.info("[Auto Updater] Auto Updater stopped.");
@@ -103,14 +101,14 @@ public class AutoUpdater {
 
 
     private void update() {
-        List<ProductDTO> products = productService.getAllProductsDtoSortById();
+        List<Product> products = productService.getAllProductsSortById();
 
         if (products.isEmpty()) {
             logger.info("[Auto Updater] Tried to update but there is no products!");
             return;
         }
 
-        List<List<ProductDTO>> splittedListIntoScrapers = divideListIntoServices(products);
+        List<List<Product>> splittedListIntoScrapers = divideListIntoServices(products);
 
         updateProducts(splittedListIntoScrapers);
 
@@ -121,29 +119,29 @@ public class AutoUpdater {
         sendNotificationsToUsers(products);
     }
 
-    List<List<ProductDTO>> divideListIntoServices(List<ProductDTO> DTOs) {
-        Map<String, List<ProductDTO>> serviceMap = new LinkedHashMap<>();
+    List<List<Product>> divideListIntoServices(List<Product> products) {
+        Map<String, List<Product>> serviceMap = new LinkedHashMap<>();
 
-        for (ProductDTO dto : DTOs) {
-            String service = dto.getServiceName().split("\\.")[0];
+        for (Product p : products) {
+            String service = p.getServiceName();
 
             if (!serviceMap.containsKey(service))
                 serviceMap.put(service, new ArrayList<>());
 
-            serviceMap.get(service).add(dto);
+            serviceMap.get(service).add(p);
         }
 
         return new ArrayList<>(serviceMap.values());
     }
 
-    private void updateProducts(List<List<ProductDTO>> productDTOS) {
-        for (List<ProductDTO> DTOs : productDTOS) {
-            String serviceName = DTOs.get(0).getServiceName();
-            Scraper scraper = scraperMap.get(serviceName);
+    private void updateProducts(List<List<Product>> listOfLists) {
+        for (List<Product> products : listOfLists) {
+            String serviceNameWithoutCountry = getServiceNameWithoutCountry(products.get(0).getServiceName());
+            Scraper scraper = scraperMap.get(serviceNameWithoutCountry);
 
             long startingTime = System.currentTimeMillis();
-            logger.info("[Product Updater] Starting updating '{}' products, service {}", DTOs.size(), serviceName);
-            ProductUpdater updater = new ProductUpdater(scraper, DTOs);
+            logger.info("[Product Updater] Starting updating '{}' products, service {}", products.size(), products.get(0).getServiceName());
+            ProductUpdater updater = new ProductUpdater(scraper, products);
             try {
                 updater.update();
             } catch (TimeoutException ex) {
@@ -156,17 +154,21 @@ public class AutoUpdater {
         }
     }
 
-    private void saveToUpdatesHistoryRepository(List<ProductDTO> updatedDTOs) {
-        updatesHistoryService.saveUpdates(productMapper.mapToHistoryEntityList(updatedDTOs));
+    private String getServiceNameWithoutCountry(String serviceName) {
+        return serviceName.split("\\.")[0];
     }
 
-    private void sendNotificationsToUsers(List<ProductDTO> DTOs) {
-        notificationManager.sendPriceNotifications(DTOs);
+    private void saveToUpdatesHistoryRepository(List<Product> updatedProducts) {
+        updatesHistoryService.saveUpdates(productMapper.mapToHistoryEntityList(updatedProducts));
+    }
+
+    private void sendNotificationsToUsers(List<Product> products) {
+        notificationManager.sendPriceNotifications(products);
         notificationManager.sendWaitingUserNotifications(waitingUserService.getAllAndDeleteWaitingUsers());
     }
 
-    private void updateProductsPriceInRepository(List<ProductDTO> updatedDTOs) {
-        productService.updateProductPrices(updatedDTOs);
+    private void updateProductsPriceInRepository(List<Product> updatedProducts) {
+        productService.updateProductPrices(updatedProducts);
     }
 
     private void sleep(long millis) throws InterruptedException {

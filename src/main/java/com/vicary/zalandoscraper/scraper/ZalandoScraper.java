@@ -7,7 +7,6 @@ import com.vicary.zalandoscraper.messages.Messages;
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
 import com.vicary.zalandoscraper.exception.InvalidLinkException;
 import com.vicary.zalandoscraper.model.Product;
-import com.vicary.zalandoscraper.service.dto.ProductDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,67 +23,67 @@ public class ZalandoScraper implements Scraper {
 
 
     @Override
-    public void updateProducts(List<ProductDTO> DTOs) {
+    public void updateProducts(List<Product> products) {
         try (Playwright playwright = Playwright.create()) {
 
             try (BrowserContext browser = playwright.chromium().launch(launchOptions).newContext()) {
                 browser.newPage();
-                browser.setDefaultTimeout(4000);
+                browser.setDefaultTimeout(8000);
 
-                for (int i = 0; i < DTOs.size(); i++) {
+                for (int i = 0; i < products.size(); i++) {
                     Page newPage = browser.newPage();
                     newPage.setExtraHTTPHeaders(extraHeaders);
-                    newPage.navigate(DTOs.get(i).getLink(), navigateOptions);
-                    newPage.setDefaultTimeout(4000);
+                    newPage.navigate(products.get(i).getLink(), navigateOptions);
+                    newPage.setDefaultTimeout(8000);
 
                     if (i == 0)
                         clickCookiesButton(newPage);
 
-                    updateProduct(newPage, DTOs.get(i));
+                    updateProduct(newPage, products.get(i));
                 }
             }
         }
     }
 
-    void updateProduct(Page page, ProductDTO dto) {
+    void updateProduct(Page page, Product product) {
         try (page) {
             waitForMainPage(page);
 
             if (!isLinkValid(page)) {
-                logger.debug("Product '{}' - link invalid", dto.getProductId());
-                dto.setNewPrice(0);
+                logger.debug("Product '{}' - link invalid", product.getProductId());
+                product.setNewPrice(0);
                 return;
             }
 
             if (isItemSoldOut(page)) {
-                logger.debug("Product '{}' - item sold out", dto.getProductId());
-                dto.setNewPrice(0);
+                logger.debug("Product '{}' - item sold out", product.getProductId());
+                product.setNewPrice(0);
                 return;
             }
 
-            if (dto.getVariant().startsWith("-oneVariant")) {
-                dto.setNewPrice(getPrice(page));
+            if (product.getVariant().startsWith("-oneVariant")) {
+                product.setNewPrice(getPrice(page));
                 return;
             }
 
-            if (isVariantAlreadyChosen(page, dto.getVariant())) {
-                dto.setNewPrice(getPrice(page));
+            if (isVariantAlreadyChosen(page, product.getVariant())) {
+                product.setNewPrice(getPrice(page));
                 return;
             }
 
             clickSizeButton(page);
 
-            if (!clickAvailableVariant(getAvailableVariantsAsLocators(page), dto.getVariant())) {
-                dto.setNewPrice(0);
-                logger.debug("Product '{}' - item variant not available", dto.getProductId());
+            if (!clickAvailableVariant(getAvailableVariantsAsLocators(page), product.getVariant())) {
+                product.setNewPrice(0);
+                logger.debug("Product '{}' - item variant not available", product.getProductId());
                 return;
             }
 
-            dto.setNewPrice(getPrice(page));
+            product.setNewPrice(getPrice(page));
 
         } catch (PlaywrightException ex) {
             ex.printStackTrace();
-            logger.warn("Failed to update productId '{}'", dto.getProductId());
+            logger.warn("Failed to update productId '{}'", product.getProductId());
         }
     }
 

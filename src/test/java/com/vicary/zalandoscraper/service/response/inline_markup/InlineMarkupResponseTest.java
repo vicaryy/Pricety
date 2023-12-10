@@ -8,7 +8,6 @@ import com.vicary.zalandoscraper.exception.InvalidLinkException;
 import com.vicary.zalandoscraper.messages.Messages;
 import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.scraper.Scraper;
-import com.vicary.zalandoscraper.service.dto.ProductDTO;
 import com.vicary.zalandoscraper.service.response.InlineKeyboardMarkupFactory;
 import com.vicary.zalandoscraper.service.response.ResponseFacade;
 import com.vicary.zalandoscraper.thread_local.ActiveLanguage;
@@ -160,10 +159,10 @@ class InlineMarkupResponseTest {
         //given
         ActiveUser givenUser = getDefaultActiveUser();
         AllProductDisplay givenDisplayer = mock(AllProductDisplay.class);
-        List<ProductDTO> givenListOfDTOs = getDefaultListOfProductDTOs();
+        List<Product> givenProducts = getDefaultListOfProducts();
 
         //when
-        when(responseFacade.getAllProductsByUserId(givenUser.getUserId())).thenReturn(givenListOfDTOs);
+        when(responseFacade.getAllProductsByUserId(givenUser.getUserId())).thenReturn(givenProducts);
 
         //then
         inlineMarkupResponse = new InlineMarkupResponse(responseFacade, givenUser, quickSender);
@@ -178,10 +177,10 @@ class InlineMarkupResponseTest {
         //given
         ActiveUser givenUser = getDefaultActiveUser();
         AllProductDisplay givenDisplayer = mock(AllProductDisplay.class);
-        List<ProductDTO> givenListOfDTOs = Collections.emptyList();
+        List<Product> givenProducts = Collections.emptyList();
 
         //when
-        when(responseFacade.getAllProductsByUserId(givenUser.getUserId())).thenReturn(givenListOfDTOs);
+        when(responseFacade.getAllProductsByUserId(givenUser.getUserId())).thenReturn(givenProducts);
 
         //then
         inlineMarkupResponse = new InlineMarkupResponse(responseFacade, givenUser, quickSender);
@@ -202,10 +201,10 @@ class InlineMarkupResponseTest {
         //given
         ActiveUser givenUser = getDefaultActiveUser();
         EditProductDisplay givenDisplayer = mock(EditProductDisplay.class);
-        List<ProductDTO> givenListOfDTOs = getDefaultListOfProductDTOs();
+        List<Product> givenProducts = getDefaultListOfProducts();
 
         //when
-        when(responseFacade.getAllProductsByUserId(givenUser.getUserId())).thenReturn(givenListOfDTOs);
+        when(responseFacade.getAllProductsByUserId(givenUser.getUserId())).thenReturn(givenProducts);
 
         //then
         inlineMarkupResponse = new InlineMarkupResponse(responseFacade, givenUser, quickSender);
@@ -220,10 +219,10 @@ class InlineMarkupResponseTest {
         //given
         ActiveUser givenUser = getDefaultActiveUser();
         EditProductDisplay givenDisplayer = mock(EditProductDisplay.class);
-        List<ProductDTO> givenListOfDTOs = Collections.emptyList();
+        List<Product> givenProducts = Collections.emptyList();
 
         //when
-        when(responseFacade.getAllProductsByUserId(givenUser.getUserId())).thenReturn(givenListOfDTOs);
+        when(responseFacade.getAllProductsByUserId(givenUser.getUserId())).thenReturn(givenProducts);
 
         //then
         inlineMarkupResponse = new InlineMarkupResponse(responseFacade, givenUser, quickSender);
@@ -244,10 +243,10 @@ class InlineMarkupResponseTest {
         //given
         ActiveUser givenUser = getDefaultActiveUser();
         EditProductDisplay givenDisplayer = mock(EditProductDisplay.class);
-        List<ProductDTO> givenListOfDTOs = getDefaultListOfProductDTOs();
+        List<Product> givenProducts = getDefaultListOfProducts();
 
         //when
-        when(responseFacade.getAllProductsByUserId(givenUser.getUserId())).thenReturn(givenListOfDTOs);
+        when(responseFacade.getAllProductsByUserId(givenUser.getUserId())).thenReturn(givenProducts);
 
         //then
         inlineMarkupResponse = new InlineMarkupResponse(responseFacade, givenUser, quickSender);
@@ -262,10 +261,10 @@ class InlineMarkupResponseTest {
         //given
         ActiveUser givenUser = getDefaultActiveUser();
         EditProductDisplay givenDisplayer = mock(EditProductDisplay.class);
-        List<ProductDTO> givenListOfDTOs = Collections.emptyList();
+        List<Product> givenProducts = Collections.emptyList();
 
         //when
-        when(responseFacade.getAllProductsByUserId(givenUser.getUserId())).thenReturn(givenListOfDTOs);
+        when(responseFacade.getAllProductsByUserId(givenUser.getUserId())).thenReturn(givenProducts);
 
         //then
         inlineMarkupResponse = new InlineMarkupResponse(responseFacade, givenUser, quickSender);
@@ -610,7 +609,7 @@ class InlineMarkupResponseTest {
                 .build();
     }
 
-    private List<ProductDTO> getDefaultListOfProductDTOs() {
-        return List.of(new ProductDTO());
+    private List<Product> getDefaultListOfProducts() {
+        return List.of(new Product());
     }
 }

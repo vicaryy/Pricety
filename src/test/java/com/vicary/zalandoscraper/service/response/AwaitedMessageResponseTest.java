@@ -3,10 +3,10 @@ package com.vicary.zalandoscraper.service.response;
 import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
 import com.vicary.zalandoscraper.exception.IllegalInputException;
 import com.vicary.zalandoscraper.messages.Messages;
-import com.vicary.zalandoscraper.service.dto.ProductDTO;
+import com.vicary.zalandoscraper.model.Product;
+import com.vicary.zalandoscraper.model.User;
 import com.vicary.zalandoscraper.thread_local.ActiveLanguage;
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,18 +43,18 @@ class AwaitedMessageResponseTest {
 
         long givenProductId = 200;
         String givenRequest = "-edit " + givenProductId;
-        ProductDTO givenDTO = getDefaultProductDTO();
-        givenDTO.setPrice(300);
+        Product givenProduct = getDefaultProduct();
+        givenProduct.setPrice(300);
 
         //when
         when(responseFacade.getAwaitedMessageRequestByUserIdAndDelete(givenUser.getChatId())).thenReturn(givenRequest);
-        when(responseFacade.getProductDTOById(givenProductId)).thenReturn(givenDTO);
+        when(responseFacade.getProductById(givenProductId)).thenReturn(givenProduct);
         awaitedMessageResponse = new AwaitedMessageResponse(responseFacade, givenUser, quickSender);
         awaitedMessageResponse.response();
 
         //then
         verify(responseFacade, times(1)).getAwaitedMessageRequestByUserIdAndDelete(givenUser.getChatId());
-        verify(responseFacade, times(1)).getProductDTOById(givenProductId);
+        verify(responseFacade, times(1)).getProductById(givenProductId);
         verify(responseFacade, times(1)).updateProductPriceAlert(givenProductId, "200.00");
         verify(quickSender, times(1)).popupMessage(givenUser.getChatId(), Messages.other("priceAlertUpdated"));
         verify(quickSender, times(1)).inlineMarkup(
@@ -72,18 +72,18 @@ class AwaitedMessageResponseTest {
 
         long givenProductId = 200;
         String givenRequest = "-edit " + givenProductId;
-        ProductDTO givenDTO = getDefaultProductDTO();
-        givenDTO.setPrice(100);
+        Product givenProduct = getDefaultProduct();
+        givenProduct.setPrice(100);
 
         //when
         when(responseFacade.getAwaitedMessageRequestByUserIdAndDelete(givenUser.getChatId())).thenReturn(givenRequest);
-        when(responseFacade.getProductDTOById(givenProductId)).thenReturn(givenDTO);
+        when(responseFacade.getProductById(givenProductId)).thenReturn(givenProduct);
         awaitedMessageResponse = new AwaitedMessageResponse(responseFacade, givenUser, quickSender);
 
         //then
         assertThrows(IllegalInputException.class, () -> awaitedMessageResponse.response());
         verify(responseFacade, times(1)).getAwaitedMessageRequestByUserIdAndDelete(givenUser.getChatId());
-        verify(responseFacade, times(1)).getProductDTOById(givenProductId);
+        verify(responseFacade, times(1)).getProductById(givenProductId);
         verify(responseFacade, times(0)).updateProductPriceAlert(givenProductId, "200.00");
         verify(quickSender, times(0)).popupMessage(givenUser.getChatId(), Messages.other("priceAlertUpdated"));
         verify(quickSender, times(0)).inlineMarkup(
@@ -483,11 +483,11 @@ class AwaitedMessageResponseTest {
         return givenUser;
     }
 
-    private ProductDTO getDefaultProductDTO() {
-        return ProductDTO.builder()
+    private Product getDefaultProduct() {
+        return Product.builder()
                 .variant("M")
                 .link("link")
-                .email("email@email.pl")
+                .user(User.builder().email("email@email.pl").build())
                 .priceAlert("100.00")
                 .build();
     }

@@ -6,7 +6,6 @@ import com.microsoft.playwright.options.WaitUntilState;
 import com.vicary.zalandoscraper.exception.InvalidLinkException;
 import com.vicary.zalandoscraper.messages.Messages;
 import com.vicary.zalandoscraper.model.Product;
-import com.vicary.zalandoscraper.service.dto.ProductDTO;
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,14 +21,14 @@ public class NikeScraper implements Scraper {
     private final Page.NavigateOptions navigateOptions = new Page.NavigateOptions().setWaitUntil(WaitUntilState.COMMIT);
 
     @Override
-    public void updateProducts(List<ProductDTO> DTOs) {
+    public void updateProducts(List<Product> products) {
         try (Playwright playwright = Playwright.create()) {
 
             try (BrowserContext browser = playwright.chromium().launch(launchOptions).newContext()) {
                 browser.newPage();
                 browser.setDefaultTimeout(4000);
 
-                for (ProductDTO dto : DTOs) {
+                for (Product dto : products) {
                     Page newPage = browser.newPage();
                     newPage.setExtraHTTPHeaders(extraHeaders);
                     newPage.navigate(dto.getLink(), navigateOptions);
@@ -41,7 +40,7 @@ public class NikeScraper implements Scraper {
         }
     }
 
-    void updateProduct(Page page, ProductDTO dto) {
+    void updateProduct(Page page, Product product) {
         try (page) {
             boolean isSoldOut = false;
             boolean isMultiVariant = false;
@@ -61,32 +60,32 @@ public class NikeScraper implements Scraper {
             }
 
             if (isItemNotAvailable) {
-                logger.debug("Product '{}' - is not longer available, delete it", dto.getProductId());
-                dto.setNewPrice(0);
+                logger.debug("Product '{}' - is not longer available, delete it", product.getProductId());
+                product.setNewPrice(0);
                 return;
             }
 
             if (isSoldOut) {
-                logger.debug("Product '{}' - item sold out", dto.getProductId());
-                dto.setNewPrice(0);
+                logger.debug("Product '{}' - item sold out", product.getProductId());
+                product.setNewPrice(0);
                 return;
             }
 
             if (isMultiVariant) {
-                if (isVariantAvailable(page, dto.getVariant()))
-                    dto.setNewPrice(getPrice(page));
+                if (isVariantAvailable(page, product.getVariant()))
+                    product.setNewPrice(getPrice(page));
                 else {
-                    dto.setNewPrice(0);
-                    logger.debug("Product '{}' - item variant not available", dto.getProductId());
+                    product.setNewPrice(0);
+                    logger.debug("Product '{}' - item variant not available", product.getProductId());
                 }
                 return;
             }
 
-            dto.setNewPrice(getPrice(page));
+            product.setNewPrice(getPrice(page));
 
         } catch (PlaywrightException ex) {
             ex.printStackTrace();
-            logger.warn("Failed to update productId '{}'", dto.getProductId());
+            logger.warn("Failed to update productId '{}'", product.getProductId());
         }
     }
 
@@ -127,6 +126,8 @@ public class NikeScraper implements Scraper {
                     .price(0)
                     .variant(variant)
                     .link(page.url())
+                    .serviceName("nike.pl")
+                    .currency("pl")
                     .build();
 
             if (variant.equals("-oneVariant Unknown"))

@@ -12,7 +12,6 @@ import com.vicary.zalandoscraper.api_telegram.api_object.Action;
 import com.vicary.zalandoscraper.entity.LinkRequestEntity;
 import com.vicary.zalandoscraper.exception.InvalidLinkException;
 import com.vicary.zalandoscraper.model.Product;
-import com.vicary.zalandoscraper.service.dto.ProductDTO;
 import com.vicary.zalandoscraper.service.response.InlineKeyboardMarkupFactory;
 import lombok.SneakyThrows;
 
@@ -129,17 +128,17 @@ public class InlineMarkupResponse implements Responser {
     }
 
     void displayAllProducts(ProductDisplayer displayer) {
-        List<ProductDTO> productDTOList = responseFacade.getAllProductsByUserId(user.getUserId());
+        List<Product> products = responseFacade.getAllProductsByUserId(user.getUserId());
 
         deletePreviousMessage();
 
-        if (productDTOList.isEmpty()) {
+        if (products.isEmpty()) {
             popupMessage(Messages.other("dontHaveProduct"));
             displayMenu();
             return;
         }
 
-        displayer.setProductDTOList(productDTOList);
+        displayer.setProductDTOList(products);
         displayer.setChatId(user.getChatId());
         displayer.display();
     }
@@ -152,15 +151,15 @@ public class InlineMarkupResponse implements Responser {
     void displayEditPriceAlert(ProductDisplayer displayer) {
         deletePreviousMessage();
 
-        List<ProductDTO> productDTOList = responseFacade.getAllProductsByUserId(user.getUserId());
+        List<Product> products = responseFacade.getAllProductsByUserId(user.getUserId());
 
-        if (productDTOList.isEmpty()) {
+        if (products.isEmpty()) {
             popupMessage(Messages.other("dontHaveProduct"));
             displayMenu();
             return;
         }
 
-        displayer.setProductDTOList(productDTOList);
+        displayer.setProductDTOList(products);
         displayer.setChatId(user.getChatId());
         displayer.display();
     }
@@ -174,17 +173,17 @@ public class InlineMarkupResponse implements Responser {
     }
 
     void displayDeleteProduct(ProductDisplayer displayer) {
-        List<ProductDTO> productDTOList = responseFacade.getAllProductsByUserId(user.getUserId());
+        List<Product> products = responseFacade.getAllProductsByUserId(user.getUserId());
 
         deletePreviousMessage();
 
-        if (productDTOList.isEmpty()) {
+        if (products.isEmpty()) {
             popupMessage(Messages.other("dontHaveProduct"));
             displayMenu();
             return;
         }
 
-        displayer.setProductDTOList(productDTOList);
+        displayer.setProductDTOList(products);
         displayer.setChatId(user.getChatId());
         displayer.display();
     }

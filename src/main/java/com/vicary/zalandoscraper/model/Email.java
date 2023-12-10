@@ -1,7 +1,6 @@
 package com.vicary.zalandoscraper.model;
 
 import com.vicary.zalandoscraper.messages.Messages;
-import com.vicary.zalandoscraper.service.dto.ProductDTO;
 import lombok.*;
 
 @Data
@@ -22,43 +21,49 @@ public class Email {
     }
 
 
-    public void setPriceAlertMessageAndTitle(ProductDTO p) {
+    public void setPriceAlertMessageAndTitle(Product p) {
         if (p.getPrice() == 0) {
             setPriceAlertWhenOldPriceIsZero(p);
             return;
         }
 
         mime = true;
-        title = Messages.email("notificationTitle", p.getLanguage());
+        title = Messages.email("notificationTitle", p.getUser().getLanguage());
         String newPrice = String.format("%.2f", p.getNewPrice());
         String oldPrice = String.format("%.2f", p.getPrice());
         String cheaper = String.format("%.2f", p.getPrice() - p.getNewPrice());
         String variant = getFormattedVariant(p);
-        message = Messages.email("notificationMessage", p.getLanguage()).formatted(
+        message = Messages.email("notificationMessage", p.getUser().getLanguage()).formatted(
                 cheaper,
+                p.getCurrency(),
                 p.getName(),
                 p.getDescription(),
                 variant,
                 p.getLink(),
                 oldPrice,
-                newPrice
+                p.getCurrency(),
+                newPrice,
+                p.getCurrency()
         );
     }
 
-    private void setPriceAlertWhenOldPriceIsZero(ProductDTO p) {
+    private void setPriceAlertWhenOldPriceIsZero(Product p) {
         mime = true;
-        title = Messages.email("notificationTitle", p.getLanguage());
+        title = Messages.email("notificationTitle", p.getUser().getLanguage());
         String newPrice = String.format("%.2f", p.getNewPrice());
         String variant = getFormattedVariant(p);
         if (variant.startsWith("-oneVariant "))
             variant = variant.substring(12);
-        message = Messages.email("notificationMessageWhenPriceZero", p.getLanguage()).formatted(
+        message = Messages.email("notificationMessageWhenPriceZero", p.getUser().getLanguage()).formatted(
                 p.getName(),
                 p.getDescription(),
                 variant,
                 p.getLink(),
                 newPrice,
-                p.getPriceAlert());
+                p.getCurrency(),
+                p.getPriceAlert(),
+                p.getCurrency()
+        );
     }
 
     public void setVerificationMessageAndTitle(String token) {
@@ -68,14 +73,14 @@ public class Email {
                 .formatted(token);
     }
 
-    private String getFormattedVariant(ProductDTO p) {
+    private String getFormattedVariant(Product p) {
         String variant = p.getVariant();
         if (variant.startsWith("-oneVariant ")) {
             variant = variant.substring(12).trim();
             if (variant.equals("One Variant"))
-                variant = Messages.allProducts("oneVariant", p.getLanguage());
+                variant = Messages.allProducts("oneVariant", p.getUser().getLanguage());
             else if (variant.equals("Unknown"))
-                variant = Messages.allProducts("unknown", p.getLanguage());
+                variant = Messages.allProducts("unknown", p.getUser().getLanguage());
         }
         return variant;
     }

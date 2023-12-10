@@ -7,7 +7,6 @@ import com.microsoft.playwright.Playwright;
 import com.microsoft.playwright.options.WaitUntilState;
 import com.vicary.zalandoscraper.exception.InvalidLinkException;
 import com.vicary.zalandoscraper.model.Product;
-import com.vicary.zalandoscraper.service.dto.ProductDTO;
 import com.vicary.zalandoscraper.thread_local.ActiveLanguage;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
@@ -146,7 +145,7 @@ class ZalandoScraperTest {
     @Test
     void updateProduct_expectTrue_OneVariantItem() {
         //given
-        ProductDTO givenDto = ProductDTO.builder()
+        Product givenDto = Product.builder()
                 .price(500)
                 .newPrice(0)
                 .variant("-oneVariant One Size")
@@ -163,7 +162,7 @@ class ZalandoScraperTest {
     void updateProduct_expectEquals_ItemSoldOut() {
         //given
         int expectedPrice = 0;
-        ProductDTO givenDto = ProductDTO.builder()
+        Product givenDto = Product.builder()
                 .price(500)
                 .newPrice(500)
                 .build();
@@ -183,7 +182,7 @@ class ZalandoScraperTest {
         List<String> givenVariants = scraper.getAvailableVariants(givenLink);
         String givenVariant = givenVariants.get(ThreadLocalRandom.current().nextInt(0, givenVariants.size()));
 
-        ProductDTO givenDto = ProductDTO.builder()
+        Product givenDto = Product.builder()
                 .price(500)
                 .newPrice(0)
                 .variant(givenVariant)
@@ -204,7 +203,7 @@ class ZalandoScraperTest {
         List<String> givenVariants = scraper.getNonAvailableVariants(givenLink);
         String givenVariant = givenVariants.get(ThreadLocalRandom.current().nextInt(0, givenVariants.size()));
 
-        ProductDTO givenDto = ProductDTO.builder()
+        Product givenDto = Product.builder()
                 .price(500)
                 .newPrice(500)
                 .variant(givenVariant)
@@ -216,7 +215,7 @@ class ZalandoScraperTest {
         assertEquals(expectedPrice, givenDto.getNewPrice());
     }
 
-    private void runPlaywrightAndUpdateProduct(String link, ProductDTO givenDto) {
+    private void runPlaywrightAndUpdateProduct(String link, Product product) {
         Map<String, String> extraHeaders = Map.of("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36");
         BrowserType.LaunchOptions launchOptions = new DefaultLaunchOptions();
         Page.NavigateOptions navigateOptions = new Page.NavigateOptions().setWaitUntil(WaitUntilState.COMMIT);
@@ -228,7 +227,7 @@ class ZalandoScraperTest {
             page.setExtraHTTPHeaders(extraHeaders);
             page.navigate(link, navigateOptions);
 
-            scraper.updateProduct(page, givenDto);
+            scraper.updateProduct(page, product);
         }
     }
 

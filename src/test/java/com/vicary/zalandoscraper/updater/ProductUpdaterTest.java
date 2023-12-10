@@ -1,7 +1,7 @@
 package com.vicary.zalandoscraper.updater;
 
+import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.scraper.Scraper;
-import com.vicary.zalandoscraper.service.dto.ProductDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -26,7 +26,7 @@ class ProductUpdaterTest {
     @Test
     void setUpdatesTimeout_expectEquals_ListSizeIsOne() {
         //given
-        List<ProductDTO> givenList = getListOfDefaultDTOs(1);
+        List<Product> givenList = getListOfDefaultProduct(1);
         long timeout = 11_000; // 11 sec per DTO
 
         //when
@@ -42,7 +42,7 @@ class ProductUpdaterTest {
     @Test
     void setUpdatesTimeout_expectEquals_ListSizeIsTwo() {
         //given
-        List<ProductDTO> givenList = getListOfDefaultDTOs(2);
+        List<Product> givenList = getListOfDefaultProduct(2);
         long timeout = 20_000; // 10 sec per DTO
 
         //when
@@ -58,7 +58,7 @@ class ProductUpdaterTest {
     @Test
     void setUpdatesTimeout_expectEquals_ListSizeIsThree() {
         //given
-        List<ProductDTO> givenList = getListOfDefaultDTOs(3);
+        List<Product> givenList = getListOfDefaultProduct(3);
         long timeout = 27_000; // 9 sec per DTO
 
         //when
@@ -74,7 +74,7 @@ class ProductUpdaterTest {
     @Test
     void setUpdatesTimeout_expectEquals_ListSizeIsFive() {
         //given
-        List<ProductDTO> givenList = getListOfDefaultDTOs(5);
+        List<Product> givenList = getListOfDefaultProduct(5);
         long timeout = 35_000; // 7 sec per DTO
 
         //when
@@ -90,7 +90,7 @@ class ProductUpdaterTest {
     @Test
     void setUpdatesTimeout_expectEquals_ListSizeIsAboveSix() {
         //given
-        List<ProductDTO> givenList = getListOfDefaultDTOs(8);
+        List<Product> givenList = getListOfDefaultProduct(8);
         long timeout = 28_000; // 3,5 sec per DTO
 
         //when
@@ -106,7 +106,7 @@ class ProductUpdaterTest {
     @Test
     void setUpdatesTimeout_expectEquals_ListSizeIsOneHundred() {
         //given
-        List<ProductDTO> givenList = getListOfDefaultDTOs(100);
+        List<Product> givenList = getListOfDefaultProduct(100);
         long timeout = 350_000; // 3,5 sec per DTO
 
         //when
@@ -120,15 +120,15 @@ class ProductUpdaterTest {
     }
 
 
-    private List<ProductDTO> getListOfDefaultDTOs(int size) {
-        List<ProductDTO> list = new ArrayList<>();
+    private List<Product> getListOfDefaultProduct(int size) {
+        List<Product> list = new ArrayList<>();
         for (int i = 0; i < size; i++)
             list.add(getDefaultDTO());
         return list;
     }
 
-    private ProductDTO getDefaultDTO() {
-        return ProductDTO.builder().build();
+    private Product getDefaultDTO() {
+        return Product.builder().build();
     }
 }
 

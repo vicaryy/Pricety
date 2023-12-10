@@ -2,7 +2,8 @@ package com.vicary.zalandoscraper.updater.sender;
 
 import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.entity.WaitingUserEntity;
-import com.vicary.zalandoscraper.service.dto.ProductDTO;
+import com.vicary.zalandoscraper.model.Product;
+import com.vicary.zalandoscraper.model.User;
 import com.vicary.zalandoscraper.service.repository_services.ProductService;
 import com.vicary.zalandoscraper.thread_local.ActiveLanguage;
 import org.junit.jupiter.api.BeforeAll;
@@ -36,113 +37,113 @@ class NotificationManagerTest {
     @Test
     void isUserNeedsNotify_expectFalse_PriceAlertIsOFF() {
         //given
-        ProductDTO givenDto = getDefaultProductDTO();
-        givenDto.setPriceAlert("OFF");
+        Product givenProduct = getDefaultProduct();
+        givenProduct.setPriceAlert("OFF");
 
         //when
         //then
-        assertFalse(notificationManager.isUserNeedsNotify(givenDto));
+        assertFalse(notificationManager.isUserNeedsNotify(givenProduct));
     }
 
     @Test
     void isUserNeedsNotify_expectFalse_NewPriceIsZero() {
         //given
-        ProductDTO givenDto = getDefaultProductDTO();
-        givenDto.setPriceAlert("AUTO");
-        givenDto.setNewPrice(0);
+        Product givenProduct = getDefaultProduct();
+        givenProduct.setPriceAlert("AUTO");
+        givenProduct.setNewPrice(0);
 
         //when
         //then
-        assertFalse(notificationManager.isUserNeedsNotify(givenDto));
+        assertFalse(notificationManager.isUserNeedsNotify(givenProduct));
     }
 
     @Test
     void isUserNeedsNotify_expectFalse_NewPriceIsHigherThanActualPriceAndPriceAlertIsAUTO() {
         //given
-        ProductDTO givenDto = getDefaultProductDTO();
-        givenDto.setPriceAlert("AUTO");
-        givenDto.setPrice(100);
-        givenDto.setNewPrice(200);
+        Product givenProduct = getDefaultProduct();
+        givenProduct.setPriceAlert("AUTO");
+        givenProduct.setPrice(100);
+        givenProduct.setNewPrice(200);
 
         //when
         //then
-        assertFalse(notificationManager.isUserNeedsNotify(givenDto));
+        assertFalse(notificationManager.isUserNeedsNotify(givenProduct));
     }
 
     @Test
     void isUserNeedsNotify_expectFalse_NewPriceIsEqualToActualPriceAndPriceAlertIsAUTO() {
         //given
-        ProductDTO givenDto = getDefaultProductDTO();
-        givenDto.setPriceAlert("AUTO");
-        givenDto.setPrice(200);
-        givenDto.setNewPrice(200);
+        Product givenProduct = getDefaultProduct();
+        givenProduct.setPriceAlert("AUTO");
+        givenProduct.setPrice(200);
+        givenProduct.setNewPrice(200);
 
         //when
         //then
-        assertFalse(notificationManager.isUserNeedsNotify(givenDto));
+        assertFalse(notificationManager.isUserNeedsNotify(givenProduct));
     }
 
     @Test
     void isUserNeedsNotify_expectFalse_NewPriceIsHigherThanPriceAlert() {
         //given
-        ProductDTO givenDto = getDefaultProductDTO();
-        givenDto.setPriceAlert("100.00");
-        givenDto.setPrice(150);
-        givenDto.setNewPrice(200);
+        Product givenProduct = getDefaultProduct();
+        givenProduct.setPriceAlert("100.00");
+        givenProduct.setPrice(150);
+        givenProduct.setNewPrice(200);
 
         //when
         //then
-        assertFalse(notificationManager.isUserNeedsNotify(givenDto));
+        assertFalse(notificationManager.isUserNeedsNotify(givenProduct));
     }
 
     @Test
     void isUserNeedsNotify_expectTrue_NewPriceIsLowerThanActualPriceAndPriceAlertIsAUTO() {
         //given
-        ProductDTO givenDto = getDefaultProductDTO();
-        givenDto.setPriceAlert("AUTO");
-        givenDto.setPrice(200);
-        givenDto.setNewPrice(190);
+        Product givenProduct = getDefaultProduct();
+        givenProduct.setPriceAlert("AUTO");
+        givenProduct.setPrice(200);
+        givenProduct.setNewPrice(190);
 
         //when
         //then
-        assertTrue(notificationManager.isUserNeedsNotify(givenDto));
+        assertTrue(notificationManager.isUserNeedsNotify(givenProduct));
     }
 
     @Test
     void isUserNeedsNotify_expectTrue_NewPriceIsLowerThanPriceAlert() {
         //given
-        ProductDTO givenDto = getDefaultProductDTO();
-        givenDto.setPriceAlert("200.00");
-        givenDto.setPrice(300);
-        givenDto.setNewPrice(190);
+        Product givenProduct = getDefaultProduct();
+        givenProduct.setPriceAlert("200.00");
+        givenProduct.setPrice(300);
+        givenProduct.setNewPrice(190);
 
         //when
         //then
-        assertTrue(notificationManager.isUserNeedsNotify(givenDto));
+        assertTrue(notificationManager.isUserNeedsNotify(givenProduct));
     }
 
     @Test
     void isUserNeedsNotify_expectTrue_NewPriceIsEqualToPriceAlert() {
         //given
-        ProductDTO givenDto = getDefaultProductDTO();
-        givenDto.setPriceAlert("200.00");
-        givenDto.setPrice(300);
-        givenDto.setNewPrice(200);
+        Product givenProduct = getDefaultProduct();
+        givenProduct.setPriceAlert("200.00");
+        givenProduct.setPrice(300);
+        givenProduct.setNewPrice(200);
 
         //when
         //then
-        assertTrue(notificationManager.isUserNeedsNotify(givenDto));
+        assertTrue(notificationManager.isUserNeedsNotify(givenProduct));
     }
 
 
     @Test
     void updatePriceAlertInRepository_notUpdated_PriceAlertIsOFF() {
         //given
-        ProductDTO givenDto = getDefaultProductDTO();
-        givenDto.setPriceAlert("OFF");
+        Product givenProduct = getDefaultProduct();
+        givenProduct.setPriceAlert("OFF");
 
         //when
-        notificationManager.updatePriceAlertInRepository(givenDto);
+        notificationManager.updatePriceAlertInRepository(givenProduct);
 
         //then
         verify(productService, times(0)).updateProductPriceAlert(anyLong(), anyString());
@@ -151,11 +152,11 @@ class NotificationManagerTest {
     @Test
     void updatePriceAlertInRepository_notUpdated_PriceAlertIsAUTO() {
         //given
-        ProductDTO givenDto = getDefaultProductDTO();
-        givenDto.setPriceAlert("AUTO");
+        Product givenProduct = getDefaultProduct();
+        givenProduct.setPriceAlert("AUTO");
 
         //when
-        notificationManager.updatePriceAlertInRepository(givenDto);
+        notificationManager.updatePriceAlertInRepository(givenProduct);
 
         //then
         verify(productService, times(0)).updateProductPriceAlert(anyLong(), anyString());
@@ -164,12 +165,12 @@ class NotificationManagerTest {
     @Test
     void updatePriceAlertInRepository_notUpdated_NewPriceIsHigherThanPriceAlert() {
         //given
-        ProductDTO givenDto = getDefaultProductDTO();
-        givenDto.setPriceAlert("200.00");
-        givenDto.setNewPrice(210);
+        Product givenProduct = getDefaultProduct();
+        givenProduct.setPriceAlert("200.00");
+        givenProduct.setNewPrice(210);
 
         //when
-        notificationManager.updatePriceAlertInRepository(givenDto);
+        notificationManager.updatePriceAlertInRepository(givenProduct);
 
         //then
         verify(productService, times(0)).updateProductPriceAlert(anyLong(), anyString());
@@ -178,35 +179,35 @@ class NotificationManagerTest {
     @Test
     void updatePriceAlertInRepository_updated_NewPriceIsLowerThanPriceAlert() {
         //given
-        ProductDTO givenDto = getDefaultProductDTO();
-        givenDto.setPriceAlert("200.00");
-        givenDto.setNewPrice(190);
+        Product givenProduct = getDefaultProduct();
+        givenProduct.setPriceAlert("200.00");
+        givenProduct.setNewPrice(190);
 
         //when
-        notificationManager.updatePriceAlertInRepository(givenDto);
+        notificationManager.updatePriceAlertInRepository(givenProduct);
 
         //then
-        verify(productService, times(1)).updateProductPriceAlert(givenDto.getProductId(), "OFF");
+        verify(productService, times(1)).updateProductPriceAlert(givenProduct.getProductId(), "OFF");
     }
 
     @Test
     void updatePriceAlertInRepository_updated_NewPriceIsEqualToPriceAlert() {
         //given
-        ProductDTO givenDto = getDefaultProductDTO();
-        givenDto.setPriceAlert("200.00");
-        givenDto.setNewPrice(200);
+        Product givenProduct = getDefaultProduct();
+        givenProduct.setPriceAlert("200.00");
+        givenProduct.setNewPrice(200);
 
         //when
-        notificationManager.updatePriceAlertInRepository(givenDto);
+        notificationManager.updatePriceAlertInRepository(givenProduct);
 
         //then
-        verify(productService, times(1)).updateProductPriceAlert(givenDto.getProductId(), "OFF");
+        verify(productService, times(1)).updateProductPriceAlert(givenProduct.getProductId(), "OFF");
     }
 
     @Test
     void sendPriceNotifications_expectReturn_DTOsDontNeedsToBeSend() {
         //given
-        List<ProductDTO> givenList = Arrays.asList(getNoNeedToSendProductDTO(), getNoNeedToSendProductDTO(), getNoNeedToSendProductDTO(), getNoNeedToSendProductDTO());
+        List<Product> givenList = Arrays.asList(getNoNeedToSendProduct(), getNoNeedToSendProduct(), getNoNeedToSendProduct(), getNoNeedToSendProduct());
 
         //when
         notificationManager.sendPriceNotifications(givenList);
@@ -219,7 +220,7 @@ class NotificationManagerTest {
     @Test
     void sendPriceNotifications_expectSend_DTOsNeedsToBeSend() {
         //given
-        List<ProductDTO> givenList = Arrays.asList(getNeedToSendProductDTO(), getNeedToSendProductDTO(), getNeedToSendProductDTO(), getNeedToSendProductDTO());
+        List<Product> givenList = Arrays.asList(getNeedToSendProduct(), getNeedToSendProduct(), getNeedToSendProduct(), getNeedToSendProduct());
 
         //when
         notificationManager.sendPriceNotifications(givenList);
@@ -232,7 +233,7 @@ class NotificationManagerTest {
     @Test
     void sendPriceNotifications_expectSend_DTOsNeedsToBeSendButNotOnEmail() {
         //given
-        List<ProductDTO> givenList = Arrays.asList(getNeedToSendButNotOnEmailProductDTO(), getNeedToSendButNotOnEmailProductDTO());
+        List<Product> givenList = Arrays.asList(getNeedToSendButNotOnEmailProduct(), getNeedToSendButNotOnEmailProduct());
 
         //when
         notificationManager.sendPriceNotifications(givenList);
@@ -266,22 +267,22 @@ class NotificationManagerTest {
         verify(chatSender, times(1)).send(anyList());
     }
 
-    private ProductDTO getDefaultProductDTO() {
-        return ProductDTO.builder()
+    private Product getDefaultProduct() {
+        return Product.builder()
                 .productId(123L)
                 .name("name")
-                .language("en")
+                .user(User.builder().language("en").build())
                 .link("https://www.link.pl/")
                 .description("desc")
                 .variant("variant")
                 .build();
     }
 
-    private ProductDTO getNoNeedToSendProductDTO() {
-        return ProductDTO.builder()
+    private Product getNoNeedToSendProduct() {
+        return Product.builder()
                 .productId(123L)
                 .priceAlert("OFF")
-                .language("en")
+                .user(User.builder().language("en").build())
                 .link("https://www.link.pl/")
                 .name("name")
                 .description("desc")
@@ -289,11 +290,11 @@ class NotificationManagerTest {
                 .build();
     }
 
-    private ProductDTO getNeedToSendProductDTO() {
-        return ProductDTO.builder()
+    private Product getNeedToSendProduct() {
+        return Product.builder()
                 .productId(123L)
                 .priceAlert("100.00")
-                .language("en")
+                .user(User.builder().language("en").build())
                 .link("https://www.link.pl/")
                 .price(200)
                 .newPrice(50)
@@ -303,18 +304,17 @@ class NotificationManagerTest {
                 .build();
     }
 
-    private ProductDTO getNeedToSendButNotOnEmailProductDTO() {
-        return ProductDTO.builder()
+    private Product getNeedToSendButNotOnEmailProduct() {
+        return Product.builder()
                 .productId(123L)
                 .priceAlert("100.00")
-                .language("en")
+                .user(User.builder().language("en").notifyByEmail(false).build())
                 .link("https://www.link.pl/")
                 .price(200)
                 .newPrice(50)
                 .name("name")
                 .description("desc")
                 .variant("variant")
-                .notifyByEmail(false)
                 .build();
     }
 

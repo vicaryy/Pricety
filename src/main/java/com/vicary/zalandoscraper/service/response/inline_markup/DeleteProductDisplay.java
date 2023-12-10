@@ -6,7 +6,7 @@ import com.vicary.zalandoscraper.api_telegram.api_request.send.SendMessage;
 import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
 import com.vicary.zalandoscraper.format.MarkdownV2;
 import com.vicary.zalandoscraper.messages.Messages;
-import com.vicary.zalandoscraper.service.dto.ProductDTO;
+import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.service.response.InlineKeyboardMarkupFactory;
 import lombok.NonNull;
 
@@ -15,17 +15,17 @@ import java.util.List;
 
 class DeleteProductDisplay implements ProductDisplayer {
     private String chatId;
-    private List<ProductDTO> productDTOList;
+    private List<Product> products;
     private final QuickSender quickSender;
 
-    public DeleteProductDisplay(@NonNull List<ProductDTO> productDTOList, @NonNull String chatId) {
-        this.productDTOList = productDTOList;
+    public DeleteProductDisplay(@NonNull List<Product> products, @NonNull String chatId) {
+        this.products = products;
         this.chatId = chatId;
         this.quickSender = new QuickSender();
     }
 
-    public DeleteProductDisplay(@NonNull List<ProductDTO> productDTOList, @NonNull String chatId, QuickSender quickSender) {
-        this.productDTOList = productDTOList;
+    public DeleteProductDisplay(@NonNull List<Product> products, @NonNull String chatId, QuickSender quickSender) {
+        this.products = products;
         this.chatId = chatId;
         this.quickSender = quickSender;
     }
@@ -40,15 +40,15 @@ class DeleteProductDisplay implements ProductDisplayer {
         List<StringBuilder> stringBuilders = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
 
-        for (int i = 0; i < productDTOList.size(); i++) {
-            ProductDTO dto = productDTOList.get(i);
+        for (int i = 0; i < products.size(); i++) {
+            Product product = products.get(i);
 
             if (i == 0)
                 setTitle(sb);
 
-            sb.append(getFullProductDescription(dto, i));
+            sb.append(getFullProductDescription(product, i));
 
-            if (i != productDTOList.size() - 1)
+            if (i != products.size() - 1)
                 sb.append("\n\n\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\\-\n\n");
 
             int maxProductsAmountInOneMessage = 10;
@@ -77,8 +77,10 @@ class DeleteProductDisplay implements ProductDisplayer {
         }
 
 
-        for (StringBuilder s : stringBuilders)
-            quickSender.message(chatId, s.toString(), true);
+        for (StringBuilder s : stringBuilders) {
+            if (!s.toString().isBlank())
+                quickSender.message(chatId, s.toString(), true);
+        }
 
         sb.setLength(0);
 
@@ -90,8 +92,8 @@ class DeleteProductDisplay implements ProductDisplayer {
     }
 
     @Override
-    public void setProductDTOList(List<ProductDTO> DTOs) {
-        this.productDTOList = DTOs;
+    public void setProductDTOList(List<Product> products) {
+        this.products = products;
     }
 
     @Override
@@ -104,10 +106,10 @@ class DeleteProductDisplay implements ProductDisplayer {
         sb.append("*").append(Messages.deleteProduct("yourProducts")).append("*\n\n");
     }
 
-    private String getFullProductDescription(ProductDTO dto, int iterator) {
-        String price = getFormattedPrice(dto.getPrice());
-        String priceAlert = getFormattedPriceAlert(dto.getPriceAlert());
-        String variant = getFormattedVariant(dto.getVariant());
+    private String getFullProductDescription(Product product, int iterator) {
+        String price = getFormattedPrice(product.getPrice(), product.getCurrency());
+        String priceAlert = getFormattedPriceAlert(product.getPriceAlert(), product.getCurrency());
+        String variant = getFormattedVariant(product.getVariant());
         return """     
                 *%s nr %d*
                                     
@@ -121,11 +123,11 @@ class DeleteProductDisplay implements ProductDisplayer {
                         Messages.allProducts("product"),
                         iterator + 1,
                         Messages.allProducts("name"),
-                        MarkdownV2.apply(dto.getName()).get(),
+                        MarkdownV2.apply(product.getName()).get(),
                         Messages.allProducts("description"),
-                        MarkdownV2.apply(dto.getDescription()).get(),
+                        MarkdownV2.apply(product.getDescription()).get(),
                         Messages.allProducts("link"),
-                        MarkdownV2.apply(dto.getLink()).toURL(dto.getServiceName()).get(),
+                        MarkdownV2.apply(product.getLink()).toURL(product.getServiceName()).get(),
                         Messages.allProducts("variant"),
                         MarkdownV2.apply(variant).get(),
                         Messages.allProducts("price"),
@@ -134,12 +136,12 @@ class DeleteProductDisplay implements ProductDisplayer {
                         MarkdownV2.apply(priceAlert).get());
     }
 
-    private String getFormattedPrice(double p) {
-        return p == 0 ? Messages.allProducts("soldOut") : String.format("%.2f zł", p).replaceFirst(",", ".");
+    private String getFormattedPrice(double price, String currency) {
+        return price == 0 ? Messages.allProducts("soldOut") : String.format("%.2f %s", price, currency).replaceFirst(",", ".");
     }
 
-    private String getFormattedPriceAlert(String p) {
-        return (!p.equals("OFF") && !p.equals("AUTO")) ? p + " zł" : p;
+    private String getFormattedPriceAlert(String priceAlert, String currency) {
+        return (!priceAlert.equals("OFF") && !priceAlert.equals("AUTO")) ? priceAlert + " " + currency : priceAlert;
     }
 
     private String getFormattedVariant(String v) {
@@ -159,6 +161,6 @@ class DeleteProductDisplay implements ProductDisplayer {
     }
 
     private ReplyMarkup getReplyMarkup() {
-        return InlineKeyboardMarkupFactory.getProductChoice(productDTOList, "-delete");
+        return InlineKeyboardMarkupFactory.getProductChoice(products, "-delete");
     }
 }

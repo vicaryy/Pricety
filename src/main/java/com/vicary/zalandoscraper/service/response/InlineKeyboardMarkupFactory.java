@@ -1,10 +1,10 @@
 package com.vicary.zalandoscraper.service.response;
 
 import com.vicary.zalandoscraper.messages.Messages;
+import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
 import com.vicary.zalandoscraper.api_telegram.api_object.keyboard.InlineKeyboardButton;
 import com.vicary.zalandoscraper.api_telegram.api_object.keyboard.InlineKeyboardMarkup;
-import com.vicary.zalandoscraper.service.dto.ProductDTO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,16 +69,16 @@ public class InlineKeyboardMarkupFactory {
         return new InlineKeyboardMarkup(List.of(List.of(deleteAllYes, deleteAllNo)));
     }
 
-    public static InlineKeyboardMarkup getProductChoice(List<ProductDTO> productDTOList, String callbackDataType) {
+    public static InlineKeyboardMarkup getProductChoice(List<Product> products, String callbackDataType) {
         List<List<InlineKeyboardButton>> listOfListsOfButtons = new ArrayList<>();
         List<InlineKeyboardButton> listOfButtons = new ArrayList<>();
         final InlineKeyboardButton back = new InlineKeyboardButton(Messages.editPriceAlert("back"), "-back");
         final InlineKeyboardButton deleteAll = new InlineKeyboardButton(Messages.deleteProduct("deleteAll"), "-deleteAll");
 
-        for (int i = 0; i < productDTOList.size(); i++) {
+        for (int i = 0; i < products.size(); i++) {
 
-            listOfButtons.add(new InlineKeyboardButton(String.valueOf(i + 1), callbackDataType + " " + productDTOList.get(i).getProductId()));
-            if (i == productDTOList.size() - 1) {
+            listOfButtons.add(new InlineKeyboardButton(String.valueOf(i + 1), callbackDataType + " " + products.get(i).getProductId()));
+            if (i == products.size() - 1) {
                 listOfListsOfButtons.add(listOfButtons);
             }
 

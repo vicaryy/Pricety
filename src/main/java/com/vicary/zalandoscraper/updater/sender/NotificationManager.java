@@ -5,7 +5,7 @@ import com.vicary.zalandoscraper.factory.ChatNotificationFactory;
 import com.vicary.zalandoscraper.model.Email;
 import com.vicary.zalandoscraper.model.ChatNotification;
 import com.vicary.zalandoscraper.factory.EmailNotificationFactory;
-import com.vicary.zalandoscraper.service.dto.ProductDTO;
+import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.service.repository_services.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -27,8 +27,8 @@ public class NotificationManager {
 
     private final EmailNotificationSender emailSender;
 
-    public void sendPriceNotifications(List<ProductDTO> DTOs) {
-        List<ProductDTO> listThatNeedsToBeSend = DTOs.stream()
+    public void sendPriceNotifications(List<Product> products) {
+        List<Product> listThatNeedsToBeSend = products.stream()
                 .filter(this::isUserNeedsNotify)
                 .toList();
         if (listThatNeedsToBeSend.isEmpty()) {
@@ -61,7 +61,7 @@ public class NotificationManager {
         displayLogsAfterSendWaitingUser();
     }
 
-    boolean isUserNeedsNotify(ProductDTO p) {
+    boolean isUserNeedsNotify(Product p) {
         if (p.getPriceAlert().equals("OFF") || p.getNewPrice() == 0)
             return false;
 
@@ -73,7 +73,7 @@ public class NotificationManager {
         return p.getNewPrice() <= priceAlert;
     }
 
-    void updatePriceAlertInRepository(ProductDTO p) {
+    void updatePriceAlertInRepository(Product p) {
         if (p.getPriceAlert().equals("OFF") || p.getPriceAlert().equals("AUTO"))
             return;
 
@@ -82,18 +82,18 @@ public class NotificationManager {
             productService.updateProductPriceAlert(p.getProductId(), "OFF");
     }
 
-    private List<ChatNotification> getChatNotifications(List<ProductDTO> DTOs) {
-        if (DTOs.isEmpty())
+    private List<ChatNotification> getChatNotifications(List<Product> products) {
+        if (products.isEmpty())
             return Collections.emptyList();
 
-        return DTOs.stream()
+        return products.stream()
                 .map(ChatNotificationFactory::getPriceAlertNotification)
                 .toList();
     }
 
-    private List<Email> getEmailNotifications(List<ProductDTO> DTOs) {
-        List<ProductDTO> listWithEnabledEmailNotifies = DTOs.stream()
-                .filter(ProductDTO::isNotifyByEmail)
+    private List<Email> getEmailNotifications(List<Product> products) {
+        List<Product> listWithEnabledEmailNotifies = products.stream()
+                .filter(p -> p.getUser().isNotifyByEmail())
                 .toList();
         if (listWithEnabledEmailNotifies.isEmpty())
             return Collections.emptyList();

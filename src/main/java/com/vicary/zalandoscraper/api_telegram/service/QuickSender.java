@@ -11,6 +11,7 @@ import com.vicary.zalandoscraper.api_telegram.api_request.send.SendMessage;
 import com.vicary.zalandoscraper.model.ChatNotification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 public class QuickSender {
     private final Logger logger = LoggerFactory.getLogger(QuickSender.class);
@@ -27,6 +28,12 @@ public class QuickSender {
             if (markdownV2)
                 sendMessage.setParseMode(ParseMode.MarkdownV2);
             requestService.sendWithoutResponse(sendMessage);
+        } catch (WebClientResponseException ex) {
+            logger.warn("---------------------------");
+            logger.warn("Error in sending message request.");
+            logger.warn("Status code: " + ex.getStatusCode());
+            logger.warn("Description: " + ex.getStatusText());
+            logger.warn("---------------------------");
         } catch (Exception ex) {
             logger.warn("Error in sending message request, message: {}", ex.getMessage());
         }

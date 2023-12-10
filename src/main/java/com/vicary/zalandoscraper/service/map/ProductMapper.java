@@ -1,12 +1,12 @@
 package com.vicary.zalandoscraper.service.map;
 
+import com.vicary.zalandoscraper.model.User;
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
 import com.vicary.zalandoscraper.entity.NotificationEntity;
 import com.vicary.zalandoscraper.entity.ProductEntity;
 import com.vicary.zalandoscraper.entity.UpdateHistoryEntity;
 import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.service.repository_services.UserService;
-import com.vicary.zalandoscraper.service.dto.ProductDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -36,10 +36,9 @@ public class ProductMapper {
                 .build();
     }
 
-    public ProductDTO map(ProductEntity product) {
-        return ProductDTO.builder()
+    public Product map(ProductEntity product) {
+        return Product.builder()
                 .productId(product.getId())
-                .userId(product.getUser().getUserId())
                 .name(product.getName())
                 .description(product.getDescription())
                 .link(product.getLink())
@@ -47,51 +46,59 @@ public class ProductMapper {
                 .price(product.getPrice())
                 .newPrice(product.getPrice())
                 .priceAlert(product.getPriceAlert())
-                .email(product.getUser().getEmail())
-                .language(product.getUser().getNationality())
-                .notifyByEmail(product.getUser().isNotifyByEmail() && product.getUser().isVerifiedEmail())
+                .serviceName(product.getServiceName())
+                .currency(product.getCurrency())
+                .user(User.builder()
+                        .userId(product.getUser().getUserId())
+                        .email(product.getUser().getEmail())
+                        .nick(product.getUser().getNick())
+                        .language(product.getUser().getNationality())
+                        .premium(product.getUser().isPremium())
+                        .admin(product.getUser().isAdmin())
+                        .notifyByEmail(product.getUser().isNotifyByEmail())
+                        .build())
                 .build();
     }
 
-    public List<ProductDTO> map(List<ProductEntity> products) {
+    public List<Product> map(List<ProductEntity> products) {
         return products.stream()
                 .map(this::map)
                 .collect(Collectors.toList());
     }
 
-    private UpdateHistoryEntity map(ProductDTO productDTO, LocalDateTime localDateTime) {
+    private UpdateHistoryEntity map(Product product, LocalDateTime localDateTime) {
         return UpdateHistoryEntity.builder()
-                .productId(productDTO.getProductId())
-                .price(productDTO.getNewPrice())
+                .productId(product.getProductId())
+                .price(product.getNewPrice())
                 .lastUpdate(localDateTime)
                 .build();
     }
 
-    public List<UpdateHistoryEntity> mapToHistoryEntityList(List<ProductDTO> productDTOs) {
+    public List<UpdateHistoryEntity> mapToHistoryEntityList(List<Product> product) {
         LocalDateTime localDateTime = LocalDateTime.now();
 
-        return productDTOs.stream()
+        return product.stream()
                 .map(productDTO -> map(productDTO, localDateTime))
                 .collect(Collectors.toList());
     }
 
-    private NotificationEntity mapToNotificationEntity(ProductDTO productDTO) {
+    private NotificationEntity mapToNotificationEntity(Product product) {
         return NotificationEntity.builder()
-                .userId(productDTO.getUserId())
-                .email(productDTO.getEmail())
-                .productName(productDTO.getName())
-                .description(productDTO.getDescription())
-                .variant(productDTO.getVariant())
-                .newPrice(productDTO.getNewPrice())
-                .oldPrice(productDTO.getPrice())
-                .link(productDTO.getLink())
-                .priceAlert(productDTO.getPriceAlert())
-                .notifyByEmail(productDTO.isNotifyByEmail())
+                .userId(product.getUser().getUserId())
+                .email(product.getUser().getEmail())
+                .productName(product.getName())
+                .description(product.getDescription())
+                .variant(product.getVariant())
+                .newPrice(product.getNewPrice())
+                .oldPrice(product.getPrice())
+                .link(product.getLink())
+                .priceAlert(product.getPriceAlert())
+                .notifyByEmail(product.getUser().isNotifyByEmail())
                 .build();
     }
 
-    public List<NotificationEntity> mapToNotificationEntity(List<ProductDTO> productDTOs) {
-        return productDTOs.stream()
+    public List<NotificationEntity> mapToNotificationEntity(List<Product> products) {
+        return products.stream()
                 .map(this::mapToNotificationEntity)
                 .collect(Collectors.toList());
     }

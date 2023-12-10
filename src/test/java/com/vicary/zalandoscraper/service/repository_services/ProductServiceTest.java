@@ -2,9 +2,9 @@ package com.vicary.zalandoscraper.service.repository_services;
 
 import com.vicary.zalandoscraper.entity.ProductEntity;
 import com.vicary.zalandoscraper.entity.UserEntity;
+import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.repository.ProductRepository;
 import com.vicary.zalandoscraper.service.UpdateReceiverService;
-import com.vicary.zalandoscraper.service.dto.ProductDTO;
 import com.vicary.zalandoscraper.service.map.ProductMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +40,7 @@ class ProductServiceTest {
     @Test
     void updateProductPrices_updateOnlyPrice_PriceAlertAUTO() {
         //given
-        ProductDTO dto = ProductDTO.builder()
+        Product givenProduct = Product.builder()
                 .productId(123L)
                 .price(200)
                 .newPrice(100)
@@ -48,17 +48,17 @@ class ProductServiceTest {
                 .build();
 
         //when
-        productService.updateProductPrices(List.of(dto));
+        productService.updateProductPrices(List.of(givenProduct));
 
         //then
-        verify(repository, times(1)).updatePrice(dto.getProductId(), dto.getNewPrice());
+        verify(repository, times(1)).updatePrice(givenProduct.getProductId(), givenProduct.getNewPrice());
         verify(repository, times(0)).updatePriceAndPriceAlert(anyLong(), anyDouble(), anyString());
     }
 
     @Test
     void updateProductPrices_updateOnlyPrice_PriceAlertOFF() {
         //given
-        ProductDTO dto = ProductDTO.builder()
+        Product givenProduct = Product.builder()
                 .productId(123L)
                 .price(200)
                 .newPrice(100)
@@ -66,17 +66,17 @@ class ProductServiceTest {
                 .build();
 
         //when
-        productService.updateProductPrices(List.of(dto));
+        productService.updateProductPrices(List.of(givenProduct));
 
         //then
-        verify(repository, times(1)).updatePrice(dto.getProductId(), dto.getNewPrice());
+        verify(repository, times(1)).updatePrice(givenProduct.getProductId(), givenProduct.getNewPrice());
         verify(repository, times(0)).updatePriceAndPriceAlert(anyLong(), anyDouble(), anyString());
     }
 
     @Test
     void updateProductPrices_updateOnlyPrice_NewPriceIsZeroAndPriceAlertIsSpecified() {
         //given
-        ProductDTO dto = ProductDTO.builder()
+        Product givenProduct = Product.builder()
                 .productId(123L)
                 .price(200)
                 .newPrice(0)
@@ -84,17 +84,17 @@ class ProductServiceTest {
                 .build();
 
         //when
-        productService.updateProductPrices(List.of(dto));
+        productService.updateProductPrices(List.of(givenProduct));
 
         //then
-        verify(repository, times(1)).updatePrice(dto.getProductId(), dto.getNewPrice());
+        verify(repository, times(1)).updatePrice(givenProduct.getProductId(), givenProduct.getNewPrice());
         verify(repository, times(0)).updatePriceAndPriceAlert(anyLong(), anyDouble(), anyString());
     }
 
     @Test
     void updateProductPrices_updateOnlyPrice_PriceAlertIsLowerThanNewPrice() {
         //given
-        ProductDTO dto = ProductDTO.builder()
+        Product givenProduct = Product.builder()
                 .productId(123L)
                 .price(200)
                 .newPrice(150)
@@ -102,17 +102,17 @@ class ProductServiceTest {
                 .build();
 
         //when
-        productService.updateProductPrices(List.of(dto));
+        productService.updateProductPrices(List.of(givenProduct));
 
         //then
-        verify(repository, times(1)).updatePrice(dto.getProductId(), dto.getNewPrice());
+        verify(repository, times(1)).updatePrice(givenProduct.getProductId(), givenProduct.getNewPrice());
         verify(repository, times(0)).updatePriceAndPriceAlert(anyLong(), anyDouble(), anyString());
     }
 
     @Test
     void updateProductPrices_updatePriceAndDisablePriceAlert_PriceAlertIsHigherThanNewPrice() {
         //given
-        ProductDTO dto = ProductDTO.builder()
+        Product givenProduct = Product.builder()
                 .productId(123L)
                 .price(200)
                 .newPrice(50)
@@ -120,10 +120,10 @@ class ProductServiceTest {
                 .build();
 
         //when
-        productService.updateProductPrices(List.of(dto));
+        productService.updateProductPrices(List.of(givenProduct));
 
         //then
-        verify(repository, times(1)).updatePriceAndPriceAlert(dto.getProductId(), dto.getNewPrice(), "OFF");
+        verify(repository, times(1)).updatePriceAndPriceAlert(givenProduct.getProductId(), givenProduct.getNewPrice(), "OFF");
         verify(repository, times(0)).updatePrice(anyLong(), anyDouble());
     }
 
@@ -137,7 +137,7 @@ class ProductServiceTest {
         when(userService.findByUserId(givenUserId)).thenReturn(givenUser);
         when(repository.findAllByUser(givenUser.get(), Sort.by("id"))).thenReturn(Collections.emptyList());
 
-        List<ProductDTO> actualList = productService.getAllProductsDtoByUserId(givenUserId);
+        List<Product> actualList = productService.getAllProductsByUserId(givenUserId);
 
         //then
         assertEquals(Collections.emptyList(), actualList);
@@ -155,7 +155,7 @@ class ProductServiceTest {
         when(userService.findByUserId(givenUserId)).thenReturn(givenUser);
         when(repository.findAllByUser(givenUser.get(), Sort.by("id"))).thenReturn(givenEntityList);
 
-        productService.getAllProductsDtoByUserId(givenUserId);
+        productService.getAllProductsByUserId(givenUserId);
 
         //then
         verify(mapper, times(1)).map(givenEntityList);

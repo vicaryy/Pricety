@@ -1,10 +1,10 @@
 package com.vicary.zalandoscraper.service.response;
 
 import com.vicary.zalandoscraper.messages.Messages;
+import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
 import com.vicary.zalandoscraper.exception.IllegalInputException;
 import com.vicary.zalandoscraper.pattern.Pattern;
-import com.vicary.zalandoscraper.service.dto.ProductDTO;
 import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
 
 public class AwaitedMessageResponse implements Responser {
@@ -40,9 +40,9 @@ public class AwaitedMessageResponse implements Responser {
         Long productId = Long.parseLong(request.split(" ")[1]);
         String priceAlert = getPriceAlertFromText(user.getText());
 
-        ProductDTO dto = responseFacade.getProductDTOById(productId);
+        Product product = responseFacade.getProductById(productId);
 
-        if (isPriceAlertHigherThanPrice(priceAlert, dto.getPrice()))
+        if (isPriceAlertHigherThanPrice(priceAlert, product.getPrice()))
             throw new IllegalInputException(Messages.other("priceAlertHigher"), "User '%s' specify price alert higher than actual price".formatted(user.getUserId()));
 
         responseFacade.updateProductPriceAlert(productId, priceAlert);
@@ -79,16 +79,20 @@ public class AwaitedMessageResponse implements Responser {
             return text.toUpperCase();
 
         try {
-            if (text.contains("zł"))
-                text = text.replaceFirst("zł", "");
+            if (text.length() > 20)
+                throw new NumberFormatException();
 
-            else if (text.contains("zl"))
-                text = text.replaceFirst("zl", "");
+            StringBuilder sb = new StringBuilder();
+            for (char ch : text.toCharArray())
+                if (Character.isDigit(ch) || ch == '.' || ch == ',')
+                    sb.append(ch);
 
-            if (text.contains(","))
-                text = text.replaceFirst(",", ".");
+            String price = sb.toString();
 
-            priceAlert = Double.parseDouble(text);
+            if (price.contains(","))
+                price = price.replaceFirst(",", ".");
+
+            priceAlert = Double.parseDouble(price);
 
             if (priceAlert <= 0)
                 throw new NumberFormatException();

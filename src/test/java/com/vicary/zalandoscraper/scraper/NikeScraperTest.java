@@ -7,7 +7,6 @@ import com.microsoft.playwright.Playwright;
 import com.microsoft.playwright.options.WaitUntilState;
 import com.vicary.zalandoscraper.exception.InvalidLinkException;
 import com.vicary.zalandoscraper.model.Product;
-import com.vicary.zalandoscraper.service.dto.ProductDTO;
 import com.vicary.zalandoscraper.thread_local.ActiveLanguage;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
@@ -156,32 +155,32 @@ class NikeScraperTest {
     @Test
     void updateProduct_expectTrue_OneVariantItem() {
         //given
-        ProductDTO givenDto = ProductDTO.builder()
+        Product givenProduct = Product.builder()
                 .price(500)
                 .newPrice(0)
                 .build();
 
         //when
-        runPlaywrightAndUpdateProduct(ONE_VARIANT_LINK, givenDto);
+        runPlaywrightAndUpdateProduct(ONE_VARIANT_LINK, givenProduct);
 
         //then
-        assertTrue(givenDto.getNewPrice() != 0);
+        assertTrue(givenProduct.getNewPrice() != 0);
     }
 
     @Test
     void updateProduct_expectEquals_ItemSoldOut() {
         //given
         int expectedPrice = 0;
-        ProductDTO givenDto = ProductDTO.builder()
+        Product givenProduct = Product.builder()
                 .price(500)
                 .newPrice(500)
                 .build();
 
         //when
-        runPlaywrightAndUpdateProduct(SOLD_OUT_LINK, givenDto);
+        runPlaywrightAndUpdateProduct(SOLD_OUT_LINK, givenProduct);
 
         //then
-        assertEquals(expectedPrice, givenDto.getNewPrice());
+        assertEquals(expectedPrice, givenProduct.getNewPrice());
     }
 
 
@@ -192,17 +191,17 @@ class NikeScraperTest {
         List<String> givenVariants = scraper.getAvailableVariants(givenLink);
         String givenVariant = givenVariants.get(ThreadLocalRandom.current().nextInt(0, givenVariants.size()));
 
-        ProductDTO givenDto = ProductDTO.builder()
+        Product givenProduct = Product.builder()
                 .price(500)
                 .newPrice(0)
                 .variant(givenVariant)
                 .build();
 
         //when
-        runPlaywrightAndUpdateProduct(givenLink, givenDto);
+        runPlaywrightAndUpdateProduct(givenLink, givenProduct);
 
         //then
-        assertTrue(givenDto.getNewPrice() != 0);
+        assertTrue(givenProduct.getNewPrice() != 0);
     }
 
     @Test
@@ -213,16 +212,16 @@ class NikeScraperTest {
         List<String> givenVariants = scraper.getNonAvailableVariants(givenLink);
         String givenVariant = givenVariants.get(ThreadLocalRandom.current().nextInt(0, givenVariants.size()));
 
-        ProductDTO givenDto = ProductDTO.builder()
+        Product givenProduct = Product.builder()
                 .price(500)
                 .newPrice(500)
                 .variant(givenVariant)
                 .build();
 
         //when
-        runPlaywrightAndUpdateProduct(givenLink, givenDto);
+        runPlaywrightAndUpdateProduct(givenLink, givenProduct);
 
-        assertEquals(expectedPrice, givenDto.getNewPrice());
+        assertEquals(expectedPrice, givenProduct.getNewPrice());
     }
 
     @Test
@@ -230,19 +229,19 @@ class NikeScraperTest {
         //given
         int expectedPrice = 0;
 
-        ProductDTO givenDto = ProductDTO.builder()
+        Product givenProduct = Product.builder()
                 .price(500)
                 .newPrice(500)
                 .variant("variant")
                 .build();
 
         //when
-        runPlaywrightAndUpdateProduct(NOT_AVAILABLE_LINK, givenDto);
+        runPlaywrightAndUpdateProduct(NOT_AVAILABLE_LINK, givenProduct);
 
-        assertEquals(expectedPrice, givenDto.getNewPrice());
+        assertEquals(expectedPrice, givenProduct.getNewPrice());
     }
 
-    void runPlaywrightAndUpdateProduct(String link, ProductDTO givenDto) {
+    void runPlaywrightAndUpdateProduct(String link, Product product) {
         Map<String, String> extraHeaders = Map.of("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36");
         BrowserType.LaunchOptions launchOptions = new DefaultLaunchOptions();
         Page.NavigateOptions navigateOptions = new Page.NavigateOptions().setWaitUntil(WaitUntilState.COMMIT);
@@ -254,7 +253,7 @@ class NikeScraperTest {
             page.setExtraHTTPHeaders(extraHeaders);
             page.navigate(link, navigateOptions);
 
-            scraper.updateProduct(page, givenDto);
+            scraper.updateProduct(page, product);
         }
     }
 }

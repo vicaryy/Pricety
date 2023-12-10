@@ -3,7 +3,6 @@ package com.vicary.zalandoscraper.service.repository_services;
 import com.vicary.zalandoscraper.entity.ProductEntity;
 import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.repository.ProductRepository;
-import com.vicary.zalandoscraper.service.dto.ProductDTO;
 import com.vicary.zalandoscraper.service.map.ProductMapper;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -26,7 +25,7 @@ public class ProductService {
 
     private final UserService userService;
 
-    public ProductDTO getProductDTOById(Long productId) {
+    public Product getProductDTOById(Long productId) {
         return mapper.map(repository.findById(productId).get());
     }
 
@@ -42,15 +41,15 @@ public class ProductService {
         repository.updatePriceAlert(productId, priceAlert);
     }
 
-    public List<ProductDTO> getAllProductsDtoSortById() {
+    public List<Product> getAllProductsSortById() {
         return mapper.map(repository.findAll(Sort.by("id")));
     }
 
-    public List<ProductDTO> getAllProductsDtoSortByLink() {
+    public List<Product> getAllProductsSortByLink() {
         return mapper.map(repository.findAll(Sort.by("link")));
     }
 
-    public List<ProductDTO> getAllProductsDtoByUserId(String userId) {
+    public List<Product> getAllProductsByUserId(String userId) {
         List<ProductEntity> productEntities = repository.findAllByUser(userService.findByUserId(userId).get(), Sort.by("id"));
 
         if (productEntities.isEmpty())
@@ -59,8 +58,8 @@ public class ProductService {
         return mapper.map(productEntities);
     }
 
-    public void updateProductPrices(List<ProductDTO> productDTOs) {
-        for (ProductDTO p : productDTOs) {
+    public void updateProductPrices(List<Product> products) {
+        for (Product p : products) {
             if (p.getPriceAlert().equals("AUTO") || p.getPriceAlert().equals("OFF"))
                 updatePriceById(p.getProductId(), p.getNewPrice());
 
@@ -91,9 +90,8 @@ public class ProductService {
     }
 
     public void saveProduct(Product product) {
-        logger.debug(product.toString());
-//        repository.save(mapper.map(product));
-//        logger.info("[Product Service] Added new product to database link: {}", product.getLink());
+        repository.save(mapper.map(product));
+        logger.info("[Product Service] Added new product to database link: {}", product.getLink());
     }
 
     public ProductEntity getProductById(Long id) {

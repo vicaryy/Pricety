@@ -7,7 +7,6 @@ import com.vicary.zalandoscraper.utils.PrettyTime;
 import com.vicary.zalandoscraper.entity.AwaitedMessageEntity;
 import com.vicary.zalandoscraper.entity.LinkRequestEntity;
 import com.vicary.zalandoscraper.model.Product;
-import com.vicary.zalandoscraper.service.dto.ProductDTO;
 import com.vicary.zalandoscraper.service.repository_services.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -39,8 +38,8 @@ public class ResponseFacade {
         productService.saveProduct(product);
     }
 
-    public List<ProductDTO> getAllProductsByUserId(String userId) {
-        return productService.getAllProductsDtoByUserId(userId);
+    public List<Product> getAllProductsByUserId(String userId) {
+        return productService.getAllProductsByUserId(userId);
     }
 
     public void createAndSaveAwaitedMessage(String userId, String request) {
@@ -110,7 +109,7 @@ public class ResponseFacade {
         return awaitedMessageService.getRequestAndDeleteMessage(userId);
     }
 
-    public ProductDTO getProductDTOById(Long productId) {
+    public Product getProductById(Long productId) {
         return productService.getProductDTOById(productId);
     }
 
