@@ -91,8 +91,9 @@ public class ProductService {
     }
 
     public void saveProduct(Product product) {
-        repository.save(mapper.map(product));
-        logger.info("[Product Service] Added new product to database link: {}", product.getLink());
+        logger.debug(product.toString());
+//        repository.save(mapper.map(product));
+//        logger.info("[Product Service] Added new product to database link: {}", product.getLink());
     }
 
     public ProductEntity getProductById(Long id) {

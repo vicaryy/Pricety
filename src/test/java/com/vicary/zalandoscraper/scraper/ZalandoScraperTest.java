@@ -272,6 +272,19 @@ class ZalandoScraperTest {
     }
 
     @Test
+    void getServiceName_expectEquals_ZalandoEnAndDe() {
+        //given
+        String givenLink = "https://en.zalando.de/asdasd-asd/asd.html";
+        String expectedServiceName = "zalando.de";
+
+        //when
+        String actualServiceName = scraper.getServiceName(givenLink);
+
+        //then
+        assertEquals(expectedServiceName, actualServiceName);
+    }
+
+    @Test
     void getProduct_NotAvailableVariant_UK() {
         //given
         String givenLink = "https://it.zalando.ch/hugo-t-shirt-basic-blackwhite-hu722o05k-q11.html";

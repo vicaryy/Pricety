@@ -66,6 +66,6 @@ public class Pattern {
     }
 
     public static boolean isAdminCommand(String text, boolean isAdmin) {
-        return isAdmin && text.startsWith("/");
+        return isAdmin && text.startsWith("//");
     }
 }

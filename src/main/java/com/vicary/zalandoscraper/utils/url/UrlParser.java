@@ -23,18 +23,14 @@ public class UrlParser {
     }
 
     public String parse(String URL) {
+        if (isExceptional(URL))
+            return URL;
+
         if (isShortener(URL))
             URL = expandURL(URL);
 
-        if (checkExceptions(URL))
+        if (URL.startsWith("https://www."))
             return URL;
-
-        if (URL.startsWith("https://en.")
-                || URL.startsWith("https://fr.")
-                || URL.startsWith("https://it."))
-
-            if (URL.startsWith("https://www."))
-                return URL;
 
         if (URL.startsWith("http://www."))
             return URL.replaceFirst("http", "https");
@@ -51,23 +47,20 @@ public class UrlParser {
         return "https://www." + URL;
     }
 
-    private boolean isShortener(String URL) {
-        for (var u : urlShortens)
-            if (URL.contains(u))
-                return true;
-        return false;
+    private String parseExceptional(String URL) {
+        return "https://www." + URL.substring(11);
     }
 
     private String expandURL(String URL) {
         return urlExpander.expand(URL).orElseThrow(() -> new UrlParserException("Cannot expand URL: " + URL));
     }
 
-    private boolean checkExceptions(String URL) {
-        checkZalandoExceptions(URL);
-        for (var u : zalandoExceptions)
-            if (URL.startsWith(u))
-                return true;
-        return false;
+    private boolean isShortener(String URL) {
+        return urlShortens.stream().anyMatch(URL::contains);
+    }
+
+    private boolean isExceptional(String URL) {
+        return zalandoExceptions.stream().anyMatch(URL::startsWith);
     }
 
     public void setShortener(String shortener) {

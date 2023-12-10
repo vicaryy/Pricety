@@ -1,7 +1,6 @@
 package com.vicary.zalandoscraper.service;
 
 import com.microsoft.playwright.PlaywrightException;
-import com.microsoft.playwright.Response;
 import com.vicary.zalandoscraper.exception.*;
 import com.vicary.zalandoscraper.messages.Messages;
 import com.vicary.zalandoscraper.scraper.Scraper;

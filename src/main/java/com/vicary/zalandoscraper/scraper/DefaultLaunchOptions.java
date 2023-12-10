@@ -16,6 +16,6 @@ public class DefaultLaunchOptions extends BrowserType.LaunchOptions {
                 "--no-zygote",
                 "--disable-gpu"
         ));
-//        setHeadless(false);
+        setHeadless(false);
     }
 }

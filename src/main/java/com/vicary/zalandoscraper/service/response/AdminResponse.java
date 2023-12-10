@@ -37,40 +37,40 @@ public class AdminResponse implements Responser {
     }
 
     public void response() {
-        if (user.getText().startsWith("/set premium "))
+        if (user.getText().startsWith("//set premium "))
             setPremium();
 
-        else if (user.getText().startsWith("/set standard "))
+        else if (user.getText().startsWith("//set standard "))
             setStandard();
 
-        else if (user.getText().startsWith("/set admin "))
+        else if (user.getText().startsWith("//set admin "))
             setAdmin();
 
-        else if (user.getText().startsWith("/set non-admin "))
+        else if (user.getText().startsWith("//set non-admin "))
             setNonAdmin();
 
-        else if (user.getText().startsWith("/set command "))
+        else if (user.getText().startsWith("//set command "))
             setCommand();
 
-        else if (user.getText().startsWith("/remove command "))
+        else if (user.getText().startsWith("//remove command "))
             removeCommand();
 
-        else if (user.getText().startsWith("/remove commands all"))
+        else if (user.getText().startsWith("//remove commands all"))
             removeAllCommands();
 
-        else if (user.getText().equals("/update start"))
+        else if (user.getText().equals("//update start"))
             updateStart();
 
-        else if (user.getText().equals("/update start once"))
+        else if (user.getText().equals("//update start once"))
             updateStartOnce();
 
-        else if (user.getText().equals("/update stop"))
+        else if (user.getText().equals("//update stop"))
             updateStop();
 
-        else if (user.getText().equals("/update state"))
+        else if (user.getText().equals("//update state"))
             updateGetState();
 
-        else if (user.getText().equals("/get all"))
+        else if (user.getText().equals("//get all"))
             getAllCommands();
     }
 
@@ -79,24 +79,24 @@ public class AdminResponse implements Responser {
                 List of commands:
                 
                 *Set:*
-                /set premium \\+ nick
-                /set standard \\+ nick
-                /set admin \\+ nick
-                /set non\\-admin \\+ nick
-                /set command \\+ command
+                //set premium \\+ nick
+                //set standard \\+ nick
+                //set admin \\+ nick
+                //set non\\-admin \\+ nick
+                //set command \\+ command
                
                 *Remove:*
-                /remove command \\+ command
-                /remove commands all
+                //remove command \\+ command
+                //remove commands all
                 
                 *Update:*
-                /update start
-                /update start once
-                /update stop
-                /update state
+                //update start
+                //update start once
+                //update stop
+                //update state
                 
                 *Get:*
-                /get all \\- getting all commands
+                //get all \\- getting all commands
                 """;
         quickSender.message(user.getChatId(), commands, true);
     }

@@ -88,16 +88,14 @@ public class ZalandoScraper implements Scraper {
         }
     }
 
-
     @Override
     public Product getProduct(String link, String variant) {
         try (Playwright playwright = Playwright.create()) {
-            Browser browser = playwright.chromium().launch();
+            Browser browser = playwright.chromium().launch(launchOptions);
             Page page = browser.newPage();
             page.setDefaultTimeout(10000);
             page.setExtraHTTPHeaders(extraHeaders);
             page.navigate(link);
-
             try {
                 Product product = Product.builder()
                         .name(getName(page))
@@ -110,15 +108,18 @@ public class ZalandoScraper implements Scraper {
                         .build();
 
                 if (isItemSoldOut(page)) {
+                    logger.debug("Item sold out.");
                     return product;
                 }
 
                 if (variant.startsWith("-oneVariant")) {
+                    logger.debug("Item one variant.");
                     product.setPrice(getPrice(page));
                     return product;
                 }
 
                 if (isVariantAlreadyChosen(page, variant)) {
+                    logger.debug("Item variant already chosen.");
                     product.setPrice(getPrice(page));
                     return product;
                 }
@@ -127,9 +128,12 @@ public class ZalandoScraper implements Scraper {
 
                 List<Locator> availableVariantsAsLocators = getAvailableVariantsAsLocators(page);
 
-                if (!clickAvailableVariant(availableVariantsAsLocators, variant))
+                if (!clickAvailableVariant(availableVariantsAsLocators, variant)) {
+                    logger.debug("Item variant don't available.");
                     return product;
+                }
 
+                logger.debug("Item variant available.");
                 product.setPrice(getPrice(page));
 
                 return product;
@@ -319,8 +323,8 @@ public class ZalandoScraper implements Scraper {
             price = page.locator(Tag.Zalando.PRICE_SPAN).first().textContent();
         else if (page.isVisible(Tag.Zalando.PRICE_P))
             price = page.locator(Tag.Zalando.PRICE_P).first().textContent();
-
-        System.out.println(price);
+        else if (page.isVisible(Tag.Zalando.PRICE_P_SECOND_VARIANT))
+            price = page.locator(Tag.Zalando.PRICE_P_SECOND_VARIANT).first().textContent();
 
         StringBuilder finalPrice = new StringBuilder();
         for (char c : price.toCharArray())
@@ -339,7 +343,7 @@ public class ZalandoScraper implements Scraper {
             return "kr";
         if (link.startsWith("https://www.zalando.ro/"))
             return "lei";
-        if (link.startsWith("https://www.it.zalando.ch/"))
+        if (link.startsWith("https://www.zalando.ch/"))
             return "CHF";
         if (link.startsWith("https://www.zalando.co.uk/"))
             return "£";
@@ -347,9 +351,11 @@ public class ZalandoScraper implements Scraper {
     }
 
     String getServiceName(String link) {
-        return link.replaceFirst("https://www.", "").split("/")[0];
+        String[] arrayLink = link.split("\\.");
+        return arrayLink[1] + "." + arrayLink[2].split("/")[0];
 
-        //https://it.zalando.ch/uomo-home/
+        // https://www.zalando.whatever123/asdasd-asd/asd.html
+        // https://www  zalando  whatever123/asdasd-asd/asd.html
     }
 
 

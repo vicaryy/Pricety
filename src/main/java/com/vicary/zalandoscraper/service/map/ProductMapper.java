@@ -29,6 +29,8 @@ public class ProductMapper {
                 .variant(product.getVariant())
                 .priceAlert("AUTO")
                 .link(product.getLink())
+                .currency(product.getCurrency())
+                .serviceName(product.getServiceName())
                 .user(userService.findByUserId(ActiveUser.get().getChatId())
                         .orElseThrow(() -> new NoSuchElementException("Error in mapping user")))
                 .build();

@@ -6,7 +6,9 @@ class Tag {
         static final String NAME = "span._ZDS_REF_SCOPE_._5FHGm_";
         static final String DESCRIPTION = "span.EKabf7.R_QwOV";
         static final String PRICE_SPAN = "span.sDq_FX._4sa1cA";
-        static final String PRICE_P = "div.hD5J5m > div > div > div > p.sDq_FX._4sa1cA";
+        static final String PRICE_P = "div.hD5J5m > div > div > p.sDq_FX._4sa1cA";
+        static final String PRICE_P_SECOND_VARIANT = "div.hD5J5m > div > div > div > p.sDq_FX._4sa1cA";
+        // #main-content > div.I7OI1O.C3wGFf > div > div._5qdMrS.VHXqc_.rceRmQ._4NtqZU.mIlIve > x-wrapper-re-1-4 > div.hD5J5m > div > div > div > p.sDq_FX._4sa1cA.FxZV-M.HlZ_Tf
         //#main-content > div.I7OI1O.C3wGFf > div > div._5qdMrS.VHXqc_.rceRmQ._4NtqZU.mIlIve > x-wrapper-re-1-4 > div.hD5J5m > div > div > div > p.sDq_FX._4sa1cA.FxZV-M.HlZ_Tf
         static final String MAIN_TAB = "div._5qdMrS.VHXqc_.rceRmQ._4NtqZU.mIlIve";
 //        static final String SOLD_OUT_TAB = "Artykuł wyprzedany";

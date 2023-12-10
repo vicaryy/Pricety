@@ -47,9 +47,9 @@ public class AutoUpdater {
         this.waitingUserService = waitingUserService;
         this.notificationManager = notificationManager;
 
-        scraperMap.put("zalando.pl", zalandoScraper);
-        scraperMap.put("hebe.pl", hebeScraper);
-        scraperMap.put("nike.pl", nikeScraper);
+        scraperMap.put("zalando", zalandoScraper);
+        scraperMap.put("hebe", hebeScraper);
+        scraperMap.put("nike", nikeScraper);
         state = new StopState(this);
     }
 
@@ -125,11 +125,10 @@ public class AutoUpdater {
         Map<String, List<ProductDTO>> serviceMap = new LinkedHashMap<>();
 
         for (ProductDTO dto : DTOs) {
-            String service = dto.getServiceName();
+            String service = dto.getServiceName().split("\\.")[0];
 
-            if (!serviceMap.containsKey(service)) {
+            if (!serviceMap.containsKey(service))
                 serviceMap.put(service, new ArrayList<>());
-            }
 
             serviceMap.get(service).add(dto);
         }

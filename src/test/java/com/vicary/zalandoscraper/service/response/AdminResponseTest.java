@@ -55,7 +55,7 @@ class AdminResponseTest {
         //given
         String givenNick = "user123";
         ActiveUser givenUser = getDefaultActiveUser();
-        givenUser.setText("/set premium " + givenNick);
+        givenUser.setText("//set premium " + givenNick);
 
         //when
         when(responseFacade.updateUserToPremiumByNick(givenNick)).thenReturn(true);
@@ -73,7 +73,7 @@ class AdminResponseTest {
         //given
         String givenNick = "user123";
         ActiveUser givenUser = getDefaultActiveUser();
-        givenUser.setText("/set premium " + givenNick);
+        givenUser.setText("//set premium " + givenNick);
 
         //when
         when(responseFacade.updateUserToPremiumByNick(givenNick)).thenReturn(false);
@@ -90,7 +90,7 @@ class AdminResponseTest {
         //given
         String givenNick = "user123";
         ActiveUser givenUser = getDefaultActiveUser();
-        givenUser.setText("/set standard " + givenNick);
+        givenUser.setText("//set standard " + givenNick);
 
         //when
         when(responseFacade.updateUserToStandardByNick(givenNick)).thenReturn(true);
@@ -108,7 +108,7 @@ class AdminResponseTest {
         //given
         String givenNick = "user123";
         ActiveUser givenUser = getDefaultActiveUser();
-        givenUser.setText("/set standard " + givenNick);
+        givenUser.setText("//set standard " + givenNick);
 
         //when
         when(responseFacade.updateUserToStandardByNick(givenNick)).thenReturn(false);
@@ -125,7 +125,7 @@ class AdminResponseTest {
         //given
         String givenNick = "user123";
         ActiveUser givenUser = getDefaultActiveUser();
-        givenUser.setText("/set admin " + givenNick);
+        givenUser.setText("//set admin " + givenNick);
 
         //when
         when(responseFacade.updateUserToAdminByNick(givenNick)).thenReturn(true);
@@ -143,7 +143,7 @@ class AdminResponseTest {
         //given
         String givenNick = "user123";
         ActiveUser givenUser = getDefaultActiveUser();
-        givenUser.setText("/set admin " + givenNick);
+        givenUser.setText("//set admin " + givenNick);
 
         //when
         when(responseFacade.updateUserToAdminByNick(givenNick)).thenReturn(false);
@@ -160,7 +160,7 @@ class AdminResponseTest {
         //given
         String givenNick = "user123";
         ActiveUser givenUser = getDefaultActiveUser();
-        givenUser.setText("/set non-admin " + givenNick);
+        givenUser.setText("//set non-admin " + givenNick);
 
         //when
         when(responseFacade.updateUserToNonAdminByNick(givenNick)).thenReturn(true);
@@ -178,7 +178,7 @@ class AdminResponseTest {
         //given
         String givenNick = "user123";
         ActiveUser givenUser = getDefaultActiveUser();
-        givenUser.setText("/set non-admin " + givenNick);
+        givenUser.setText("//set non-admin " + givenNick);
 
         //when
         when(responseFacade.updateUserToNonAdminByNick(givenNick)).thenReturn(false);
@@ -195,7 +195,7 @@ class AdminResponseTest {
         //given
         String givenCommand = "/command:description";
         ActiveUser givenUser = getDefaultActiveUser();
-        givenUser.setText("/set command " + givenCommand);
+        givenUser.setText("//set command " + givenCommand);
 
         //when
         adminResponse.setActiveUser(givenUser);
@@ -212,7 +212,7 @@ class AdminResponseTest {
         //given
         String givenCommand = "/commandDescription";
         ActiveUser givenUser = getDefaultActiveUser();
-        givenUser.setText("/set command " + givenCommand);
+        givenUser.setText("//set command " + givenCommand);
 
         //when
         adminResponse.setActiveUser(givenUser);
@@ -229,7 +229,7 @@ class AdminResponseTest {
         //given
         String givenCommand = "  :Description";
         ActiveUser givenUser = getDefaultActiveUser();
-        givenUser.setText("/set command " + givenCommand);
+        givenUser.setText("//set command " + givenCommand);
 
         //when
         adminResponse.setActiveUser(givenUser);
@@ -246,7 +246,7 @@ class AdminResponseTest {
         //given
         String givenCommand = "command:    ";
         ActiveUser givenUser = getDefaultActiveUser();
-        givenUser.setText("/set command " + givenCommand);
+        givenUser.setText("//set command " + givenCommand);
 
         //when
         adminResponse.setActiveUser(givenUser);
@@ -263,7 +263,7 @@ class AdminResponseTest {
         //given
         String givenCommand = ":";
         ActiveUser givenUser = getDefaultActiveUser();
-        givenUser.setText("/set command " + givenCommand);
+        givenUser.setText("//set command " + givenCommand);
 
         //when
         adminResponse.setActiveUser(givenUser);
@@ -280,7 +280,7 @@ class AdminResponseTest {
         //given
         String givenCommand = "//command:///asd";
         ActiveUser givenUser = getDefaultActiveUser();
-        givenUser.setText("/set command " + givenCommand);
+        givenUser.setText("//set command " + givenCommand);
 
         //when
         when(requestService.send((ApiRequest<?>) any())).thenThrow(IllegalInputException.class);
@@ -298,7 +298,7 @@ class AdminResponseTest {
         //given
         String givenCommand = "menu";
         ActiveUser givenUser = getDefaultActiveUser();
-        givenUser.setText("/remove command " + givenCommand);
+        givenUser.setText("//remove command " + givenCommand);
         List<?> givenBotCommands = getDefaultBotCommands();
 
         //when
@@ -316,7 +316,7 @@ class AdminResponseTest {
         //given
         String givenCommand = "/menu";
         ActiveUser givenUser = getDefaultActiveUser();
-        givenUser.setText("/remove command " + givenCommand);
+        givenUser.setText("//remove command " + givenCommand);
         List<?> givenBotCommands = getDefaultBotCommands();
 
         //when
@@ -335,7 +335,7 @@ class AdminResponseTest {
         //given
         String givenCommand = "invalid";
         ActiveUser givenUser = getDefaultActiveUser();
-        givenUser.setText("/remove command " + givenCommand);
+        givenUser.setText("//remove command " + givenCommand);
         List<?> givenBotCommands = getDefaultBotCommands();
 
         //when
@@ -353,7 +353,7 @@ class AdminResponseTest {
     void response_removeAllCommands_JustRemove() {
         //given
         ActiveUser givenUser = getDefaultActiveUser();
-        givenUser.setText("/remove commands all");
+        givenUser.setText("//remove commands all");
 
         //when
         adminResponse.setActiveUser(givenUser);
@@ -368,7 +368,7 @@ class AdminResponseTest {
     void response_expectNothing_WrongCommand() {
         //given
         ActiveUser givenUser = getDefaultActiveUser();
-        givenUser.setText("/wrong command");
+        givenUser.setText("//wrong command");
 
         //when
         adminResponse.setActiveUser(givenUser);
@@ -383,7 +383,7 @@ class AdminResponseTest {
     void response_startUpdated_JustStart() {
         //given
         ActiveUser givenUser = getDefaultActiveUser();
-        givenUser.setText("/update start");
+        givenUser.setText("//update start");
 
         //when
         adminResponse.setActiveUser(givenUser);
@@ -399,7 +399,7 @@ class AdminResponseTest {
     void response_startUpdated_ThrowsException() {
         //given
         ActiveUser givenUser = getDefaultActiveUser();
-        givenUser.setText("/update start");
+        givenUser.setText("//update start");
 
         //when
         doThrow(new ZalandoScraperBotException("asd", "dsa")).when(autoUpdater).start();
@@ -415,7 +415,7 @@ class AdminResponseTest {
     void response_stopUpdated_JustStop() {
         //given
         ActiveUser givenUser = getDefaultActiveUser();
-        givenUser.setText("/update stop");
+        givenUser.setText("//update stop");
 
         //when
         adminResponse.setActiveUser(givenUser);
@@ -431,7 +431,7 @@ class AdminResponseTest {
     void response_stopUpdated_ThrowsException() {
         //given
         ActiveUser givenUser = getDefaultActiveUser();
-        givenUser.setText("/update stop");
+        givenUser.setText("//update stop");
 
         //when
         doThrow(new ZalandoScraperBotException("asd", "dsa")).when(autoUpdater).stop();
@@ -447,7 +447,7 @@ class AdminResponseTest {
     void response_startOnceUpdated_JustStart() {
         //given
         ActiveUser givenUser = getDefaultActiveUser();
-        givenUser.setText("/update start once");
+        givenUser.setText("//update start once");
 
         //when
         adminResponse.setActiveUser(givenUser);
@@ -462,7 +462,7 @@ class AdminResponseTest {
     void response_startOnceUpdated_ThrowsException() {
         //given
         ActiveUser givenUser = getDefaultActiveUser();
-        givenUser.setText("/update start once");
+        givenUser.setText("//update start once");
 
         //when
         doThrow(new ZalandoScraperBotException("asd", "dsa")).when(autoUpdater).startOnce();
@@ -478,7 +478,7 @@ class AdminResponseTest {
     void response_getState_JustGetState() {
         //given
         ActiveUser givenUser = getDefaultActiveUser();
-        givenUser.setText("/update state");
+        givenUser.setText("//update state");
 
         //when
         adminResponse.setActiveUser(givenUser);
@@ -493,7 +493,7 @@ class AdminResponseTest {
     void response_getAll_JustGetAllCommands() {
         //given
         ActiveUser givenUser = getDefaultActiveUser();
-        givenUser.setText("/get all");
+        givenUser.setText("//get all");
 
         //when
         adminResponse.setActiveUser(givenUser);

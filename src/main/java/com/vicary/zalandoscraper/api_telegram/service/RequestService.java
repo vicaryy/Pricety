@@ -455,7 +455,6 @@ public class RequestService {
     }
 
     private String getRequestURL() {
-//        return "https://api.telegram.org/bot6889892570:AAHer1RJ_VxrkMCK7tDA0OA2dbm2j48bvIA";
         if (requestURL == null) {
             String botToken = UpdateFetcher.getBotToken();
             if (botToken == null) {
