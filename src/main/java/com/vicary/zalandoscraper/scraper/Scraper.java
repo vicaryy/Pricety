@@ -11,5 +11,10 @@ public interface Scraper {
 
     List<String> getAllVariants(String link);
 
+    /**
+     *
+     * Sometimes Scraper gets stuck and Updater force shutdown it.
+     * setBugged have to set Scraper to non-headless.
+     */
     void setBugged(boolean bugged);
 }

@@ -39,6 +39,16 @@ class PatternTest {
     }
 
     @Test
+    void isZalandoURL_expectTrue_ENZalandoDE() {
+        //given
+        String givenLink = "https://en.zalando.de/asd";
+
+        //when
+        //then
+        assertTrue(Pattern.isZalandoURL(givenLink));
+    }
+
+    @Test
     void isZalandoURL_expectFalse_WrongCountry() {
         //given
         String givenLink = "https://www.zalando.wrong/asd";
@@ -62,6 +72,16 @@ class PatternTest {
     void isZalandoURL_expectFalse_NoHttps() {
         //given
         String givenLink = "www.zalando.pl/asd";
+
+        //when
+        //then
+        assertFalse(Pattern.isZalandoURL(givenLink));
+    }
+
+    @Test
+    void isZalandoURL_expectFalse_TripleSlash() {
+        //given
+        String givenLink = "https:///www.zalando.pl/asd";
 
         //when
         //then

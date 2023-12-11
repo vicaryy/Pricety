@@ -10,7 +10,7 @@ public class Pattern {
             + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$");
 
     private static final java.util.regex.Pattern urlPattern = java.util.regex.Pattern.compile("^[a-zA-Z0-9\\./:_-]*[a-zA-Z]\\.([a-z]{0,4})/.*");
-    private static final java.util.regex.Pattern zalandoPattern = java.util.regex.Pattern.compile(".+\\.zalando\\.(pl|cz|no|se|ro|ch|co.uk|es|sk|nl|at|fi|ie|it|be|lt|si|de|fr)/.+");
+    private static final java.util.regex.Pattern zalandoPattern = java.util.regex.Pattern.compile("https://[^/]+\\.zalando\\.(pl|cz|no|se|ro|ch|co.uk|es|sk|nl|at|fi|ie|it|be|lt|si|de|fr)/.+");
 
     public static boolean isZalandoURL(String text) {
         return zalandoPattern.matcher(text).matches();

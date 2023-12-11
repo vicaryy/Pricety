@@ -205,7 +205,7 @@ class NotificationManagerTest {
     }
 
     @Test
-    void sendPriceNotifications_expectReturn_DTOsDontNeedsToBeSend() {
+    void sendPriceNotifications_expectReturn_ProductsDontNeedsToBeSend() {
         //given
         List<Product> givenList = Arrays.asList(getNoNeedToSendProduct(), getNoNeedToSendProduct(), getNoNeedToSendProduct(), getNoNeedToSendProduct());
 
@@ -218,7 +218,7 @@ class NotificationManagerTest {
     }
 
     @Test
-    void sendPriceNotifications_expectSend_DTOsNeedsToBeSend() {
+    void sendPriceNotifications_expectSend_ProductsNeedsToBeSend() {
         //given
         List<Product> givenList = Arrays.asList(getNeedToSendProduct(), getNeedToSendProduct(), getNeedToSendProduct(), getNeedToSendProduct());
 
@@ -231,7 +231,7 @@ class NotificationManagerTest {
     }
 
     @Test
-    void sendPriceNotifications_expectSend_DTOsNeedsToBeSendButNotOnEmail() {
+    void sendPriceNotifications_expectSend_ProductsNeedsToBeSendButNotOnEmail() {
         //given
         List<Product> givenList = Arrays.asList(getNeedToSendButNotOnEmailProduct(), getNeedToSendButNotOnEmailProduct());
 
@@ -296,6 +296,8 @@ class NotificationManagerTest {
                 .priceAlert("100.00")
                 .user(User.builder().language("en").build())
                 .link("https://www.link.pl/")
+                .serviceName("link.pl")
+                .currency("zł")
                 .price(200)
                 .newPrice(50)
                 .name("name")
@@ -310,6 +312,8 @@ class NotificationManagerTest {
                 .priceAlert("100.00")
                 .user(User.builder().language("en").notifyByEmail(false).build())
                 .link("https://www.link.pl/")
+                .serviceName("link.pl")
+                .currency("zł")
                 .price(200)
                 .newPrice(50)
                 .name("name")

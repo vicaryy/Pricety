@@ -84,7 +84,7 @@ public class AwaitedMessageResponse implements Responser {
 
             StringBuilder sb = new StringBuilder();
             for (char ch : text.toCharArray())
-                if (Character.isDigit(ch) || ch == '.' || ch == ',')
+                if (Character.isDigit(ch) || ch == '.' || ch == ',' || ch == '-')
                     sb.append(ch);
 
             String price = sb.toString();

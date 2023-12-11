@@ -166,7 +166,7 @@ class UrlParserTest {
     void parse_expectEquals_ExceptionalURL() {
         //given
         String givenURL = "https://en.zalando.de/asd";
-        String expectedURL = "https://www.zalando.de/asd";
+        String expectedURL = "https://en.zalando.de/asd";
 
         //when
         String actualURL = parser.parse(givenURL);

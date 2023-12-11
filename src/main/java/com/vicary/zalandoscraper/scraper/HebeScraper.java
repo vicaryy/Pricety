@@ -28,13 +28,13 @@ public class HebeScraper implements Scraper {
                 browser.newPage();
                 browser.setDefaultTimeout(4000);
 
-                for (Product dto : products) {
+                for (Product p : products) {
                     Page newPage = browser.newPage();
                     newPage.setExtraHTTPHeaders(extraHeaders);
-                    newPage.navigate(dto.getLink(), navigateOptions);
+                    newPage.navigate(p.getLink(), navigateOptions);
                     newPage.setDefaultTimeout(4000);
 
-                    updateProduct(newPage, dto);
+                    updateProduct(newPage, p);
                 }
             }
         }

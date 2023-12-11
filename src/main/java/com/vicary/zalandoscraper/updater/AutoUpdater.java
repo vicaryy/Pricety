@@ -39,7 +39,8 @@ public class AutoUpdater {
                        WaitingUserService waitingUserService,
                        ZalandoScraper zalandoScraper,
                        HebeScraper hebeScraper,
-                       NikeScraper nikeScraper) {
+                       NikeScraper nikeScraper,
+                       HouseScraper houseScraper) {
         this.productService = productService;
         this.updatesHistoryService = updatesHistoryService;
         this.productMapper = productMapper;
@@ -49,6 +50,7 @@ public class AutoUpdater {
         scraperMap.put("zalando", zalandoScraper);
         scraperMap.put("hebe", hebeScraper);
         scraperMap.put("nike", nikeScraper);
+        scraperMap.put("house", houseScraper);
         state = new StopState(this);
     }
 

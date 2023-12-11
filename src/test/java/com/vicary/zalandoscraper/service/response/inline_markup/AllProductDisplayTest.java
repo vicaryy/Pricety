@@ -64,7 +64,7 @@ class AllProductDisplayTest {
     void display_expectEquals_MoreThanTenProducts() {
         //given
         ActiveUser givenUser = getDefaultActiveUser();
-        List<Product> givenProducts = getDefaultListOfDTOs(35);
+        List<Product> givenProducts = getDefaultListOfProducts(35);
         InlineKeyboardMarkup expectedReplyMarkup = InlineKeyboardMarkupFactory.getBack();
         List<String> expectedMessages = getFiveExpectedMessagesForThirtyFiveProducts();
 
@@ -100,65 +100,77 @@ class AllProductDisplayTest {
     }
 
     private List<Product> getFiveDifferentProducts() {
-        List<Product> DTOs = new ArrayList<>();
+        List<Product> products = new ArrayList<>();
 
-        DTOs.add(Product.builder()
+        products.add(Product.builder()
                 .name("example name")
                 .description("example description")
                 .link("https://www.link.pl/")
                 .variant("example variant")
+                .serviceName("zalando.pl")
+                .currency("zł")
                 .price(200.55)
                 .priceAlert("150.00")
                 .build());
-        DTOs.add(Product.builder()
+        products.add(Product.builder()
                 .name("example name")
                 .description("example description")
                 .link("https://www.link.pl/")
                 .variant("example variant")
+                .serviceName("zalando.ch")
+                .currency("CHF")
                 .price(0)
                 .priceAlert("AUTO")
                 .build());
-        DTOs.add(Product.builder()
+        products.add(Product.builder()
                 .name("example name")
                 .description("example description")
                 .link("https://www.link.pl/")
                 .variant("-oneVariant One Sizer")
+                .serviceName("hebe.pl")
+                .currency("zł")
                 .price(200.55)
                 .priceAlert("AUTO")
                 .build());
-        DTOs.add(Product.builder()
+        products.add(Product.builder()
                 .name("example name")
                 .description("example description")
                 .link("https://www.link.pl/")
                 .variant("-oneVariant Unknown")
+                .serviceName("nike.pl")
+                .currency("zł")
                 .price(200.55)
                 .priceAlert("OFF")
                 .build());
-        DTOs.add(Product.builder()
+        products.add(Product.builder()
                 .name("example name")
                 .description("example description")
                 .link("https://www.link.pl/")
                 .variant("example variant")
+                .serviceName("zalando.de")
+                .currency("€")
                 .price(200.55)
                 .priceAlert("AUTO")
                 .build());
 
-        return DTOs;
+        return products;
     }
 
-    private List<Product> getDefaultListOfDTOs(int howMuch) {
-        List<Product> DTOs = new ArrayList<>();
+    private List<Product> getDefaultListOfProducts(int howMuch) {
+        List<Product> products = new ArrayList<>();
         for (int i = 0; i < howMuch; i++) {
-            DTOs.add(Product.builder()
+            products.add(Product.builder()
                     .name("example name")
                     .description("example description")
                     .link("https://www.link.pl/")
                     .variant("example variant")
+                    .serviceName("zalando.pl")
+                    .currency("zł")
                     .price(200.55)
                     .priceAlert("AUTO")
                     .build());
         }
-        return DTOs;
+        return products;
     }
 
     private String getExpectedMessageForFiveProducts() {
@@ -169,7 +181,7 @@ class AllProductDisplayTest {
 
                 *Name:* example name
                 *Description:* example description
-                *Link:* [link](https://www\\.link\\.pl/)
+                *Link:* [zalando․pl](https://www\\.link\\.pl/)
                 *Variant:* example variant
                 *Price:* 200\\.55 zł
                 *Price Alert:* 150\\.00 zł
@@ -180,7 +192,7 @@ class AllProductDisplayTest {
 
                 *Name:* example name
                 *Description:* example description
-                *Link:* [link](https://www\\.link\\.pl/)
+                *Link:* [zalando․ch](https://www\\.link\\.pl/)
                 *Variant:* example variant
                 *Price:* Sold Out
                 *Price Alert:* AUTO
@@ -191,7 +203,7 @@ class AllProductDisplayTest {
 
                 *Name:* example name
                 *Description:* example description
-                *Link:* [link](https://www\\.link\\.pl/)
+                *Link:* [hebe․pl](https://www\\.link\\.pl/)
                 *Variant:* One Sizer
                 *Price:* 200\\.55 zł
                 *Price Alert:* AUTO
@@ -202,7 +214,7 @@ class AllProductDisplayTest {
 
                 *Name:* example name
                 *Description:* example description
-                *Link:* [link](https://www\\.link\\.pl/)
+                *Link:* [nike․pl](https://www\\.link\\.pl/)
                 *Variant:* Undefined
                 *Price:* 200\\.55 zł
                 *Price Alert:* OFF
@@ -213,9 +225,9 @@ class AllProductDisplayTest {
 
                 *Name:* example name
                 *Description:* example description
-                *Link:* [link](https://www\\.link\\.pl/)
+                *Link:* [zalando․de](https://www\\.link\\.pl/)
                 *Variant:* example variant
-                *Price:* 200\\.55 zł
+                *Price:* 200\\.55 €
                 *Price Alert:* AUTO
 
 
@@ -231,7 +243,7 @@ class AllProductDisplayTest {
 
                 *Name:* example name
                 *Description:* example description
-                *Link:* [link](https://www\\.link\\.pl/)
+                *Link:* [zalando․pl](https://www\\.link\\.pl/)
                 *Variant:* example variant
                 *Price:* 200\\.55 zł
                 *Price Alert:* AUTO
@@ -242,7 +254,7 @@ class AllProductDisplayTest {
 
                 *Name:* example name
                 *Description:* example description
-                *Link:* [link](https://www\\.link\\.pl/)
+                *Link:* [zalando․pl](https://www\\.link\\.pl/)
                 *Variant:* example variant
                 *Price:* 200\\.55 zł
                 *Price Alert:* AUTO
@@ -253,7 +265,7 @@ class AllProductDisplayTest {
 
                 *Name:* example name
                 *Description:* example description
-                *Link:* [link](https://www\\.link\\.pl/)
+                *Link:* [zalando․pl](https://www\\.link\\.pl/)
                 *Variant:* example variant
                 *Price:* 200\\.55 zł
                 *Price Alert:* AUTO
@@ -264,7 +276,7 @@ class AllProductDisplayTest {
 
                 *Name:* example name
                 *Description:* example description
-                *Link:* [link](https://www\\.link\\.pl/)
+                *Link:* [zalando․pl](https://www\\.link\\.pl/)
                 *Variant:* example variant
                 *Price:* 200\\.55 zł
                 *Price Alert:* AUTO
@@ -275,7 +287,7 @@ class AllProductDisplayTest {
 
                 *Name:* example name
                 *Description:* example description
-                *Link:* [link](https://www\\.link\\.pl/)
+                *Link:* [zalando․pl](https://www\\.link\\.pl/)
                 *Variant:* example variant
                 *Price:* 200\\.55 zł
                 *Price Alert:* AUTO
@@ -286,7 +298,7 @@ class AllProductDisplayTest {
 
                 *Name:* example name
                 *Description:* example description
-                *Link:* [link](https://www\\.link\\.pl/)
+                *Link:* [zalando․pl](https://www\\.link\\.pl/)
                 *Variant:* example variant
                 *Price:* 200\\.55 zł
                 *Price Alert:* AUTO
@@ -297,7 +309,7 @@ class AllProductDisplayTest {
 
                 *Name:* example name
                 *Description:* example description
-                *Link:* [link](https://www\\.link\\.pl/)
+                *Link:* [zalando․pl](https://www\\.link\\.pl/)
                 *Variant:* example variant
                 *Price:* 200\\.55 zł
                 *Price Alert:* AUTO
@@ -308,7 +320,7 @@ class AllProductDisplayTest {
 
                 *Name:* example name
                 *Description:* example description
-                *Link:* [link](https://www\\.link\\.pl/)
+                *Link:* [zalando․pl](https://www\\.link\\.pl/)
                 *Variant:* example variant
                 *Price:* 200\\.55 zł
                 *Price Alert:* AUTO
@@ -319,7 +331,7 @@ class AllProductDisplayTest {
 
                 *Name:* example name
                 *Description:* example description
-                *Link:* [link](https://www\\.link\\.pl/)
+                *Link:* [zalando․pl](https://www\\.link\\.pl/)
                 *Variant:* example variant
                 *Price:* 200\\.55 zł
                 *Price Alert:* AUTO
@@ -330,7 +342,7 @@ class AllProductDisplayTest {
 
                 *Name:* example name
                 *Description:* example description
-                *Link:* [link](https://www\\.link\\.pl/)
+                *Link:* [zalando․pl](https://www\\.link\\.pl/)
                 *Variant:* example variant
                 *Price:* 200\\.55 zł
                 *Price Alert:* AUTO
@@ -341,7 +353,7 @@ class AllProductDisplayTest {
 
                 *Name:* example name
                 *Description:* example description
-                *Link:* [link](https://www\\.link\\.pl/)
+                *Link:* [zalando․pl](https://www\\.link\\.pl/)
                 *Variant:* example variant
                 *Price:* 200\\.55 zł
                 *Price Alert:* AUTO
@@ -355,7 +367,7 @@ class AllProductDisplayTest {
 
                 *Name:* example name
                 *Description:* example description
-                *Link:* [link](https://www\\.link\\.pl/)
+                *Link:* [zalando․pl](https://www\\.link\\.pl/)
                 *Variant:* example variant
                 *Price:* 200\\.55 zł
                 *Price Alert:* AUTO
@@ -366,7 +378,7 @@ class AllProductDisplayTest {
 
                 *Name:* example name
                 *Description:* example description
-                *Link:* [link](https://www\\.link\\.pl/)
+                *Link:* [zalando․pl](https://www\\.link\\.pl/)
                 *Variant:* example variant
                 *Price:* 200\\.55 zł
                 *Price Alert:* AUTO
@@ -377,7 +389,7 @@ class AllProductDisplayTest {
 
                 *Name:* example name
                 *Description:* example description
-                *Link:* [link](https://www\\.link\\.pl/)
+                *Link:* [zalando․pl](https://www\\.link\\.pl/)
                 *Variant:* example variant
                 *Price:* 200\\.55 zł
                 *Price Alert:* AUTO
@@ -388,7 +400,7 @@ class AllProductDisplayTest {
 
                 *Name:* example name
                 *Description:* example description
-                *Link:* [link](https://www\\.link\\.pl/)
+                *Link:* [zalando․pl](https://www\\.link\\.pl/)
                 *Variant:* example variant
                 *Price:* 200\\.55 zł
                 *Price Alert:* AUTO
@@ -399,7 +411,7 @@ class AllProductDisplayTest {
 
                 *Name:* example name
                 *Description:* example description
-                *Link:* [link](https://www\\.link\\.pl/)
+                *Link:* [zalando․pl](https://www\\.link\\.pl/)
                 *Variant:* example variant
                 *Price:* 200\\.55 zł
                 *Price Alert:* AUTO
@@ -410,7 +422,7 @@ class AllProductDisplayTest {
 
                 *Name:* example name
                 *Description:* example description
-                *Link:* [link](https://www\\.link\\.pl/)
+                *Link:* [zalando․pl](https://www\\.link\\.pl/)
                 *Variant:* example variant
                 *Price:* 200\\.55 zł
                 *Price Alert:* AUTO
@@ -421,7 +433,7 @@ class AllProductDisplayTest {
 
                 *Name:* example name
                 *Description:* example description
-                *Link:* [link](https://www\\.link\\.pl/)
+                *Link:* [zalando․pl](https://www\\.link\\.pl/)
                 *Variant:* example variant
                 *Price:* 200\\.55 zł
                 *Price Alert:* AUTO
@@ -432,7 +444,7 @@ class AllProductDisplayTest {
 
                 *Name:* example name
                 *Description:* example description
-                *Link:* [link](https://www\\.link\\.pl/)
+                *Link:* [zalando․pl](https://www\\.link\\.pl/)
                 *Variant:* example variant
                 *Price:* 200\\.55 zł
                 *Price Alert:* AUTO
@@ -443,7 +455,7 @@ class AllProductDisplayTest {
 
                 *Name:* example name
                 *Description:* example description
-                *Link:* [link](https://www\\.link\\.pl/)
+                *Link:* [zalando․pl](https://www\\.link\\.pl/)
                 *Variant:* example variant
                 *Price:* 200\\.55 zł
                 *Price Alert:* AUTO
@@ -454,7 +466,7 @@ class AllProductDisplayTest {
 
                 *Name:* example name
                 *Description:* example description
-                *Link:* [link](https://www\\.link\\.pl/)
+                *Link:* [zalando․pl](https://www\\.link\\.pl/)
                 *Variant:* example variant
                 *Price:* 200\\.55 zł
                 *Price Alert:* AUTO
@@ -468,7 +480,7 @@ class AllProductDisplayTest {
 
                 *Name:* example name
                 *Description:* example description
-                *Link:* [link](https://www\\.link\\.pl/)
+                *Link:* [zalando․pl](https://www\\.link\\.pl/)
                 *Variant:* example variant
                 *Price:* 200\\.55 zł
                 *Price Alert:* AUTO
@@ -479,7 +491,7 @@ class AllProductDisplayTest {
 
                 *Name:* example name
                 *Description:* example description
-                *Link:* [link](https://www\\.link\\.pl/)
+                *Link:* [zalando․pl](https://www\\.link\\.pl/)
                 *Variant:* example variant
                 *Price:* 200\\.55 zł
                 *Price Alert:* AUTO
@@ -490,7 +502,7 @@ class AllProductDisplayTest {
 
                 *Name:* example name
                 *Description:* example description
-                *Link:* [link](https://www\\.link\\.pl/)
+                *Link:* [zalando․pl](https://www\\.link\\.pl/)
                 *Variant:* example variant
                 *Price:* 200\\.55 zł
                 *Price Alert:* AUTO
@@ -501,7 +513,7 @@ class AllProductDisplayTest {
 
                 *Name:* example name
                 *Description:* example description
-                *Link:* [link](https://www\\.link\\.pl/)
+                *Link:* [zalando․pl](https://www\\.link\\.pl/)
                 *Variant:* example variant
                 *Price:* 200\\.55 zł
                 *Price Alert:* AUTO
@@ -512,7 +524,7 @@ class AllProductDisplayTest {
 
                 *Name:* example name
                 *Description:* example description
-                *Link:* [link](https://www\\.link\\.pl/)
+                *Link:* [zalando․pl](https://www\\.link\\.pl/)
                 *Variant:* example variant
                 *Price:* 200\\.55 zł
                 *Price Alert:* AUTO
@@ -523,7 +535,7 @@ class AllProductDisplayTest {
 
                 *Name:* example name
                 *Description:* example description
-                *Link:* [link](https://www\\.link\\.pl/)
+                *Link:* [zalando․pl](https://www\\.link\\.pl/)
                 *Variant:* example variant
                 *Price:* 200\\.55 zł
                 *Price Alert:* AUTO
@@ -534,7 +546,7 @@ class AllProductDisplayTest {
 
                 *Name:* example name
                 *Description:* example description
-                *Link:* [link](https://www\\.link\\.pl/)
+                *Link:* [zalando․pl](https://www\\.link\\.pl/)
                 *Variant:* example variant
                 *Price:* 200\\.55 zł
                 *Price Alert:* AUTO
@@ -545,7 +557,7 @@ class AllProductDisplayTest {
 
                 *Name:* example name
                 *Description:* example description
-                *Link:* [link](https://www\\.link\\.pl/)
+                *Link:* [zalando․pl](https://www\\.link\\.pl/)
                 *Variant:* example variant
                 *Price:* 200\\.55 zł
                 *Price Alert:* AUTO
@@ -556,7 +568,7 @@ class AllProductDisplayTest {
 
                 *Name:* example name
                 *Description:* example description
-                *Link:* [link](https://www\\.link\\.pl/)
+                *Link:* [zalando․pl](https://www\\.link\\.pl/)
                 *Variant:* example variant
                 *Price:* 200\\.55 zł
                 *Price Alert:* AUTO
@@ -567,7 +579,7 @@ class AllProductDisplayTest {
 
                 *Name:* example name
                 *Description:* example description
-                *Link:* [link](https://www\\.link\\.pl/)
+                *Link:* [zalando․pl](https://www\\.link\\.pl/)
                 *Variant:* example variant
                 *Price:* 200\\.55 zł
                 *Price Alert:* AUTO
@@ -581,7 +593,7 @@ class AllProductDisplayTest {
 
                 *Name:* example name
                 *Description:* example description
-                *Link:* [link](https://www\\.link\\.pl/)
+                *Link:* [zalando․pl](https://www\\.link\\.pl/)
                 *Variant:* example variant
                 *Price:* 200\\.55 zł
                 *Price Alert:* AUTO
@@ -592,7 +604,7 @@ class AllProductDisplayTest {
 
                 *Name:* example name
                 *Description:* example description
-                *Link:* [link](https://www\\.link\\.pl/)
+                *Link:* [zalando․pl](https://www\\.link\\.pl/)
                 *Variant:* example variant
                 *Price:* 200\\.55 zł
                 *Price Alert:* AUTO
@@ -603,7 +615,7 @@ class AllProductDisplayTest {
 
                 *Name:* example name
                 *Description:* example description
-                *Link:* [link](https://www\\.link\\.pl/)
+                *Link:* [zalando․pl](https://www\\.link\\.pl/)
                 *Variant:* example variant
                 *Price:* 200\\.55 zł
                 *Price Alert:* AUTO
@@ -614,7 +626,7 @@ class AllProductDisplayTest {
 
                 *Name:* example name
                 *Description:* example description
-                *Link:* [link](https://www\\.link\\.pl/)
+                *Link:* [zalando․pl](https://www\\.link\\.pl/)
                 *Variant:* example variant
                 *Price:* 200\\.55 zł
                 *Price Alert:* AUTO""";
@@ -624,7 +636,8 @@ class AllProductDisplayTest {
 
 
                 *Did you know? \uD83D\uDCA1*
-                The Great Wall of China is not visible from the Moon without aid, contrary to popular belief \uD83D\uDC80""";;
+                The Great Wall of China is not visible from the Moon without aid, contrary to popular belief \uD83D\uDC80""";
+        ;
 
         return List.of(first, second, third, fourth, fifth);
     }
