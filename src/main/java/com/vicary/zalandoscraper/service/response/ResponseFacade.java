@@ -34,8 +34,8 @@ public class ResponseFacade {
     private final WaitingUserService waitingUserService;
 
 
-    public void saveProduct(Product product) {
-        productService.saveProduct(product);
+    public void saveProduct(Product product, String userId) {
+        productService.saveProduct(product, userId);
     }
 
     public List<Product> getAllProductsByUserId(String userId) {

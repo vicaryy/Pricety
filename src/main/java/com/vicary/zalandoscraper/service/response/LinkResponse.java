@@ -62,7 +62,7 @@ public class LinkResponse implements Responser {
 
     private void getAndSaveOneVariantProduct(String variant, Scraper scraper) {
         Product product = scraper.getProduct(user.getText(), variant);
-        responseFacade.saveProduct(product);
+        responseFacade.saveProduct(product, user.getUserId());
     }
 
     private void checkIfUserHaveProduct(String link, String variant) {

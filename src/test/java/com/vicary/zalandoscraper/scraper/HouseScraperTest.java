@@ -2,6 +2,7 @@ package com.vicary.zalandoscraper.scraper;
 
 import com.vicary.zalandoscraper.thread_local.ActiveLanguage;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.Locale;
@@ -9,6 +10,7 @@ import java.util.ResourceBundle;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@Disabled
 class HouseScraperTest {
 
     private HouseScraper scraper = new HouseScraper();

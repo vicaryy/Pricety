@@ -1,5 +1,6 @@
 package com.vicary.zalandoscraper.service.map;
 
+import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.model.User;
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
 import com.vicary.zalandoscraper.entity.NotificationEntity;
@@ -21,7 +22,7 @@ public class ProductMapper {
 
     private final UserService userService;
 
-    public ProductEntity map(Product product) {
+    public ProductEntity map(Product product, UserEntity user) {
         return ProductEntity.builder()
                 .name(product.getName())
                 .description(product.getDescription())

@@ -4,6 +4,7 @@ import com.vicary.zalandoscraper.entity.ProductEntity;
 import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.repository.ProductRepository;
 import com.vicary.zalandoscraper.service.map.ProductMapper;
+import com.vicary.zalandoscraper.thread_local.ActiveUser;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -89,8 +91,9 @@ public class ProductService {
         repository.deleteAllByUserId(userId);
     }
 
-    public void saveProduct(Product product) {
-        repository.save(mapper.map(product));
+    public void saveProduct(Product product, String userId) {
+        repository.save(mapper.map(product, userService.findByUserId(userId)
+                .orElseThrow(() -> new NoSuchElementException("User by id '%s' not found in repository".formatted(userId)))));
         logger.info("[Product Service] Added new product to database link: {}", product.getLink());
     }
 

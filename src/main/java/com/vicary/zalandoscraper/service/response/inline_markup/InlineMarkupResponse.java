@@ -105,7 +105,7 @@ public class InlineMarkupResponse implements Responser {
 
         checkIfUserHaveProduct(product);
 
-        responseFacade.saveProduct(product);
+        responseFacade.saveProduct(product, user.getUserId());
         quickSender.message(user.getChatId(), Messages.other("productAdded"), false);
     }
 

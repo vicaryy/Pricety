@@ -73,7 +73,7 @@ class InlineMarkupResponseTest {
         verify(quickSender, times(1)).messageWithReturn(givenUser.getChatId(), Messages.other("adding"), false);
         verify(quickSender, times(1)).chatAction(givenUser.getChatId(), Action.TYPING);
         verify(responseFacade, times(1)).productExistsByUserIdAndLinkAndVariant(anyString(), anyString(), anyString());
-        verify(responseFacade, times(1)).saveProduct(givenProduct);
+        verify(responseFacade, times(1)).saveProduct(givenProduct, givenUser.getChatId());
         verify(quickSender, times(1)).message(givenUser.getChatId(), Messages.other("productAdded"), false);
     }
 
@@ -111,7 +111,7 @@ class InlineMarkupResponseTest {
         verify(quickSender, times(1)).chatAction(givenUser.getChatId(), Action.TYPING);
         verify(responseFacade, times(1)).productExistsByUserIdAndLinkAndVariant(anyString(), anyString(), anyString());
         verify(responseFacade, times(0)).countProductsByUserId(givenUser.getChatId());
-        verify(responseFacade, times(0)).saveProduct(givenProduct);
+        verify(responseFacade, times(0)).saveProduct(givenProduct, givenUser.getChatId());
         verify(quickSender, times(0)).message(givenUser.getChatId(), Messages.other("productAdded"), false);
     }
 
@@ -149,7 +149,7 @@ class InlineMarkupResponseTest {
         verify(quickSender, times(1)).messageWithReturn(givenUser.getChatId(), Messages.other("adding"), false);
         verify(quickSender, times(1)).chatAction(givenUser.getChatId(), Action.TYPING);
         verify(responseFacade, times(1)).productExistsByUserIdAndLinkAndVariant(anyString(), anyString(), anyString());
-        verify(responseFacade, times(1)).saveProduct(givenProduct);
+        verify(responseFacade, times(1)).saveProduct(givenProduct, givenUser.getChatId());
         verify(quickSender, times(1)).message(givenUser.getChatId(), Messages.other("productAdded"), false);
     }
 
