@@ -24,6 +24,10 @@ public class Pattern {
         return text.startsWith("https://www.nike.com/pl/");
     }
 
+    public static boolean isHouseURL(String text) {
+        return text.startsWith("https://www.housebrand.com/");
+    }
+
     public static boolean isURL(String text) {
         return urlPattern.matcher(text).matches();
     }

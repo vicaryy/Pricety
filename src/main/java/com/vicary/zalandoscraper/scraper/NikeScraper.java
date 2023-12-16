@@ -84,7 +84,6 @@ public class NikeScraper implements Scraper {
             product.setNewPrice(getPrice(page));
 
         } catch (PlaywrightException ex) {
-            ex.printStackTrace();
             logger.warn("Failed to update productId '{}'", product.getProductId());
         }
     }
@@ -125,7 +124,7 @@ public class NikeScraper implements Scraper {
                     .description(getDescription(page))
                     .price(0)
                     .variant(variant)
-                    .link(page.url())
+                    .link(link)
                     .serviceName("nike.pl")
                     .currency("pl")
                     .build();

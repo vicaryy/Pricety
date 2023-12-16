@@ -4,20 +4,18 @@ import com.microsoft.playwright.*;
 import com.microsoft.playwright.BrowserType;
 import com.microsoft.playwright.options.WaitUntilState;
 import com.vicary.zalandoscraper.exception.InvalidLinkException;
-import com.vicary.zalandoscraper.exception.TimeoutException;
 import com.vicary.zalandoscraper.messages.Messages;
 import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class HouseScraper implements Scraper {
-    private final static Logger logger = LoggerFactory.getLogger(HebeScraper.class);
+    private final static Logger logger = LoggerFactory.getLogger(HouseScraper.class);
     private final Map<String, String> extraHeaders = new HashMap<>();
     private final BrowserType.LaunchOptions launchOptions = new DefaultLaunchOptions();
     private final Page.NavigateOptions navigateOptions = new Page.NavigateOptions().setWaitUntil(WaitUntilState.COMMIT);
@@ -55,13 +53,110 @@ public class HouseScraper implements Scraper {
         }
     }
 
-    private void updateProduct(Page page, Product product) {
+    void updateProduct(Page page, Product product) {
+        try (page) {
+            if (!isLinkValid(page)) {
+                logger.info("Product '{}' is not available anymore, delete it.", product.getProductId());
+                product.setNewPrice(0);
+                return;
+            }
 
+            if (isItemSoldOut(page)) {
+                logger.info("Product '{}' sold out.", product.getProductId());
+                product.setNewPrice(0);
+                return;
+            }
+
+            if (product.getVariant().startsWith("-oneVariant ")) {
+                product.setNewPrice(getPrice(page));
+                return;
+            }
+
+            if (!isVariantAvailable(page, product.getVariant())) {
+                logger.info("Product '{}' variant '{}' not available.", product.getProductId(), product.getVariant());
+                product.setNewPrice(0);
+                return;
+            }
+
+            product.setNewPrice(getPrice(page));
+
+        } catch (PlaywrightException ex) {
+            logger.warn("Failed to update productId '{}'", product.getProductId());
+        }
     }
 
     @Override
     public Product getProduct(String link, String variant) {
-        return null;
+        try (Playwright playwright = Playwright.create()) {
+            Browser browser = playwright.chromium().launch(launchOptions);
+            Page page = browser.newPage();
+            page.setDefaultTimeout(10000);
+            page.setExtraHTTPHeaders(extraHeaders);
+            page.navigate(link, navigateOptions);
+
+            clickCookiesButton(page);
+
+            Product product = Product.builder()
+                    .name(getName(page))
+                    .description("-")
+                    .price(0)
+                    .variant(variant)
+                    .link(page.url())
+                    .serviceName("housebrand.com")
+                    .currency(getCurrency(page))
+                    .build();
+
+            if (isItemSoldOut(page)) {
+                logger.info("Product sold out.");
+                return product;
+            }
+
+            if (variant.startsWith("-oneVariant ")) {
+                logger.info("One variant item.");
+                product.setPrice(getPrice(page));
+                return product;
+            }
+
+            if (!isVariantAvailable(page, variant)) {
+                logger.info("Variant not available.");
+                return product;
+            }
+
+            logger.info("Variant available.");
+            product.setPrice(getPrice(page));
+            return product;
+        }
+    }
+
+    private boolean isVariantAvailable(Page page, String variant) {
+        return getAvailableVariantsAsString(page).stream().anyMatch(variant::equals);
+    }
+
+    private boolean isItemSoldOut(Page page) {
+        return page.getByTestId("product-unavailable").isVisible();
+    }
+
+    private double getPrice(Page page) {
+        String price = page.locator("div.basic-pricestyled__StyledBasicPrice-sc-1tz47jj-0.hfTNOq.basic-price").first().textContent();
+
+        StringBuilder sbFinalPrice = new StringBuilder();
+        for (char c : price.toCharArray())
+            if (Character.isDigit(c) || c == ',' || c == '.')
+                sbFinalPrice.append(c);
+
+        String finalPrice = sbFinalPrice.toString();
+        if (finalPrice.contains(","))
+            finalPrice = finalPrice.replaceFirst(",", ".");
+
+        return Double.parseDouble(finalPrice);
+    }
+
+    String getCurrency(Page page) {
+        return page.locator("span.currencycomponent__Currency-sc-1bzking-0.bdfSnQ.currency").first().textContent();
+    }
+
+    private String getName(Page page) {
+        return page.locator("div.titlestyled__StyledTitle-urmrll-1.cnhsCB").first().textContent().trim();
     }
 
     private void sleep() {
@@ -71,6 +166,7 @@ public class HouseScraper implements Scraper {
             throw new RuntimeException(e);
         }
     }
+
     @Override
     public List<String> getAllVariants(String link) {
         try (Playwright playwright = Playwright.create()) {
@@ -88,9 +184,39 @@ public class HouseScraper implements Scraper {
 
 
             if (isMultiVariant(page))
-                return getAllVariantsAsString(page);
+                return getVariantsAsString(page);
 
             return List.of("-oneVariant " + getOneVariant(page));
+        }
+    }
+
+    List<String> getAvailableVariants(String link) {
+        try (Playwright playwright = Playwright.create()) {
+            Browser browser = playwright.chromium().launch(launchOptions);
+
+            Page page = browser.newPage();
+            page.setDefaultTimeout(14000);
+            page.setExtraHTTPHeaders(extraHeaders);
+            page.navigate(link);
+
+            clickCookiesButton(page);
+
+            return getAvailableVariantsAsString(page);
+        }
+    }
+
+    List<String> getNonAvailableVariants(String link) {
+        try (Playwright playwright = Playwright.create()) {
+            Browser browser = playwright.chromium().launch(launchOptions);
+
+            Page page = browser.newPage();
+            page.setDefaultTimeout(14000);
+            page.setExtraHTTPHeaders(extraHeaders);
+            page.navigate(link);
+
+            clickCookiesButton(page);
+
+            return getNonAvailableVariantsAsString(page);
         }
     }
 
@@ -102,18 +228,26 @@ public class HouseScraper implements Scraper {
         page.waitForSelector("button#cookiebotDialogOkButton").click();
     }
 
-    private List<String> getAllVariantsAsString(Page page) {
+    private List<String> getVariantsAsString(Page page) {
         return page.locator("li.itemstyled__ItemStyled-sc-1p6n2ae-0.zwcmQ").all().stream()
+                .map(l -> l.textContent().trim())
+                .toList();
+    }
+
+    private List<String> getAvailableVariantsAsString(Page page) {
+        return page.getByTestId("size").all().stream()
+                .map(l -> l.textContent().trim())
+                .toList();
+    }
+
+    private List<String> getNonAvailableVariantsAsString(Page page) {
+        return page.getByTestId("size-inactive").all().stream()
                 .map(l -> l.textContent().trim())
                 .toList();
     }
 
     private boolean isMultiVariant(Page page) {
         return !page.locator("li.itemstyled__ItemStyled-sc-1p6n2ae-0.zwcmQ").all().isEmpty();
-    }
-
-    private void waitForContent(Page page) {
-
     }
 
     private boolean isLinkValid(Page page) {

@@ -47,10 +47,8 @@ public class ZalandoScraper implements Scraper {
 
     void updateProduct(Page page, Product product) {
         try (page) {
-            waitForMainPage(page);
-
             if (!isLinkValid(page)) {
-                logger.debug("Product '{}' - link invalid", product.getProductId());
+                logger.debug("Product '{}' - is not longer available, delete it", product.getProductId());
                 product.setNewPrice(0);
                 return;
             }
@@ -82,7 +80,6 @@ public class ZalandoScraper implements Scraper {
             product.setNewPrice(getPrice(page));
 
         } catch (PlaywrightException ex) {
-            ex.printStackTrace();
             logger.warn("Failed to update productId '{}'", product.getProductId());
         }
     }
@@ -352,14 +349,18 @@ public class ZalandoScraper implements Scraper {
     String getServiceName(String link) {
         String[] arrayLink = link.split("\\.");
         return arrayLink[1] + "." + arrayLink[2].split("/")[0];
-
-        // https://www.zalando.whatever123/asdasd-asd/asd.html
-        // https://www  zalando  whatever123/asdasd-asd/asd.html
     }
 
 
     private boolean isLinkValid(Page page) {
-        return page.locator(Tag.Zalando.MAIN_TAB).count() > 0;
+        Page.WaitForSelectorOptions wait = new Page.WaitForSelectorOptions();
+        wait.setTimeout(4000);
+        try {
+            page.waitForSelector(Tag.Zalando.MAIN_TAB, wait);
+            return true;
+        } catch (Exception ex) {
+            return false;
+        }
     }
 
 

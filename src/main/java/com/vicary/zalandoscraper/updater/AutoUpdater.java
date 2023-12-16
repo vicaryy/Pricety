@@ -20,7 +20,7 @@ import java.util.*;
 @Service
 public class AutoUpdater {
     private final static Logger logger = LoggerFactory.getLogger(AutoUpdater.class);
-//    private final static int DELAY_BETWEEN_UPDATES = 2000; // 2 sec
+    //    private final static int DELAY_BETWEEN_UPDATES = 2000; // 2 sec
     private final static int DELAY_BETWEEN_UPDATES = 1000 * 60 * 60 * 2; // 2 hour
     private final ProductService productService;
     private final UpdatesHistoryService updatesHistoryService;
@@ -139,7 +139,7 @@ public class AutoUpdater {
     private void updateProducts(List<List<Product>> listOfLists) {
         for (List<Product> products : listOfLists) {
             String serviceNameWithoutCountry = getServiceNameWithoutCountry(products.get(0).getServiceName());
-            Scraper scraper = scraperMap.get(serviceNameWithoutCountry);
+            Scraper scraper = getScraperFromMap(serviceNameWithoutCountry);
 
             long startingTime = System.currentTimeMillis();
             logger.info("[Product Updater] Starting updating '{}' products, service {}", products.size(), products.get(0).getServiceName());
@@ -152,8 +152,15 @@ public class AutoUpdater {
                 scraper.setBugged(true);
                 TerminalExecutor.shutdownBrowser(BrowserType.Chromium);
             }
-            logger.info("[Product Updater] Products updated successfully, it takes {} seconds", (System.currentTimeMillis() - startingTime) / 1000);
+            logger.info("[Product Updater] Products updated successfully, it takes {} seconds\n", (System.currentTimeMillis() - startingTime) / 1000);
         }
+    }
+
+    private Scraper getScraperFromMap(String serviceName) {
+        for (Map.Entry<String, Scraper> entry : scraperMap.entrySet())
+            if (serviceName.startsWith(entry.getKey()))
+                return entry.getValue();
+        throw new ZalandoScraperBotException("Can't find Scraper for service '%s'".formatted(serviceName));
     }
 
     private String getServiceNameWithoutCountry(String serviceName) {

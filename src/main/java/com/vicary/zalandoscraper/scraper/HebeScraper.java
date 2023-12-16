@@ -94,7 +94,7 @@ public class HebeScraper implements Scraper {
                     .description(getDescription(page))
                     .price(0)
                     .variant(variant)
-                    .link(page.url())
+                    .link(link)
                     .serviceName("hebe.pl")
                     .currency("pl")
                     .build();
