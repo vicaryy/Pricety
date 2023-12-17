@@ -3,6 +3,7 @@ package com.vicary.zalandoscraper.updater;
 import com.vicary.zalandoscraper.exception.ZalandoScraperBotException;
 import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.scraper.*;
+import com.vicary.zalandoscraper.scraper.config.BrowserType;
 import com.vicary.zalandoscraper.service.repository_services.WaitingUserService;
 import com.vicary.zalandoscraper.updater.sender.NotificationManager;
 import com.vicary.zalandoscraper.utils.TerminalExecutor;
@@ -40,7 +41,8 @@ public class AutoUpdater {
                        ZalandoScraper zalandoScraper,
                        HebeScraper hebeScraper,
                        NikeScraper nikeScraper,
-                       HouseScraper houseScraper) {
+                       HouseScraper houseScraper,
+                       ZaraScraper zaraScraper) {
         this.productService = productService;
         this.updatesHistoryService = updatesHistoryService;
         this.productMapper = productMapper;
@@ -51,6 +53,7 @@ public class AutoUpdater {
         scraperMap.put("hebe", hebeScraper);
         scraperMap.put("nike", nikeScraper);
         scraperMap.put("house", houseScraper);
+        scraperMap.put("zara", zaraScraper);
         state = new StopState(this);
     }
 

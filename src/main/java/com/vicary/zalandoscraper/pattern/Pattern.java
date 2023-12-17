@@ -28,6 +28,10 @@ public class Pattern {
         return text.startsWith("https://www.housebrand.com/");
     }
 
+    public static boolean isZaraURL(String text) {
+        return text.startsWith("https://www.zara.com/");
+    }
+
     public static boolean isURL(String text) {
         return urlPattern.matcher(text).matches();
     }

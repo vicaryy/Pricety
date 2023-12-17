@@ -7,6 +7,8 @@ import com.microsoft.playwright.Playwright;
 import com.microsoft.playwright.options.WaitUntilState;
 import com.vicary.zalandoscraper.exception.InvalidLinkException;
 import com.vicary.zalandoscraper.model.Product;
+import com.vicary.zalandoscraper.scraper.config.DefaultExtraHeaders;
+import com.vicary.zalandoscraper.scraper.config.DefaultLaunchOptions;
 import com.vicary.zalandoscraper.thread_local.ActiveLanguage;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
@@ -205,17 +207,7 @@ class HouseScraperTest {
     }
 
     void runPlaywrightAndUpdateProduct(String link, Product givenProduct) {
-        Map<String, String> extraHeaders = new HashMap<>();
-        extraHeaders.put("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36");
-        extraHeaders.put("Upgrade-Insecure-Requests", "1");
-        extraHeaders.put("Sec-Fetch-User", "?1");
-        extraHeaders.put("Sec-Fetch-Site", "same-origin");
-        extraHeaders.put("Sec-Fetch-Mode", "navigate");
-        extraHeaders.put("Sec-Fetch-Dest", "dust");
-        extraHeaders.put("Sec-Ch-Ua-Platform", "\"macOS\"");
-        extraHeaders.put("Sec-Ch-Ua-Mobile", "?0");
-        extraHeaders.put("Sec-Ch-Ua", "\"Google Chrome\";v=\"119\", \"Chromium\";v=\"119\", \"Not?A_Brand\";v=\"24\"");
-        extraHeaders.put("Cache-Control", "max-age=0");
+        Map<String, String> extraHeaders = new DefaultExtraHeaders();
         BrowserType.LaunchOptions launchOptions = new DefaultLaunchOptions();
         Page.NavigateOptions navigateOptions = new Page.NavigateOptions().setWaitUntil(WaitUntilState.COMMIT);
 

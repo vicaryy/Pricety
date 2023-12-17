@@ -30,7 +30,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UpdateReceiverService implements UpdateReceiver {
 
-    // TODO change waitingUser database in original database
     // TODO add to product database service name and currency
 
     private final static Logger logger = LoggerFactory.getLogger(UpdateReceiverService.class);

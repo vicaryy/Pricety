@@ -6,6 +6,8 @@ import com.microsoft.playwright.options.WaitUntilState;
 import com.vicary.zalandoscraper.exception.InvalidLinkException;
 import com.vicary.zalandoscraper.messages.Messages;
 import com.vicary.zalandoscraper.model.Product;
+import com.vicary.zalandoscraper.scraper.config.DefaultExtraHeaders;
+import com.vicary.zalandoscraper.scraper.config.DefaultLaunchOptions;
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +18,7 @@ import java.util.Map;
 
 public class NikeScraper implements Scraper {
     private final static Logger logger = LoggerFactory.getLogger(NikeScraper.class);
-    private final Map<String, String> extraHeaders = Map.of("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36");
+    private final Map<String, String> extraHeaders = new DefaultExtraHeaders();
     private final BrowserType.LaunchOptions launchOptions = new DefaultLaunchOptions();
     private final Page.NavigateOptions navigateOptions = new Page.NavigateOptions().setWaitUntil(WaitUntilState.COMMIT);
 

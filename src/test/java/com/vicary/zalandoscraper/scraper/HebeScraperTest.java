@@ -7,6 +7,7 @@ import com.microsoft.playwright.Playwright;
 import com.microsoft.playwright.options.WaitUntilState;
 import com.vicary.zalandoscraper.exception.InvalidLinkException;
 import com.vicary.zalandoscraper.model.Product;
+import com.vicary.zalandoscraper.scraper.config.DefaultLaunchOptions;
 import com.vicary.zalandoscraper.thread_local.ActiveLanguage;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;

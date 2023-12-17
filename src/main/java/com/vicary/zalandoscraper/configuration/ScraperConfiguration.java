@@ -1,9 +1,6 @@
 package com.vicary.zalandoscraper.configuration;
 
-import com.vicary.zalandoscraper.scraper.HebeScraper;
-import com.vicary.zalandoscraper.scraper.HouseScraper;
-import com.vicary.zalandoscraper.scraper.NikeScraper;
-import com.vicary.zalandoscraper.scraper.ZalandoScraper;
+import com.vicary.zalandoscraper.scraper.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -28,5 +25,10 @@ public class ScraperConfiguration {
     @Bean
     public HouseScraper getHouseScraper() {
         return new HouseScraper();
+    }
+
+    @Bean
+    public ZaraScraper getZaraScraper() {
+        return new ZaraScraper();
     }
 }

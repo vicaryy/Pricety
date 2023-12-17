@@ -1,4 +1,4 @@
-package com.vicary.zalandoscraper.scraper;
+package com.vicary.zalandoscraper.scraper.config;
 
 import com.microsoft.playwright.BrowserType;
 
@@ -16,6 +16,6 @@ public class DefaultLaunchOptions extends BrowserType.LaunchOptions {
                 "--no-zygote",
                 "--disable-gpu"
         ));
-        setHeadless(false);
+//        setHeadless(false);
     }
 }

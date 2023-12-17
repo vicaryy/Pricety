@@ -4,6 +4,8 @@ import com.microsoft.playwright.*;
 import com.microsoft.playwright.BrowserType;
 import com.microsoft.playwright.options.WaitUntilState;
 import com.vicary.zalandoscraper.messages.Messages;
+import com.vicary.zalandoscraper.scraper.config.DefaultExtraHeaders;
+import com.vicary.zalandoscraper.scraper.config.DefaultLaunchOptions;
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
 import com.vicary.zalandoscraper.exception.InvalidLinkException;
 import com.vicary.zalandoscraper.model.Product;
@@ -17,7 +19,7 @@ import java.util.stream.Collectors;
 public class ZalandoScraper implements Scraper {
 
     private final static Logger logger = LoggerFactory.getLogger(ZalandoScraper.class);
-    private final Map<String, String> extraHeaders = Map.of("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36");
+    private final Map<String, String> extraHeaders = Map.of("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36");
     private final BrowserType.LaunchOptions launchOptions = new DefaultLaunchOptions();
     private final Page.NavigateOptions navigateOptions = new Page.NavigateOptions().setWaitUntil(WaitUntilState.COMMIT);
 

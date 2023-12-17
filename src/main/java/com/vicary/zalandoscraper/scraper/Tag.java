@@ -8,10 +8,7 @@ class Tag {
         static final String PRICE_SPAN = "span.sDq_FX._4sa1cA";
         static final String PRICE_P = "div.hD5J5m > div > div > p.sDq_FX._4sa1cA";
         static final String PRICE_P_SECOND_VARIANT = "div.hD5J5m > div > div > div > p.sDq_FX._4sa1cA";
-        // #main-content > div.I7OI1O.C3wGFf > div > div._5qdMrS.VHXqc_.rceRmQ._4NtqZU.mIlIve > x-wrapper-re-1-4 > div.hD5J5m > div > div > div > p.sDq_FX._4sa1cA.FxZV-M.HlZ_Tf
-        //#main-content > div.I7OI1O.C3wGFf > div > div._5qdMrS.VHXqc_.rceRmQ._4NtqZU.mIlIve > x-wrapper-re-1-4 > div.hD5J5m > div > div > div > p.sDq_FX._4sa1cA.FxZV-M.HlZ_Tf
         static final String MAIN_TAB = "div._5qdMrS.VHXqc_.rceRmQ._4NtqZU.mIlIve";
-//        static final String SOLD_OUT_TAB = "Artykuł wyprzedany";
         static final String SOLD_OUT_TAB = "h2#pdp_size-reminder-dialog_title";
         static final String VARIANT_BUTTON = "pdp-size-picker-trigger";
         static final String COOKIES_BUTTON = "button.uc-btn";
@@ -44,16 +41,30 @@ class Tag {
         static final String PRICE = "div.product-price.is--current-price";
         static final String VARIANT_TAB = "label.css-xf3ahq";
     }
+
+    static class House {
+        static final String SOLD_OUT_TAB = "product-unavailable";
+        static final String PRICE = "div.basic-pricestyled__StyledBasicPrice-sc-1tz47jj-0.hfTNOq.basic-price";
+        static final String CURRENCY = "span.currencycomponent__Currency-sc-1bzking-0.bdfSnQ.currency";
+        static final String NAME = "div.titlestyled__StyledTitle-urmrll-1.cnhsCB";
+        static final String ONE_VARIANT = "size-picker-size-name";
+        static final String COOKIES_BUTTON = "button#cookiebotDialogOkButton";
+        static final String ALL_VARIANTS_TAB = "li.itemstyled__ItemStyled-sc-1p6n2ae-0.zwcmQ";
+        static final String AVAILABLE_VARIANTS_TAB = "size";
+        static final String NON_AVAILABLE_VARIANTS_TAB = "size-inactive";
+        static final String PRODUCT_TAB = "div.desktop__RightSection-sc-19wvx4y-1.llWjxx";
+    }
+
+    static class Zara {
+        static final String ADD_TO_CART_BUTTON = "button.zds-button.product-cart-buttons__button.product-cart-buttons__add-to-cart.zds-bt-none";
+        static final String PRICE = "span.price-current__amount";
+        static final String NAME = "h1.product-detail-info__header-name";
+        static final String PRODUCT_TAB = "div.product-detail-info";
+        static final String INTERNATIONAL_EXIT_BUTTON = "svg.zds-dialog-icon-button__icon.zds-dialog-close-button__icon";
+        static final String CURRENT_COLOR = "p.product-color-extended-name.product-detail-color-selector__selected-color-name";
+        static final String ALL_VARIANTS_TEXT_TAB = "div.product-size-info__main-label";
+        static final String ALL_VARIANTS_TAB = "li.size-selector-list__item";
+        static final String NON_AVAILABLE_VARIANTS_TAB = "li.size-selector-list__item.size-selector-list__item--is-disabled.size-selector-list__item--out-of-stock";
+        static final String ALL_COLORS_TAB = "li.product-detail-color-selector__color";
+    }
 }
-
-
-
-
-
-
-
-
-
-
-
-

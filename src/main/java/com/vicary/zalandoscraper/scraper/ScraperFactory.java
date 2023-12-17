@@ -22,6 +22,9 @@ public class ScraperFactory {
         else if (Pattern.isHouseURL(link))
             return Optional.of(new HouseScraper());
 
+        else if (Pattern.isZaraURL(link))
+            return Optional.of(new ZaraScraper());
+
         return Optional.empty();
     }
 
