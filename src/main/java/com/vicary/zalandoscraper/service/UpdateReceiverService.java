@@ -29,10 +29,8 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class UpdateReceiverService implements UpdateReceiver {
-
-    // TODO add to product database service name and currency
-
     private final static Logger logger = LoggerFactory.getLogger(UpdateReceiverService.class);
+    private boolean running = true;
 
     private final UserAuthentication userAuthentication;
 
@@ -74,6 +72,10 @@ public class UpdateReceiverService implements UpdateReceiver {
             if (Pattern.isAdminCommand(user.getText(), user.isAdmin())) {
                 adminResponse.setActiveUser(user);
                 adminResponse.response();
+                return;
+            }
+            if (!running) {
+                logger.info("Receiver is not running");
                 return;
             }
 
@@ -133,6 +135,15 @@ public class UpdateReceiverService implements UpdateReceiver {
         quickSender.message(userId, message, true);
         facade.checkAndSaveWaitingUser(userId);
         throw new IllegalArgumentException("User '%s' interact with bot while product updater is running.".formatted(userId));
+    }
+
+    public void running(boolean isRunning) {
+        this.running = isRunning;
+    }
+
+    public void crash() {
+        logger.info("Receiver is crashed, you have to restart entire application.");
+        System.exit(0);
     }
 
     @Override

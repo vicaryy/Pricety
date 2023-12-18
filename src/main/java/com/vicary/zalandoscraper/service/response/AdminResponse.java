@@ -6,10 +6,14 @@ import com.vicary.zalandoscraper.api_telegram.api_request.commands.GetMyCommands
 import com.vicary.zalandoscraper.api_telegram.api_request.commands.SetMyCommands;
 import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
 import com.vicary.zalandoscraper.api_telegram.service.RequestService;
+import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.exception.IllegalInputException;
 import com.vicary.zalandoscraper.exception.ZalandoScraperBotException;
+import com.vicary.zalandoscraper.format.MarkdownV2;
+import com.vicary.zalandoscraper.service.UpdateReceiverService;
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
 import com.vicary.zalandoscraper.updater.AutoUpdater;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -17,20 +21,20 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class AdminResponse implements Responser {
     private final static Logger logger = LoggerFactory.getLogger(AdminResponse.class);
     private ActiveUser user;
+
     private final RequestService requestService;
+
     private final ResponseFacade responseFacade;
+
     private final QuickSender quickSender;
+
     private final AutoUpdater autoUpdater;
 
-    public AdminResponse(RequestService requestService, ResponseFacade responseFacade, QuickSender quickSender, AutoUpdater autoUpdater) {
-        this.requestService = requestService;
-        this.responseFacade = responseFacade;
-        this.quickSender = quickSender;
-        this.autoUpdater = autoUpdater;
-    }
+    private final UpdateReceiverService updateReceiverService;
 
     public void setActiveUser(ActiveUser activeUser) {
         this.user = activeUser;
@@ -52,11 +56,8 @@ public class AdminResponse implements Responser {
         else if (user.getText().startsWith("//set command "))
             setCommand();
 
-        else if (user.getText().startsWith("//remove command "))
-            removeCommand();
-
-        else if (user.getText().startsWith("//remove commands all"))
-            removeAllCommands();
+        else if (user.getText().startsWith("//delete command "))
+            deleteCommand();
 
         else if (user.getText().equals("//update start"))
             updateStart();
@@ -72,32 +73,136 @@ public class AdminResponse implements Responser {
 
         else if (user.getText().equals("//get all"))
             getAllCommands();
+
+        else if (user.getText().startsWith("//get user"))
+            getUser();
+
+        else if (user.getText().startsWith("//send message"))
+            sendMessage();
+
+//        else if (user.getText().equals("//start"))
+//            start();
+//
+//        else if (user.getText().equals("//stop"))
+//            stop();
+//
+//        else if (user.getText().equals("//crash"))
+//            crash();
+    }
+
+//    private void start() {
+//        updateReceiverService.running(true);
+//        quickSender.message(user.getChatId(), "Receiver started.", false);
+//        logger.info("Receiver started");
+//    }
+//
+//    private void stop() {
+//        updateReceiverService.running(false);
+//        quickSender.message(user.getChatId(), "Receiver stopped.", false);
+//        logger.info("Receiver stopped");
+//    }
+//
+//    private void crash() {
+//        quickSender.message(user.getChatId(), "Crashing application...", false);
+//        updateReceiverService.crash();
+//    }
+
+    private void getUser() {
+        String userId = removePrefix(this.user.getText());
+        if (userId.isBlank())
+            throw new IllegalInputException("User cannot be empty", "Admin tries to get user but user is empty");
+
+        if (userId.equals("all"))
+            displayUsers(responseFacade.getAllUsers());
+        else
+            displayUsers(List.of(responseFacade.getUserByUserId(userId)));
+    }
+
+    private void displayUsers(List<UserEntity> users) {
+        for (int i = 0; i < users.size(); i++) {
+            UserEntity u = users.get(i);
+            String user = MarkdownV2.applyWithManualBoldAndItalic("""
+                    *User nr. %d*
+                        id: %s
+                        nick: %s
+                        email: %s
+                        nationality: %s
+                        premium: %s
+                        admin: %s
+                        notifyByEmail: %s
+                        verifiedEmail: %s"""
+                    .formatted(
+                            i + 1,
+                            u.getUserId(),
+                            u.getNick() == null ? "-" : u.getNick(),
+                            u.getEmail() == null ? "-" : u.getEmail(),
+                            u.getNationality(),
+                            Boolean.toString(u.isPremium()),
+                            Boolean.toString(u.isAdmin()),
+                            Boolean.toString(u.isNotifyByEmail()),
+                            Boolean.toString(u.isVerifiedEmail())
+                    ));
+            quickSender.message(this.user.getChatId(), user, true);
+        }
+    }
+
+    private void sendMessage() {
+        String[] textWithoutPrefix = removePrefix(user.getText()).split(" ");
+        String to = "";
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < textWithoutPrefix.length; i++) {
+            if (i == 0) {
+                to = textWithoutPrefix[i];
+                continue;
+            }
+            sb.append(textWithoutPrefix[i]).append(" ");
+        }
+        final String text = MarkdownV2.applyWithManualBoldAndItalic(sb.toString().trim());
+
+        if (to.isBlank() || text.isBlank())
+            throw new IllegalInputException("User and text cannot be empty", "Admin tries to send message but user or text are empty");
+
+        if (to.equals("all"))
+            responseFacade.getAllUsers().forEach(user -> quickSender.message(user.getUserId(), text, true));
+        else
+            quickSender.message(responseFacade.getUserByUserId(to).getUserId(), text, true);
     }
 
     private void getAllCommands() {
-        String commands = """
+        String commands = MarkdownV2.applyWithManualBoldAndItalic("""
                 List of commands:
-                
+                                
                 *Set:*
-                //set premium \\+ nick
-                //set standard \\+ nick
-                //set admin \\+ nick
-                //set non\\-admin \\+ nick
-                //set command \\+ command
-               
+                //set premium userId
+                //set standard userId
+                //set admin userId
+                //set non-admin userId
+                //set command command:description
+                               
                 *Remove:*
-                //remove command \\+ command
-                //remove commands all
-                
+                //delete command command
+                //delete command all
+                                
                 *Update:*
                 //update start
                 //update start once
                 //update stop
                 //update state
-                
+                                
+                *Send:*
+                //send message all text
+                //send message userId text
+                                
                 *Get:*
-                //get all \\- getting all commands
-                """;
+                //get user all
+                //get user userId
+                //get all - getting all commands
+                
+                *Application:*  -  not working yet
+                //start
+                //stop
+                //crash
+                """);
         quickSender.message(user.getChatId(), commands, true);
     }
 
@@ -132,47 +237,47 @@ public class AdminResponse implements Responser {
     }
 
     private void updateGetState() {
-            quickSender.message(user.getChatId(), "Current state: " + autoUpdater.getCurrentState(), false);
+        quickSender.message(user.getChatId(), "Current state: " + autoUpdater.getCurrentState(), false);
     }
 
     private void setPremium() {
-        String userNick = removePrefix(user.getText());
-        if (responseFacade.updateUserToPremiumByNick(userNick))
-            quickSender.message(user.getChatId(), String.format("User %s successfully updated to Premium.", userNick), false);
+        String userId = removePrefix(user.getText());
+        if (responseFacade.updateUserToPremiumByUserId(userId))
+            quickSender.message(user.getChatId(), String.format("User %s successfully updated to Premium.", userId), false);
         else
             throw new IllegalInputException(
-                    String.format("User %s does not exist.", userNick),
-                    String.format("Admin typed invalid user nick %s.", userNick));
+                    String.format("User %s does not exist.", userId),
+                    String.format("Admin typed invalid userId %s.", userId));
     }
 
     private void setStandard() {
-        String userNick = removePrefix(user.getText());
-        if (responseFacade.updateUserToStandardByNick(userNick))
-            quickSender.message(user.getChatId(), String.format("User %s successfully updated to Standard.", userNick), false);
+        String userId = removePrefix(user.getText());
+        if (responseFacade.updateUserToStandardByUserId(userId))
+            quickSender.message(user.getChatId(), String.format("User %s successfully updated to Standard.", userId), false);
         else
             throw new IllegalInputException(
-                    String.format("User %s does not exist.", userNick),
-                    String.format("Admin typed invalid user nick %s.", userNick));
+                    String.format("User %s does not exist.", userId),
+                    String.format("Admin typed invalid userId %s.", userId));
     }
 
     private void setAdmin() {
-        String userNick = removePrefix(user.getText());
-        if (responseFacade.updateUserToAdminByNick(userNick))
-            quickSender.message(user.getChatId(), String.format("User %s successfully updated to Admin.", userNick), false);
+        String userId = removePrefix(user.getText());
+        if (responseFacade.updateUserToAdminByUserId(userId))
+            quickSender.message(user.getChatId(), String.format("User %s successfully updated to Admin.", userId), false);
         else
             throw new IllegalInputException(
-                    String.format("User %s does not exist.", userNick),
-                    String.format("Admin typed invalid user nick %s.", userNick));
+                    String.format("User %s does not exist.", userId),
+                    String.format("Admin typed invalid userId %s.", userId));
     }
 
     void setNonAdmin() {
-        String userNick = removePrefix(user.getText());
-        if (responseFacade.updateUserToNonAdminByNick(userNick))
-            quickSender.message(user.getChatId(), String.format("User %s successfully updated to Non-Admin.", userNick), false);
+        String userId = removePrefix(user.getText());
+        if (responseFacade.updateUserToNonAdminByUserId(userId))
+            quickSender.message(user.getChatId(), String.format("User %s successfully updated to Non-Admin.", userId), false);
         else
             throw new IllegalInputException(
-                    String.format("User %s does not exist.", userNick),
-                    String.format("Admin typed invalid user nick %s.", userNick));
+                    String.format("User %s does not exist.", userId),
+                    String.format("Admin typed invalid userId %s.", userId));
     }
 
 
@@ -207,12 +312,18 @@ public class AdminResponse implements Responser {
         }
     }
 
-    private void removeCommand() {
+    private void deleteCommand() {
         String textWithoutPrefix = removePrefix(user.getText());
         if (textWithoutPrefix.isBlank())
             throw new IllegalInputException(
                     "I don't see command.",
                     "Admin don't typed command to remove.");
+
+        if (textWithoutPrefix.equals("all")) {
+            requestService.send(new DeleteMyCommands());
+            quickSender.message(user.getChatId(), "Successfully removed all commands.", false);
+            return;
+        }
 
         String command = textWithoutPrefix.startsWith("/") ? textWithoutPrefix.substring(1) : textWithoutPrefix;
         List<BotCommand> commandList = requestService.sendRequestList(new GetMyCommands());
@@ -236,11 +347,6 @@ public class AdminResponse implements Responser {
         throw new IllegalInputException(
                 "Command does not exist.",
                 "Admin don't typed command to remove.");
-    }
-
-    private void removeAllCommands() {
-        requestService.send(new DeleteMyCommands());
-        quickSender.message(user.getChatId(), "Successfully removed all commands.", false);
     }
 
 

@@ -1,9 +1,11 @@
 package com.vicary.zalandoscraper.updater;
 
 import com.vicary.zalandoscraper.model.Product;
+import com.vicary.zalandoscraper.service.UpdateReceiverService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,6 +18,9 @@ class AutoUpdaterTest {
 
     @Autowired
     private AutoUpdater autoUpdater;
+
+    @MockBean
+    private UpdateReceiverService updateReceiverService;
 
     @Test
     void divideListIntoServices_expectEquals_MultiServicesList() {

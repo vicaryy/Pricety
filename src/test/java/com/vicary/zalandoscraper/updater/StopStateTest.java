@@ -15,7 +15,6 @@ class StopStateTest {
 
     @MockBean
     private AutoUpdater autoUpdater;
-
     @MockBean
     private UpdateReceiverService updateReceiverService;
 

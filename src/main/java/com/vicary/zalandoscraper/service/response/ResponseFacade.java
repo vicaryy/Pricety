@@ -2,6 +2,7 @@ package com.vicary.zalandoscraper.service.response;
 
 import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.entity.WaitingUserEntity;
+import com.vicary.zalandoscraper.exception.IllegalInputException;
 import com.vicary.zalandoscraper.format.MarkdownV2;
 import com.vicary.zalandoscraper.utils.PrettyTime;
 import com.vicary.zalandoscraper.entity.AwaitedMessageEntity;
@@ -77,20 +78,20 @@ public class ResponseFacade {
         return linkRequestService.getAndDeleteByRequestId(requestId);
     }
 
-    public boolean updateUserToPremiumByNick(String userNick) {
-        return userService.updateUserToPremiumByNick(userNick);
+    public boolean updateUserToPremiumByUserId(String userId) {
+        return userService.updateUserToPremiumByUserId(userId);
     }
 
-    public boolean updateUserToStandardByNick(String userNick) {
-        return userService.updateUserToStandardByNick(userNick);
+    public boolean updateUserToStandardByUserId(String userId) {
+        return userService.updateUserToStandardByUserId(userId);
     }
 
-    public boolean updateUserToAdminByNick(String userNick) {
-        return userService.updateUserToAdminByNick(userNick);
+    public boolean updateUserToAdminByUserId(String userId) {
+        return userService.updateUserToAdminByUserId(userId);
     }
 
-    public boolean updateUserToNonAdminByNick(String userNick) {
-        return userService.updateUserToNonAdminByNick(userNick);
+    public boolean updateUserToNonAdminByUserId(String userId) {
+        return userService.updateUserToNonAdminByUserId(userId);
     }
 
     public boolean emailVerExistsByUserIdAndToken(String userId, String token) {
@@ -149,7 +150,12 @@ public class ResponseFacade {
     }
 
     public UserEntity getUserByUserId(String userId) {
-        return userService.findByUserId(userId).orElseThrow();
+        return userService.findByUserId(userId)
+                .orElseThrow(() -> new IllegalInputException("User '%s' not found".formatted(userId), "Admin trying to send message to user '%s' but user not found".formatted(userId)));
+    }
+
+    public List<UserEntity> getAllUsers() {
+        return userService.findAllUsers();
     }
 
     public void checkAndSaveWaitingUser(String userId) {

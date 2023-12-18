@@ -4,17 +4,15 @@ import com.vicary.zalandoscraper.api_telegram.api_object.bot.bot_command.BotComm
 import com.vicary.zalandoscraper.api_telegram.api_request.ApiRequest;
 import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
 import com.vicary.zalandoscraper.api_telegram.service.RequestService;
+import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.exception.IllegalInputException;
 import com.vicary.zalandoscraper.exception.ZalandoScraperBotException;
 import com.vicary.zalandoscraper.service.UpdateReceiverService;
 import com.vicary.zalandoscraper.thread_local.ActiveLanguage;
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
 import com.vicary.zalandoscraper.updater.AutoUpdater;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -23,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -53,141 +52,141 @@ class AdminResponseTest {
     @Test
     void response_setPremium_ValidUser() {
         //given
-        String givenNick = "user123";
+        String givenUserId = "user123";
         ActiveUser givenUser = getDefaultActiveUser();
-        givenUser.setText("//set premium " + givenNick);
+        givenUser.setText("//set premium " + givenUserId);
 
         //when
-        when(responseFacade.updateUserToPremiumByNick(givenNick)).thenReturn(true);
+        when(responseFacade.updateUserToPremiumByUserId(givenUserId)).thenReturn(true);
         adminResponse.setActiveUser(givenUser);
         adminResponse.response();
 
         //then
-        verify(responseFacade, times(1)).updateUserToPremiumByNick(givenNick);
-        verify(quickSender, times(1)).message(givenUser.getChatId(), String.format("User %s successfully updated to Premium.", givenNick), false);
-        verify(quickSender, times(0)).message(givenUser.getChatId(), String.format("User %s does not exist.", givenNick), false);
+        verify(responseFacade, times(1)).updateUserToPremiumByUserId(givenUserId);
+        verify(quickSender, times(1)).message(givenUser.getChatId(), String.format("User %s successfully updated to Premium.", givenUserId), false);
+        verify(quickSender, times(0)).message(givenUser.getChatId(), String.format("User %s does not exist.", givenUserId), false);
     }
 
     @Test
     void response_setPremium_UserDoesNotExists() {
         //given
-        String givenNick = "user123";
+        String givenUserId = "user123";
         ActiveUser givenUser = getDefaultActiveUser();
-        givenUser.setText("//set premium " + givenNick);
+        givenUser.setText("//set premium " + givenUserId);
 
         //when
-        when(responseFacade.updateUserToPremiumByNick(givenNick)).thenReturn(false);
+        when(responseFacade.updateUserToPremiumByUserId(givenUserId)).thenReturn(false);
         adminResponse.setActiveUser(givenUser);
 
         //then
         assertThrows(IllegalInputException.class, () -> adminResponse.response());
-        verify(responseFacade, times(1)).updateUserToPremiumByNick(givenNick);
-        verify(quickSender, times(0)).message(givenUser.getChatId(), String.format("User %s successfully updated to Premium.", givenNick), false);
+        verify(responseFacade, times(1)).updateUserToPremiumByUserId(givenUserId);
+        verify(quickSender, times(0)).message(givenUser.getChatId(), String.format("User %s successfully updated to Premium.", givenUserId), false);
     }
 
     @Test
     void response_setStandard_ValidUser() {
         //given
-        String givenNick = "user123";
+        String givenUserId = "user123";
         ActiveUser givenUser = getDefaultActiveUser();
-        givenUser.setText("//set standard " + givenNick);
+        givenUser.setText("//set standard " + givenUserId);
 
         //when
-        when(responseFacade.updateUserToStandardByNick(givenNick)).thenReturn(true);
+        when(responseFacade.updateUserToStandardByUserId(givenUserId)).thenReturn(true);
         adminResponse.setActiveUser(givenUser);
         adminResponse.response();
 
         //then
-        verify(responseFacade, times(1)).updateUserToStandardByNick(givenNick);
-        verify(quickSender, times(1)).message(givenUser.getChatId(), String.format("User %s successfully updated to Standard.", givenNick), false);
-        verify(quickSender, times(0)).message(givenUser.getChatId(), String.format("User %s does not exist.", givenNick), false);
+        verify(responseFacade, times(1)).updateUserToStandardByUserId(givenUserId);
+        verify(quickSender, times(1)).message(givenUser.getChatId(), String.format("User %s successfully updated to Standard.", givenUserId), false);
+        verify(quickSender, times(0)).message(givenUser.getChatId(), String.format("User %s does not exist.", givenUserId), false);
     }
 
     @Test
     void response_setStandard_UserDoesNotExists() {
         //given
-        String givenNick = "user123";
+        String givenUserId = "user123";
         ActiveUser givenUser = getDefaultActiveUser();
-        givenUser.setText("//set standard " + givenNick);
+        givenUser.setText("//set standard " + givenUserId);
 
         //when
-        when(responseFacade.updateUserToStandardByNick(givenNick)).thenReturn(false);
+        when(responseFacade.updateUserToStandardByUserId(givenUserId)).thenReturn(false);
         adminResponse.setActiveUser(givenUser);
 
         //then
         assertThrows(IllegalInputException.class, () -> adminResponse.response());
-        verify(responseFacade, times(1)).updateUserToStandardByNick(givenNick);
-        verify(quickSender, times(0)).message(givenUser.getChatId(), String.format("User %s successfully updated to Standard.", givenNick), false);
+        verify(responseFacade, times(1)).updateUserToStandardByUserId(givenUserId);
+        verify(quickSender, times(0)).message(givenUser.getChatId(), String.format("User %s successfully updated to Standard.", givenUserId), false);
     }
 
     @Test
     void response_setAdmin_ValidUser() {
         //given
-        String givenNick = "user123";
+        String givenUserId = "user123";
         ActiveUser givenUser = getDefaultActiveUser();
-        givenUser.setText("//set admin " + givenNick);
+        givenUser.setText("//set admin " + givenUserId);
 
         //when
-        when(responseFacade.updateUserToAdminByNick(givenNick)).thenReturn(true);
+        when(responseFacade.updateUserToAdminByUserId(givenUserId)).thenReturn(true);
         adminResponse.setActiveUser(givenUser);
         adminResponse.response();
 
         //then
-        verify(responseFacade, times(1)).updateUserToAdminByNick(givenNick);
-        verify(quickSender, times(1)).message(givenUser.getChatId(), String.format("User %s successfully updated to Admin.", givenNick), false);
-        verify(quickSender, times(0)).message(givenUser.getChatId(), String.format("User %s does not exist.", givenNick), false);
+        verify(responseFacade, times(1)).updateUserToAdminByUserId(givenUserId);
+        verify(quickSender, times(1)).message(givenUser.getChatId(), String.format("User %s successfully updated to Admin.", givenUserId), false);
+        verify(quickSender, times(0)).message(givenUser.getChatId(), String.format("User %s does not exist.", givenUserId), false);
     }
 
     @Test
     void response_setAdmin_UserDoesNotExists() {
         //given
-        String givenNick = "user123";
+        String givenUserId = "user123";
         ActiveUser givenUser = getDefaultActiveUser();
-        givenUser.setText("//set admin " + givenNick);
+        givenUser.setText("//set admin " + givenUserId);
 
         //when
-        when(responseFacade.updateUserToAdminByNick(givenNick)).thenReturn(false);
+        when(responseFacade.updateUserToAdminByUserId(givenUserId)).thenReturn(false);
         adminResponse.setActiveUser(givenUser);
 
         //then
         assertThrows(IllegalInputException.class, () -> adminResponse.response());
-        verify(responseFacade, times(1)).updateUserToAdminByNick(givenNick);
-        verify(quickSender, times(0)).message(givenUser.getChatId(), String.format("User %s successfully updated to Admin.", givenNick), false);
+        verify(responseFacade, times(1)).updateUserToAdminByUserId(givenUserId);
+        verify(quickSender, times(0)).message(givenUser.getChatId(), String.format("User %s successfully updated to Admin.", givenUserId), false);
     }
 
     @Test
     void response_setNonAdmin_ValidUser() {
         //given
-        String givenNick = "user123";
+        String givenUserId = "user123";
         ActiveUser givenUser = getDefaultActiveUser();
-        givenUser.setText("//set non-admin " + givenNick);
+        givenUser.setText("//set non-admin " + givenUserId);
 
         //when
-        when(responseFacade.updateUserToNonAdminByNick(givenNick)).thenReturn(true);
+        when(responseFacade.updateUserToNonAdminByUserId(givenUserId)).thenReturn(true);
         adminResponse.setActiveUser(givenUser);
         adminResponse.response();
 
         //then
-        verify(responseFacade, times(1)).updateUserToNonAdminByNick(givenNick);
-        verify(quickSender, times(1)).message(givenUser.getChatId(), String.format("User %s successfully updated to Non-Admin.", givenNick), false);
-        verify(quickSender, times(0)).message(givenUser.getChatId(), String.format("User %s does not exist.", givenNick), false);
+        verify(responseFacade, times(1)).updateUserToNonAdminByUserId(givenUserId);
+        verify(quickSender, times(1)).message(givenUser.getChatId(), String.format("User %s successfully updated to Non-Admin.", givenUserId), false);
+        verify(quickSender, times(0)).message(givenUser.getChatId(), String.format("User %s does not exist.", givenUserId), false);
     }
 
     @Test
     void response_setNonAdmin_UserDoesNotExists() {
         //given
-        String givenNick = "user123";
+        String givenUserId = "user123";
         ActiveUser givenUser = getDefaultActiveUser();
-        givenUser.setText("//set non-admin " + givenNick);
+        givenUser.setText("//set non-admin " + givenUserId);
 
         //when
-        when(responseFacade.updateUserToNonAdminByNick(givenNick)).thenReturn(false);
+        when(responseFacade.updateUserToNonAdminByUserId(givenUserId)).thenReturn(false);
         adminResponse.setActiveUser(givenUser);
 
         //then
         assertThrows(IllegalInputException.class, () -> adminResponse.response());
-        verify(responseFacade, times(1)).updateUserToNonAdminByNick(givenNick);
-        verify(quickSender, times(0)).message(givenUser.getChatId(), String.format("User %s successfully updated to Non-Admin.", givenNick), false);
+        verify(responseFacade, times(1)).updateUserToNonAdminByUserId(givenUserId);
+        verify(quickSender, times(0)).message(givenUser.getChatId(), String.format("User %s successfully updated to Non-Admin.", givenUserId), false);
     }
 
     @Test
@@ -298,7 +297,7 @@ class AdminResponseTest {
         //given
         String givenCommand = "menu";
         ActiveUser givenUser = getDefaultActiveUser();
-        givenUser.setText("//remove command " + givenCommand);
+        givenUser.setText("//delete command " + givenCommand);
         List<?> givenBotCommands = getDefaultBotCommands();
 
         //when
@@ -316,7 +315,7 @@ class AdminResponseTest {
         //given
         String givenCommand = "/menu";
         ActiveUser givenUser = getDefaultActiveUser();
-        givenUser.setText("//remove command " + givenCommand);
+        givenUser.setText("//delete command " + givenCommand);
         List<?> givenBotCommands = getDefaultBotCommands();
 
         //when
@@ -335,7 +334,7 @@ class AdminResponseTest {
         //given
         String givenCommand = "invalid";
         ActiveUser givenUser = getDefaultActiveUser();
-        givenUser.setText("//remove command " + givenCommand);
+        givenUser.setText("//delete command " + givenCommand);
         List<?> givenBotCommands = getDefaultBotCommands();
 
         //when
@@ -353,7 +352,7 @@ class AdminResponseTest {
     void response_removeAllCommands_JustRemove() {
         //given
         ActiveUser givenUser = getDefaultActiveUser();
-        givenUser.setText("//remove commands all");
+        givenUser.setText("//delete command all");
 
         //when
         adminResponse.setActiveUser(givenUser);
@@ -503,6 +502,252 @@ class AdminResponseTest {
         verify(quickSender, times(1)).message(eq(givenUser.getChatId()), anyString(), eq(true));
     }
 
+    @Test
+    void response_sendMessage_SendMessageToUser() {
+        //given
+        UserEntity givenUserEntity = getDefaultUserEntity();
+        ActiveUser givenUser = getDefaultActiveUser();
+        givenUser.setText("""
+                //send message 1234 text text text
+                text
+                *text*
+                text.""");
+        String givenTo = "1234";
+        String givenText = """
+                text text text
+                text
+                *text*
+                text\\.""";
+
+        //when
+        when(responseFacade.getUserByUserId(givenTo)).thenReturn(givenUserEntity);
+        adminResponse.setActiveUser(givenUser);
+        adminResponse.response();
+
+        //then
+        verify(responseFacade, times(1)).getUserByUserId(givenTo);
+        verify(responseFacade, times(0)).getAllUsers();
+        verify(quickSender, times(1)).message(givenTo, givenText, true);
+    }
+
+    @Test
+    void response_sendMessage_SendMessageToAllUsers() {
+        //given
+        List<UserEntity> givenUserEntity = List.of(
+                getUserEntity("1"),
+                getUserEntity("2"),
+                getUserEntity("3"),
+                getUserEntity("4"),
+                getUserEntity("5"));
+        ActiveUser givenUser = getDefaultActiveUser();
+        givenUser.setText("""
+                //send message all text text text
+                text
+                *text*
+                text.""");
+        String givenTo = "1234";
+        String givenText = """
+                text text text
+                text
+                *text*
+                text\\.""";
+
+        //when
+        when(responseFacade.getAllUsers()).thenReturn(givenUserEntity);
+        adminResponse.setActiveUser(givenUser);
+        adminResponse.response();
+
+        //then
+        verify(responseFacade, times(0)).getUserByUserId(givenTo);
+        verify(responseFacade, times(1)).getAllUsers();
+        verify(quickSender, times(1)).message("1", givenText, true);
+        verify(quickSender, times(1)).message("2", givenText, true);
+        verify(quickSender, times(1)).message("3", givenText, true);
+        verify(quickSender, times(1)).message("4", givenText, true);
+        verify(quickSender, times(1)).message("5", givenText, true);
+    }
+
+    @Test
+    void response_sendMessage_SendMessageButEmptyText() {
+        //given
+        ActiveUser givenUser = getDefaultActiveUser();
+        givenUser.setText("""
+                //send message all """);
+
+        //when
+        adminResponse.setActiveUser(givenUser);
+
+        //then
+        assertThrows(IllegalInputException.class, () -> adminResponse.response());
+        verify(responseFacade, times(0)).getUserByUserId(anyString());
+        verify(responseFacade, times(0)).getAllUsers();
+        verify(quickSender, times(0)).message(anyString(), anyString(), anyBoolean());
+    }
+
+    @Test
+    void response_sendMessage_SendMessageButEmptyUserAndText() {
+        //given
+        ActiveUser givenUser = getDefaultActiveUser();
+        givenUser.setText("""
+                //send message""");
+
+        //when
+        adminResponse.setActiveUser(givenUser);
+
+        //then
+        assertThrows(IllegalInputException.class, () -> adminResponse.response());
+        verify(responseFacade, times(0)).getUserByUserId(anyString());
+        verify(responseFacade, times(0)).getAllUsers();
+        verify(quickSender, times(0)).message(anyString(), anyString(), anyBoolean());
+    }
+
+
+    @Test
+    void response_getUser_displayOneUser() {
+        //given
+        ActiveUser givenUser = getDefaultActiveUser();
+        givenUser.setText("""
+                //get user 1234""");
+        String givenUserId = "1234";
+        UserEntity givenUserEntity = getDefaultUserEntity();
+        String expectedText = """
+                *User nr\\. 1*
+                    id: 1234
+                    nick: nick
+                    email: email
+                    nationality: pl
+                    premium: true
+                    admin: false
+                    notifyByEmail: true
+                    verifiedEmail: true""";
+
+        //when
+        when(responseFacade.getUserByUserId(givenUserId)).thenReturn(givenUserEntity);
+        adminResponse.setActiveUser(givenUser);
+        adminResponse.response();
+
+        //then
+        verify(quickSender, times(1)).message(givenUser.getChatId(), expectedText, true);
+    }
+
+    @Test
+    void response_getUser_displayThreeUsers() {
+        //given
+        ActiveUser givenUser = getDefaultActiveUser();
+        givenUser.setText("""
+                //get user all""");
+        List<UserEntity> givenUserEntities = getListOfDefaultUserEntity(3);
+        String expectedText1 = """
+                *User nr\\. 1*
+                    id: 1234
+                    nick: nick
+                    email: email
+                    nationality: pl
+                    premium: true
+                    admin: false
+                    notifyByEmail: true
+                    verifiedEmail: true""";
+        String expectedText2 = """
+                *User nr\\. 2*
+                    id: 1234
+                    nick: nick
+                    email: email
+                    nationality: pl
+                    premium: true
+                    admin: false
+                    notifyByEmail: true
+                    verifiedEmail: true""";
+        String expectedText3 = """
+                *User nr\\. 3*
+                    id: 1234
+                    nick: nick
+                    email: email
+                    nationality: pl
+                    premium: true
+                    admin: false
+                    notifyByEmail: true
+                    verifiedEmail: true""";
+
+        //when
+        when(responseFacade.getAllUsers()).thenReturn(givenUserEntities);
+        adminResponse.setActiveUser(givenUser);
+        adminResponse.response();
+
+        //then
+        verify(quickSender, times(1)).message(givenUser.getChatId(), expectedText1, true);
+        verify(quickSender, times(1)).message(givenUser.getChatId(), expectedText2, true);
+        verify(quickSender, times(1)).message(givenUser.getChatId(), expectedText3, true);
+    }
+
+//    @Test
+//    void response_startReceiver() {
+//        //given
+//        ActiveUser givenUser = getDefaultActiveUser();
+//        givenUser.setText("//start");
+//
+//        //when
+//        adminResponse.setActiveUser(givenUser);
+//        adminResponse.response();
+//
+//        //then
+//        verify(updateReceiverService, times(1)).running(true);
+//        verify(quickSender, times(1)).message(givenUser.getChatId(), "Receiver started.", false);
+//    }
+//
+//    @Test
+//    void response_stopReceiver() {
+//        //given
+//        ActiveUser givenUser = getDefaultActiveUser();
+//        givenUser.setText("//stop");
+//
+//        //when
+//        adminResponse.setActiveUser(givenUser);
+//        adminResponse.response();
+//
+//        //then
+//        verify(updateReceiverService, times(1)).running(false);
+//        verify(quickSender, times(1)).message(givenUser.getChatId(), "Receiver stopped.", false);
+//    }
+//
+//    @Test
+//    void response_crashApplication() {
+//        //given
+//        ActiveUser givenUser = getDefaultActiveUser();
+//        givenUser.setText("//crash");
+//
+//        //when
+//        adminResponse.setActiveUser(givenUser);
+//        adminResponse.response();
+//
+//        //then
+//        verify(updateReceiverService, times(1)).crash();
+//        verify(quickSender, times(1)).message(givenUser.getChatId(), "Crashing application...", false);
+//    }
+
+    private UserEntity getDefaultUserEntity() {
+        return UserEntity.builder()
+                .userId("1234")
+                .email("email")
+                .nick("nick")
+                .nationality("pl")
+                .premium(true)
+                .admin(false)
+                .notifyByEmail(true)
+                .verifiedEmail(true)
+                .build();
+    }
+
+    private List<UserEntity> getListOfDefaultUserEntity(int size) {
+        return IntStream.range(0, size)
+                .mapToObj(i -> getDefaultUserEntity())
+                .toList();
+    }
+
+    private UserEntity getUserEntity(String userId) {
+        return UserEntity.builder()
+                .userId(userId)
+                .build();
+    }
 
 
     private List<BotCommand> getDefaultBotCommands() {

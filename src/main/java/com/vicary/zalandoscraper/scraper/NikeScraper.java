@@ -127,7 +127,7 @@ public class NikeScraper implements Scraper {
                     .price(0)
                     .variant(variant)
                     .link(link)
-                    .serviceName("nike.pl")
+                    .serviceName("nike.com")
                     .currency("pl")
                     .build();
 

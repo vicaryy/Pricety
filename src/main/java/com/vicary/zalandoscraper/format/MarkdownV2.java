@@ -1,5 +1,6 @@
 package com.vicary.zalandoscraper.format;
 
+import com.vicary.zalandoscraper.exception.IllegalInputException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,6 +11,7 @@ public class MarkdownV2 {
     private final static Logger logger = LoggerFactory.getLogger(MarkdownV2.class);
     private final StringBuilder sb;
     private static final List<Character> markdownV2Characters = Arrays.asList('_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!');
+    private static final List<Character> markdownV2CharactersSkips = Arrays.asList('[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!');
 
     private MarkdownV2(StringBuilder sb) {
         this.sb = sb;
@@ -20,6 +22,27 @@ public class MarkdownV2 {
             if (text.contains(String.valueOf(c)))
                 text = text.replace(String.valueOf(c), "\\" + c);
         return new MarkdownV2(new StringBuilder().append(text));
+    }
+
+    public static String applyWithManualBoldAndItalic(String text) {
+        int stars = 0;
+        int underscores = 0;
+        for (char ch : text.toCharArray()) {
+            if (ch == '*')
+                stars++;
+            if (ch == '_')
+                underscores++;
+        }
+
+        if (stars % 2 != 0)
+            throw new IllegalInputException("Number of stars must be even.", "Admin tries to send message but stars are not even.");
+        if (underscores % 2 != 0)
+            throw new IllegalInputException("Number of underscores must be even.", "Admin tries to send message but stars are not even.");
+
+        for (char c : markdownV2CharactersSkips)
+            if (text.contains(String.valueOf(c)))
+                text = text.replace(String.valueOf(c), "\\" + c);
+        return text;
     }
 
     public MarkdownV2 toURL() {

@@ -42,7 +42,7 @@ public class RequestService {
         return (ReturnObject) response.getResult();
     }
 
-    public synchronized <Request extends ApiRequest> void sendWithoutResponse(Request request) throws RestClientException {
+    public synchronized <Request extends ApiRequest> void sendWithoutResponse(Request request) {
         request.checkValidation();
         String url = getRequestURL() + request.getEndPoint();
 

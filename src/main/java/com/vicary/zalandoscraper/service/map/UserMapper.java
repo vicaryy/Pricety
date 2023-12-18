@@ -19,6 +19,7 @@ public class UserMapper {
                 .premium(false)
                 .admin(false)
                 .notifyByEmail(false)
+                .verifiedEmail(false)
                 .build();
     }
 }

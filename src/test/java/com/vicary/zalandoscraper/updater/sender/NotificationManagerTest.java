@@ -4,6 +4,7 @@ import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.entity.WaitingUserEntity;
 import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.model.User;
+import com.vicary.zalandoscraper.service.UpdateReceiverService;
 import com.vicary.zalandoscraper.service.repository_services.ProductService;
 import com.vicary.zalandoscraper.thread_local.ActiveLanguage;
 import org.junit.jupiter.api.BeforeAll;
@@ -28,6 +29,8 @@ class NotificationManagerTest {
     private ChatNotificationSender chatSender;
     @MockBean
     private EmailNotificationSender emailSender;
+    @MockBean
+    private UpdateReceiverService updateReceiverService;
 
     @BeforeAll
     static void beforeAll() {
