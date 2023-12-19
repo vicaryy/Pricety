@@ -69,8 +69,8 @@ public class AutoUpdater {
         state.stop();
     }
 
-    public boolean isRunning() {
-        return state.isRunning();
+    public boolean isUpdating() {
+        return state.isUpdating();
     }
 
     public String getCurrentState() {

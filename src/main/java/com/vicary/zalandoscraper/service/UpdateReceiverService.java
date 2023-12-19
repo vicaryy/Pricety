@@ -5,6 +5,7 @@ import com.vicary.zalandoscraper.exception.*;
 import com.vicary.zalandoscraper.messages.Messages;
 import com.vicary.zalandoscraper.scraper.Scraper;
 import com.vicary.zalandoscraper.scraper.ScraperFactory;
+import com.vicary.zalandoscraper.service.response.admin.AdminResponse;
 import com.vicary.zalandoscraper.thread_local.ActiveLanguage;
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
 import com.vicary.zalandoscraper.api_telegram.service.UpdateFetcher;
@@ -16,37 +17,49 @@ import com.vicary.zalandoscraper.service.response.*;
 import com.vicary.zalandoscraper.service.response.inline_markup.InlineMarkupResponse;
 import com.vicary.zalandoscraper.updater.AutoUpdater;
 import com.vicary.zalandoscraper.utils.url.UrlParser;
-import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
 
 import com.vicary.zalandoscraper.api_telegram.api_object.Update;
 import org.openqa.selenium.WebDriverException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 
 @Service
-@RequiredArgsConstructor
 public class UpdateReceiverService implements UpdateReceiver {
     private final static Logger logger = LoggerFactory.getLogger(UpdateReceiverService.class);
-    private boolean running = true;
-
+    private final AtomicBoolean running = new AtomicBoolean(true);
     private final UserAuthentication userAuthentication;
-
     private final ResponseFacade facade;
-
     private final QuickSender quickSender;
-
     private final UrlParser urlParser;
-
     private final AdminResponse adminResponse;
-
     private final AutoUpdater autoUpdater;
-    private final UpdateFetcher updateFetcher = new UpdateFetcher(this);
+    private final UpdateFetcher updateFetcher;
 
-    @PostConstruct
-    void setup() {
+    @Autowired
+    public UpdateReceiverService(UserAuthentication userAuthentication, ResponseFacade facade, QuickSender quickSender, UrlParser urlParser, AdminResponse adminResponse, AutoUpdater autoUpdater) {
+        this.userAuthentication = userAuthentication;
+        this.facade = facade;
+        this.quickSender = quickSender;
+        this.urlParser = urlParser;
+        this.adminResponse = adminResponse;
+        this.autoUpdater = autoUpdater;
+        updateFetcher = new UpdateFetcher(this);
+        facade.deleteAllActiveRequests();
+    }
+
+    public UpdateReceiverService(UserAuthentication userAuthentication, ResponseFacade facade, QuickSender quickSender, UrlParser urlParser, AdminResponse adminResponse, AutoUpdater autoUpdater, UpdateFetcher updateFetcher) {
+        this.userAuthentication = userAuthentication;
+        this.facade = facade;
+        this.quickSender = quickSender;
+        this.urlParser = urlParser;
+        this.adminResponse = adminResponse;
+        this.autoUpdater = autoUpdater;
+        this.updateFetcher = updateFetcher;
         facade.deleteAllActiveRequests();
     }
 
@@ -70,16 +83,13 @@ public class UpdateReceiverService implements UpdateReceiver {
 
         try {
             if (Pattern.isAdminCommand(user.getText(), user.isAdmin())) {
-                adminResponse.setActiveUser(user);
+                adminResponse.set(user, updateFetcher);
                 adminResponse.response();
                 return;
             }
-            if (!running) {
-                logger.info("Receiver is not running");
+            if (!running.get())
                 return;
-            }
-
-            if (autoUpdater.isRunning())
+            if (autoUpdater.isUpdating())
                 handleProductUpdaterRunning(userId);
 
 
@@ -137,13 +147,14 @@ public class UpdateReceiverService implements UpdateReceiver {
         throw new IllegalArgumentException("User '%s' interact with bot while product updater is running.".formatted(userId));
     }
 
-    public void running(boolean isRunning) {
-        this.running = isRunning;
+    @Override
+    public void setRunning(boolean isRunning) {
+        running.set(isRunning);
     }
 
-    public void crash() {
-        logger.info("Receiver is crashed, you have to restart entire application.");
-        System.exit(0);
+    @Override
+    public boolean isRunning() {
+        return running.get();
     }
 
     @Override

@@ -50,7 +50,7 @@ class UpdatingStateTest {
     void isRunning_expectTrue() {
         //when
         //then
-        assertTrue(state.isRunning());
+        assertTrue(state.isUpdating());
     }
 
     @Test

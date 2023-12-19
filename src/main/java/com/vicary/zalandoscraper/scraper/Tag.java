@@ -64,7 +64,7 @@ class Tag {
         static final String CURRENT_COLOR = "p.product-color-extended-name.product-detail-color-selector__selected-color-name";
         static final String ALL_VARIANTS_TEXT_TAB = "div.product-size-info__main-label";
         static final String ALL_VARIANTS_TAB = "li.size-selector-list__item";
-        static final String NON_AVAILABLE_VARIANTS_TAB = "li.size-selector-list__item.size-selector-list__item--is-disabled.size-selector-list__item--out-of-stock";
+        static final String NON_AVAILABLE_VARIANTS_TAB = "li.size-selector-list__item--is-disabled";
         static final String ALL_COLORS_TAB = "li.product-detail-color-selector__color";
     }
 }

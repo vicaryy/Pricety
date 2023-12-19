@@ -29,7 +29,7 @@ public class RunningOnceState extends UpdaterState {
     }
 
     @Override
-    public boolean isRunning() {
+    public boolean isUpdating() {
         return true;
     }
 

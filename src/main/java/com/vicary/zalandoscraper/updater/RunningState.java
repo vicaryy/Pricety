@@ -28,8 +28,8 @@ public class RunningState extends UpdaterState {
     }
 
     @Override
-    public boolean isRunning() {
-        return true;
+    public boolean isUpdating() {
+        return false;
     }
 
     @Override

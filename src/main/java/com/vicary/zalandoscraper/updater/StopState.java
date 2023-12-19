@@ -31,7 +31,7 @@ public class StopState extends UpdaterState {
     }
 
     @Override
-    public boolean isRunning() {
+    public boolean isUpdating() {
         return false;
     }
 

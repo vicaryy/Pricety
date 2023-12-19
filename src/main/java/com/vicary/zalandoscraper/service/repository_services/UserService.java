@@ -1,15 +1,19 @@
 package com.vicary.zalandoscraper.service.repository_services;
 
 import com.vicary.zalandoscraper.entity.UserEntity;
+import com.vicary.zalandoscraper.exception.IllegalInputException;
+import com.vicary.zalandoscraper.messages.Messages;
 import com.vicary.zalandoscraper.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -17,6 +21,7 @@ public class UserService {
     private final static Logger logger = LoggerFactory.getLogger(UserService.class);
 
     private final UserRepository repository;
+    private final static Pattern NICK_PATTERN = Pattern.compile("^[a-z0-9]+$");
 
 
     public void updateLanguage(String userId, String language) {
@@ -37,7 +42,7 @@ public class UserService {
     }
 
     public List<UserEntity> findAllUsers() {
-        return repository.findAll();
+        return repository.findAll(Sort.by("userId"));
     }
 
     public Optional<UserEntity> findByUserNick(String nick) {
@@ -151,5 +156,34 @@ public class UserService {
 
     public void setVerifiedEmail(String userId, boolean verified) {
         repository.setVerifiedEmail(userId, verified);
+    }
+
+    @Transactional
+    public void updateUserNick(String userId, String nick) {
+        nick = nick.toLowerCase();
+        validateNick(nick);
+        UserEntity user = findByUserId(userId).orElseThrow(() -> new IllegalInputException("User not found.", "User to nick change not found"));
+        user.setNick(nick);
+    }
+
+    private void validateNick(String nick) {
+        if (nick.length() > 25)
+            throw new IllegalInputException(Messages.other("nickCharacterLimitAbove"), "User entered nick above 25 characters.");
+        if (nick.length() < 3)
+            throw new IllegalInputException(Messages.other("nickCharacterLimitUnder"), "User entered nick under 3 characters.");
+        if (!NICK_PATTERN.matcher(nick).matches())
+            throw new IllegalInputException(Messages.other("nickCharacterIllegal"), "User entered nick but with illegal characters.");
+        if (isNickExists(nick))
+            throw new IllegalInputException(Messages.other("nickAlreadyExists"), "User entered nick which already exists.");
+    }
+
+    private boolean isNickExists(String nick) {
+        return repository.existsByNick(nick);
+    }
+
+    public void deleteUser(String userId) {
+        if (!existsByUserId(userId))
+            throw new IllegalInputException("User not found.", "Admin tries to delete user but user not found, userId: " + userId);
+        repository.deleteById(userId);
     }
 }

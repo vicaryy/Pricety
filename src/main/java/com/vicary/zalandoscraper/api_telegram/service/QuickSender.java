@@ -30,12 +30,12 @@ public class QuickSender {
             requestService.sendWithoutResponse(sendMessage);
         } catch (WebClientResponseException ex) {
             logger.warn("---------------------------");
-            logger.warn("Error in sending message request.");
+            logger.warn("Error in sending message request to user '{}'.", chatId);
             logger.warn("Status code: " + ex.getStatusCode());
             logger.warn("Description: " + ex.getStatusText());
             logger.warn("---------------------------");
         } catch (Exception ex) {
-            logger.warn("Error in sending message request, message: {}", ex.getMessage());
+            logger.warn("Error in sending message request to user '{}', message: {}", chatId, ex.getMessage());
         }
     }
 
@@ -50,8 +50,14 @@ public class QuickSender {
             if (markdownV2)
                 sendMessage.setParseMode(ParseMode.MarkdownV2);
             requestService.sendWithoutResponse(sendMessage);
+        } catch (WebClientResponseException ex) {
+            logger.warn("---------------------------");
+            logger.warn("Error in sending message request to user '{}'.", chatId);
+            logger.warn("Status code: " + ex.getStatusCode());
+            logger.warn("Description: " + ex.getStatusText());
+            logger.warn("---------------------------");
         } catch (Exception ex) {
-            logger.warn("Error in sending message request, message: {}", ex.getMessage());
+            logger.warn("Error in sending message request to user '{}', message: {}", chatId, ex.getMessage());
         }
     }
 
@@ -66,8 +72,14 @@ public class QuickSender {
             if (markdownV2)
                 sendMessage.setParseMode(ParseMode.MarkdownV2);
             requestService.sendWithoutResponse(sendMessage);
+        } catch (WebClientResponseException ex) {
+            logger.warn("---------------------------");
+            logger.warn("Error in sending message request to user '{}'.", chatId);
+            logger.warn("Status code: " + ex.getStatusCode());
+            logger.warn("Description: " + ex.getStatusText());
+            logger.warn("---------------------------");
         } catch (Exception ex) {
-            logger.warn("Error in sending message request, message: {}", ex.getMessage());
+            logger.warn("Error in sending message request to user '{}', message: {}", chatId, ex.getMessage());
         }
     }
 
@@ -80,26 +92,48 @@ public class QuickSender {
                     .disableWebPagePreview(true)
                     .build();
             requestService.sendWithoutResponse(sendMessage);
+        } catch (WebClientResponseException ex) {
+            logger.warn("---------------------------");
+            logger.warn("Error in sending message request to user '{}'.", chatId);
+            logger.warn("Status code: " + ex.getStatusCode());
+            logger.warn("Description: " + ex.getStatusText());
+            logger.warn("---------------------------");
         } catch (Exception ex) {
-            logger.warn("Error in sending message request, message: {}", ex.getMessage());
+            logger.warn("Error in sending message request to user '{}', message: {}", chatId, ex.getMessage());
         }
     }
 
 
     public void notification(ChatNotification notification) throws Exception {
+        try {
         requestService.sendWithoutResponse(SendMessage.builder()
                 .chatId(notification.getChatId())
                 .text(notification.getMessage())
                 .parseMode(notification.isMarkdownV2() ? ParseMode.MarkdownV2 : null)
                 .build());
+        } catch (WebClientResponseException ex) {
+            logger.warn("---------------------------");
+            logger.warn("Error in sending message request to user '{}'.", notification.getChatId());
+            logger.warn("Status code: " + ex.getStatusCode());
+            logger.warn("Description: " + ex.getStatusText());
+            logger.warn("---------------------------");
+        } catch (Exception ex) {
+            logger.warn("Error in sending message request to user '{}', message: {}", notification.getChatId(), ex.getMessage());
+        }
     }
 
 
     public void message(SendMessage sendMessage) {
         try {
             requestService.sendWithoutResponse(sendMessage);
+        } catch (WebClientResponseException ex) {
+            logger.warn("---------------------------");
+            logger.warn("Error in sending message request to user '{}'.", sendMessage.getChatId());
+            logger.warn("Status code: " + ex.getStatusCode());
+            logger.warn("Description: " + ex.getStatusText());
+            logger.warn("---------------------------");
         } catch (Exception ex) {
-            logger.warn("Error in sending message request, message: {}", ex.getMessage());
+            logger.warn("Error in sending message request to user '{}', message: {}", sendMessage.getChatId(), ex.getMessage());
         }
     }
 
@@ -110,8 +144,14 @@ public class QuickSender {
                     .messageId(messageId)
                     .build();
             requestService.sendWithoutResponse(deleteMessage);
+        } catch (WebClientResponseException ex) {
+            logger.warn("---------------------------");
+            logger.warn("Error in sending message request to user '{}'.", chatId);
+            logger.warn("Status code: " + ex.getStatusCode());
+            logger.warn("Description: " + ex.getStatusText());
+            logger.warn("---------------------------");
         } catch (Exception ex) {
-            logger.warn("Error in deleting message request, message: {}", ex.getMessage());
+            logger.warn("Error in sending message request to user '{}', message: {}", chatId, ex.getMessage());
         }
     }
 
@@ -164,8 +204,14 @@ public class QuickSender {
                     .action(action)
                     .build();
             requestService.sendWithoutResponse(sendChatAction);
+        } catch (WebClientResponseException ex) {
+            logger.warn("---------------------------");
+            logger.warn("Error in sending message request to user '{}'.", chatId);
+            logger.warn("Status code: " + ex.getStatusCode());
+            logger.warn("Description: " + ex.getStatusText());
+            logger.warn("---------------------------");
         } catch (Exception ex) {
-            logger.warn("Error in sending chatAction request, message: {}", ex.getMessage());
+            logger.warn("Error in sending message request to user '{}', message: {}", chatId, ex.getMessage());
         }
     }
 }

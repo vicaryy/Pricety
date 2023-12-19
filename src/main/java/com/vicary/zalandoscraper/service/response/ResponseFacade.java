@@ -58,10 +58,6 @@ public class ResponseFacade {
         productService.deleteAllProductsByUserId(userId);
     }
 
-    public void updateLanguageByUserId(String userId, String language) {
-        userService.updateLanguage(userId, language);
-    }
-
     public void updateNotifyByEmailById(String userId, boolean notifyByEmail) {
         userService.updateNotifyByEmailById(userId, notifyByEmail);
     }
@@ -149,7 +145,7 @@ public class ResponseFacade {
         activeRequestService.deleteAllActiveUsers();
     }
 
-    public UserEntity getUserByUserId(String userId) {
+    public UserEntity getUser(String userId) {
         return userService.findByUserId(userId)
                 .orElseThrow(() -> new IllegalInputException("User '%s' not found".formatted(userId), "Admin trying to send message to user '%s' but user not found".formatted(userId)));
     }
@@ -158,8 +154,20 @@ public class ResponseFacade {
         return userService.findAllUsers();
     }
 
+    public void updateUserNick(String userId, String nick) {
+        userService.updateUserNick(userId, nick);
+    }
+
+    public void updateUserLanguage(String userId, String language) {
+        userService.updateLanguage(userId, language);
+    }
+
     public void checkAndSaveWaitingUser(String userId) {
-        if (!waitingUserService.existsByUserId(getUserByUserId(userId)))
-            waitingUserService.saveWaitingUser(new WaitingUserEntity(getUserByUserId(userId)));
+        if (!waitingUserService.existsByUserId(getUser(userId)))
+            waitingUserService.saveWaitingUser(new WaitingUserEntity(getUser(userId)));
+    }
+
+    public void deleteUser(String userId) {
+        userService.deleteUser(userId);
     }
 }

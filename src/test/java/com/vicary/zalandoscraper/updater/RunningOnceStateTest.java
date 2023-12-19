@@ -54,7 +54,7 @@ class RunningOnceStateTest {
         //given
         //when
         //then
-        assertTrue(state.isRunning());
+        assertTrue(state.isUpdating());
     }
 
     @Test

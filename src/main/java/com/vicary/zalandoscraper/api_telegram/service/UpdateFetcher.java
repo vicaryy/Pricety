@@ -22,7 +22,7 @@ public class UpdateFetcher {
     private static String fetchURL;
     private static String deleteURL;
     private long fastModeDuration;
-    private final AtomicBoolean isRunning = new AtomicBoolean(false);
+    private final AtomicBoolean fetcherRunning = new AtomicBoolean(true);
     private Mode mode = Mode.FAST;
     private List<Update> updates = new ArrayList<>();
     private final Thread thread;
@@ -50,10 +50,9 @@ public class UpdateFetcher {
     }
 
     private void run() {
-        isRunning.set(true);
         configBotInfo();
         sleep(options.getBreakBeforeStart());
-        while (isRunning.get()) {
+        while (fetcherRunning.get()) {
             try {
                 updates = getUpdates();
             } catch (WebClientResponseException ex) {
@@ -81,6 +80,14 @@ public class UpdateFetcher {
 
     public void setOptions(FetcherOptions options) {
         this.options = options;
+    }
+
+    public void setReceiverRunning(boolean isRunning) {
+        updateReceiver.setRunning(isRunning);
+    }
+
+    public boolean isReceiverRunning() {
+        return updateReceiver.isRunning();
     }
 
     static String getBotToken() {
@@ -150,7 +157,6 @@ public class UpdateFetcher {
     }
 
 
-
     private void checkUpdatesDelay() {
         if (!updates.isEmpty() && mode == Mode.FAST)
             resetFastModeDuration();
@@ -186,7 +192,7 @@ public class UpdateFetcher {
         logger.error("Description: " + ex.getStatusText());
         logger.error("Check your bot token etc. and try again.");
         logger.error("---------------------------");
-        isRunning.set(false);
+        fetcherRunning.set(false);
     }
 
     private void handleWebClientRequestException() {
@@ -200,8 +206,7 @@ public class UpdateFetcher {
     private void handleException(Exception ex) {
         logger.error("Telegram API Bot stopped.");
         logger.error("Unexpected error: " + ex.getMessage());
-        ex.printStackTrace();
-        isRunning.set(false);
+        fetcherRunning.set(false);
     }
 
     private void sleep(int milliseconds) {

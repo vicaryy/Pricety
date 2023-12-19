@@ -529,7 +529,7 @@ class InlineMarkupResponseTest {
 
         //then
         verify(quickSender, times(1)).deleteMessage(givenUser.getChatId(), givenUser.getMessageId());
-        verify(responseFacade, times(1)).updateLanguageByUserId(givenUser.getChatId(), givenLanguage);
+        verify(responseFacade, times(1)).updateUserLanguage(givenUser.getChatId(), givenLanguage);
         verify(quickSender, times(1)).inlineMarkup(
                 eq(givenUser.getChatId()),
                 anyString(),

@@ -1,7 +1,6 @@
 package com.vicary.zalandoscraper.repository;
 
 import com.vicary.zalandoscraper.entity.UserEntity;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -16,6 +15,8 @@ public interface UserRepository extends JpaRepository<UserEntity, String> {
     Optional<UserEntity> findByNick(String nick);
 
     boolean existsByUserId(String userId);
+
+    boolean existsByNick(String nick);
 
     @Modifying
     @Transactional

@@ -59,7 +59,7 @@ class StopStateTest {
         //given
         //when
         //then
-        assertFalse(state.isRunning());
+        assertFalse(state.isUpdating());
     }
 
     @Test

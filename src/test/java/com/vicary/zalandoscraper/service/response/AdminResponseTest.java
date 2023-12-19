@@ -4,15 +4,19 @@ import com.vicary.zalandoscraper.api_telegram.api_object.bot.bot_command.BotComm
 import com.vicary.zalandoscraper.api_telegram.api_request.ApiRequest;
 import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
 import com.vicary.zalandoscraper.api_telegram.service.RequestService;
+import com.vicary.zalandoscraper.api_telegram.service.UpdateFetcher;
 import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.exception.IllegalInputException;
 import com.vicary.zalandoscraper.exception.ZalandoScraperBotException;
 import com.vicary.zalandoscraper.service.UpdateReceiverService;
+import com.vicary.zalandoscraper.service.response.admin.AdminResponse;
 import com.vicary.zalandoscraper.thread_local.ActiveLanguage;
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
 import com.vicary.zalandoscraper.updater.AutoUpdater;
+import com.vicary.zalandoscraper.utils.ApplicationCrasher;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -41,7 +45,10 @@ class AdminResponseTest {
     private UpdateReceiverService updateReceiverService;
     @MockBean
     private AutoUpdater autoUpdater;
-
+    @MockBean
+    private ApplicationCrasher applicationCrasher;
+    @Mock
+    private UpdateFetcher updateFetcher;
 
     @BeforeAll
     static void beforeAll() {
@@ -58,7 +65,7 @@ class AdminResponseTest {
 
         //when
         when(responseFacade.updateUserToPremiumByUserId(givenUserId)).thenReturn(true);
-        adminResponse.setActiveUser(givenUser);
+        adminResponse.set(givenUser, updateFetcher);
         adminResponse.response();
 
         //then
@@ -76,7 +83,7 @@ class AdminResponseTest {
 
         //when
         when(responseFacade.updateUserToPremiumByUserId(givenUserId)).thenReturn(false);
-        adminResponse.setActiveUser(givenUser);
+        adminResponse.set(givenUser, updateFetcher);
 
         //then
         assertThrows(IllegalInputException.class, () -> adminResponse.response());
@@ -93,7 +100,7 @@ class AdminResponseTest {
 
         //when
         when(responseFacade.updateUserToStandardByUserId(givenUserId)).thenReturn(true);
-        adminResponse.setActiveUser(givenUser);
+        adminResponse.set(givenUser, updateFetcher);
         adminResponse.response();
 
         //then
@@ -111,7 +118,7 @@ class AdminResponseTest {
 
         //when
         when(responseFacade.updateUserToStandardByUserId(givenUserId)).thenReturn(false);
-        adminResponse.setActiveUser(givenUser);
+        adminResponse.set(givenUser, updateFetcher);
 
         //then
         assertThrows(IllegalInputException.class, () -> adminResponse.response());
@@ -128,7 +135,7 @@ class AdminResponseTest {
 
         //when
         when(responseFacade.updateUserToAdminByUserId(givenUserId)).thenReturn(true);
-        adminResponse.setActiveUser(givenUser);
+        adminResponse.set(givenUser, updateFetcher);
         adminResponse.response();
 
         //then
@@ -146,7 +153,7 @@ class AdminResponseTest {
 
         //when
         when(responseFacade.updateUserToAdminByUserId(givenUserId)).thenReturn(false);
-        adminResponse.setActiveUser(givenUser);
+        adminResponse.set(givenUser, updateFetcher);
 
         //then
         assertThrows(IllegalInputException.class, () -> adminResponse.response());
@@ -163,7 +170,7 @@ class AdminResponseTest {
 
         //when
         when(responseFacade.updateUserToNonAdminByUserId(givenUserId)).thenReturn(true);
-        adminResponse.setActiveUser(givenUser);
+        adminResponse.set(givenUser, updateFetcher);
         adminResponse.response();
 
         //then
@@ -181,7 +188,7 @@ class AdminResponseTest {
 
         //when
         when(responseFacade.updateUserToNonAdminByUserId(givenUserId)).thenReturn(false);
-        adminResponse.setActiveUser(givenUser);
+        adminResponse.set(givenUser, updateFetcher);
 
         //then
         assertThrows(IllegalInputException.class, () -> adminResponse.response());
@@ -197,7 +204,7 @@ class AdminResponseTest {
         givenUser.setText("//set command " + givenCommand);
 
         //when
-        adminResponse.setActiveUser(givenUser);
+        adminResponse.set(givenUser, updateFetcher);
         adminResponse.response();
 
         //then
@@ -214,7 +221,7 @@ class AdminResponseTest {
         givenUser.setText("//set command " + givenCommand);
 
         //when
-        adminResponse.setActiveUser(givenUser);
+        adminResponse.set(givenUser, updateFetcher);
 
         //then
         assertThrows(IllegalInputException.class, () -> adminResponse.response());
@@ -231,7 +238,7 @@ class AdminResponseTest {
         givenUser.setText("//set command " + givenCommand);
 
         //when
-        adminResponse.setActiveUser(givenUser);
+        adminResponse.set(givenUser, updateFetcher);
 
         //then
         assertThrows(IllegalInputException.class, () -> adminResponse.response());
@@ -248,7 +255,7 @@ class AdminResponseTest {
         givenUser.setText("//set command " + givenCommand);
 
         //when
-        adminResponse.setActiveUser(givenUser);
+        adminResponse.set(givenUser, updateFetcher);
 
         //then
         assertThrows(IllegalInputException.class, () -> adminResponse.response());
@@ -265,7 +272,7 @@ class AdminResponseTest {
         givenUser.setText("//set command " + givenCommand);
 
         //when
-        adminResponse.setActiveUser(givenUser);
+        adminResponse.set(givenUser, updateFetcher);
 
         //then
         assertThrows(IllegalInputException.class, () -> adminResponse.response());
@@ -283,7 +290,7 @@ class AdminResponseTest {
 
         //when
         when(requestService.send((ApiRequest<?>) any())).thenThrow(IllegalInputException.class);
-        adminResponse.setActiveUser(givenUser);
+        adminResponse.set(givenUser, updateFetcher);
 
         //then
         assertThrows(IllegalInputException.class, () -> adminResponse.response());
@@ -302,7 +309,7 @@ class AdminResponseTest {
 
         //when
         when(requestService.sendRequestList(any())).thenReturn((List<Object>) givenBotCommands);
-        adminResponse.setActiveUser(givenUser);
+        adminResponse.set(givenUser, updateFetcher);
         adminResponse.response();
 
         //then
@@ -320,7 +327,7 @@ class AdminResponseTest {
 
         //when
         when(requestService.sendRequestList(any())).thenReturn((List<Object>) givenBotCommands);
-        adminResponse.setActiveUser(givenUser);
+        adminResponse.set(givenUser, updateFetcher);
         adminResponse.response();
 
         //then
@@ -339,7 +346,7 @@ class AdminResponseTest {
 
         //when
         when(requestService.sendRequestList(any())).thenReturn((List<Object>) givenBotCommands);
-        adminResponse.setActiveUser(givenUser);
+        adminResponse.set(givenUser, updateFetcher);
 
         //then
         assertThrows(IllegalInputException.class, () -> adminResponse.response());
@@ -355,7 +362,7 @@ class AdminResponseTest {
         givenUser.setText("//delete command all");
 
         //when
-        adminResponse.setActiveUser(givenUser);
+        adminResponse.set(givenUser, updateFetcher);
         adminResponse.response();
 
         //then
@@ -370,7 +377,7 @@ class AdminResponseTest {
         givenUser.setText("//wrong command");
 
         //when
-        adminResponse.setActiveUser(givenUser);
+        adminResponse.set(givenUser, updateFetcher);
         adminResponse.response();
 
         //then
@@ -385,7 +392,7 @@ class AdminResponseTest {
         givenUser.setText("//update start");
 
         //when
-        adminResponse.setActiveUser(givenUser);
+        adminResponse.set(givenUser, updateFetcher);
         adminResponse.response();
 
         //then
@@ -402,7 +409,7 @@ class AdminResponseTest {
 
         //when
         doThrow(new ZalandoScraperBotException("asd", "dsa")).when(autoUpdater).start();
-        adminResponse.setActiveUser(givenUser);
+        adminResponse.set(givenUser, updateFetcher);
         adminResponse.response();
 
         //then
@@ -417,7 +424,7 @@ class AdminResponseTest {
         givenUser.setText("//update stop");
 
         //when
-        adminResponse.setActiveUser(givenUser);
+        adminResponse.set(givenUser, updateFetcher);
         adminResponse.response();
 
         //then
@@ -434,7 +441,7 @@ class AdminResponseTest {
 
         //when
         doThrow(new ZalandoScraperBotException("asd", "dsa")).when(autoUpdater).stop();
-        adminResponse.setActiveUser(givenUser);
+        adminResponse.set(givenUser, updateFetcher);
         adminResponse.response();
 
         //then
@@ -449,7 +456,7 @@ class AdminResponseTest {
         givenUser.setText("//update start once");
 
         //when
-        adminResponse.setActiveUser(givenUser);
+        adminResponse.set(givenUser, updateFetcher);
         adminResponse.response();
 
         //then
@@ -465,7 +472,7 @@ class AdminResponseTest {
 
         //when
         doThrow(new ZalandoScraperBotException("asd", "dsa")).when(autoUpdater).startOnce();
-        adminResponse.setActiveUser(givenUser);
+        adminResponse.set(givenUser, updateFetcher);
         adminResponse.response();
 
         //then
@@ -480,7 +487,7 @@ class AdminResponseTest {
         givenUser.setText("//update state");
 
         //when
-        adminResponse.setActiveUser(givenUser);
+        adminResponse.set(givenUser, updateFetcher);
         adminResponse.response();
 
         //then
@@ -495,7 +502,7 @@ class AdminResponseTest {
         givenUser.setText("//get all");
 
         //when
-        adminResponse.setActiveUser(givenUser);
+        adminResponse.set(givenUser, updateFetcher);
         adminResponse.response();
 
         //then
@@ -520,12 +527,12 @@ class AdminResponseTest {
                 text\\.""";
 
         //when
-        when(responseFacade.getUserByUserId(givenTo)).thenReturn(givenUserEntity);
-        adminResponse.setActiveUser(givenUser);
+        when(responseFacade.getUser(givenTo)).thenReturn(givenUserEntity);
+        adminResponse.set(givenUser, updateFetcher);
         adminResponse.response();
 
         //then
-        verify(responseFacade, times(1)).getUserByUserId(givenTo);
+        verify(responseFacade, times(1)).getUser(givenTo);
         verify(responseFacade, times(0)).getAllUsers();
         verify(quickSender, times(1)).message(givenTo, givenText, true);
     }
@@ -554,11 +561,11 @@ class AdminResponseTest {
 
         //when
         when(responseFacade.getAllUsers()).thenReturn(givenUserEntity);
-        adminResponse.setActiveUser(givenUser);
+        adminResponse.set(givenUser, updateFetcher);
         adminResponse.response();
 
         //then
-        verify(responseFacade, times(0)).getUserByUserId(givenTo);
+        verify(responseFacade, times(0)).getUser(givenTo);
         verify(responseFacade, times(1)).getAllUsers();
         verify(quickSender, times(1)).message("1", givenText, true);
         verify(quickSender, times(1)).message("2", givenText, true);
@@ -575,11 +582,11 @@ class AdminResponseTest {
                 //send message all """);
 
         //when
-        adminResponse.setActiveUser(givenUser);
+        adminResponse.set(givenUser, updateFetcher);
 
         //then
         assertThrows(IllegalInputException.class, () -> adminResponse.response());
-        verify(responseFacade, times(0)).getUserByUserId(anyString());
+        verify(responseFacade, times(0)).getUser(anyString());
         verify(responseFacade, times(0)).getAllUsers();
         verify(quickSender, times(0)).message(anyString(), anyString(), anyBoolean());
     }
@@ -592,11 +599,11 @@ class AdminResponseTest {
                 //send message""");
 
         //when
-        adminResponse.setActiveUser(givenUser);
+        adminResponse.set(givenUser, updateFetcher);
 
         //then
         assertThrows(IllegalInputException.class, () -> adminResponse.response());
-        verify(responseFacade, times(0)).getUserByUserId(anyString());
+        verify(responseFacade, times(0)).getUser(anyString());
         verify(responseFacade, times(0)).getAllUsers();
         verify(quickSender, times(0)).message(anyString(), anyString(), anyBoolean());
     }
@@ -613,7 +620,7 @@ class AdminResponseTest {
         String expectedText = """
                 *User nr\\. 1*
                     id: 1234
-                    nick: nick
+                    nick: nick\\_
                     email: email
                     nationality: pl
                     premium: true
@@ -622,8 +629,8 @@ class AdminResponseTest {
                     verifiedEmail: true""";
 
         //when
-        when(responseFacade.getUserByUserId(givenUserId)).thenReturn(givenUserEntity);
-        adminResponse.setActiveUser(givenUser);
+        when(responseFacade.getUser(givenUserId)).thenReturn(givenUserEntity);
+        adminResponse.set(givenUser, updateFetcher);
         adminResponse.response();
 
         //then
@@ -640,7 +647,7 @@ class AdminResponseTest {
         String expectedText1 = """
                 *User nr\\. 1*
                     id: 1234
-                    nick: nick
+                    nick: nick\\_
                     email: email
                     nationality: pl
                     premium: true
@@ -650,7 +657,7 @@ class AdminResponseTest {
         String expectedText2 = """
                 *User nr\\. 2*
                     id: 1234
-                    nick: nick
+                    nick: nick\\_
                     email: email
                     nationality: pl
                     premium: true
@@ -660,7 +667,7 @@ class AdminResponseTest {
         String expectedText3 = """
                 *User nr\\. 3*
                     id: 1234
-                    nick: nick
+                    nick: nick\\_
                     email: email
                     nationality: pl
                     premium: true
@@ -670,7 +677,7 @@ class AdminResponseTest {
 
         //when
         when(responseFacade.getAllUsers()).thenReturn(givenUserEntities);
-        adminResponse.setActiveUser(givenUser);
+        adminResponse.set(givenUser, updateFetcher);
         adminResponse.response();
 
         //then
@@ -679,56 +686,197 @@ class AdminResponseTest {
         verify(quickSender, times(1)).message(givenUser.getChatId(), expectedText3, true);
     }
 
-//    @Test
-//    void response_startReceiver() {
-//        //given
-//        ActiveUser givenUser = getDefaultActiveUser();
-//        givenUser.setText("//start");
-//
-//        //when
-//        adminResponse.setActiveUser(givenUser);
-//        adminResponse.response();
-//
-//        //then
-//        verify(updateReceiverService, times(1)).running(true);
-//        verify(quickSender, times(1)).message(givenUser.getChatId(), "Receiver started.", false);
-//    }
-//
-//    @Test
-//    void response_stopReceiver() {
-//        //given
-//        ActiveUser givenUser = getDefaultActiveUser();
-//        givenUser.setText("//stop");
-//
-//        //when
-//        adminResponse.setActiveUser(givenUser);
-//        adminResponse.response();
-//
-//        //then
-//        verify(updateReceiverService, times(1)).running(false);
-//        verify(quickSender, times(1)).message(givenUser.getChatId(), "Receiver stopped.", false);
-//    }
-//
-//    @Test
-//    void response_crashApplication() {
-//        //given
-//        ActiveUser givenUser = getDefaultActiveUser();
-//        givenUser.setText("//crash");
-//
-//        //when
-//        adminResponse.setActiveUser(givenUser);
-//        adminResponse.response();
-//
-//        //then
-//        verify(updateReceiverService, times(1)).crash();
-//        verify(quickSender, times(1)).message(givenUser.getChatId(), "Crashing application...", false);
-//    }
+    @Test
+    void response_startReceiver() {
+        //given
+        ActiveUser givenUser = getDefaultActiveUser();
+        givenUser.setText("//start");
+
+        //when
+        when(updateFetcher.isReceiverRunning()).thenReturn(false);
+        adminResponse.set(givenUser, updateFetcher);
+        adminResponse.response();
+
+        //then
+        verify(updateFetcher, times(1)).isReceiverRunning();
+        verify(updateFetcher, times(1)).setReceiverRunning(true);
+        verify(quickSender, times(1)).message(givenUser.getChatId(), "Receiver started.", false);
+    }
+
+    @Test
+    void response_startReceiverButAlreadyRunning() {
+        //given
+        ActiveUser givenUser = getDefaultActiveUser();
+        givenUser.setText("//start");
+
+        //when
+        when(updateFetcher.isReceiverRunning()).thenReturn(true);
+        adminResponse.set(givenUser, updateFetcher);
+        adminResponse.response();
+
+        //then
+        verify(updateFetcher, times(1)).isReceiverRunning();
+        verify(updateFetcher, times(0)).setReceiverRunning(true);
+        verify(quickSender, times(1)).message(givenUser.getChatId(), "Receiver is already running.", false);
+    }
+
+    @Test
+    void response_stopReceiver() {
+        //given
+        ActiveUser givenUser = getDefaultActiveUser();
+        givenUser.setText("//stop");
+
+        //when
+        when(updateFetcher.isReceiverRunning()).thenReturn(true);
+        adminResponse.set(givenUser, updateFetcher);
+        adminResponse.response();
+
+        //then
+        verify(updateFetcher, times(1)).isReceiverRunning();
+        verify(updateFetcher, times(1)).setReceiverRunning(false);
+        verify(quickSender, times(1)).message(givenUser.getChatId(), "Receiver stopped.", false);
+    }
+
+    @Test
+    void response_stopReceiverButStoppedAlready() {
+        //given
+        ActiveUser givenUser = getDefaultActiveUser();
+        givenUser.setText("//stop");
+
+        //when
+        when(updateFetcher.isReceiverRunning()).thenReturn(false);
+        adminResponse.set(givenUser, updateFetcher);
+        adminResponse.response();
+
+        //then
+        verify(updateFetcher, times(1)).isReceiverRunning();
+        verify(updateFetcher, times(0)).setReceiverRunning(false);
+        verify(quickSender, times(1)).message(givenUser.getChatId(), "Receiver is already stopped.", false);
+    }
+
+    @Test
+    void response_crashApplication() {
+        //given
+        ActiveUser givenUser = getDefaultActiveUser();
+        givenUser.setText("//crash");
+
+        //when
+        adminResponse.set(givenUser, updateFetcher);
+        adminResponse.response();
+
+        //then
+        verify(applicationCrasher, times(1)).crash();
+        verify(quickSender, times(1)).message(givenUser.getChatId(), "Crashing application...", false);
+    }
+
+    @Test
+    void response_setNick_validParams() {
+        //given
+        ActiveUser givenUser = getDefaultActiveUser();
+        givenUser.setText("//set nick 12345 delfin");
+
+        //when
+        adminResponse.set(givenUser, updateFetcher);
+        adminResponse.response();
+
+        //then
+        verify(responseFacade, times(1)).updateUserNick("12345", "delfin");
+        verify(quickSender, times(1)).message(givenUser.getChatId(), "UserId: 12345 nick updated to delfin successfully.", false);
+    }
+
+    @Test
+    void response_setNick_NoUserId() {
+        //given
+        ActiveUser givenUser = getDefaultActiveUser();
+        givenUser.setText("//set nick delfin");
+
+        //when
+        adminResponse.set(givenUser, updateFetcher);
+
+        //then
+        assertThrows(IllegalInputException.class, () -> adminResponse.response());
+        verify(responseFacade, times(0)).updateUserNick(anyString(), anyString());
+        verify(quickSender, times(0)).message(anyString(), anyString(), anyBoolean());
+    }
+
+    @Test
+    void response_setNick_NoNick() {
+        //given
+        ActiveUser givenUser = getDefaultActiveUser();
+        givenUser.setText("//set nick 12345 ");
+
+        //when
+        adminResponse.set(givenUser, updateFetcher);
+
+        //then
+        assertThrows(IllegalInputException.class, () -> adminResponse.response());
+        verify(responseFacade, times(0)).updateUserNick(anyString(), anyString());
+        verify(quickSender, times(0)).message(anyString(), anyString(), anyBoolean());
+    }
+
+    @Test
+    void response_setNick_NoUserIdAndNick() {
+        //given
+        ActiveUser givenUser = getDefaultActiveUser();
+        givenUser.setText("//set nick ");
+
+        //when
+        adminResponse.set(givenUser, updateFetcher);
+
+        //then
+        assertThrows(IllegalInputException.class, () -> adminResponse.response());
+        verify(responseFacade, times(0)).updateUserNick(anyString(), anyString());
+        verify(quickSender, times(0)).message(anyString(), anyString(), anyBoolean());
+    }
+
+    @Test
+    void response_setNick_MoreNicks() {
+        //given
+        ActiveUser givenUser = getDefaultActiveUser();
+        givenUser.setText("//set nick 12345 nick1 nick2 nick3");
+
+        //when
+        adminResponse.set(givenUser, updateFetcher);
+        adminResponse.response();
+
+        //then
+        verify(responseFacade, times(1)).updateUserNick("12345", "nick1");
+        verify(quickSender, times(1)).message(givenUser.getChatId(), "UserId: 12345 nick updated to nick1 successfully.", false);
+    }
+
+    @Test
+    void response_deleteUser_JustDelete() {
+        ActiveUser givenUser = getDefaultActiveUser();
+        givenUser.setText("//delete user 12345");
+
+        //when
+        adminResponse.set(givenUser, updateFetcher);
+        adminResponse.response();
+
+        //then
+        verify(responseFacade, times(1)).deleteUser("12345");
+        verify(quickSender, times(1)).message(givenUser.getChatId(), "User deleted.", false);
+    }
+
+    @Test
+    void response_deleteUser_UserIdEmpty() {
+        ActiveUser givenUser = getDefaultActiveUser();
+        givenUser.setText("//delete user   ");
+
+        //when
+        adminResponse.set(givenUser, updateFetcher);
+
+        //then
+        assertThrows(IllegalInputException.class, () -> adminResponse.response());
+        verify(responseFacade, times(0)).deleteUser("12345");
+        verify(quickSender, times(0)).message(givenUser.getChatId(), "User deleted.", false);
+    }
 
     private UserEntity getDefaultUserEntity() {
         return UserEntity.builder()
                 .userId("1234")
                 .email("email")
-                .nick("nick")
+                .nick("nick_")
                 .nationality("pl")
                 .premium(true)
                 .admin(false)

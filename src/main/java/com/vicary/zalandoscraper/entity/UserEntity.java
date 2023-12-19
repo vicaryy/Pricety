@@ -41,7 +41,15 @@ public class UserEntity {
     @Column(name = "verified_email")
     private boolean verifiedEmail;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @ToString.Exclude
     private List<ProductEntity> products;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @ToString.Exclude
+    private List<MessageEntity> messages;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @ToString.Exclude
+    private List<WaitingUserEntity> waitingUsers;
 }

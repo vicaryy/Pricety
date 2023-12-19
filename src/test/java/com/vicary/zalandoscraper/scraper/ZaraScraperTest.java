@@ -636,6 +636,11 @@ class ZaraScraperTest {
         assertEquals(expectedPrice, givenProduct.getNewPrice());
     }
 
+    @Test
+    void test() {
+        scraper.getProduct("https://www.zara.com/pl/pl/kamizelka-pikowana-p06985454.html?v1=280465776&v2=2299526", "Jasnoszary + L");
+    }
+
 
     void runPlaywrightAndUpdateProduct(String link, Product givenProduct) {
         Map<String, String> extraHeaders = new HashMap<>();

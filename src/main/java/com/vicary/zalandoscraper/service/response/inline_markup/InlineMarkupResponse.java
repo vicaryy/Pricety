@@ -225,7 +225,7 @@ public class InlineMarkupResponse implements Responser {
 
         String language = user.getText().split(" ")[1];
 
-        responseFacade.updateLanguageByUserId(user.getUserId(), language);
+        responseFacade.updateUserLanguage(user.getUserId(), language);
         ActiveLanguage.get().setResourceBundle(ResourceBundle.getBundle("messages", Locale.of(language)));
 
         displayMenu();

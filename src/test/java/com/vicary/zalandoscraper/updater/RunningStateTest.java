@@ -2,10 +2,8 @@ package com.vicary.zalandoscraper.updater;
 
 import com.vicary.zalandoscraper.exception.ZalandoScraperBotException;
 import com.vicary.zalandoscraper.service.UpdateReceiverService;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
@@ -64,7 +62,7 @@ class RunningStateTest {
         //given
         //when
         //then
-        assertTrue(state.isRunning());
+        assertFalse(state.isUpdating());
     }
 
     @Test
