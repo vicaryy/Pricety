@@ -11,6 +11,7 @@ import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.exception.IllegalInputException;
 import com.vicary.zalandoscraper.exception.ZalandoScraperBotException;
 import com.vicary.zalandoscraper.format.MarkdownV2;
+import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.service.response.ResponseFacade;
 import com.vicary.zalandoscraper.service.response.Responser;
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
@@ -69,6 +70,9 @@ public class AdminResponse implements Responser {
 
         else if (user.getText().startsWith("//delete user "))
             deleteUser();
+
+        else if (user.getText().startsWith("//delete product "))
+            deleteProduct();
 
         else if (user.getText().equals("//update start"))
             updateStart();
@@ -236,10 +240,25 @@ public class AdminResponse implements Responser {
     private void deleteUser() {
         String userId = removePrefix(user.getText());
         if (userId.isBlank())
-            throw new IllegalInputException("UserId cannot be empty", "Admin tries to delete user but userId is empty");
+            throw new IllegalInputException("UserId cannot be empty.", "Admin tries to delete product but userId is empty");
+
+        if (!responseFacade.isUserExists(userId))
+            throw new IllegalInputException("User not found.", "Admin tries to delete user but user not found, userId: " + userId);
 
         responseFacade.deleteUser(userId);
         quickSender.message(user.getChatId(), "User deleted.", false);
+    }
+
+    private void deleteProduct() {
+        String productId = removePrefix(user.getText());
+        if (productId.isBlank())
+            throw new IllegalInputException("ProductId cannot be empty.", "Admin tries to delete user but userId is empty");
+
+        if (!responseFacade.isProductExists(productId))
+            throw new IllegalInputException("Product not found.", "Admin tries to delete product but product not found, productId: " + productId);
+
+        responseFacade.deleteProduct(Long.parseLong(productId));
+        quickSender.message(user.getChatId(), "Product deleted.", false);
     }
 
     private void updateStart() {
@@ -310,20 +329,29 @@ public class AdminResponse implements Responser {
     }
 
     private void getProduct() {
-        //get product all
-        //get product productId
-//        String product = removePrefix(this.user.getText());
-//        if (product.isBlank())
-//            throw new IllegalInputException("Product cannot be empty", "Admin tries to get product but product is empty");
-//
-//        if (product.equals("all"))
-//            displayProducts(responseFacade.getAllProducts());
-//        else
-//            displayProducts(responseFacade.getProductById(Long.parseLong(product)));
+        String product = removePrefix(this.user.getText());
+        if (product.isBlank())
+            throw new IllegalInputException("Product cannot be empty", "Admin tries to get product but product is empty");
+
+        if (product.equals("all")) {
+            displayProducts(responseFacade.getAllProducts());
+            return;
+        }
+        if (!responseFacade.isProductExists(product))
+            throw new IllegalInputException("Product does not exists.", "Admin tries to display product but product '%s' does not exists".formatted(product));
+
+        displayProducts(List.of(responseFacade.getProductById(Long.parseLong(product))));
     }
 
     private void getProductUser() {
+        String userId = removePrefix(user.getText());
+        if (userId.isBlank())
+            throw new IllegalInputException("UserId cannot be empty", "Admin tries to get products but userId is empty");
 
+        if (!responseFacade.isUserExists(userId))
+            throw new IllegalInputException("User does not exists.", "Admin tries to display productUser but user '%s' does not exists".formatted(userId));
+
+        displayProducts(responseFacade.getAllProductsByUserId(userId));
     }
 
     private void getAllCommands() {
@@ -342,6 +370,7 @@ public class AdminResponse implements Responser {
                 //delete command command
                 //delete command all
                 //delete user userId
+                //delete product productId
                                 
                 *Ban:*
                 //ban userId  -  not yet
@@ -427,31 +456,37 @@ public class AdminResponse implements Responser {
         }
     }
 
-    private void displayProducts(List<UserEntity> users) {
-        for (int i = 0; i < users.size(); i++) {
-            UserEntity u = users.get(i);
-            String user = ("""
+    private void displayProducts(List<Product> products) {
+        if (products.isEmpty()) {
+            quickSender.message(user.getChatId(), "No products to display.", true);
+            return;
+        }
+        for (int i = 0; i < products.size(); i++) {
+            Product p = products.get(i);
+            String product = ("""
                     %s
-                        id: %s
-                        nick: %s
-                        email: %s
-                        nationality: %s
-                        premium: %s
-                        admin: %s
-                        notifyByEmail: %s
-                        verifiedEmail: %s"""
+                        productId: %s
+                        userId: %s
+                        name: %s
+                        description: %s
+                        variant: %s
+                        price: %s
+                        priceAlert: %s
+                        currency: %s
+                        link: %s"""
                     .formatted(
-                            MarkdownV2.applyWithManualBoldAndItalic("*User nr. " + (i + 1) + "*"),
-                            u.getUserId(),
-                            MarkdownV2.apply(u.getNick() == null ? "-" : u.getNick()).get(),
-                            MarkdownV2.apply(u.getEmail() == null ? "-" : u.getEmail()).get(),
-                            u.getNationality(),
-                            Boolean.toString(u.isPremium()),
-                            Boolean.toString(u.isAdmin()),
-                            Boolean.toString(u.isNotifyByEmail()),
-                            Boolean.toString(u.isVerifiedEmail())
+                            MarkdownV2.applyWithManualBoldAndItalic("*Product nr. " + (i + 1) + "*"),
+                            p.getProductId(),
+                            p.getUser().getUserId(),
+                            MarkdownV2.apply(p.getName()).get(),
+                            MarkdownV2.apply(p.getDescription()).get(),
+                            MarkdownV2.apply(p.getVariant()).get(),
+                            MarkdownV2.apply(String.format("%.2f", p.getPrice())).get(),
+                            MarkdownV2.apply(p.getPriceAlert()).get(),
+                            MarkdownV2.apply(p.getCurrency()).get(),
+                            MarkdownV2.apply(p.getLink()).toURL(p.getServiceName()).get()
                     ));
-            quickSender.message(this.user.getChatId(), user, true);
+            quickSender.message(user.getChatId(), product, true);
         }
     }
 

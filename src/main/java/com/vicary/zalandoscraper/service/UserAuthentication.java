@@ -87,7 +87,7 @@ public class UserAuthentication {
 
     private UserEntity checkUserInRepository(User user, String chatId) {
         if (userService.existsByUserId(chatId))
-            return userService.findByUserId(chatId).orElseThrow(ZalandoScraperBotException::new);
+            return userService.findByUserId(chatId);
 
         UserEntity userEntity = userMapper.map(user);
         userService.saveUser(userEntity);

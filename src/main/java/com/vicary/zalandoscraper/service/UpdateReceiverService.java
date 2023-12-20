@@ -40,6 +40,10 @@ public class UpdateReceiverService implements UpdateReceiver {
     private final AutoUpdater autoUpdater;
     private final UpdateFetcher updateFetcher;
 
+    // TODO product to be deleted notifications
+    // TODO set username
+    // TODO product diagram - price history
+
     @Autowired
     public UpdateReceiverService(UserAuthentication userAuthentication, ResponseFacade facade, QuickSender quickSender, UrlParser urlParser, AdminResponse adminResponse, AutoUpdater autoUpdater) {
         this.userAuthentication = userAuthentication;
@@ -65,7 +69,7 @@ public class UpdateReceiverService implements UpdateReceiver {
 
     @Override
     public void receive(Update update) {
-        if (update.getMessage() == null && update.getCallbackQuery() == null) {
+        if (isMessageEmpty(update)) {
             logger.info("Got update without message.");
             return;
         }
@@ -138,6 +142,10 @@ public class UpdateReceiverService implements UpdateReceiver {
             ActiveUser.remove();
             ActiveLanguage.remove();
         }
+    }
+
+    public boolean isMessageEmpty(Update update) {
+        return (update.getMessage() == null && update.getCallbackQuery() == null) || (update.getMessage() != null && update.getMessage().getText() == null);
     }
 
     private void handleProductUpdaterRunning(String userId) {

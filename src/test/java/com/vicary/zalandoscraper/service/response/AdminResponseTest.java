@@ -8,6 +8,8 @@ import com.vicary.zalandoscraper.api_telegram.service.UpdateFetcher;
 import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.exception.IllegalInputException;
 import com.vicary.zalandoscraper.exception.ZalandoScraperBotException;
+import com.vicary.zalandoscraper.model.Product;
+import com.vicary.zalandoscraper.model.User;
 import com.vicary.zalandoscraper.service.UpdateReceiverService;
 import com.vicary.zalandoscraper.service.response.admin.AdminResponse;
 import com.vicary.zalandoscraper.thread_local.ActiveLanguage;
@@ -21,10 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -850,6 +849,7 @@ class AdminResponseTest {
         givenUser.setText("//delete user 12345");
 
         //when
+        when(responseFacade.isUserExists("12345")).thenReturn(true);
         adminResponse.set(givenUser, updateFetcher);
         adminResponse.response();
 
@@ -859,7 +859,24 @@ class AdminResponseTest {
     }
 
     @Test
+    void response_deleteUser_UserNotFound() {
+        ActiveUser givenUser = getDefaultActiveUser();
+        givenUser.setText("//delete user 12345");
+
+        //when
+        when(responseFacade.isUserExists("12345")).thenReturn(false);
+        adminResponse.set(givenUser, updateFetcher);
+
+        //then
+        assertThrows(IllegalInputException.class, () -> adminResponse.response());
+        verify(responseFacade, times(0)).deleteUser("12345");
+        verify(quickSender, times(0)).message(givenUser.getChatId(), "User deleted.", false);
+    }
+
+
+    @Test
     void response_deleteUser_UserIdEmpty() {
+        //given
         ActiveUser givenUser = getDefaultActiveUser();
         givenUser.setText("//delete user   ");
 
@@ -870,6 +887,305 @@ class AdminResponseTest {
         assertThrows(IllegalInputException.class, () -> adminResponse.response());
         verify(responseFacade, times(0)).deleteUser("12345");
         verify(quickSender, times(0)).message(givenUser.getChatId(), "User deleted.", false);
+    }
+
+    @Test
+    void response_deleteProduct_JustDelete() {
+        ActiveUser givenUser = getDefaultActiveUser();
+        givenUser.setText("//delete product 12345");
+
+        //when
+        when(responseFacade.isProductExists("12345")).thenReturn(true);
+        adminResponse.set(givenUser, updateFetcher);
+        adminResponse.response();
+
+        //then
+        verify(responseFacade, times(1)).deleteProduct(12345L);
+        verify(quickSender, times(1)).message(givenUser.getChatId(), "Product deleted.", false);
+    }
+
+    @Test
+    void response_deleteProduct_UserNotFound() {
+        ActiveUser givenUser = getDefaultActiveUser();
+        givenUser.setText("//delete product 12345");
+
+        //when
+        when(responseFacade.isProductExists("12345")).thenReturn(false);
+        adminResponse.set(givenUser, updateFetcher);
+
+        //then
+        assertThrows(IllegalInputException.class, () -> adminResponse.response());
+        verify(responseFacade, times(0)).deleteProduct(12345L);
+        verify(quickSender, times(0)).message(givenUser.getChatId(), "Product deleted.", false);
+    }
+
+
+    @Test
+    void response_deleteProduct_UserIdEmpty() {
+        //given
+        ActiveUser givenUser = getDefaultActiveUser();
+        givenUser.setText("//delete product   ");
+
+        //when
+        adminResponse.set(givenUser, updateFetcher);
+
+        //then
+        assertThrows(IllegalInputException.class, () -> adminResponse.response());
+        verify(responseFacade, times(0)).deleteProduct(12345L);
+        verify(quickSender, times(0)).message(givenUser.getChatId(), "Product deleted.", false);
+    }
+
+    @Test
+    void response_getProduct_AllProductsThreeProducts() {
+        //given
+        ActiveUser givenUser = getDefaultActiveUser();
+        givenUser.setText("//get product all");
+        List<Product> givenProducts = getListOfDefaultProducts(3);
+        String expectedFirstProduct = """
+                *Product nr\\. 1*
+                    productId: 123
+                    userId: 1234
+                    name: name
+                    description: desc\\_
+                    variant: M
+                    price: 100,00
+                    priceAlert: AUTO
+                    currency: zł
+                    link: [service․com](link)""";
+        String expectedSecondProduct = """
+                *Product nr\\. 2*
+                    productId: 123
+                    userId: 1234
+                    name: name
+                    description: desc\\_
+                    variant: M
+                    price: 100,00
+                    priceAlert: AUTO
+                    currency: zł
+                    link: [service․com](link)""";
+        String expectedThirdProduct = """
+                *Product nr\\. 3*
+                    productId: 123
+                    userId: 1234
+                    name: name
+                    description: desc\\_
+                    variant: M
+                    price: 100,00
+                    priceAlert: AUTO
+                    currency: zł
+                    link: [service․com](link)""";
+
+        //when
+        when(responseFacade.getAllProducts()).thenReturn(givenProducts);
+        adminResponse.set(givenUser, updateFetcher);
+        adminResponse.response();
+
+        //then
+        verify(quickSender, times(1)).message(givenUser.getChatId(), expectedFirstProduct, true);
+        verify(quickSender, times(1)).message(givenUser.getChatId(), expectedSecondProduct, true);
+        verify(quickSender, times(1)).message(givenUser.getChatId(), expectedThirdProduct, true);
+    }
+
+    @Test
+    void response_getProduct_NoProducts() {
+        //given
+        ActiveUser givenUser = getDefaultActiveUser();
+        givenUser.setText("//get product all");
+
+        //when
+        when(responseFacade.getAllProducts()).thenReturn(Collections.emptyList());
+        adminResponse.set(givenUser, updateFetcher);
+        adminResponse.response();
+
+        //then
+        verify(quickSender, times(1)).message(givenUser.getChatId(), "No products to display.", true);
+        verify(responseFacade, times(0)).isProductExists(anyString());
+        verify(responseFacade, times(0)).getProductById(1234L);
+    }
+
+    @Test
+    void response_getProduct_OneProduct() {
+        //given
+        ActiveUser givenUser = getDefaultActiveUser();
+        givenUser.setText("//get product 1234");
+        Product givenProducts = getDefaultProduct();
+        String expectedProduct = """
+                *Product nr\\. 1*
+                    productId: 123
+                    userId: 1234
+                    name: name
+                    description: desc\\_
+                    variant: M
+                    price: 100,00
+                    priceAlert: AUTO
+                    currency: zł
+                    link: [service․com](link)""";
+
+        //when
+        when(responseFacade.isProductExists("1234")).thenReturn(true);
+        when(responseFacade.getProductById(1234L)).thenReturn(givenProducts);
+        adminResponse.set(givenUser, updateFetcher);
+        adminResponse.response();
+
+        //then
+        verify(responseFacade, times(1)).isProductExists("1234");
+        verify(responseFacade, times(1)).getProductById(1234L);
+        verify(quickSender, times(1)).message(givenUser.getChatId(), expectedProduct, true);
+    }
+
+    @Test
+    void response_getProduct_ProductDoesNotExists() {
+        //given
+        ActiveUser givenUser = getDefaultActiveUser();
+        givenUser.setText("//get product 1234");
+
+        //when
+        when(responseFacade.isProductExists("1234")).thenReturn(false);
+        adminResponse.set(givenUser, updateFetcher);
+
+        //then
+        assertThrows(IllegalInputException.class, () -> adminResponse.response());
+        verify(responseFacade, times(1)).isProductExists("1234");
+        verify(responseFacade, times(0)).getProductById(1234L);
+    }
+
+    @Test
+    void response_getProduct_EmptyUserId() {
+        //given
+        ActiveUser givenUser = getDefaultActiveUser();
+        givenUser.setText("//get product   ");
+
+        //when
+        when(responseFacade.isProductExists("1234")).thenReturn(false);
+        adminResponse.set(givenUser, updateFetcher);
+
+        //then
+        assertThrows(IllegalInputException.class, () -> adminResponse.response());
+        verify(responseFacade, times(0)).isProductExists(anyString());
+        verify(quickSender, times(0)).message(givenUser.getChatId(), "Product does not exists.", false);
+        verify(responseFacade, times(0)).getProductById(1234L);
+    }
+
+
+    @Test
+    void response_getProductUser_DisplayUsersProducts() {
+        //given
+        ActiveUser givenUser = getDefaultActiveUser();
+        givenUser.setText("//get productUser 1234");
+        List<Product> givenProducts = getListOfDefaultProducts(3);
+        String expectedFirstProduct = """
+                *Product nr\\. 1*
+                    productId: 123
+                    userId: 1234
+                    name: name
+                    description: desc\\_
+                    variant: M
+                    price: 100,00
+                    priceAlert: AUTO
+                    currency: zł
+                    link: [service․com](link)""";
+        String expectedSecondProduct = """
+                *Product nr\\. 2*
+                    productId: 123
+                    userId: 1234
+                    name: name
+                    description: desc\\_
+                    variant: M
+                    price: 100,00
+                    priceAlert: AUTO
+                    currency: zł
+                    link: [service․com](link)""";
+        String expectedThirdProduct = """
+                *Product nr\\. 3*
+                    productId: 123
+                    userId: 1234
+                    name: name
+                    description: desc\\_
+                    variant: M
+                    price: 100,00
+                    priceAlert: AUTO
+                    currency: zł
+                    link: [service․com](link)""";
+
+        //when
+        when(responseFacade.isUserExists("1234")).thenReturn(true);
+        when(responseFacade.getAllProductsByUserId("1234")).thenReturn(givenProducts);
+        adminResponse.set(givenUser, updateFetcher);
+        adminResponse.response();
+
+        //then
+        verify(quickSender, times(1)).message(givenUser.getChatId(), expectedFirstProduct, true);
+        verify(quickSender, times(1)).message(givenUser.getChatId(), expectedSecondProduct, true);
+        verify(quickSender, times(1)).message(givenUser.getChatId(), expectedThirdProduct, true);
+    }
+
+    @Test
+    void response_getProductUser_UserDontHaveProducts() {
+        //given
+        ActiveUser givenUser = getDefaultActiveUser();
+        givenUser.setText("//get productUser 1234");
+        List<Product> givenProducts = Collections.emptyList();
+
+        //when
+        when(responseFacade.isUserExists("1234")).thenReturn(true);
+        when(responseFacade.getAllProductsByUserId("1234")).thenReturn(givenProducts);
+        adminResponse.set(givenUser, updateFetcher);
+        adminResponse.response();
+
+        //then
+        verify(quickSender, times(1)).message(givenUser.getChatId(), "No products to display.", true);
+    }
+
+    @Test
+    void response_getProductUser_NoUserInCommand() {
+        //given
+        ActiveUser givenUser = getDefaultActiveUser();
+        givenUser.setText("//get productUser    ");
+
+        //when
+        adminResponse.set(givenUser, updateFetcher);
+
+        //then
+        assertThrows(IllegalInputException.class, () -> adminResponse.response());
+        verify(quickSender, times(0)).message(anyString(), anyString(), anyBoolean());
+    }
+
+    @Test
+    void response_getProductUser_UserDoesNotExists() {
+        //given
+        ActiveUser givenUser = getDefaultActiveUser();
+        givenUser.setText("//get productUser 1234");
+
+        //when
+        when(responseFacade.isUserExists("1234")).thenReturn(false);
+        adminResponse.set(givenUser, updateFetcher);
+
+        //then
+        assertThrows(IllegalInputException.class, () -> adminResponse.response());
+        verify(responseFacade, times(1)).isUserExists("1234");
+        verify(quickSender, times(0)).message(anyString(), anyString(), anyBoolean());
+    }
+
+    private Product getDefaultProduct() {
+        return Product.builder()
+                .productId(123L)
+                .name("name")
+                .description("desc_")
+                .price(100)
+                .newPrice(0)
+                .currency("zł")
+                .variant("M")
+                .priceAlert("AUTO")
+                .link("link")
+                .serviceName("service.com")
+                .user(getDefaultUser())
+                .build();
+    }
+
+    private User getDefaultUser() {
+        return User.builder()
+                .userId("1234")
+                .build();
     }
 
     private UserEntity getDefaultUserEntity() {
@@ -888,6 +1204,12 @@ class AdminResponseTest {
     private List<UserEntity> getListOfDefaultUserEntity(int size) {
         return IntStream.range(0, size)
                 .mapToObj(i -> getDefaultUserEntity())
+                .toList();
+    }
+
+    private List<Product> getListOfDefaultProducts(int size) {
+        return IntStream.range(0, size)
+                .mapToObj(i -> getDefaultProduct())
                 .toList();
     }
 
@@ -915,13 +1237,3 @@ class AdminResponseTest {
         return givenUser;
     }
 }
-
-
-
-
-
-
-
-
-
-

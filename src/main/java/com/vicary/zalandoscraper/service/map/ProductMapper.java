@@ -32,8 +32,7 @@ public class ProductMapper {
                 .link(product.getLink())
                 .currency(product.getCurrency())
                 .serviceName(product.getServiceName())
-                .user(userService.findByUserId(ActiveUser.get().getChatId())
-                        .orElseThrow(() -> new NoSuchElementException("Error in mapping user")))
+                .user(user)
                 .build();
     }
 

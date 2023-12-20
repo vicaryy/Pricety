@@ -322,7 +322,7 @@ class InlineMarkupResponseTest {
         inlineMarkupResponse.deleteProduct();
 
         //then
-        verify(responseFacade, times(1)).deleteProductById(givenProductId);
+        verify(responseFacade, times(1)).deleteProduct(givenProductId);
         verify(quickSender, times(1)).popupMessage(givenUser.getChatId(), Messages.other("deleted"));
         verify(quickSender, times(1)).deleteMessage(givenUser.getChatId(), givenUser.getMessageId());
         verify(quickSender, times(1)).inlineMarkup(

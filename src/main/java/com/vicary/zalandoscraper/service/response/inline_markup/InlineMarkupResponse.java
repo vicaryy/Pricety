@@ -191,7 +191,7 @@ public class InlineMarkupResponse implements Responser {
     void deleteProduct() {
         long productId = Long.parseLong(user.getText().split(" ")[1]);
 
-        responseFacade.deleteProductById(productId);
+        responseFacade.deleteProduct(productId);
 
         popupMessage(Messages.other("deleted"), true);
 

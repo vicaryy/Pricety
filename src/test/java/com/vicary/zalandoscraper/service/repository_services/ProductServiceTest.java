@@ -128,14 +128,14 @@ class ProductServiceTest {
     }
 
     @Test
-    void getAllProductsDtoByUserId_expectEmptyList_NoProducts() {
+    void getAllProductsByUserId_expectEmptyList_NoProducts() {
         //given
         String givenUserId = "123";
-        Optional<UserEntity> givenUser = Optional.ofNullable(UserEntity.builder().build());
+        UserEntity givenUser = UserEntity.builder().build();
 
         //when
         when(userService.findByUserId(givenUserId)).thenReturn(givenUser);
-        when(repository.findAllByUser(givenUser.get(), Sort.by("id"))).thenReturn(Collections.emptyList());
+        when(repository.findAllByUser(givenUser, Sort.by("id"))).thenReturn(Collections.emptyList());
 
         List<Product> actualList = productService.getAllProductsByUserId(givenUserId);
 
@@ -145,15 +145,15 @@ class ProductServiceTest {
     }
 
     @Test
-    void getAllProductsDtoByUserId_expectList_NormalListOfProducts() {
+    void getAllProductsByUserId_expectList_NormalListOfProducts() {
         //given
         List<ProductEntity> givenEntityList = getNormalEntityList();
         String givenUserId = "123";
-        Optional<UserEntity> givenUser = Optional.ofNullable(UserEntity.builder().build());
+        UserEntity givenUser = UserEntity.builder().build();
 
         //when
         when(userService.findByUserId(givenUserId)).thenReturn(givenUser);
-        when(repository.findAllByUser(givenUser.get(), Sort.by("id"))).thenReturn(givenEntityList);
+        when(repository.findAllByUser(givenUser, Sort.by("id"))).thenReturn(givenEntityList);
 
         productService.getAllProductsByUserId(givenUserId);
 

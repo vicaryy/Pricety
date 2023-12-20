@@ -4,7 +4,6 @@ import com.vicary.zalandoscraper.entity.ProductEntity;
 import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.repository.ProductRepository;
 import com.vicary.zalandoscraper.service.map.ProductMapper;
-import com.vicary.zalandoscraper.thread_local.ActiveUser;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,8 +27,8 @@ public class ProductService {
 
     private final UserService userService;
 
-    public Product getProductDTOById(Long productId) {
-        return mapper.map(repository.findById(productId).get());
+    public Product getProduct(Long productId) {
+        return mapper.map(repository.findById(productId).orElseThrow());
     }
 
     public void updatePriceById(Long productId, double price) {
@@ -52,7 +52,7 @@ public class ProductService {
     }
 
     public List<Product> getAllProductsByUserId(String userId) {
-        List<ProductEntity> productEntities = repository.findAllByUser(userService.findByUserId(userId).get(), Sort.by("id"));
+        List<ProductEntity> productEntities = repository.findAllByUser(userService.findByUserId(userId), Sort.by("id"));
 
         if (productEntities.isEmpty())
             return Collections.emptyList();
@@ -92,12 +92,12 @@ public class ProductService {
     }
 
     public void saveProduct(Product product, String userId) {
-        repository.save(mapper.map(product, userService.findByUserId(userId)
-                .orElseThrow(() -> new NoSuchElementException("User by id '%s' not found in repository".formatted(userId)))));
+        repository.save(mapper.map(product, userService.findByUserId(userId)));
+//        repository.save(mapper.map(product, userService.findByUserId("6488358449")));
         logger.info("[Product Service] Added new product to database link: {}", product.getLink());
     }
 
-    public ProductEntity getProductById(Long id) {
-        return repository.findById(id).get();
+    public boolean existsById(long productId) {
+        return repository.existsById(productId);
     }
 }

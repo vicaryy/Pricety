@@ -2,7 +2,6 @@ package com.vicary.zalandoscraper.service.response;
 
 import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.entity.WaitingUserEntity;
-import com.vicary.zalandoscraper.exception.IllegalInputException;
 import com.vicary.zalandoscraper.format.MarkdownV2;
 import com.vicary.zalandoscraper.utils.PrettyTime;
 import com.vicary.zalandoscraper.entity.AwaitedMessageEntity;
@@ -50,7 +49,7 @@ public class ResponseFacade {
                 .build());
     }
 
-    public void deleteProductById(long productId) {
+    public void deleteProduct(long productId) {
         productService.deleteProductById(productId);
     }
 
@@ -107,7 +106,7 @@ public class ResponseFacade {
     }
 
     public Product getProductById(Long productId) {
-        return productService.getProductDTOById(productId);
+        return productService.getProduct(productId);
     }
 
     public void updateProductPriceAlert(Long productId, String priceAlert) {
@@ -146,8 +145,14 @@ public class ResponseFacade {
     }
 
     public UserEntity getUser(String userId) {
-        return userService.findByUserId(userId)
-                .orElseThrow(() -> new IllegalInputException("User '%s' not found".formatted(userId), "Admin trying to send message to user '%s' but user not found".formatted(userId)));
+        return userService.findByUserId(userId);
+    }
+    public boolean isUserExists(String userId) {
+        return userService.existsByUserId(userId);
+    }
+
+    public void deleteUser(String userId) {
+        userService.deleteUser(userId);
     }
 
     public List<UserEntity> getAllUsers() {
@@ -167,7 +172,17 @@ public class ResponseFacade {
             waitingUserService.saveWaitingUser(new WaitingUserEntity(getUser(userId)));
     }
 
-    public void deleteUser(String userId) {
-        userService.deleteUser(userId);
+    public List<Product> getAllProducts() {
+        return productService.getAllProductsSortById();
+    }
+
+    public boolean isProductExists(String productId) {
+        long id;
+        try {
+            id = Long.parseLong(productId);
+        } catch (Exception ex) {
+            return false;
+        }
+        return productService.existsById(id);
     }
 }
