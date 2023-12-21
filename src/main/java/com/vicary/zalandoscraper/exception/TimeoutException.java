@@ -1,6 +1,6 @@
 package com.vicary.zalandoscraper.exception;
 
-public class TimeoutException extends ZalandoScraperBotException {
+public class TimeoutException extends ScraperBotException {
     public TimeoutException() {
         super();
     }

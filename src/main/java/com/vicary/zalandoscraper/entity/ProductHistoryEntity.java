@@ -11,8 +11,7 @@ import java.time.LocalDateTime;
 @Builder
 @Entity
 @Table(name = "updates_history", schema = "public")
-public class UpdateHistoryEntity {
-
+public class ProductHistoryEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")

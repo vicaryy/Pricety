@@ -7,7 +7,7 @@ import com.vicary.zalandoscraper.api_telegram.service.RequestService;
 import com.vicary.zalandoscraper.api_telegram.service.UpdateFetcher;
 import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.exception.IllegalInputException;
-import com.vicary.zalandoscraper.exception.ZalandoScraperBotException;
+import com.vicary.zalandoscraper.exception.ScraperBotException;
 import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.model.User;
 import com.vicary.zalandoscraper.service.UpdateReceiverService;
@@ -407,7 +407,7 @@ class AdminResponseTest {
         givenUser.setText("//update start");
 
         //when
-        doThrow(new ZalandoScraperBotException("asd", "dsa")).when(autoUpdater).start();
+        doThrow(new ScraperBotException("asd", "dsa")).when(autoUpdater).start();
         adminResponse.set(givenUser, updateFetcher);
         adminResponse.response();
 
@@ -439,7 +439,7 @@ class AdminResponseTest {
         givenUser.setText("//update stop");
 
         //when
-        doThrow(new ZalandoScraperBotException("asd", "dsa")).when(autoUpdater).stop();
+        doThrow(new ScraperBotException("asd", "dsa")).when(autoUpdater).stop();
         adminResponse.set(givenUser, updateFetcher);
         adminResponse.response();
 
@@ -470,7 +470,7 @@ class AdminResponseTest {
         givenUser.setText("//update start once");
 
         //when
-        doThrow(new ZalandoScraperBotException("asd", "dsa")).when(autoUpdater).startOnce();
+        doThrow(new ScraperBotException("asd", "dsa")).when(autoUpdater).startOnce();
         adminResponse.set(givenUser, updateFetcher);
         adminResponse.response();
 

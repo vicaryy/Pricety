@@ -1,6 +1,6 @@
 package com.vicary.zalandoscraper.updater;
 
-import com.vicary.zalandoscraper.exception.ZalandoScraperBotException;
+import com.vicary.zalandoscraper.exception.ScraperBotException;
 import com.vicary.zalandoscraper.service.UpdateReceiverService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,7 +31,7 @@ class RunningStateTest {
         //given
         //when
         //then
-        assertThrows(ZalandoScraperBotException.class, () -> state.start());
+        assertThrows(ScraperBotException.class, () -> state.start());
     }
 
     @Test
@@ -39,7 +39,7 @@ class RunningStateTest {
         //given
         //when
         //then
-        assertThrows(ZalandoScraperBotException.class, () -> state.start());
+        assertThrows(ScraperBotException.class, () -> state.start());
     }
 
     @Test

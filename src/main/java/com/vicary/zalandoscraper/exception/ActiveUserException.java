@@ -1,6 +1,6 @@
 package com.vicary.zalandoscraper.exception;
 
-public class ActiveUserException extends ZalandoScraperBotException{
+public class ActiveUserException extends ScraperBotException {
     public ActiveUserException() {
         super();
     }

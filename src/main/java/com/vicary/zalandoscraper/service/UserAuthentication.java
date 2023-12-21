@@ -8,9 +8,7 @@ import com.vicary.zalandoscraper.api_telegram.api_object.message.Message;
 import com.vicary.zalandoscraper.entity.ActiveRequestEntity;
 import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.exception.ActiveUserException;
-import com.vicary.zalandoscraper.exception.ZalandoScraperBotException;
 import com.vicary.zalandoscraper.messages.Messages;
-import com.vicary.zalandoscraper.pattern.Pattern;
 import com.vicary.zalandoscraper.service.repository_services.ActiveRequestService;
 import com.vicary.zalandoscraper.service.repository_services.AwaitedMessageService;
 import com.vicary.zalandoscraper.service.repository_services.MessageService;
@@ -22,7 +20,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.net.InetAddress;
 import java.util.Locale;
 import java.util.ResourceBundle;
 

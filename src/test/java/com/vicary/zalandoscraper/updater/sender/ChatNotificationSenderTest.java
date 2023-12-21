@@ -1,13 +1,12 @@
 package com.vicary.zalandoscraper.updater.sender;
 
 import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
-import com.vicary.zalandoscraper.exception.ZalandoScraperBotException;
+import com.vicary.zalandoscraper.exception.ScraperBotException;
 import com.vicary.zalandoscraper.model.ChatNotification;
 import com.vicary.zalandoscraper.service.UpdateReceiverService;
 import com.vicary.zalandoscraper.service.repository_services.NotificationChatService;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -76,7 +75,7 @@ class ChatNotificationSenderTest {
         givenElevenNotifications.add(givenFailedNotification);
 
         //when
-        doThrow(ZalandoScraperBotException.class).when(quickSender).notification(givenFailedNotification);
+        doThrow(ScraperBotException.class).when(quickSender).notification(givenFailedNotification);
         sender.send(givenElevenNotifications);
 
         //then

@@ -19,7 +19,6 @@ import com.vicary.zalandoscraper.updater.AutoUpdater;
 import com.vicary.zalandoscraper.utils.url.UrlParser;
 
 import com.vicary.zalandoscraper.api_telegram.api_object.Update;
-import org.openqa.selenium.WebDriverException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -124,13 +123,13 @@ public class UpdateReceiverService implements UpdateReceiver {
 
         } catch (IllegalArgumentException | UrlParserException ex) {
             logger.warn(ex.getMessage());
-        } catch (InvalidLinkException | IllegalInputException ex) {
+        } catch (InvalidLinkException | IllegalInputException | ChartGeneratorException ex) {
             logger.warn(ex.getLoggerMessage());
             quickSender.message(chatId, ex.getMessage(), false);
-        } catch (WebDriverException | PlaywrightException ex) {
+        } catch (PlaywrightException ex) {
             logger.error("Web Driver exception: " + ex.getMessage());
             quickSender.message(chatId, Messages.other("somethingGoesWrong"), false);
-        } catch (ZalandoScraperBotException ex) {
+        } catch (ScraperBotException ex) {
             logger.error(ex.getLoggerMessage());
             quickSender.message(chatId, ex.getMessage(), false);
         } catch (Exception ex) {

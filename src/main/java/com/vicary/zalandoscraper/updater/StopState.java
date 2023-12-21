@@ -1,6 +1,6 @@
 package com.vicary.zalandoscraper.updater;
 
-import com.vicary.zalandoscraper.exception.ZalandoScraperBotException;
+import com.vicary.zalandoscraper.exception.ScraperBotException;
 
 public class StopState extends UpdaterState {
     public StopState(AutoUpdater autoUpdater) {
@@ -27,7 +27,7 @@ public class StopState extends UpdaterState {
 
     @Override
     public void stop() {
-        throw new ZalandoScraperBotException("Auto Updater is stopped already.", "Admin tried to stop Auto Updater but is stopped already.");
+        throw new ScraperBotException("Auto Updater is stopped already.", "Admin tried to stop Auto Updater but is stopped already.");
     }
 
     @Override

@@ -27,7 +27,7 @@ public class ResponseFacade {
 
     private final EmailVerificationService emailVerificationService;
 
-    private final UpdatesHistoryService updatesHistoryService;
+    private final ProductHistoryService productHistoryService;
 
     private final ActiveRequestService activeRequestService;
 
@@ -129,7 +129,7 @@ public class ResponseFacade {
     }
 
     public String getLastUpdateTime() {
-        return MarkdownV2.apply(PrettyTime.get(updatesHistoryService.getLastUpdateTime())).toItalic().get();
+        return MarkdownV2.apply(PrettyTime.get(productHistoryService.getLastUpdateTime())).toItalic().get();
     }
 
     public String generateAndSaveRequest(String link) {

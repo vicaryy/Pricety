@@ -1,6 +1,6 @@
 package com.vicary.zalandoscraper.updater.sender;
 
-import com.vicary.zalandoscraper.exception.ZalandoScraperBotException;
+import com.vicary.zalandoscraper.exception.ScraperBotException;
 import com.vicary.zalandoscraper.model.Email;
 import com.vicary.zalandoscraper.sender.EmailSender;
 import com.vicary.zalandoscraper.service.UpdateReceiverService;
@@ -76,7 +76,7 @@ class EmailNotificationSenderTest {
         givenElevenNotifications.add(givenFailedNotification);
 
         //when
-        doThrow(ZalandoScraperBotException.class).when(emailSender).send(givenFailedNotification);
+        doThrow(ScraperBotException.class).when(emailSender).send(givenFailedNotification);
         sender.send(givenElevenNotifications);
 
         //then

@@ -1,6 +1,6 @@
 package com.vicary.zalandoscraper.updater;
 
-import com.vicary.zalandoscraper.exception.ZalandoScraperBotException;
+import com.vicary.zalandoscraper.exception.ScraperBotException;
 import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.scraper.*;
 import com.vicary.zalandoscraper.scraper.config.BrowserType;
@@ -9,7 +9,7 @@ import com.vicary.zalandoscraper.updater.sender.NotificationManager;
 import com.vicary.zalandoscraper.utils.TerminalExecutor;
 import com.vicary.zalandoscraper.exception.TimeoutException;
 import com.vicary.zalandoscraper.service.repository_services.ProductService;
-import com.vicary.zalandoscraper.service.repository_services.UpdatesHistoryService;
+import com.vicary.zalandoscraper.service.repository_services.ProductHistoryService;
 import com.vicary.zalandoscraper.service.map.ProductMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +24,7 @@ public class AutoUpdater {
     //    private final static int DELAY_BETWEEN_UPDATES = 2000; // 2 sec
     private final static int DELAY_BETWEEN_UPDATES = 1000 * 60 * 60 * 2; // 2 hour
     private final ProductService productService;
-    private final UpdatesHistoryService updatesHistoryService;
+    private final ProductHistoryService productHistoryService;
     private final ProductMapper productMapper;
     private final NotificationManager notificationManager;
     private final WaitingUserService waitingUserService;
@@ -34,7 +34,7 @@ public class AutoUpdater {
 
     @Autowired
     public AutoUpdater(ProductService productService,
-                       UpdatesHistoryService updatesHistoryService,
+                       ProductHistoryService productHistoryService,
                        ProductMapper productMapper,
                        NotificationManager notificationManager,
                        WaitingUserService waitingUserService,
@@ -44,7 +44,7 @@ public class AutoUpdater {
                        HouseScraper houseScraper,
                        ZaraScraper zaraScraper) {
         this.productService = productService;
-        this.updatesHistoryService = updatesHistoryService;
+        this.productHistoryService = productHistoryService;
         this.productMapper = productMapper;
         this.waitingUserService = waitingUserService;
         this.notificationManager = notificationManager;
@@ -90,7 +90,7 @@ public class AutoUpdater {
             logger.info("[Auto Updater] Auto Updater stopped.");
         } catch (Exception ex) {
             String message = "Auto Updater stopped due to error: " + ex.getMessage();
-            throw new ZalandoScraperBotException(message, message);
+            throw new ScraperBotException(message, message);
         }
     }
 
@@ -100,7 +100,7 @@ public class AutoUpdater {
             update();
         } catch (Exception ex) {
             String message = "Auto Updater Once stopped due to error: " + ex.getMessage();
-            throw new ZalandoScraperBotException(message, message);
+            throw new ScraperBotException(message, message);
         }
     }
 
@@ -163,7 +163,7 @@ public class AutoUpdater {
         for (Map.Entry<String, Scraper> entry : scraperMap.entrySet())
             if (serviceName.startsWith(entry.getKey()))
                 return entry.getValue();
-        throw new ZalandoScraperBotException("Can't find Scraper for service '%s'".formatted(serviceName));
+        throw new ScraperBotException("Can't find Scraper for service '%s'".formatted(serviceName));
     }
 
     private String getServiceNameWithoutCountry(String serviceName) {
@@ -171,7 +171,7 @@ public class AutoUpdater {
     }
 
     private void saveToUpdatesHistoryRepository(List<Product> updatedProducts) {
-        updatesHistoryService.saveUpdates(productMapper.mapToHistoryEntityList(updatedProducts));
+        productHistoryService.saveUpdates(productMapper.mapToHistoryEntityList(updatedProducts));
     }
 
     private void sendNotificationsToUsers(List<Product> products) {

@@ -3,18 +3,18 @@ package com.vicary.zalandoscraper.exception;
 import lombok.Getter;
 
 @Getter
-public class ZalandoScraperBotException extends RuntimeException {
+public class ScraperBotException extends RuntimeException {
 
     private String loggerMessage;
 
-    public ZalandoScraperBotException() {
+    public ScraperBotException() {
         super();
     }
-    public ZalandoScraperBotException(String message, String loggerMessage) {
+    public ScraperBotException(String message, String loggerMessage) {
         super(message);
         this.loggerMessage = loggerMessage;
     }
-    public ZalandoScraperBotException(String message) {
+    public ScraperBotException(String message) {
         super(message);
     }
 

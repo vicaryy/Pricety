@@ -1,6 +1,6 @@
 package com.vicary.zalandoscraper.exception;
 
-public class IllegalInputException extends ZalandoScraperBotException {
+public class IllegalInputException extends ScraperBotException {
     public IllegalInputException() {
         super();
     }

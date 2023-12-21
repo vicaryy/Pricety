@@ -9,7 +9,7 @@ import com.vicary.zalandoscraper.api_telegram.service.RequestService;
 import com.vicary.zalandoscraper.api_telegram.service.UpdateFetcher;
 import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.exception.IllegalInputException;
-import com.vicary.zalandoscraper.exception.ZalandoScraperBotException;
+import com.vicary.zalandoscraper.exception.ScraperBotException;
 import com.vicary.zalandoscraper.format.MarkdownV2;
 import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.service.response.ResponseFacade;
@@ -265,7 +265,7 @@ public class AdminResponse implements Responser {
         try {
             autoUpdater.start();
             quickSender.message(user.getChatId(), "Auto Updater started successfully.", false);
-        } catch (ZalandoScraperBotException ex) {
+        } catch (ScraperBotException ex) {
             quickSender.message(user.getChatId(), ex.getMessage(), false);
             logger.info(ex.getLoggerMessage());
         }
@@ -275,7 +275,7 @@ public class AdminResponse implements Responser {
         try {
             autoUpdater.startOnce();
             quickSender.message(user.getChatId(), "Auto Updater Once started successfully.", false);
-        } catch (ZalandoScraperBotException ex) {
+        } catch (ScraperBotException ex) {
             quickSender.message(user.getChatId(), ex.getMessage(), false);
             logger.info(ex.getLoggerMessage());
         }
@@ -285,7 +285,7 @@ public class AdminResponse implements Responser {
         try {
             autoUpdater.stop();
             quickSender.message(user.getChatId(), "Auto Updater stopped.", false);
-        } catch (ZalandoScraperBotException ex) {
+        } catch (ScraperBotException ex) {
             quickSender.message(user.getChatId(), ex.getMessage(), false);
             logger.info(ex.getLoggerMessage());
         }

@@ -1,6 +1,6 @@
 package com.vicary.zalandoscraper.updater;
 
-import com.vicary.zalandoscraper.exception.ZalandoScraperBotException;
+import com.vicary.zalandoscraper.exception.ScraperBotException;
 import com.vicary.zalandoscraper.service.UpdateReceiverService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,21 +29,21 @@ class UpdatingStateTest {
     void start_expectThrow() {
         //when
         //then
-        assertThrows(ZalandoScraperBotException.class, () -> state.start());
+        assertThrows(ScraperBotException.class, () -> state.start());
     }
 
     @Test
     void startOnce_expectThrow() {
         //when
         //then
-        assertThrows(ZalandoScraperBotException.class, () -> state.start());
+        assertThrows(ScraperBotException.class, () -> state.start());
     }
 
     @Test
     void stop_expectThrow() {
         //when
         //then
-        assertThrows(ZalandoScraperBotException.class, () -> state.start());
+        assertThrows(ScraperBotException.class, () -> state.start());
     }
 
     @Test

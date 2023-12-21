@@ -2,10 +2,9 @@ package com.vicary.zalandoscraper.service.map;
 
 import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.model.User;
-import com.vicary.zalandoscraper.thread_local.ActiveUser;
 import com.vicary.zalandoscraper.entity.NotificationEntity;
 import com.vicary.zalandoscraper.entity.ProductEntity;
-import com.vicary.zalandoscraper.entity.UpdateHistoryEntity;
+import com.vicary.zalandoscraper.entity.ProductHistoryEntity;
 import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.service.repository_services.UserService;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Component
@@ -66,15 +64,15 @@ public class ProductMapper {
                 .collect(Collectors.toList());
     }
 
-    private UpdateHistoryEntity map(Product product, LocalDateTime localDateTime) {
-        return UpdateHistoryEntity.builder()
+    private ProductHistoryEntity map(Product product, LocalDateTime localDateTime) {
+        return ProductHistoryEntity.builder()
                 .productId(product.getProductId())
                 .price(product.getNewPrice())
                 .lastUpdate(localDateTime)
                 .build();
     }
 
-    public List<UpdateHistoryEntity> mapToHistoryEntityList(List<Product> product) {
+    public List<ProductHistoryEntity> mapToHistoryEntityList(List<Product> product) {
         LocalDateTime localDateTime = LocalDateTime.now();
 
         return product.stream()

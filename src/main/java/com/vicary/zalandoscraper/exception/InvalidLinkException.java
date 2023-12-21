@@ -1,6 +1,6 @@
 package com.vicary.zalandoscraper.exception;
 
-public class InvalidLinkException extends ZalandoScraperBotException {
+public class InvalidLinkException extends ScraperBotException {
 
     public InvalidLinkException() {
         super();
