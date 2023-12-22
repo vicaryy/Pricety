@@ -4,6 +4,7 @@ import com.vicary.zalandoscraper.entity.ProductEntity;
 import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.repository.ProductRepository;
+import com.vicary.zalandoscraper.scraper.*;
 import com.vicary.zalandoscraper.service.UpdateReceiverService;
 import com.vicary.zalandoscraper.service.map.ProductMapper;
 import org.junit.jupiter.api.Test;
@@ -32,9 +33,18 @@ class ProductServiceTest {
 
     @MockBean
     private ProductMapper mapper;
-
     @MockBean
     private UpdateReceiverService updateReceiverService;
+    @MockBean
+    private ZalandoScraper zalandoScraper;
+    @MockBean
+    private NikeScraper nikeScraper;
+    @MockBean
+    private HouseScraper houseScraper;
+    @MockBean
+    private ZaraScraper zaraScraper;
+    @MockBean
+    private HebeScraper hebeScraper;
 
 
     @Test

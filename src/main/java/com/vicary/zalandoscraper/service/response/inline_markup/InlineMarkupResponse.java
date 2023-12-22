@@ -12,7 +12,6 @@ import com.vicary.zalandoscraper.api_telegram.api_object.Action;
 import com.vicary.zalandoscraper.entity.LinkRequestEntity;
 import com.vicary.zalandoscraper.exception.InvalidLinkException;
 import com.vicary.zalandoscraper.model.Product;
-import com.vicary.zalandoscraper.service.response.InlineKeyboardMarkupFactory;
 import lombok.SneakyThrows;
 
 import java.util.List;

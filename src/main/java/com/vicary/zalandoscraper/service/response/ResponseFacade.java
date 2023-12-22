@@ -129,7 +129,7 @@ public class ResponseFacade {
     }
 
     public String getLastUpdateTime() {
-        return MarkdownV2.apply(PrettyTime.get(productHistoryService.getLastUpdateTime())).toItalic().get();
+        return MarkdownV2.apply(PrettyTime.getAgo(productHistoryService.getLastUpdateTime())).toItalic().get();
     }
 
     public String generateAndSaveRequest(String link) {

@@ -1,4 +1,4 @@
-package com.vicary.zalandoscraper.service.response;
+package com.vicary.zalandoscraper.service.response.inline_markup;
 
 import com.vicary.zalandoscraper.messages.Messages;
 import com.vicary.zalandoscraper.model.Product;
@@ -13,22 +13,31 @@ public class InlineKeyboardMarkupFactory {
 
     public static InlineKeyboardMarkup getMenu() {
         String language = Messages.menu("language");
-
+//        final InlineKeyboardButton allProducts = new InlineKeyboardButton(Messages.menu("allProducts"), "-allProducts");
+//        final InlineKeyboardButton addProduct = new InlineKeyboardButton(Messages.menu("addProduct"), "-addProduct");
+//        final InlineKeyboardButton editPriceProduct = new InlineKeyboardButton(Messages.menu("editPriceAlert"), "-editPriceAlert");
+//        final InlineKeyboardButton deleteProduct = new InlineKeyboardButton(Messages.menu("deleteProduct"), "-deleteProduct");
+//        final InlineKeyboardButton notification = new InlineKeyboardButton(Messages.menu("notification"), "-notification");
+//        final InlineKeyboardButton exit = new InlineKeyboardButton(Messages.menu("exit"), "-exit");
+//        final InlineKeyboardButton changeLanguage = new InlineKeyboardButton(language, "-lang " + (language.equals("\uD83C\uDDFA\uD83C\uDDF8") ? "en" : "pl"));
         final InlineKeyboardButton allProducts = new InlineKeyboardButton(Messages.menu("allProducts"), "-allProducts");
         final InlineKeyboardButton addProduct = new InlineKeyboardButton(Messages.menu("addProduct"), "-addProduct");
         final InlineKeyboardButton editPriceProduct = new InlineKeyboardButton(Messages.menu("editPriceAlert"), "-editPriceAlert");
         final InlineKeyboardButton deleteProduct = new InlineKeyboardButton(Messages.menu("deleteProduct"), "-deleteProduct");
+        final InlineKeyboardButton chart = new InlineKeyboardButton(Messages.menu("generateChart"), "-generateChart");
         final InlineKeyboardButton notification = new InlineKeyboardButton(Messages.menu("notification"), "-notification");
+        final InlineKeyboardButton options = new InlineKeyboardButton(Messages.menu("options"), "-options");
         final InlineKeyboardButton exit = new InlineKeyboardButton(Messages.menu("exit"), "-exit");
-        final InlineKeyboardButton changeLanguage = new InlineKeyboardButton(language, "-lang " + (language.equals("\uD83C\uDDFA\uD83C\uDDF8") ? "en" : "pl"));
 
         return new InlineKeyboardMarkup(
                 List.of(
                         List.of(allProducts, addProduct),
                         List.of(editPriceProduct, deleteProduct),
+                        List.of(chart),
                         List.of(notification),
-                        List.of(exit),
-                        List.of(changeLanguage)));
+                        List.of(options),
+                        List.of(exit)
+                ));
     }
 
     public static InlineKeyboardMarkup getNotification(ActiveUser user) {

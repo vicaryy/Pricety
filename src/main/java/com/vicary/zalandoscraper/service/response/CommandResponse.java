@@ -2,6 +2,7 @@ package com.vicary.zalandoscraper.service.response;
 
 import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
 import com.vicary.zalandoscraper.messages.Messages;
+import com.vicary.zalandoscraper.service.response.inline_markup.InlineKeyboardMarkupFactory;
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
 
 public class CommandResponse implements Responser {

@@ -1,6 +1,5 @@
 package com.vicary.zalandoscraper.utils;
 
-import com.vicary.zalandoscraper.exception.IllegalInputException;
 import com.vicary.zalandoscraper.messages.Messages;
 
 import java.time.Instant;
@@ -9,8 +8,8 @@ import java.time.ZoneOffset;
 
 public class PrettyTime {
 
-    public static String get(LocalDateTime localDateTime) {
-        Long updateTime = localDateTime.toEpochSecond(ZoneOffset.ofHours(1));
+    public static String getAgo(LocalDateTime date) {
+        Long updateTime = date.toEpochSecond(ZoneOffset.ofHours(1));
 
         Long currentTime = Instant.now().getEpochSecond();
 
@@ -39,8 +38,8 @@ public class PrettyTime {
         return when + Messages.pretty("ago");
     }
 
-    static String get(LocalDateTime localDateTime, InstantTime instantTime) {
-        Long updateTime = localDateTime.toEpochSecond(ZoneOffset.ofHours(1));
+    static String getAgo(LocalDateTime date, InstantTime instantTime) {
+        Long updateTime = date.toEpochSecond(ZoneOffset.ofHours(1));
 
         Long currentTime = instantTime.nowInSeconds();
 
@@ -67,5 +66,9 @@ public class PrettyTime {
             when = String.format("%d %s", days, days < 2 ? Messages.pretty("day") : Messages.pretty("days"));
 
         return when + Messages.pretty("ago");
+    }
+
+    public static String getDDmmYYYY(LocalDateTime date) {
+        return String.format("%02d", date.getDayOfMonth()) + "." + date.getMonth().getValue() + "." + date.getYear();
     }
 }

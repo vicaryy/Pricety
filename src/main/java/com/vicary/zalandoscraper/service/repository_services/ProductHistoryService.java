@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -20,8 +19,6 @@ public class ProductHistoryService {
     private final static Logger logger = LoggerFactory.getLogger(ProductHistoryService.class);
 
     private final ProductHistoryRepository repository;
-
-    private final ProductService productService;
 
     private final ProductHistoryMapper mapper;
 
@@ -43,10 +40,15 @@ public class ProductHistoryService {
 
     public List<ProductHistoryDTO> getProductHistory(long productId) {
         List<ProductHistoryEntity> entities = repository.findAllByProductId(productId);
-        return mapper.map(getReducedList(entities));
+        return mapper.map(entities);
     }
 
-    List<ProductHistoryEntity> getReducedList(List<ProductHistoryEntity> entities) {
+    public List<ProductHistoryDTO> getReducedProductHistory(long productId) {
+        List<ProductHistoryEntity> entities = repository.findAllByProductId(productId);
+        return mapper.map(getReducedListToOneDay(entities));
+    }
+
+    List<ProductHistoryEntity> getReducedListToOneDay(List<ProductHistoryEntity> entities) {
         List<ProductHistoryEntity> reduced = new ArrayList<>();
         for (int i = 0; i < entities.size(); i++) {
             ProductHistoryEntity p = entities.get(i);

@@ -5,6 +5,7 @@ import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.service.dto.ProductHistoryDTO;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -18,6 +19,9 @@ public class ProductHistoryMapper {
     }
 
     public List<ProductHistoryDTO> map(List<ProductHistoryEntity> phs) {
-        return phs.stream().map(this::map).toList();
+        List<ProductHistoryDTO> DTOs = new ArrayList<>();
+        for (ProductHistoryEntity e : phs)
+            DTOs.add(map(e));
+        return DTOs;
     }
 }

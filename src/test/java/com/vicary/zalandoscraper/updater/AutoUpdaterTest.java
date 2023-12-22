@@ -2,6 +2,11 @@ package com.vicary.zalandoscraper.updater;
 
 import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.service.UpdateReceiverService;
+import com.vicary.zalandoscraper.service.map.ProductMapper;
+import com.vicary.zalandoscraper.service.repository_services.ProductHistoryService;
+import com.vicary.zalandoscraper.service.repository_services.ProductService;
+import com.vicary.zalandoscraper.service.repository_services.WaitingUserService;
+import com.vicary.zalandoscraper.updater.sender.NotificationManager;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,6 +24,16 @@ class AutoUpdaterTest {
     @Autowired
     private AutoUpdater autoUpdater;
 
+    @MockBean
+    private ProductService productService;
+    @MockBean
+    private ProductHistoryService productHistoryService;
+    @MockBean
+    private ProductMapper productMapper;
+    @MockBean
+    private NotificationManager notificationManager;
+    @MockBean
+    private WaitingUserService waitingUserService;
     @MockBean
     private UpdateReceiverService updateReceiverService;
 

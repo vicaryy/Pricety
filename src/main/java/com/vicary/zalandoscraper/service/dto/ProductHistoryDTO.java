@@ -5,10 +5,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Builder
-@Getter
-@Setter
-@ToString
-@AllArgsConstructor
+@Data
 public class ProductHistoryDTO {
     private double price;
     private LocalDateTime updateTime;

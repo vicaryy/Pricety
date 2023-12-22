@@ -7,7 +7,6 @@ import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
 import com.vicary.zalandoscraper.format.MarkdownV2;
 import com.vicary.zalandoscraper.messages.Messages;
 import com.vicary.zalandoscraper.model.Product;
-import com.vicary.zalandoscraper.service.response.InlineKeyboardMarkupFactory;
 import lombok.NonNull;
 
 import java.util.ArrayList;

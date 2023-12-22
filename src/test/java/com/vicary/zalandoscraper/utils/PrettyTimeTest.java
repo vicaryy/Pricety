@@ -38,7 +38,7 @@ class PrettyTimeTest {
 
         //when
         when(instantTime.nowInSeconds()).thenReturn(mockedTime);
-        String actualPrettyTime = PrettyTime.get(givenTime, instantTime);
+        String actualPrettyTime = PrettyTime.getAgo(givenTime, instantTime);
 
         //then
         assertEquals(expectedPrettyTime, actualPrettyTime);
@@ -53,7 +53,7 @@ class PrettyTimeTest {
 
         //when
         when(instantTime.nowInSeconds()).thenReturn(mockedTime);
-        String actualPrettyTime = PrettyTime.get(givenTime, instantTime);
+        String actualPrettyTime = PrettyTime.getAgo(givenTime, instantTime);
 
         //then
         assertEquals(expectedPrettyTime, actualPrettyTime);
@@ -68,7 +68,7 @@ class PrettyTimeTest {
 
         //when
         when(instantTime.nowInSeconds()).thenReturn(mockedTime);
-        String actualPrettyTime = PrettyTime.get(givenTime, instantTime);
+        String actualPrettyTime = PrettyTime.getAgo(givenTime, instantTime);
 
         //then
         assertEquals(expectedPrettyTime, actualPrettyTime);
@@ -83,7 +83,7 @@ class PrettyTimeTest {
 
         //when
         when(instantTime.nowInSeconds()).thenReturn(mockedTime);
-        String actualPrettyTime = PrettyTime.get(givenTime, instantTime);
+        String actualPrettyTime = PrettyTime.getAgo(givenTime, instantTime);
 
         //then
         assertEquals(expectedPrettyTime, actualPrettyTime);
@@ -98,7 +98,7 @@ class PrettyTimeTest {
 
         //when
         when(instantTime.nowInSeconds()).thenReturn(mockedTime);
-        String actualPrettyTime = PrettyTime.get(givenTime, instantTime);
+        String actualPrettyTime = PrettyTime.getAgo(givenTime, instantTime);
 
         //then
         assertEquals(expectedPrettyTime, actualPrettyTime);
@@ -113,7 +113,7 @@ class PrettyTimeTest {
 
         //when
         when(instantTime.nowInSeconds()).thenReturn(mockedTime);
-        String actualPrettyTime = PrettyTime.get(givenTime, instantTime);
+        String actualPrettyTime = PrettyTime.getAgo(givenTime, instantTime);
 
         //then
         assertEquals(expectedPrettyTime, actualPrettyTime);
@@ -128,7 +128,7 @@ class PrettyTimeTest {
 
         //when
         when(instantTime.nowInSeconds()).thenReturn(mockedTime);
-        String actualPrettyTime = PrettyTime.get(givenTime, instantTime);
+        String actualPrettyTime = PrettyTime.getAgo(givenTime, instantTime);
 
         //then
         assertEquals(expectedPrettyTime, actualPrettyTime);
@@ -143,7 +143,7 @@ class PrettyTimeTest {
 
         //when
         when(instantTime.nowInSeconds()).thenReturn(mockedTime);
-        String actualPrettyTime = PrettyTime.get(givenTime, instantTime);
+        String actualPrettyTime = PrettyTime.getAgo(givenTime, instantTime);
 
         //then
         assertEquals(expectedPrettyTime, actualPrettyTime);
@@ -158,7 +158,7 @@ class PrettyTimeTest {
 
         //when
         when(instantTime.nowInSeconds()).thenReturn(mockedTime);
-        String actualPrettyTime = PrettyTime.get(givenTime, instantTime);
+        String actualPrettyTime = PrettyTime.getAgo(givenTime, instantTime);
 
         //then
         assertEquals(expectedPrettyTime, actualPrettyTime);
@@ -171,7 +171,7 @@ class PrettyTimeTest {
 
         //when
         //then
-        assertThrows(IllegalArgumentException.class, () -> PrettyTime.get(givenTime, instantTime));
+        assertThrows(IllegalArgumentException.class, () -> PrettyTime.getAgo(givenTime, instantTime));
     }
 }
 

@@ -3,8 +3,10 @@ package com.vicary.zalandoscraper.service.chart;
 import com.vicary.zalandoscraper.exception.ChartGeneratorException;
 import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.service.dto.ProductHistoryDTO;
+import com.vicary.zalandoscraper.utils.PrettyTime;
 import lombok.Getter;
 import lombok.Setter;
+import org.knowm.xchart.BitmapEncoder;
 import org.knowm.xchart.SwingWrapper;
 import org.knowm.xchart.XYChart;
 import org.knowm.xchart.XYChartBuilder;
@@ -12,17 +14,19 @@ import org.knowm.xchart.style.markers.None;
 
 import java.awt.*;
 import java.io.File;
+import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 public class ProductChartGenerator {
-    private List<Double> x = new ArrayList<>();
-    private List<Double> y = new ArrayList<>();
-//    private List<Double> xSoldOut = new ArrayList<>();
-//    private List<Double> ySoldOut = new ArrayList<>();
-    List<List<Double>> xS = new ArrayList<>();
-    List<List<Double>> yS = new ArrayList<>();
+    private XYChart chart;
+    private List<Double> x;
+    private List<Double> y;
+    private List<List<Double>> xSoldOut;
+    private List<List<Double>> ySoldOut;
 
     @Setter
     @Getter
@@ -34,106 +38,51 @@ public class ProductChartGenerator {
 
 
     public File asPng(Product p, List<ProductHistoryDTO> DTOs) {
-        if (fileDestination.isBlank())
-            throw new ChartGeneratorException("", "File destination cannot be empty when generating to Png");
-        checkDTOsValidation(p, DTOs);
-
-
-        XYChart chart = new XYChartBuilder()
-                .title(p.getName() + " - " + p.getVariant() + " - " + p.getServiceName())
-                .width(dimension.width())
-                .height(dimension.height())
-                .xAxisTitle("Time")
-                .yAxisTitle("Price - " + p.getCurrency())
-                .build();
-        setAxis(DTOs);
-        chart.addSeries("Price", x, y).setMarker(new None()).setLineWidth(4);
-        for (int k = 0; k < xS.size(); k++) {
-            chart.addSeries("Sold Out" + k, xS.get(k), yS.get(k)).setMarker(new None()).setLineWidth(4).setLineColor(Color.RED);
-        }
-        System.out.println(xS);
-        System.out.println(yS);
-        int i = 1;
-        for (ProductHistoryDTO dto : DTOs) {
-            System.out.println("        Product nr: " + i);
-            System.out.println(dto);
-            i++;
-        }
-//        chart.addSeries("Sold Out", xSoldOut, ySoldOut);
-//        chart.addSeries("Sold Out", xSoldOut, ySoldOut).setMarker(new None()).setLineWidth(8);
-        new SwingWrapper(chart).displayChart();
-        try {
-            Thread.sleep(20000000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        return null;
+        return getFile(p, DTOs, BitmapEncoder.BitmapFormat.PNG, 0);
     }
 
-    void setAxis(List<ProductHistoryDTO> DTOs) {
-        System.out.println(DTOs.get(21));
-        DTOs.get(21).setPrice(9);
-//        List<List<Double>> xS = new ArrayList<>();
-//        List<List<Double>> yS = new ArrayList<>();
 
+    public File asJpg(Product p, List<ProductHistoryDTO> DTOs) {
+        return getFile(p, DTOs, BitmapEncoder.BitmapFormat.JPG, 0);
+    }
 
-        for (int i = 0; i < DTOs.size(); i++) {
-            var dto = DTOs.get(i);
-            if (dto.getPrice() == 0 && i == 0) {
-                for (int k = i + 1; k < DTOs.size(); k++) {
-                    var dtoK = DTOs.get(k);
-                    if (dtoK.getPrice() != 0) {
-                        double nextPrice = dtoK.getPrice();
-                        List<Double> xx = new ArrayList<>();
-                        List<Double> yy = new ArrayList<>();
-                        for (int l = i; l < k; l++) {
+    public File asPngHighResolution(Product p, List<ProductHistoryDTO> DTOs) {
+        return getFile(p, DTOs, BitmapEncoder.BitmapFormat.PNG, 300);
+    }
 
-                            xx.add((double) l);
-                            yy.add(nextPrice);
-//                            xSoldOut.add((double) l);
-//                            ySoldOut.add(nextPrice);
-                            x.add((double) l);
-                            y.add(nextPrice);
-                        }
-                        xx.add((double) k + 1);
-                        yy.add(nextPrice);
+    public File asJpgHighResolution(Product p, List<ProductHistoryDTO> DTOs) {
+            return getFile(p, DTOs, BitmapEncoder.BitmapFormat.JPG, 300);
+    }
 
-                        xS.add(xx);
-                        yS.add(yy);
-                        i = k;
-                        x.add((double) i);
-                        y.add(nextPrice);
-                        break;
-                    }
-                }
-            } else if (dto.getPrice() == 0) {
-                double nextPrice = DTOs.get(i - 1).getPrice();
-                List<Double> xx = new ArrayList<>();
-                List<Double> yy = new ArrayList<>();
-                for (int k = i; k < DTOs.size(); k++) {
-                    if (DTOs.get(k).getPrice() == 0) {
-                        xx.add((double) k);
-                        yy.add(nextPrice);
-//                        xSoldOut.add((double) k);
-//                        ySoldOut.add(nextPrice);
-                        x.add((double) k);
-                        y.add(nextPrice);
-                    } else {
-                        xx.add((double) k - 1);
-                        yy.add(nextPrice);
-                        xS.add(xx);
-                        yS.add(yy);
-                        x.add((double) k);
-                        y.add(nextPrice);
-                        i = k - 1;
-                        break;
-                    }
-                }
-            } else {
-                x.add((double) i);
-                y.add(dto.getPrice());
-            }
+    public void display(Product p, List<ProductHistoryDTO> DTOs) {
+        checkDTOsValidation(p, DTOs);
+        setAxis(DTOs);
+        setXYChart(p, DTOs.get(0).getUpdateTime());
+
+        if (!fileDestination.endsWith("/"))
+            fileDestination = fileDestination + "/";
+        new SwingWrapper(chart).displayChart();
+    }
+
+    private File getFile(Product p, List<ProductHistoryDTO> DTOs, BitmapEncoder.BitmapFormat bitmapFormat, int dpi) {
+        if (fileDestination == null || fileDestination.isBlank())
+            throw new ChartGeneratorException("", "File destination cannot be empty when generating to Png");
+        checkDTOsValidation(p, DTOs);
+        setAxis(DTOs);
+        setXYChart(p, DTOs.get(0).getUpdateTime());
+
+        if (!fileDestination.endsWith("/"))
+            fileDestination = fileDestination + "/";
+        String fileName = fileDestination + p.getProductId() + "-" + System.currentTimeMillis();
+        try {
+            if (dpi == 0)
+                BitmapEncoder.saveBitmap(chart, fileName, bitmapFormat);
+            else
+                BitmapEncoder.saveBitmapWithDPI(chart, fileName, bitmapFormat, dpi);
+        } catch (IOException e) {
+            throw new ChartGeneratorException("", e.getMessage());
         }
+        return new File(fileName);
     }
 
     private void checkDTOsValidation(Product p, List<ProductHistoryDTO> DTOs) {
@@ -149,27 +98,77 @@ public class ProductChartGenerator {
         }
     }
 
-    public File asJpg() {
-        if (fileDestination.isBlank())
-            throw new ChartGeneratorException("", "File destination cannot be empty when generating to Png");
-        return null;
+    void setAxis(List<ProductHistoryDTO> DTOs) {
+        x = new ArrayList<>();
+        y = new ArrayList<>();
+        xSoldOut = new ArrayList<>();
+        ySoldOut = new ArrayList<>();
+        for (int i = 0; i < DTOs.size(); i++) {
+            boolean isSoldOutAtBegin = false;
+            boolean isSoldOut = false;
+            var dto = DTOs.get(i);
+            if (dto.getPrice() == 0 && i == 0) {
+                isSoldOutAtBegin = true;
+                dto.setPrice(getNearestPriceWhenZeroAtBegin(DTOs));
+            } else if (dto.getPrice() == 0) {
+                isSoldOut = true;
+                dto.setPrice(DTOs.get(i - 1).getPrice());
+            }
+
+            if (isSoldOutAtBegin) {
+                List<Double> xx = new ArrayList<>();
+                List<Double> yy = new ArrayList<>();
+                xx.add((double) i);
+                xx.add((double) i + 1);
+                yy.add(dto.getPrice());
+                yy.add(dto.getPrice());
+                xSoldOut.add(xx);
+                ySoldOut.add(yy);
+            }
+            if (isSoldOut) {
+                List<Double> xx = new ArrayList<>();
+                List<Double> yy = new ArrayList<>();
+                xx.add((double) i);
+                xx.add((double) i - 1);
+                yy.add(dto.getPrice());
+                yy.add(dto.getPrice());
+                xSoldOut.add(xx);
+                ySoldOut.add(yy);
+            }
+
+            x.add((double) i);
+            y.add(dto.getPrice());
+        }
     }
 
-    public File asPngHighResolution() {
-        if (fileDestination.isBlank())
-            throw new ChartGeneratorException("", "File destination cannot be empty when generating to Png");
-        return null;
+    private double getNearestPriceWhenZeroAtBegin(List<ProductHistoryDTO> DTOs) {
+        for (ProductHistoryDTO dto : DTOs)
+            if (dto.getPrice() != 0)
+                return dto.getPrice();
+        return 0;
     }
 
-    public File asJpgHighResolution() {
-        if (fileDestination.isBlank())
-            throw new ChartGeneratorException("", "File destination cannot be empty when generating to Png");
-        return null;
+    private void setXYChart(Product p, LocalDateTime firstUpdate) {
+        chart = new XYChartBuilder()
+                .title(p.getName() + " - " + p.getVariant() + " - " + p.getServiceName())
+                .width(dimension.width())
+                .height(dimension.height())
+                .xAxisTitle("Time")
+                .yAxisTitle("Price - " + p.getCurrency())
+                .build();
+        chart.addSeries("On Sale", x, y).setMarker(new None()).setLineWidth(4);
+        for (int i = 0; i < xSoldOut.size(); i++) {
+            if (i == 0)
+                chart.addSeries("Sold Out", xSoldOut.get(i), ySoldOut.get(i)).setMarker(new None()).setLineWidth(4).setLineColor(Color.RED);
+            chart.addSeries("Sold Out" + i, xSoldOut.get(i), ySoldOut.get(i)).setMarker(new None()).setLineWidth(4).setLineColor(Color.RED).setShowInLegend(false);
+        }
+
+        Map<Double, Object> map = Map.of(
+                0.0, PrettyTime.getDDmmYYYY(firstUpdate),
+                (double) x.size() - 1, "Today");
+        chart.setXAxisLabelOverrideMap(map);
     }
 
-    public void display() {
-
-    }
 
     void setX(List<Double> x) {
         this.x = x;
@@ -195,13 +194,13 @@ public class ProductChartGenerator {
         return y;
     }
 
-//    List<Double> getXSoldOut() {
-//        return xSoldOut;
-//    }
-//
-//    List<Double> getYSoldOut() {
-//        return ySoldOut;
-//    }
+    List<List<Double>> getXSoldOut() {
+        return xSoldOut;
+    }
+
+    List<List<Double>> getYSoldOut() {
+        return ySoldOut;
+    }
 
     public record Dimension(int width, int height) {
     }

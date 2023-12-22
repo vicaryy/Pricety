@@ -8,6 +8,7 @@ import com.vicary.zalandoscraper.exception.InvalidLinkException;
 import com.vicary.zalandoscraper.messages.Messages;
 import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.scraper.Scraper;
+import com.vicary.zalandoscraper.service.response.inline_markup.InlineKeyboardMarkupFactory;
 import com.vicary.zalandoscraper.thread_local.ActiveLanguage;
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
 import org.junit.jupiter.api.BeforeAll;

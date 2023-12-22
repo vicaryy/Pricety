@@ -3,6 +3,7 @@ package com.vicary.zalandoscraper.service.response;
 import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
 import com.vicary.zalandoscraper.messages.Messages;
 import com.vicary.zalandoscraper.scraper.Scraper;
+import com.vicary.zalandoscraper.service.response.inline_markup.InlineKeyboardMarkupFactory;
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
 import com.vicary.zalandoscraper.api_telegram.api_object.Action;
 import com.vicary.zalandoscraper.api_telegram.api_request.send.SendMessage;
