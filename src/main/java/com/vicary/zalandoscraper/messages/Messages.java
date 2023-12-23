@@ -14,6 +14,7 @@ public class Messages {
     private final static String addProduct = "addProduct-";
     private final static String editPriceAlert = "editPriceAlert-";
     private final static String deleteProduct = "deleteProduct-";
+    private final static String generateProduct = "generateProduct-";
     private final static String notification = "notifications-";
     private final static String other = "other-";
     private final static String email = "email-";
@@ -48,6 +49,10 @@ public class Messages {
 
     public static String deleteProduct(String key) {
         return ActiveLanguage.get().getResourceBundle().getString(deleteProduct + key);
+    }
+
+    public static String generateProduct(String key) {
+        return ActiveLanguage.get().getResourceBundle().getString(generateProduct + key);
     }
 
     public static String notifications(String key) {

@@ -1,9 +1,13 @@
 package com.vicary.zalandoscraper.service.response.inline_markup;
 
 import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
+import com.vicary.zalandoscraper.exception.ChartGeneratorException;
+import com.vicary.zalandoscraper.format.MarkdownV2;
 import com.vicary.zalandoscraper.messages.Messages;
 import com.vicary.zalandoscraper.scraper.Scraper;
 import com.vicary.zalandoscraper.scraper.ScraperFactory;
+import com.vicary.zalandoscraper.service.chart.ProductChartGenerator;
+import com.vicary.zalandoscraper.service.dto.ProductHistoryDTO;
 import com.vicary.zalandoscraper.service.response.ResponseFacade;
 import com.vicary.zalandoscraper.service.response.Responser;
 import com.vicary.zalandoscraper.thread_local.ActiveLanguage;
@@ -14,6 +18,7 @@ import com.vicary.zalandoscraper.exception.InvalidLinkException;
 import com.vicary.zalandoscraper.model.Product;
 import lombok.SneakyThrows;
 
+import java.io.File;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -46,27 +51,32 @@ public class InlineMarkupResponse implements Responser {
             String variant = getVariantFromText();
             Scraper scraper = ScraperFactory.getScraperFromLink(link).orElseThrow();
             addProduct(link, variant, scraper);
-        }
-        else if (text.equals("-allProducts"))
-            displayAllProducts(new AllProductDisplay());
-
-        else if (text.equals("-addProduct"))
+        } else if (text.equals("-addProduct"))
             displayAddProduct();
 
+        else if (text.equals("-allProducts"))
+            displayProducts(new AllProductDisplay());
+
         else if (text.equals("-editPriceAlert"))
-            displayEditPriceAlert(new EditProductDisplay());
+            displayProducts(new EditProductDisplay());
+
+        else if (text.equals("-deleteProduct"))
+            displayProducts(new DeleteProductDisplay());
+
+        else if (text.equals("-generateProduct"))
+            displayProducts(new GenerateProductDisplay());
 
         else if (text.equals("-notification"))
             displayNotification(true);
-
-        else if (text.equals("-deleteProduct"))
-            displayDeleteProduct(new DeleteProductDisplay());
 
         else if (text.startsWith("-edit "))
             displayEditPriceAlertMessage();
 
         else if (text.startsWith("-delete "))
             deleteProduct();
+
+        else if (text.startsWith("-generate "))
+            generateProduct();
 
         else if (text.equals("-deleteAll"))
             displayDeleteYesOrNo(true);
@@ -126,8 +136,11 @@ public class InlineMarkupResponse implements Responser {
         return variant.toString().trim();
     }
 
-    void displayAllProducts(ProductDisplayer displayer) {
-        List<Product> products = responseFacade.getAllProductsByUserId(user.getUserId());
+    void displayProducts(ProductDisplayer displayer) {
+        //TODO
+        String tymczasowy = "6488358449";
+        List<Product> products = responseFacade.getAllProductsByUserId(tymczasowy);
+        //TODO
 
         deletePreviousMessage();
 
@@ -147,44 +160,12 @@ public class InlineMarkupResponse implements Responser {
         displayMenu();
     }
 
-    void displayEditPriceAlert(ProductDisplayer displayer) {
-        deletePreviousMessage();
-
-        List<Product> products = responseFacade.getAllProductsByUserId(user.getUserId());
-
-        if (products.isEmpty()) {
-            popupMessage(Messages.other("dontHaveProduct"));
-            displayMenu();
-            return;
-        }
-
-        displayer.setProductDTOList(products);
-        displayer.setChatId(user.getChatId());
-        displayer.display();
-    }
-
     void displayEditPriceAlertMessage() {
         responseFacade.createAndSaveAwaitedMessage(user.getUserId(), user.getText());
 
         deletePreviousMessage(1500);
 
         quickSender.message(user.getChatId(), Messages.other("sendNewAlert"), true);
-    }
-
-    void displayDeleteProduct(ProductDisplayer displayer) {
-        List<Product> products = responseFacade.getAllProductsByUserId(user.getUserId());
-
-        deletePreviousMessage();
-
-        if (products.isEmpty()) {
-            popupMessage(Messages.other("dontHaveProduct"));
-            displayMenu();
-            return;
-        }
-
-        displayer.setProductDTOList(products);
-        displayer.setChatId(user.getChatId());
-        displayer.display();
     }
 
     void deleteProduct() {
@@ -195,6 +176,34 @@ public class InlineMarkupResponse implements Responser {
         popupMessage(Messages.other("deleted"), true);
 
         displayMenu();
+    }
+
+    void generateProduct() {
+        long productId = Long.parseLong(user.getText().split(" ")[1]);
+
+        List<ProductHistoryDTO> productHistoryDTOS = responseFacade.getAllReducedProductHistory(productId);
+        Product product = responseFacade.getProductById(productId);
+
+        deletePreviousMessage();
+        int messageId = quickSender.messageWithReturn(user.getChatId(), MarkdownV2.applyWithManualBoldAndItalic(Messages.generateProduct("generating")), true).getMessageId();
+        quickSender.chatAction(user.getChatId(), Action.UPLOAD_PHOTO);
+
+        ProductChartGenerator generator = ProductChartGenerator.builder()
+                .fileDestination("/Users/vicary/desktop/scraper/chart")
+                .dimension(new ProductChartGenerator.Dimension(1200, 600))
+                .build();
+
+        File generatedChart;
+        try {
+            generatedChart = generator.asPngHighResolution(product, productHistoryDTOS);
+        } catch (ChartGeneratorException ex) {
+            quickSender.message(user.getChatId(), ex.getMessage(), true);
+            quickSender.deleteMessage(user.getChatId(), messageId);
+            throw new IllegalArgumentException(ex.getLoggerMessage());
+        }
+        quickSender.photo(user.getChatId(), generatedChart);
+        quickSender.deleteMessage(user.getChatId(), messageId);
+        quickSender.inlineMarkup(user.getChatId(), MarkdownV2.applyWithManualBoldAndItalic(Messages.generateProduct("generated")), InlineKeyboardMarkupFactory.getBack(), true);
     }
 
     private void displayDeleteYesOrNo(boolean deletePreviousMessage) {

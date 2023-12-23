@@ -3,6 +3,7 @@ package com.vicary.zalandoscraper.service.response;
 import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.entity.WaitingUserEntity;
 import com.vicary.zalandoscraper.format.MarkdownV2;
+import com.vicary.zalandoscraper.service.dto.ProductHistoryDTO;
 import com.vicary.zalandoscraper.utils.PrettyTime;
 import com.vicary.zalandoscraper.entity.AwaitedMessageEntity;
 import com.vicary.zalandoscraper.entity.LinkRequestEntity;
@@ -184,5 +185,9 @@ public class ResponseFacade {
             return false;
         }
         return productService.existsById(id);
+    }
+
+    public List<ProductHistoryDTO> getAllReducedProductHistory(long productId) {
+        return productHistoryService.getReducedProductHistory(productId);
     }
 }

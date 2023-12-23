@@ -4,14 +4,18 @@ import com.vicary.zalandoscraper.api_telegram.api_object.Action;
 import com.vicary.zalandoscraper.api_telegram.api_object.ParseMode;
 import com.vicary.zalandoscraper.api_telegram.api_object.keyboard.InlineKeyboardMarkup;
 import com.vicary.zalandoscraper.api_telegram.api_object.message.Message;
+import com.vicary.zalandoscraper.api_telegram.api_request.InputFile;
 import com.vicary.zalandoscraper.api_telegram.api_request.edit_message.DeleteMessage;
 import com.vicary.zalandoscraper.api_telegram.api_request.edit_message.EditMessageText;
 import com.vicary.zalandoscraper.api_telegram.api_request.send.SendChatAction;
 import com.vicary.zalandoscraper.api_telegram.api_request.send.SendMessage;
+import com.vicary.zalandoscraper.api_telegram.api_request.send.SendPhoto;
 import com.vicary.zalandoscraper.model.ChatNotification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+
+import java.io.File;
 
 public class QuickSender {
     private final Logger logger = LoggerFactory.getLogger(QuickSender.class);
@@ -31,6 +35,24 @@ public class QuickSender {
         } catch (WebClientResponseException ex) {
             logger.warn("---------------------------");
             logger.warn("Error in sending message request to user '{}'.", chatId);
+            logger.warn("Status code: " + ex.getStatusCode());
+            logger.warn("Description: " + ex.getStatusText());
+            logger.warn("---------------------------");
+        } catch (Exception ex) {
+            logger.warn("Error in sending message request to user '{}', message: {}", chatId, ex.getMessage());
+        }
+    }
+
+    public void photo(String chatId, File generatedChart) {
+        try {
+            SendPhoto sendPhoto = SendPhoto.builder()
+                    .chatId(chatId)
+                    .photo(InputFile.builder().file(generatedChart).build())
+                    .build();
+            requestService.send(sendPhoto);
+        } catch (WebClientResponseException ex) {
+            logger.warn("---------------------------");
+            logger.warn("Error in sending photo request to user '{}'.", chatId);
             logger.warn("Status code: " + ex.getStatusCode());
             logger.warn("Description: " + ex.getStatusText());
             logger.warn("---------------------------");
@@ -106,11 +128,11 @@ public class QuickSender {
 
     public void notification(ChatNotification notification) throws Exception {
         try {
-        requestService.sendWithoutResponse(SendMessage.builder()
-                .chatId(notification.getChatId())
-                .text(notification.getMessage())
-                .parseMode(notification.isMarkdownV2() ? ParseMode.MarkdownV2 : null)
-                .build());
+            requestService.sendWithoutResponse(SendMessage.builder()
+                    .chatId(notification.getChatId())
+                    .text(notification.getMessage())
+                    .parseMode(notification.isMarkdownV2() ? ParseMode.MarkdownV2 : null)
+                    .build());
         } catch (WebClientResponseException ex) {
             logger.warn("---------------------------");
             logger.warn("Error in sending message request to user '{}'.", notification.getChatId());

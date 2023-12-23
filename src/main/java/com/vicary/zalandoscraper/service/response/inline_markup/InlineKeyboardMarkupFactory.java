@@ -13,21 +13,15 @@ public class InlineKeyboardMarkupFactory {
 
     public static InlineKeyboardMarkup getMenu() {
         String language = Messages.menu("language");
-//        final InlineKeyboardButton allProducts = new InlineKeyboardButton(Messages.menu("allProducts"), "-allProducts");
-//        final InlineKeyboardButton addProduct = new InlineKeyboardButton(Messages.menu("addProduct"), "-addProduct");
-//        final InlineKeyboardButton editPriceProduct = new InlineKeyboardButton(Messages.menu("editPriceAlert"), "-editPriceAlert");
-//        final InlineKeyboardButton deleteProduct = new InlineKeyboardButton(Messages.menu("deleteProduct"), "-deleteProduct");
-//        final InlineKeyboardButton notification = new InlineKeyboardButton(Messages.menu("notification"), "-notification");
-//        final InlineKeyboardButton exit = new InlineKeyboardButton(Messages.menu("exit"), "-exit");
-//        final InlineKeyboardButton changeLanguage = new InlineKeyboardButton(language, "-lang " + (language.equals("\uD83C\uDDFA\uD83C\uDDF8") ? "en" : "pl"));
         final InlineKeyboardButton allProducts = new InlineKeyboardButton(Messages.menu("allProducts"), "-allProducts");
         final InlineKeyboardButton addProduct = new InlineKeyboardButton(Messages.menu("addProduct"), "-addProduct");
         final InlineKeyboardButton editPriceProduct = new InlineKeyboardButton(Messages.menu("editPriceAlert"), "-editPriceAlert");
         final InlineKeyboardButton deleteProduct = new InlineKeyboardButton(Messages.menu("deleteProduct"), "-deleteProduct");
-        final InlineKeyboardButton chart = new InlineKeyboardButton(Messages.menu("generateChart"), "-generateChart");
         final InlineKeyboardButton notification = new InlineKeyboardButton(Messages.menu("notification"), "-notification");
-        final InlineKeyboardButton options = new InlineKeyboardButton(Messages.menu("options"), "-options");
+        final InlineKeyboardButton chart = new InlineKeyboardButton(Messages.menu("generateChart"), "-generateProduct");
         final InlineKeyboardButton exit = new InlineKeyboardButton(Messages.menu("exit"), "-exit");
+        final InlineKeyboardButton changeLanguage = new InlineKeyboardButton(language, "-lang " + (language.equals("\uD83C\uDDFA\uD83C\uDDF8") ? "en" : "pl"));
+
 
         return new InlineKeyboardMarkup(
                 List.of(
@@ -35,8 +29,8 @@ public class InlineKeyboardMarkupFactory {
                         List.of(editPriceProduct, deleteProduct),
                         List.of(chart),
                         List.of(notification),
-                        List.of(options),
-                        List.of(exit)
+                        List.of(exit),
+                        List.of(changeLanguage)
                 ));
     }
 
@@ -82,7 +76,6 @@ public class InlineKeyboardMarkupFactory {
         List<List<InlineKeyboardButton>> listOfListsOfButtons = new ArrayList<>();
         List<InlineKeyboardButton> listOfButtons = new ArrayList<>();
         final InlineKeyboardButton back = new InlineKeyboardButton(Messages.editPriceAlert("back"), "-back");
-        final InlineKeyboardButton deleteAll = new InlineKeyboardButton(Messages.deleteProduct("deleteAll"), "-deleteAll");
 
         for (int i = 0; i < products.size(); i++) {
 
@@ -102,7 +95,7 @@ public class InlineKeyboardMarkupFactory {
         }
 
         if (callbackDataType.equals("-delete"))
-            listOfListsOfButtons.add(List.of(deleteAll));
+            listOfListsOfButtons.add(List.of(new InlineKeyboardButton(Messages.deleteProduct("deleteAll"), "-deleteAll")));
 
         listOfListsOfButtons.add(List.of(back));
 

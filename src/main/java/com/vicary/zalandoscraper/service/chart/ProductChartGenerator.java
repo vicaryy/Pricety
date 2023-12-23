@@ -1,6 +1,8 @@
 package com.vicary.zalandoscraper.service.chart;
 
 import com.vicary.zalandoscraper.exception.ChartGeneratorException;
+import com.vicary.zalandoscraper.format.MarkdownV2;
+import com.vicary.zalandoscraper.messages.Messages;
 import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.service.dto.ProductHistoryDTO;
 import com.vicary.zalandoscraper.utils.PrettyTime;
@@ -73,7 +75,8 @@ public class ProductChartGenerator {
 
         if (!fileDestination.endsWith("/"))
             fileDestination = fileDestination + "/";
-        String fileName = fileDestination + p.getProductId() + "-" + System.currentTimeMillis();
+        String extension = bitmapFormat.name().toLowerCase();
+        String fileName = fileDestination + p.getProductId() + "-" + System.currentTimeMillis() + "." + extension;
         try {
             if (dpi == 0)
                 BitmapEncoder.saveBitmap(chart, fileName, bitmapFormat);
@@ -88,12 +91,12 @@ public class ProductChartGenerator {
     private void checkDTOsValidation(Product p, List<ProductHistoryDTO> DTOs) {
         if (DTOs.isEmpty()) {
             throw new ChartGeneratorException(
-                    "This product don't have any price history.",
+                    MarkdownV2.applyWithManualBoldAndItalic(Messages.generateProduct("noPriceHistory")),
                     "User '%s' try to get product price history but product history is empty, productId '%s'".formatted(p.getUser().getUserId(), p.getProductId()));
         }
         if (DTOs.stream().allMatch(dto -> dto.getPrice() == 0)) {
             throw new ChartGeneratorException(
-                    "This product don't have any price history, was always sold out.",
+                    MarkdownV2.applyWithManualBoldAndItalic(Messages.generateProduct("alwaysSoldOut")),
                     "User '%s' try to get product price history but product was always sold out, productId '%s'".formatted(p.getUser().getUserId(), p.getProductId()));
         }
     }
@@ -150,23 +153,35 @@ public class ProductChartGenerator {
 
     private void setXYChart(Product p, LocalDateTime firstUpdate) {
         chart = new XYChartBuilder()
-                .title(p.getName() + " - " + p.getVariant() + " - " + p.getServiceName())
+                .title(p.getName() + " - " + getFormattedVariant(p.getVariant()) + " - " + p.getServiceName())
                 .width(dimension.width())
                 .height(dimension.height())
-                .xAxisTitle("Time")
-                .yAxisTitle("Price - " + p.getCurrency())
+                .xAxisTitle(Messages.generateProduct("time"))
+                .yAxisTitle(Messages.generateProduct("price") + p.getCurrency())
                 .build();
-        chart.addSeries("On Sale", x, y).setMarker(new None()).setLineWidth(4);
+        chart.addSeries(Messages.generateProduct("onSale"), x, y).setMarker(new None()).setLineWidth(4);
         for (int i = 0; i < xSoldOut.size(); i++) {
             if (i == 0)
-                chart.addSeries("Sold Out", xSoldOut.get(i), ySoldOut.get(i)).setMarker(new None()).setLineWidth(4).setLineColor(Color.RED);
-            chart.addSeries("Sold Out" + i, xSoldOut.get(i), ySoldOut.get(i)).setMarker(new None()).setLineWidth(4).setLineColor(Color.RED).setShowInLegend(false);
+                chart.addSeries(Messages.generateProduct("soldOut"), xSoldOut.get(i), ySoldOut.get(i)).setMarker(new None()).setLineWidth(4).setLineColor(Color.RED);
+            chart.addSeries(Messages.generateProduct("soldOut") + i, xSoldOut.get(i), ySoldOut.get(i)).setMarker(new None()).setLineWidth(4).setLineColor(Color.RED).setShowInLegend(false);
         }
 
         Map<Double, Object> map = Map.of(
                 0.0, PrettyTime.getDDmmYYYY(firstUpdate),
-                (double) x.size() - 1, "Today");
+                (double) x.size() - 1, Messages.generateProduct("today"));
         chart.setXAxisLabelOverrideMap(map);
+    }
+
+    private String getFormattedVariant(String v) {
+        if (v.startsWith("-oneVariant")) {
+            String oneVariant = v.substring(11).trim();
+
+            if (oneVariant.equals("Unknown"))
+                return Messages.allProducts("unknown");
+
+            return oneVariant;
+        }
+        return v;
     }
 
 
