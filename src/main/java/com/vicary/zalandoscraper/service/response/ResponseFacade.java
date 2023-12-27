@@ -102,8 +102,16 @@ public class ResponseFacade {
         emailVerificationService.deleteByToken(token);
     }
 
-    public String getAwaitedMessageRequestByUserIdAndDelete(String userId) {
+    public String getAwaitedMessageRequestAndDelete(String userId) {
         return awaitedMessageService.getRequestAndDeleteMessage(userId);
+    }
+
+    public void deleteAwaitedMessage(String userId) {
+        awaitedMessageService.deleteAwaitedMessage(userId);
+    }
+
+    public String getAwaitedMessageRequest(String userId) {
+        return awaitedMessageService.getRequest(userId);
     }
 
     public Product getProductById(Long productId) {

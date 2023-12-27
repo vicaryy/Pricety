@@ -22,6 +22,7 @@ public class Messages {
     private final static String command = "command-";
     private final static String pretty = "pretty-";
     private final static String scraper = "scraper-";
+    private final static String authenticate = "authenticate-";
 
 
     public static String menu(String key) {
@@ -104,5 +105,9 @@ public class Messages {
 
     public static String scraper(String key) {
         return ActiveLanguage.get().getResourceBundle().getString(scraper + key);
+    }
+
+    public static String authenticate(String key) {
+        return ActiveLanguage.get().getResourceBundle().getString(authenticate + key);
     }
 }

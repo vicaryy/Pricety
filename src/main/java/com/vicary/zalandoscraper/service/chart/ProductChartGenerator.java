@@ -53,7 +53,7 @@ public class ProductChartGenerator {
     }
 
     public File asJpgHighResolution(Product p, List<ProductHistoryDTO> DTOs) {
-            return getFile(p, DTOs, BitmapEncoder.BitmapFormat.JPG, 300);
+        return getFile(p, DTOs, BitmapEncoder.BitmapFormat.JPG, 300);
     }
 
     public void display(Product p, List<ProductHistoryDTO> DTOs) {
@@ -183,23 +183,6 @@ public class ProductChartGenerator {
         }
         return v;
     }
-
-
-    void setX(List<Double> x) {
-        this.x = x;
-    }
-
-    void setY(List<Double> y) {
-        this.y = y;
-    }
-
-//    void setXSoldOut(List<Double> xSoldOut) {
-//        this.xSoldOut = xSoldOut;
-//    }
-//
-//    void setYSoldOut(List<Double> ySoldOut) {
-//        this.ySoldOut = ySoldOut;
-//    }
 
     List<Double> getX() {
         return x;

@@ -139,6 +139,45 @@ class PatternTest {
         assertTrue(Pattern.isPrefixedURL(givenURL));
     }
 
+    @Test
+    void removePrefix_expectEquals_LinkAtBeginning() {
+        //given
+        String givenURL = "https://www.zalando.pl/asd sprawdź ten przedmiot na zalando.";
+        String expectedURL = "https://www.zalando.pl/asd";
+
+        //when
+        String actualURL = Pattern.removePrefix(givenURL);
+
+        //then
+        assertEquals(expectedURL, actualURL);
+    }
+
+    @Test
+    void removePrefix_expectEquals_LinkAtEnd() {
+        //given
+        String givenURL = "sprawdź ten przedmiot na zalando https://www.zalando.pl/asd";
+        String expectedURL = "https://www.zalando.pl/asd";
+
+        //when
+        String actualURL = Pattern.removePrefix(givenURL);
+
+        //then
+        assertEquals(expectedURL, actualURL);
+    }
+
+    @Test
+    void removePrefix_expectEquals_LinkInMiddle() {
+        //given
+        String givenURL = "sprawdź ten https://www.zalando.pl/asd przedmiot na zalando";
+        String expectedURL = "sprawdź ten https://www.zalando.pl/asd przedmiot na zalando";
+
+        //when
+        String actualURL = Pattern.removePrefix(givenURL);
+
+        //then
+        assertEquals(expectedURL, actualURL);
+    }
+
 
     private List<String> getValidURLs() {
         return List.of(

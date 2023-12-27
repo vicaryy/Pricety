@@ -49,7 +49,7 @@ public class Pattern {
             if (urlPattern.matcher(textArray[0]).matches())
                 return textArray[0];
             if (urlPattern.matcher(textArray[textArray.length - 1]).matches())
-                return textArray[1];
+                return textArray[textArray.length - 1];
         }
         return text;
     }

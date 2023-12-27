@@ -3,6 +3,9 @@ package com.vicary.zalandoscraper.api_telegram.api_object;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class User implements ApiObject {
     @JsonProperty("id")
     private Long id;
@@ -36,7 +39,4 @@ public class User implements ApiObject {
 
     @JsonProperty("supports_inline_queries")
     private boolean supportsInlineQueries;
-
-    public User() {
-    }
 }

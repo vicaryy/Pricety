@@ -81,9 +81,4 @@ public class Update implements ApiObject {
 
     @JsonProperty("chat_join_request")
     private ChatJoinRequest chatJoinRequest;
-
-
-    public String getChatId() {
-        return message.getChat().getId().toString();
-    }
 }

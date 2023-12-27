@@ -7,7 +7,9 @@ import com.vicary.zalandoscraper.thread_local.ActiveUser;
 import com.vicary.zalandoscraper.exception.IllegalInputException;
 import com.vicary.zalandoscraper.pattern.Pattern;
 import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class AwaitedMessageResponse implements Responser {
     private final ResponseFacade responseFacade;
     private final ActiveUser user;
@@ -28,16 +30,29 @@ public class AwaitedMessageResponse implements Responser {
 
     @Override
     public void response() {
-        String request = responseFacade.getAwaitedMessageRequestByUserIdAndDelete(user.getUserId());
+        String request = responseFacade.getAwaitedMessageRequest(user.getUserId());
 
         if (request.startsWith("-edit"))
             updateProductPriceAlert(request);
 
         else if (request.startsWith("-setEmail"))
             updateUserEmail();
+
+        else if (request.startsWith("-setNick"))
+            setNick();
+    }
+
+    private void setNick() {
+        String nick = user.getText();
+
+        responseFacade.updateUserNick(user.getUserId(), nick);
+        responseFacade.deleteAwaitedMessage(user.getUserId());
+        quickSender.popupMessage(user.getChatId(), Messages.other("setNickSuccess"));
+        quickSender.message(user.getChatId(), Messages.command("start").formatted(" " + user.getText()), true);
     }
 
     private void updateProductPriceAlert(String request) {
+        responseFacade.deleteAwaitedMessage(user.getUserId());
         Long productId = Long.parseLong(request.split(" ")[1]);
         String priceAlert = getPriceAlertFromText(user.getText());
 
@@ -53,6 +68,7 @@ public class AwaitedMessageResponse implements Responser {
     }
 
     private void updateUserEmail() {
+        responseFacade.deleteAwaitedMessage(user.getUserId());
         String email = user.getText();
 
         if (!Pattern.isEmail(email))

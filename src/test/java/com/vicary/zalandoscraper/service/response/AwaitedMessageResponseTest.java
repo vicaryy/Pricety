@@ -35,9 +35,47 @@ class AwaitedMessageResponseTest {
         quickSender = mock(QuickSender.class);
     }
 
+    @Test
+    void response_setNick_ValidNick() {
+        //given
+        ActiveUser givenUser = getDefaultActiveUser();
+        givenUser.setText("vicary");
+        String givenRequest = "-setNick";
+
+        //when
+        when(responseFacade.getAwaitedMessageRequest(givenUser.getChatId())).thenReturn(givenRequest);
+        awaitedMessageResponse = new AwaitedMessageResponse(responseFacade, givenUser, quickSender);
+        awaitedMessageResponse.response();
+
+        //then
+        verify(responseFacade, times(1)).updateUserNick(givenUser.getChatId(), givenUser.getText());
+        verify(responseFacade, times(1)).deleteAwaitedMessage(givenUser.getChatId());
+        verify(quickSender, times(1)).popupMessage(givenUser.getChatId(), Messages.other("setNickSuccess"));
+        verify(quickSender, times(1)).message(givenUser.getChatId(), Messages.command("start").formatted(" " + givenUser.getText()), true);
+    }
 
     @Test
-    void response_everythingValid_editPriceAlert() {
+    void response_setNick_InvalidNick() {
+        //given
+        ActiveUser givenUser = getDefaultActiveUser();
+        givenUser.setText("invalid!");
+        String givenRequest = "-setNick";
+
+        //when
+        doThrow(new IllegalInputException()).when(responseFacade).updateUserNick(givenUser.getChatId(), givenUser.getText());
+        when(responseFacade.getAwaitedMessageRequest(givenUser.getChatId())).thenReturn(givenRequest);
+        awaitedMessageResponse = new AwaitedMessageResponse(responseFacade, givenUser, quickSender);
+
+        //then
+        assertThrows(IllegalInputException.class, () -> awaitedMessageResponse.response());
+        verify(responseFacade, times(1)).updateUserNick(givenUser.getChatId(), givenUser.getText());
+        verify(responseFacade, times(0)).deleteAwaitedMessage(givenUser.getChatId());
+        verify(quickSender, times(0)).popupMessage(givenUser.getChatId(), Messages.other("setNickSuccess"));
+        verify(quickSender, times(0)).message(givenUser.getChatId(), Messages.command("start").formatted(" " + givenUser.getText()), true);
+    }
+
+    @Test
+    void response_editPriceAlert_validPriceAlert() {
         //given
         ActiveUser givenUser = getDefaultActiveUser();
         givenUser.setText("200 zł");
@@ -48,13 +86,13 @@ class AwaitedMessageResponseTest {
         givenProduct.setPrice(300);
 
         //when
-        when(responseFacade.getAwaitedMessageRequestByUserIdAndDelete(givenUser.getChatId())).thenReturn(givenRequest);
+        when(responseFacade.getAwaitedMessageRequest(givenUser.getChatId())).thenReturn(givenRequest);
         when(responseFacade.getProductById(givenProductId)).thenReturn(givenProduct);
         awaitedMessageResponse = new AwaitedMessageResponse(responseFacade, givenUser, quickSender);
         awaitedMessageResponse.response();
 
         //then
-        verify(responseFacade, times(1)).getAwaitedMessageRequestByUserIdAndDelete(givenUser.getChatId());
+        verify(responseFacade, times(1)).deleteAwaitedMessage(givenUser.getChatId());
         verify(responseFacade, times(1)).getProductById(givenProductId);
         verify(responseFacade, times(1)).updateProductPriceAlert(givenProductId, "200.00");
         verify(quickSender, times(1)).popupMessage(givenUser.getChatId(), Messages.other("priceAlertUpdated"));
@@ -66,7 +104,7 @@ class AwaitedMessageResponseTest {
     }
 
     @Test
-    void response_expectThrow_priceAlertIsHigherThanActualPrice() {
+    void response_editPriceAlert_priceAlertIsHigherThanActualPrice() {
         //given
         ActiveUser givenUser = getDefaultActiveUser();
         givenUser.setText("200 zł");
@@ -77,13 +115,13 @@ class AwaitedMessageResponseTest {
         givenProduct.setPrice(100);
 
         //when
-        when(responseFacade.getAwaitedMessageRequestByUserIdAndDelete(givenUser.getChatId())).thenReturn(givenRequest);
+        when(responseFacade.getAwaitedMessageRequest(givenUser.getChatId())).thenReturn(givenRequest);
         when(responseFacade.getProductById(givenProductId)).thenReturn(givenProduct);
         awaitedMessageResponse = new AwaitedMessageResponse(responseFacade, givenUser, quickSender);
 
         //then
         assertThrows(IllegalInputException.class, () -> awaitedMessageResponse.response());
-        verify(responseFacade, times(1)).getAwaitedMessageRequestByUserIdAndDelete(givenUser.getChatId());
+        verify(responseFacade, times(1)).deleteAwaitedMessage(givenUser.getChatId());
         verify(responseFacade, times(1)).getProductById(givenProductId);
         verify(responseFacade, times(0)).updateProductPriceAlert(givenProductId, "200.00");
         verify(quickSender, times(0)).popupMessage(givenUser.getChatId(), Messages.other("priceAlertUpdated"));
@@ -95,35 +133,37 @@ class AwaitedMessageResponseTest {
     }
 
     @Test
-    void response_everythingValid_UpdateUserEmail() {
+    void response_UpdateUserEmail_validEmail() {
         //given
         ActiveUser givenUser = getDefaultActiveUser();
         givenUser.setText("example@email.com");
         String givenRequest = "-setEmail";
 
         //when
-        when(responseFacade.getAwaitedMessageRequestByUserIdAndDelete(givenUser.getChatId())).thenReturn(givenRequest);
+        when(responseFacade.getAwaitedMessageRequest(givenUser.getChatId())).thenReturn(givenRequest);
         awaitedMessageResponse = new AwaitedMessageResponse(responseFacade, givenUser, quickSender);
         awaitedMessageResponse.response();
 
         //then
+        verify(responseFacade, times(1)).deleteAwaitedMessage(givenUser.getChatId());
         verify(responseFacade, times(1)).updateEmailAndSendToken(givenUser.getChatId(), givenUser.getText());
         verify(quickSender, times(1)).message(givenUser.getChatId(), Messages.other("verificationCodeMessage"), true);
     }
 
     @Test
-    void response_everythingValid_UpdateUserEmailButEmailIsDeleteFirstVariant() {
+    void response_updateUserEmail_EmailIsDeleteFirstVariant() {
         //given
         ActiveUser givenUser = getDefaultActiveUser();
         givenUser.setText("delete");
         String givenRequest = "-setEmail";
 
         //when
-        when(responseFacade.getAwaitedMessageRequestByUserIdAndDelete(givenUser.getChatId())).thenReturn(givenRequest);
+        when(responseFacade.getAwaitedMessageRequest(givenUser.getChatId())).thenReturn(givenRequest);
         awaitedMessageResponse = new AwaitedMessageResponse(responseFacade, givenUser, quickSender);
         awaitedMessageResponse.response();
 
         //then
+        verify(responseFacade, times(1)).deleteAwaitedMessage(givenUser.getChatId());
         verify(responseFacade, times(1)).deleteEmailById(givenUser.getChatId());
         verify(quickSender, times(1)).popupMessage(givenUser.getChatId(), Messages.other("emailDeleted"));
         verify(quickSender, times(1)).inlineMarkup(
@@ -136,18 +176,19 @@ class AwaitedMessageResponseTest {
     }
 
     @Test
-    void response_everythingValid_UpdateUserEmailButEmailIsDeleteSecondVariant() {
+    void response_updateUserEmail_EmailIsDeleteSecondVariant() {
         //given
         ActiveUser givenUser = getDefaultActiveUser();
         givenUser.setText("DELETE");
         String givenRequest = "-setEmail";
 
         //when
-        when(responseFacade.getAwaitedMessageRequestByUserIdAndDelete(givenUser.getChatId())).thenReturn(givenRequest);
+        when(responseFacade.getAwaitedMessageRequest(givenUser.getChatId())).thenReturn(givenRequest);
         awaitedMessageResponse = new AwaitedMessageResponse(responseFacade, givenUser, quickSender);
         awaitedMessageResponse.response();
 
         //then
+        verify(responseFacade, times(1)).deleteAwaitedMessage(givenUser.getChatId());
         verify(responseFacade, times(1)).deleteEmailById(givenUser.getChatId());
         verify(quickSender, times(1)).popupMessage(givenUser.getChatId(), Messages.other("emailDeleted"));
         verify(quickSender, times(1)).inlineMarkup(
@@ -160,24 +201,25 @@ class AwaitedMessageResponseTest {
     }
 
     @Test
-    void response_expectThrow_UpdateUserEmailButEmailIsInvalid() {
+    void response_updateUserEmail_EmailIsInvalid() {
         //given
         ActiveUser givenUser = getDefaultActiveUser();
         givenUser.setText("example@email");
         String givenRequest = "-setEmail";
 
         //when
-        when(responseFacade.getAwaitedMessageRequestByUserIdAndDelete(givenUser.getChatId())).thenReturn(givenRequest);
+        when(responseFacade.getAwaitedMessageRequest(givenUser.getChatId())).thenReturn(givenRequest);
         awaitedMessageResponse = new AwaitedMessageResponse(responseFacade, givenUser, quickSender);
 
         //then
         assertThrows(IllegalInputException.class, () -> awaitedMessageResponse.response());
+        verify(responseFacade, times(1)).deleteAwaitedMessage(givenUser.getChatId());
         verify(responseFacade, times(0)).updateEmailAndSendToken(givenUser.getChatId(), givenUser.getText());
         verify(quickSender, times(0)).message(givenUser.getChatId(), Messages.other("verificationCodeMessage"), true);
     }
 
     @Test
-    void response_expectThrow_UpdateUserEmailButEmailIsTheSame() {
+    void response_updateUserEmail_EmailIsTheSame() {
         //given
         ActiveUser givenUser = getDefaultActiveUser();
         givenUser.setText("example@email.com");
@@ -185,11 +227,12 @@ class AwaitedMessageResponseTest {
         String givenRequest = "-setEmail";
 
         //when
-        when(responseFacade.getAwaitedMessageRequestByUserIdAndDelete(givenUser.getChatId())).thenReturn(givenRequest);
+        when(responseFacade.getAwaitedMessageRequest(givenUser.getChatId())).thenReturn(givenRequest);
         awaitedMessageResponse = new AwaitedMessageResponse(responseFacade, givenUser, quickSender);
 
         //then
         assertThrows(IllegalInputException.class, () -> awaitedMessageResponse.response());
+        verify(responseFacade, times(1)).deleteAwaitedMessage(givenUser.getChatId());
         verify(responseFacade, times(0)).updateEmailAndSendToken(givenUser.getChatId(), givenUser.getText());
         verify(quickSender, times(0)).message(givenUser.getChatId(), Messages.other("verificationCodeMessage"), true);
     }

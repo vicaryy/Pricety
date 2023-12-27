@@ -2,15 +2,14 @@ package com.vicary.zalandoscraper.api_telegram.api_object.other;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.vicary.zalandoscraper.api_telegram.api_object.message.Message;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 import com.vicary.zalandoscraper.api_telegram.api_object.ApiObject;
 import com.vicary.zalandoscraper.api_telegram.api_object.User;
 
-@Getter
-@ToString
-@EqualsAndHashCode
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class CallbackQuery implements ApiObject {
     @JsonProperty("id")
     private String id;
@@ -32,7 +31,4 @@ public class CallbackQuery implements ApiObject {
 
     @JsonProperty("game_short_name")
     private String gameShortName;
-
-    private CallbackQuery() {
-    }
 }

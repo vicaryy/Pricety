@@ -1,9 +1,11 @@
 package com.vicary.zalandoscraper.service.repository_services;
 
+import com.vicary.zalandoscraper.api_telegram.api_object.User;
 import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.exception.IllegalInputException;
 import com.vicary.zalandoscraper.messages.Messages;
 import com.vicary.zalandoscraper.repository.UserRepository;
+import com.vicary.zalandoscraper.service.map.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +24,8 @@ public class UserService {
     private final static Logger logger = LoggerFactory.getLogger(UserService.class);
 
     private final UserRepository repository;
+
+    private final UserMapper mapper;
     private final static Pattern NICK_PATTERN = Pattern.compile("^[a-z0-9]+$");
 
 
@@ -32,6 +36,16 @@ public class UserService {
     public void saveUser(UserEntity userEntity) {
         repository.save(userEntity);
         logger.info("[User Service] Added new user to database, userId '{}'", userEntity.getUserId());
+    }
+
+    public UserEntity saveUser(User user) {
+        UserEntity userEntity = mapper.map(user);
+        checkValidation(userEntity);
+
+    }
+
+    private void checkValidation(UserEntity userEntity) {
+
     }
 
     public boolean existsByUserId(String userId) {
@@ -131,9 +145,9 @@ public class UserService {
         } catch (Exception ex) {
             return false;
         }
-            updatedUser.setPremium(true);
-            logger.info("User '{}' updated to Premium.", nick);
-            return true;
+        updatedUser.setPremium(true);
+        logger.info("User '{}' updated to Premium.", nick);
+        return true;
     }
 
     public boolean updateUserToStandardByNick(String nick) {
@@ -184,7 +198,7 @@ public class UserService {
         user.setNick(nick);
     }
 
-    private void validateNick(String nick) {
+    public void validateNick(String nick) {
         if (nick.length() > 25)
             throw new IllegalInputException(Messages.other("nickCharacterLimitAbove"), "User entered nick above 25 characters.");
         if (nick.length() < 3)

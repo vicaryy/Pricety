@@ -4,10 +4,16 @@ import com.vicary.zalandoscraper.api_telegram.api_object.Action;
 import com.vicary.zalandoscraper.api_telegram.api_object.message.Message;
 import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
 import com.vicary.zalandoscraper.entity.LinkRequestEntity;
+import com.vicary.zalandoscraper.exception.ChartGeneratorException;
+import com.vicary.zalandoscraper.exception.IllegalInputException;
 import com.vicary.zalandoscraper.exception.InvalidLinkException;
+import com.vicary.zalandoscraper.format.MarkdownV2;
 import com.vicary.zalandoscraper.messages.Messages;
 import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.scraper.Scraper;
+import com.vicary.zalandoscraper.service.chart.ChartGeneratorFactory;
+import com.vicary.zalandoscraper.service.chart.ProductChartGenerator;
+import com.vicary.zalandoscraper.service.dto.ProductHistoryDTO;
 import com.vicary.zalandoscraper.service.response.ResponseFacade;
 import com.vicary.zalandoscraper.thread_local.ActiveLanguage;
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
@@ -15,6 +21,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.CharConversionException;
+import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -24,10 +33,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class InlineMarkupResponseTest {
-    private static InlineMarkupResponse inlineMarkupResponse;
-    private static ResponseFacade responseFacade;
-    private static QuickSender quickSender;
-    private static Scraper scraper;
+    private InlineMarkupResponse inlineMarkupResponse;
+    private ResponseFacade responseFacade;
+    private QuickSender quickSender;
+    private Scraper scraper;
 
     @BeforeAll
     static void beforeAll() {
@@ -165,7 +174,7 @@ class InlineMarkupResponseTest {
 
         //then
         inlineMarkupResponse = new InlineMarkupResponse(responseFacade, givenUser, quickSender);
-        inlineMarkupResponse.displayAllProducts(givenDisplayer);
+        inlineMarkupResponse.displayProducts(givenDisplayer);
 
         verify(quickSender, times(1)).deleteMessage(givenUser.getChatId(), givenUser.getMessageId());
         verify(givenDisplayer, times(1)).display();
@@ -183,7 +192,7 @@ class InlineMarkupResponseTest {
 
         //then
         inlineMarkupResponse = new InlineMarkupResponse(responseFacade, givenUser, quickSender);
-        inlineMarkupResponse.displayAllProducts(givenDisplayer);
+        inlineMarkupResponse.displayProducts(givenDisplayer);
 
         verify(quickSender, times(1)).deleteMessage(givenUser.getChatId(), givenUser.getMessageId());
         verify(quickSender, times(1)).popupMessage(givenUser.getChatId(), Messages.other("dontHaveProduct"));
@@ -207,7 +216,7 @@ class InlineMarkupResponseTest {
 
         //then
         inlineMarkupResponse = new InlineMarkupResponse(responseFacade, givenUser, quickSender);
-        inlineMarkupResponse.displayEditPriceAlert(givenDisplayer);
+        inlineMarkupResponse.displayProducts(givenDisplayer);
 
         verify(quickSender, times(1)).deleteMessage(givenUser.getChatId(), givenUser.getMessageId());
         verify(givenDisplayer, times(1)).display();
@@ -225,7 +234,7 @@ class InlineMarkupResponseTest {
 
         //then
         inlineMarkupResponse = new InlineMarkupResponse(responseFacade, givenUser, quickSender);
-        inlineMarkupResponse.displayEditPriceAlert(givenDisplayer);
+        inlineMarkupResponse.displayProducts(givenDisplayer);
 
         verify(quickSender, times(1)).deleteMessage(givenUser.getChatId(), givenUser.getMessageId());
         verify(quickSender, times(1)).popupMessage(givenUser.getChatId(), Messages.other("dontHaveProduct"));
@@ -249,7 +258,7 @@ class InlineMarkupResponseTest {
 
         //then
         inlineMarkupResponse = new InlineMarkupResponse(responseFacade, givenUser, quickSender);
-        inlineMarkupResponse.displayDeleteProduct(givenDisplayer);
+        inlineMarkupResponse.displayProducts(givenDisplayer);
 
         verify(quickSender, times(1)).deleteMessage(givenUser.getChatId(), givenUser.getMessageId());
         verify(givenDisplayer, times(1)).display();
@@ -267,7 +276,7 @@ class InlineMarkupResponseTest {
 
         //then
         inlineMarkupResponse = new InlineMarkupResponse(responseFacade, givenUser, quickSender);
-        inlineMarkupResponse.displayDeleteProduct(givenDisplayer);
+        inlineMarkupResponse.displayProducts(givenDisplayer);
 
         verify(quickSender, times(1)).deleteMessage(givenUser.getChatId(), givenUser.getMessageId());
         verify(quickSender, times(1)).popupMessage(givenUser.getChatId(), Messages.other("dontHaveProduct"));
@@ -569,7 +578,73 @@ class InlineMarkupResponseTest {
                 eq(true));
     }
 
+    @Test
+    void generateProduct_JustGenerate() {
+        //given
+        File givenFile = getDefaultFile();
+        Product givenProduct = getDefaultProduct();
+        List<ProductHistoryDTO> givenDTOs = Collections.emptyList();
+        ProductChartGenerator givenGenerator = mock(ProductChartGenerator.class);
+        ActiveUser givenUser = getDefaultActiveUser();
+        givenUser.setText("-generate 100");
 
+        //when
+        when(responseFacade.getProductById(100L)).thenReturn(givenProduct);
+        when(responseFacade.getAllReducedProductHistory(100L)).thenReturn(givenDTOs);
+        when(quickSender.messageWithReturn(givenUser.getChatId(), MarkdownV2.applyWithManualBoldAndItalic(Messages.generateProduct("generating")), true)).thenReturn(getDefaultMessage());
+        when(givenGenerator.asPngHighResolution(givenProduct, givenDTOs)).thenReturn(givenFile);
+        inlineMarkupResponse = new InlineMarkupResponse(responseFacade, givenUser, quickSender);
+        inlineMarkupResponse.generateProduct(givenGenerator);
+
+        //then
+        verify(responseFacade, times(1)).getAllReducedProductHistory(100L);
+        verify(responseFacade, times(1)).getProductById(100L);
+        verify(quickSender, times(1)).deleteMessage(givenUser.getChatId(), givenUser.getMessageId());
+        verify(quickSender, times(1)).messageWithReturn(givenUser.getChatId(), MarkdownV2.applyWithManualBoldAndItalic(Messages.generateProduct("generating")), true);
+        verify(quickSender, times(1)).chatAction(givenUser.getChatId(), Action.UPLOAD_PHOTO);
+        verify(givenGenerator, times(1)).asPngHighResolution(givenProduct, givenDTOs);
+        verify(quickSender, times(1)).photo(givenUser.getChatId(), givenFile);
+        verify(quickSender, times(1)).inlineMarkup(givenUser.getChatId(), MarkdownV2.applyWithManualBoldAndItalic(Messages.generateProduct("generated")), InlineKeyboardMarkupFactory.getBack(), true);
+    }
+
+    @Test
+    void generateProduct_GeneratorThrowsException() {
+        //given
+        File givenFile = getDefaultFile();
+        Product givenProduct = getDefaultProduct();
+        List<ProductHistoryDTO> givenDTOs = Collections.emptyList();
+        ProductChartGenerator givenGenerator = mock(ProductChartGenerator.class);
+        ActiveUser givenUser = getDefaultActiveUser();
+        givenUser.setText("-generate 100");
+
+        //when
+        when(responseFacade.getProductById(100L)).thenReturn(givenProduct);
+        when(responseFacade.getAllReducedProductHistory(100L)).thenReturn(givenDTOs);
+        when(quickSender.messageWithReturn(givenUser.getChatId(), MarkdownV2.applyWithManualBoldAndItalic(Messages.generateProduct("generating")), true)).thenReturn(getDefaultMessage());
+        doThrow(new ChartGeneratorException("throw", "throw")).when(givenGenerator).asPngHighResolution(givenProduct, givenDTOs);
+        inlineMarkupResponse = new InlineMarkupResponse(responseFacade, givenUser, quickSender);
+
+        //then
+        assertThrows(IllegalArgumentException.class, () -> inlineMarkupResponse.generateProduct(givenGenerator));
+        verify(responseFacade, times(1)).getAllReducedProductHistory(100L);
+        verify(responseFacade, times(1)).getProductById(100L);
+        verify(quickSender, times(1)).deleteMessage(givenUser.getChatId(), givenUser.getMessageId());
+        verify(quickSender, times(1)).messageWithReturn(givenUser.getChatId(), MarkdownV2.applyWithManualBoldAndItalic(Messages.generateProduct("generating")), true);
+        verify(quickSender, times(1)).chatAction(givenUser.getChatId(), Action.UPLOAD_PHOTO);
+        verify(givenGenerator, times(1)).asPngHighResolution(givenProduct, givenDTOs);
+        verify(quickSender, times(0)).photo(givenUser.getChatId(), givenFile);
+        verify(quickSender, times(0)).inlineMarkup(givenUser.getChatId(), MarkdownV2.applyWithManualBoldAndItalic(Messages.generateProduct("generated")), InlineKeyboardMarkupFactory.getBack(), true);
+    }
+
+    private File getDefaultFile() {
+        File file = new File("testFile");
+        try {
+            file.createNewFile();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return file;
+    }
 
     private ActiveUser getDefaultActiveUser() {
         ActiveUser givenUser = new ActiveUser();

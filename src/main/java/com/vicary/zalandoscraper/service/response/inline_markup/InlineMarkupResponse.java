@@ -6,6 +6,7 @@ import com.vicary.zalandoscraper.format.MarkdownV2;
 import com.vicary.zalandoscraper.messages.Messages;
 import com.vicary.zalandoscraper.scraper.Scraper;
 import com.vicary.zalandoscraper.scraper.ScraperFactory;
+import com.vicary.zalandoscraper.service.chart.ChartGeneratorFactory;
 import com.vicary.zalandoscraper.service.chart.ProductChartGenerator;
 import com.vicary.zalandoscraper.service.dto.ProductHistoryDTO;
 import com.vicary.zalandoscraper.service.response.ResponseFacade;
@@ -16,16 +17,20 @@ import com.vicary.zalandoscraper.api_telegram.api_object.Action;
 import com.vicary.zalandoscraper.entity.LinkRequestEntity;
 import com.vicary.zalandoscraper.exception.InvalidLinkException;
 import com.vicary.zalandoscraper.model.Product;
+import com.vicary.zalandoscraper.utils.TerminalExecutor;
 import lombok.SneakyThrows;
+import lombok.extern.flogger.Flogger;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-
+@Slf4j
 public class InlineMarkupResponse implements Responser {
-    private static final int MAX_PRODUCT_LIMIT = 10;
     private final ResponseFacade responseFacade;
     private final ActiveUser user;
     private final QuickSender quickSender;
@@ -76,7 +81,7 @@ public class InlineMarkupResponse implements Responser {
             deleteProduct();
 
         else if (text.startsWith("-generate "))
-            generateProduct();
+            generateProduct(ChartGeneratorFactory.getDefaultChartGenerator());
 
         else if (text.equals("-deleteAll"))
             displayDeleteYesOrNo(true);
@@ -138,9 +143,10 @@ public class InlineMarkupResponse implements Responser {
 
     void displayProducts(ProductDisplayer displayer) {
         //TODO
-        String tymczasowy = "6488358449";
-        List<Product> products = responseFacade.getAllProductsByUserId(tymczasowy);
+//        String tymczasowy = "6488358449";
+//        List<Product> products = responseFacade.getAllProductsByUserId(tymczasowy);
         //TODO
+        List<Product> products = responseFacade.getAllProductsByUserId(user.getUserId());
 
         deletePreviousMessage();
 
@@ -178,7 +184,7 @@ public class InlineMarkupResponse implements Responser {
         displayMenu();
     }
 
-    void generateProduct() {
+    void generateProduct(ProductChartGenerator generator) {
         long productId = Long.parseLong(user.getText().split(" ")[1]);
 
         List<ProductHistoryDTO> productHistoryDTOS = responseFacade.getAllReducedProductHistory(productId);
@@ -187,11 +193,6 @@ public class InlineMarkupResponse implements Responser {
         deletePreviousMessage();
         int messageId = quickSender.messageWithReturn(user.getChatId(), MarkdownV2.applyWithManualBoldAndItalic(Messages.generateProduct("generating")), true).getMessageId();
         quickSender.chatAction(user.getChatId(), Action.UPLOAD_PHOTO);
-
-        ProductChartGenerator generator = ProductChartGenerator.builder()
-                .fileDestination("/Users/vicary/desktop/scraper/chart")
-                .dimension(new ProductChartGenerator.Dimension(1200, 600))
-                .build();
 
         File generatedChart;
         try {
@@ -203,6 +204,7 @@ public class InlineMarkupResponse implements Responser {
         }
         quickSender.photo(user.getChatId(), generatedChart);
         quickSender.deleteMessage(user.getChatId(), messageId);
+        TerminalExecutor.deleteFile(generatedChart);
         quickSender.inlineMarkup(user.getChatId(), MarkdownV2.applyWithManualBoldAndItalic(Messages.generateProduct("generated")), InlineKeyboardMarkupFactory.getBack(), true);
     }
 

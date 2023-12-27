@@ -29,6 +29,15 @@ public class AwaitedMessageService {
         return request;
     }
 
+    public String getRequest(String userId) {
+        AwaitedMessageEntity entity = findAwaitedMessageByUserId(userId);
+        return entity.getRequest();
+    }
+
+    public void deleteAwaitedMessage(String userId) {
+        deleteAllByUserId(userId);
+    }
+
     public void deleteAllByUserId(String userId) {
         repository.deleteAllByUserId(userId);
     }
@@ -36,9 +45,5 @@ public class AwaitedMessageService {
 
     public AwaitedMessageEntity findAwaitedMessageByUserId(String userId) {
         return repository.findByUserId(userId).get();
-    }
-
-    public void deleteAwaitedMessageById(Long id) {
-        repository.deleteById(id);
     }
 }

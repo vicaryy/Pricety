@@ -3,9 +3,15 @@ package com.vicary.zalandoscraper.api_telegram.api_object.chat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.vicary.zalandoscraper.api_telegram.api_object.message.Message;
 import com.vicary.zalandoscraper.api_telegram.api_object.ApiObject;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Chat implements ApiObject {
     @JsonProperty("id")
     private String id;

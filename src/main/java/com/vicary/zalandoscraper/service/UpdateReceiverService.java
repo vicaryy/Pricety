@@ -19,6 +19,7 @@ import com.vicary.zalandoscraper.updater.AutoUpdater;
 import com.vicary.zalandoscraper.utils.url.UrlParser;
 
 import com.vicary.zalandoscraper.api_telegram.api_object.Update;
+import org.aspectj.util.FileUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
