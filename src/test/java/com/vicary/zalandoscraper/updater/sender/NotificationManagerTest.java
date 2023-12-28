@@ -5,6 +5,7 @@ import com.vicary.zalandoscraper.entity.WaitingUserEntity;
 import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.model.User;
 import com.vicary.zalandoscraper.service.UpdateReceiverService;
+import com.vicary.zalandoscraper.service.repository_services.ProductHistoryService;
 import com.vicary.zalandoscraper.service.repository_services.ProductService;
 import com.vicary.zalandoscraper.thread_local.ActiveLanguage;
 import org.junit.jupiter.api.BeforeAll;
@@ -26,6 +27,8 @@ class NotificationManagerTest {
     @MockBean
     private ProductService productService;
     @MockBean
+    private ProductHistoryService productHistoryService;
+    @MockBean
     private ChatNotificationSender chatSender;
     @MockBean
     private EmailNotificationSender emailSender;
@@ -41,29 +44,34 @@ class NotificationManagerTest {
     void isUserNeedsNotify_expectFalse_PriceAlertIsOFF() {
         //given
         Product givenProduct = getDefaultProduct();
+        givenProduct.setProductId(123L);
         givenProduct.setPriceAlert("OFF");
 
         //when
         //then
         assertFalse(notificationManager.isUserNeedsNotify(givenProduct));
+        verify(productHistoryService, times(0)).getLastPositivePrice(123L);
     }
 
     @Test
     void isUserNeedsNotify_expectFalse_NewPriceIsZero() {
         //given
         Product givenProduct = getDefaultProduct();
+        givenProduct.setProductId(123L);
         givenProduct.setPriceAlert("AUTO");
         givenProduct.setNewPrice(0);
 
         //when
         //then
         assertFalse(notificationManager.isUserNeedsNotify(givenProduct));
+        verify(productHistoryService, times(0)).getLastPositivePrice(123L);
     }
 
     @Test
     void isUserNeedsNotify_expectFalse_NewPriceIsHigherThanActualPriceAndPriceAlertIsAUTO() {
         //given
         Product givenProduct = getDefaultProduct();
+        givenProduct.setProductId(123L);
         givenProduct.setPriceAlert("AUTO");
         givenProduct.setPrice(100);
         givenProduct.setNewPrice(200);
@@ -71,12 +79,14 @@ class NotificationManagerTest {
         //when
         //then
         assertFalse(notificationManager.isUserNeedsNotify(givenProduct));
+        verify(productHistoryService, times(0)).getLastPositivePrice(123L);
     }
 
     @Test
     void isUserNeedsNotify_expectFalse_NewPriceIsEqualToActualPriceAndPriceAlertIsAUTO() {
         //given
         Product givenProduct = getDefaultProduct();
+        givenProduct.setProductId(123L);
         givenProduct.setPriceAlert("AUTO");
         givenProduct.setPrice(200);
         givenProduct.setNewPrice(200);
@@ -84,12 +94,14 @@ class NotificationManagerTest {
         //when
         //then
         assertFalse(notificationManager.isUserNeedsNotify(givenProduct));
+        verify(productHistoryService, times(0)).getLastPositivePrice(123L);
     }
 
     @Test
     void isUserNeedsNotify_expectFalse_NewPriceIsHigherThanPriceAlert() {
         //given
         Product givenProduct = getDefaultProduct();
+        givenProduct.setProductId(123L);
         givenProduct.setPriceAlert("100.00");
         givenProduct.setPrice(150);
         givenProduct.setNewPrice(200);
@@ -97,12 +109,14 @@ class NotificationManagerTest {
         //when
         //then
         assertFalse(notificationManager.isUserNeedsNotify(givenProduct));
+        verify(productHistoryService, times(0)).getLastPositivePrice(123L);
     }
 
     @Test
     void isUserNeedsNotify_expectTrue_NewPriceIsLowerThanActualPriceAndPriceAlertIsAUTO() {
         //given
         Product givenProduct = getDefaultProduct();
+        givenProduct.setProductId(123L);
         givenProduct.setPriceAlert("AUTO");
         givenProduct.setPrice(200);
         givenProduct.setNewPrice(190);
@@ -110,12 +124,14 @@ class NotificationManagerTest {
         //when
         //then
         assertTrue(notificationManager.isUserNeedsNotify(givenProduct));
+        verify(productHistoryService, times(0)).getLastPositivePrice(123L);
     }
 
     @Test
     void isUserNeedsNotify_expectTrue_NewPriceIsLowerThanPriceAlert() {
         //given
         Product givenProduct = getDefaultProduct();
+        givenProduct.setProductId(123L);
         givenProduct.setPriceAlert("200.00");
         givenProduct.setPrice(300);
         givenProduct.setNewPrice(190);
@@ -123,12 +139,14 @@ class NotificationManagerTest {
         //when
         //then
         assertTrue(notificationManager.isUserNeedsNotify(givenProduct));
+        verify(productHistoryService, times(0)).getLastPositivePrice(123L);
     }
 
     @Test
     void isUserNeedsNotify_expectTrue_NewPriceIsEqualToPriceAlert() {
         //given
         Product givenProduct = getDefaultProduct();
+        givenProduct.setProductId(123L);
         givenProduct.setPriceAlert("200.00");
         givenProduct.setPrice(300);
         givenProduct.setNewPrice(200);
@@ -136,6 +154,45 @@ class NotificationManagerTest {
         //when
         //then
         assertTrue(notificationManager.isUserNeedsNotify(givenProduct));
+        verify(productHistoryService, times(0)).getLastPositivePrice(123L);
+    }
+
+    @Test
+    void isUserNeedsNotify_expectTrue_PriceAlertAutoPriceIsZeroNewPriceIsNotZeroAndServiceReturnsHigherPrice() {
+        //given
+        Product givenProduct = getDefaultProduct();
+        givenProduct.setProductId(123L);
+        givenProduct.setPriceAlert("AUTO");
+        givenProduct.setPrice(0);
+        givenProduct.setNewPrice(200);
+        double givenLastPositivePrice = 300;
+
+        //when
+        when(productHistoryService.getLastPositivePrice(givenProduct.getProductId())).thenReturn(givenLastPositivePrice);
+
+
+        //then
+        assertTrue(notificationManager.isUserNeedsNotify(givenProduct));
+        verify(productHistoryService, times(1)).getLastPositivePrice(123L);
+    }
+
+    @Test
+    void isUserNeedsNotify_expectFalse_PriceAlertAutoPriceIsZeroNewPriceIsNotZeroAndServiceReturnsLowerPrice() {
+        //given
+        Product givenProduct = getDefaultProduct();
+        givenProduct.setProductId(123L);
+        givenProduct.setPriceAlert("AUTO");
+        givenProduct.setPrice(0);
+        givenProduct.setNewPrice(200);
+        double givenLastPositivePrice = 100;
+
+        //when
+        when(productHistoryService.getLastPositivePrice(givenProduct.getProductId())).thenReturn(givenLastPositivePrice);
+
+
+        //then
+        assertFalse(notificationManager.isUserNeedsNotify(givenProduct));
+        verify(productHistoryService, times(1)).getLastPositivePrice(123L);
     }
 
 

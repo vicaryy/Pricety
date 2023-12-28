@@ -7,6 +7,7 @@ import com.vicary.zalandoscraper.api_telegram.api_object.message.Message;
 import com.vicary.zalandoscraper.api_telegram.api_object.other.CallbackQuery;
 import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
 import com.vicary.zalandoscraper.entity.ActiveRequestEntity;
+import com.vicary.zalandoscraper.entity.AwaitedMessageEntity;
 import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.exception.ActiveUserException;
 import com.vicary.zalandoscraper.exception.IllegalInputException;
@@ -60,6 +61,26 @@ class UserAuthenticationTest {
         assertEquals(expectedActiveUser, actualActiveUser);
         verify(messageService, times(1)).saveEntity(givenUserEntity, givenUpdate.getMessage().getText());
         verify(activeRequestService, times(1)).saveActiveUser(any(ActiveRequestEntity.class));
+        verify(awaitedMessageService, times(0)).saveAwaitedMessage(any());
+    }
+
+    @Test
+    void authenticate_NormalAuthenticationAsCallbackQuery() {
+        //given
+        Update givenUpdate = getCallbackUpdate();
+        UserEntity givenUserEntity = getDefaultUserEntity();
+        ActiveUser expectedActiveUser = getExpectedActiveUserFromCallbackQuery(givenUserEntity);
+
+        //when
+        when(userService.existsByUserId(givenUpdate.getCallbackQuery().getMessage().getChat().getId())).thenReturn(true);
+        when(userService.findByUserId(givenUpdate.getCallbackQuery().getMessage().getChat().getId())).thenReturn(givenUserEntity);
+        ActiveUser actualActiveUser = authentication.authenticate(givenUpdate);
+
+        //then
+        assertEquals(expectedActiveUser, actualActiveUser);
+        verify(messageService, times(1)).saveEntity(givenUserEntity, givenUpdate.getCallbackQuery().getData());
+        verify(activeRequestService, times(1)).saveActiveUser(any(ActiveRequestEntity.class));
+        verify(awaitedMessageService, times(0)).saveAwaitedMessage(any());
     }
 
     @Test
@@ -77,23 +98,72 @@ class UserAuthenticationTest {
         assertThrows(ActiveUserException.class, () -> authentication.authenticate(givenUpdate));
         verify(messageService, times(1)).saveEntity(givenUserEntity, givenUpdate.getMessage().getText());
         verify(activeRequestService, times(0)).saveActiveUser(any(ActiveRequestEntity.class));
+        verify(awaitedMessageService, times(0)).saveAwaitedMessage(any());
+    }
+
+    @Test
+    void authenticate_UserTryToDoMoreThanOneRequestAsCallbackQuery() {
+        //given
+        Update givenUpdate = getCallbackUpdate();
+        UserEntity givenUserEntity = getDefaultUserEntity();
+
+        //when
+        when(activeRequestService.existsByUserId(givenUpdate.getCallbackQuery().getMessage().getChat().getId())).thenReturn(true);
+        when(userService.existsByUserId(givenUpdate.getCallbackQuery().getMessage().getChat().getId())).thenReturn(true);
+        when(userService.findByUserId(givenUpdate.getCallbackQuery().getMessage().getChat().getId())).thenReturn(givenUserEntity);
+
+        //then
+        assertThrows(ActiveUserException.class, () -> authentication.authenticate(givenUpdate));
+        verify(messageService, times(1)).saveEntity(givenUserEntity, givenUpdate.getCallbackQuery().getData());
+        verify(activeRequestService, times(0)).saveActiveUser(any(ActiveRequestEntity.class));
+        verify(awaitedMessageService, times(0)).saveAwaitedMessage(any());
     }
 
     @Test
     void authenticate_UserNickIsInvalid() {
         //given
-        String givenNick = "!@#$invalid";
         Update givenUpdate = getDefaultUpdate();
-        givenUpdate.getMessage().getFrom().setUsername(givenNick);
+        String givenNick = "!@#$invalid";
         UserEntity givenUserEntity = getDefaultUserEntity();
+        givenUserEntity.setNick(givenNick);
+        var givenAwaitedMessage = AwaitedMessageEntity.builder()
+                .request("-setNick")
+                .userId(givenUpdate.getMessage().getChat().getId())
+                .build();
 
         //when
         doThrow(new IllegalInputException("throw", "throw")).when(userService).validateNick(givenNick);
         when(userService.existsByUserId(givenUpdate.getMessage().getChat().getId())).thenReturn(false);
+        when(userService.saveUser(givenUpdate.getMessage().getFrom())).thenReturn(givenUserEntity);
 
         //then
         assertThrows(ActiveUserException.class, () -> authentication.authenticate(givenUpdate));
-        verify(messageService, times(1)).saveEntity(givenUserEntity, givenUpdate.getMessage().getText());
+        verify(awaitedMessageService, times(1)).saveAwaitedMessage(givenAwaitedMessage);
+        verify(messageService, times(0)).saveEntity(givenUserEntity, givenUpdate.getMessage().getText());
+        verify(activeRequestService, times(0)).saveActiveUser(any(ActiveRequestEntity.class));
+    }
+
+    @Test
+    void authenticate_UserNickIsInvalidAsCallbackQuery() {
+        //given
+        Update givenUpdate = getCallbackUpdate();
+        String givenNick = "!@#$invalid";
+        UserEntity givenUserEntity = getDefaultUserEntity();
+        givenUserEntity.setNick(givenNick);
+        var givenAwaitedMessage = AwaitedMessageEntity.builder()
+                .request("-setNick")
+                .userId(givenUpdate.getCallbackQuery().getMessage().getChat().getId())
+                .build();
+
+        //when
+        doThrow(new IllegalInputException("throw", "throw")).when(userService).validateNick(givenNick);
+        when(userService.existsByUserId(givenUpdate.getCallbackQuery().getMessage().getChat().getId())).thenReturn(false);
+        when(userService.saveUser(givenUpdate.getCallbackQuery().getMessage().getFrom())).thenReturn(givenUserEntity);
+
+        //then
+        assertThrows(ActiveUserException.class, () -> authentication.authenticate(givenUpdate));
+        verify(awaitedMessageService, times(1)).saveAwaitedMessage(givenAwaitedMessage);
+        verify(messageService, times(0)).saveEntity(givenUserEntity, givenUpdate.getCallbackQuery().getMessage().getText());
         verify(activeRequestService, times(0)).saveActiveUser(any(ActiveRequestEntity.class));
     }
 
@@ -154,6 +224,17 @@ class UserAuthenticationTest {
         activeUser.setChatId("123");
         activeUser.setMessageId(123);
         activeUser.setText("text");
+        activeUser.setNick(userEntity.getNick());
+        activeUser.setEmail(userEntity.getEmail());
+        return activeUser;
+    }
+
+    private ActiveUser getExpectedActiveUserFromCallbackQuery(UserEntity userEntity) {
+        ActiveUser activeUser = new ActiveUser();
+        activeUser.setUserId(userEntity.getUserId());
+        activeUser.setChatId("123");
+        activeUser.setMessageId(123);
+        activeUser.setText("data");
         activeUser.setNick(userEntity.getNick());
         activeUser.setEmail(userEntity.getEmail());
         return activeUser;

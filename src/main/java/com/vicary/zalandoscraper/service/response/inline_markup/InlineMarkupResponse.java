@@ -142,10 +142,6 @@ public class InlineMarkupResponse implements Responser {
     }
 
     void displayProducts(ProductDisplayer displayer) {
-        //TODO
-//        String tymczasowy = "6488358449";
-//        List<Product> products = responseFacade.getAllProductsByUserId(tymczasowy);
-        //TODO
         List<Product> products = responseFacade.getAllProductsByUserId(user.getUserId());
 
         deletePreviousMessage();

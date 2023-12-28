@@ -6,6 +6,7 @@ import com.vicary.zalandoscraper.model.Email;
 import com.vicary.zalandoscraper.model.ChatNotification;
 import com.vicary.zalandoscraper.factory.EmailNotificationFactory;
 import com.vicary.zalandoscraper.model.Product;
+import com.vicary.zalandoscraper.service.repository_services.ProductHistoryService;
 import com.vicary.zalandoscraper.service.repository_services.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -26,6 +27,8 @@ public class NotificationManager {
     private final ChatNotificationSender chatSender;
 
     private final EmailNotificationSender emailSender;
+
+    private final ProductHistoryService productHistoryService;
 
     public void sendPriceNotifications(List<Product> products) {
         List<Product> listThatNeedsToBeSend = products.stream()
@@ -62,6 +65,11 @@ public class NotificationManager {
     }
 
     boolean isUserNeedsNotify(Product p) {
+        if (p.getPriceAlert().equals("AUTO") && p.getNewPrice() != 0 && p.getPrice() == 0) {
+            p.setPrice(productHistoryService.getLastPositivePrice(p.getProductId()));
+            return p.getNewPrice() < p.getPrice();
+        }
+
         if (p.getPriceAlert().equals("OFF") || p.getNewPrice() == 0)
             return false;
 

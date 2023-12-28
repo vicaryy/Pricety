@@ -93,7 +93,6 @@ public class ProductService {
 
     public void saveProduct(Product product, String userId) {
         repository.save(mapper.map(product, userService.findByUserId(userId)));
-//        repository.save(mapper.map(product, userService.findByUserId("6488358449")));
         logger.info("[Product Service] Added new product to database link: {}", product.getLink());
     }
 

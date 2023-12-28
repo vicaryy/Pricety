@@ -43,6 +43,14 @@ public class ProductHistoryService {
         return mapper.map(entities);
     }
 
+    public double getLastPositivePrice(long productId) {
+        List<ProductHistoryDTO> productHistory = getProductHistory(productId);
+        for (int i = productHistory.size() - 1; i > 0; i--)
+            if (productHistory.get(i).getPrice() != 0)
+                return productHistory.get(i).getPrice();
+        return 0;
+    }
+
     public List<ProductHistoryDTO> getReducedProductHistory(long productId) {
         List<ProductHistoryEntity> entities = repository.findAllByProductId(productId);
         return mapper.map(getReducedListToOneDay(entities));

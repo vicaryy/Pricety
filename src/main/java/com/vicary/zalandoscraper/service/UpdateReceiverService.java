@@ -40,10 +40,6 @@ public class UpdateReceiverService implements UpdateReceiver {
     private final AutoUpdater autoUpdater;
     private final UpdateFetcher updateFetcher;
 
-    // TODO set username
-    // TODO product diagram - price history
-    // TODO product price notification on AUTO when product is przeceniony to nie powiadamia jak był wcześniej niedostepny
-
     @Autowired
     public UpdateReceiverService(UserAuthentication userAuthentication, ResponseFacade facade, QuickSender quickSender, UrlParser urlParser, AdminResponse adminResponse, AutoUpdater autoUpdater) {
         this.userAuthentication = userAuthentication;

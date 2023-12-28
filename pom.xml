@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.vicary</groupId>
-	<artifactId>zalando-scraper</artifactId>
-	<version>2.0.1-STABLE</version>
-	<name>zalando-scraper</name>
+	<artifactId>scraper-bot</artifactId>
+	<version>2.1.0-STABLE</version>
+	<name>scraper-bot</name>
 	<description>Scraper Bot</description>
 
 
@@ -24,6 +24,8 @@
 		<spring-mail.version>3.1.5</spring-mail.version>
 		<playwright.version>1.39.0</playwright.version>
 		<xchart.version>3.5.2</xchart.version>
+		<httpclient.version>4.5.14</httpclient.version>
+		<guava.version>33.0.0-jre</guava.version>
 	</properties>
 
 
@@ -31,7 +33,7 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>33.0.0-jre</version>
+			<version>${guava.version}</version>
 		</dependency>
 
 		<dependency>
@@ -95,7 +97,7 @@
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
-			<version>4.5.14</version>
+			<version>${httpclient.version}</version>
 		</dependency>
 
 		<dependency>

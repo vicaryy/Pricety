@@ -306,15 +306,34 @@ public class AdminResponse implements Responser {
             }
             sb.append(textWithoutPrefix[i]).append(" ");
         }
-        final String text = MarkdownV2.applyWithManualBoldAndItalic(sb.toString().trim());
+
+        final String text = sb.toString().trim();
+        boolean multiLanguage = text.contains("-en-");
+
+        String[] textArray = text.split("-en-");
+        String pl = MarkdownV2.applyWithManualBoldAndItalic(textArray[0].trim());
+        String en = multiLanguage ? MarkdownV2.applyWithManualBoldAndItalic(textArray[1].trim()) : "";
 
         if (to.isBlank() || text.isBlank())
             throw new IllegalInputException("User and text cannot be empty", "Admin tries to send message but user or text are empty");
 
         if (to.equals("all"))
-            responseFacade.getAllUsers().forEach(user -> quickSender.message(user.getUserId(), text, true));
+            sendMessageToAll(multiLanguage, pl, en);
         else
-            quickSender.message(responseFacade.getUser(to).getUserId(), text, true);
+            quickSender.message(responseFacade.getUser(to).getUserId(), MarkdownV2.applyWithManualBoldAndItalic(text).trim(), true);
+    }
+
+    private void sendMessageToAll(boolean multiLanguage, String pl, String en) {
+        List<UserEntity> users = responseFacade.getAllUsers();
+        if (multiLanguage) {
+            users.forEach(u -> {
+                if (u.getNationality().equals("pl"))
+                    quickSender.message(u.getUserId(), pl, true);
+                else
+                    quickSender.message(u.getUserId(), en, true);
+            });
+        } else
+            users.forEach(user -> quickSender.message(user.getUserId(), pl, true));
     }
 
     private void getUser() {
@@ -383,6 +402,7 @@ public class AdminResponse implements Responser {
                                 
                 *Send:*
                 //send message all text
+                //send message all PL -en- ENG
                 //send message userId text
                                 
                 *Get:*

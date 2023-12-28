@@ -110,6 +110,84 @@ public class ProductHistoryServiceTest {
         assertEquals(expectedList, actualList);
     }
 
+    @Test
+    void getLastPositivePrice_expectEquals_NormalList() {
+        //given
+        double expectedPrice = 350;
+        long givenId = 1;
+        List<ProductHistoryEntity> givenList = List.of(
+                getEntity(100, 1),
+                getEntity(350, 1),
+                getEntity(0, 1),
+                getEntity(0, 1),
+                getEntity(0, 1),
+                getEntity(0, 1),
+                getEntity(0, 1),
+                getEntity(0, 1),
+                getEntity(0, 1),
+                getEntity(0, 1)
+        );
+
+        //when
+        when(repository.findAllByProductId(givenId)).thenReturn(givenList);
+        double actualPrice = service.getLastPositivePrice(givenId);
+
+        //then
+        assertEquals(expectedPrice, actualPrice);
+    }
+
+    @Test
+    void getLastPositivePrice_expectEquals_EveryPriceIsZero() {
+        //given
+        double expectedPrice = 0;
+        long givenId = 1;
+        List<ProductHistoryEntity> givenList = List.of(
+                getEntity(0, 1),
+                getEntity(0, 1),
+                getEntity(0, 1),
+                getEntity(0, 1),
+                getEntity(0, 1),
+                getEntity(0, 1),
+                getEntity(0, 1),
+                getEntity(0, 1),
+                getEntity(0, 1),
+                getEntity(0, 1)
+        );
+
+        //when
+        when(repository.findAllByProductId(givenId)).thenReturn(givenList);
+        double actualPrice = service.getLastPositivePrice(givenId);
+
+        //then
+        assertEquals(expectedPrice, actualPrice);
+    }
+
+    @Test
+    void getLastPositivePrice_expectEquals_NoZeroInList() {
+        //given
+        double expectedPrice = 120;
+        long givenId = 1;
+        List<ProductHistoryEntity> givenList = List.of(
+                getEntity(350, 1),
+                getEntity(350, 1),
+                getEntity(350, 1),
+                getEntity(350, 1),
+                getEntity(350, 1),
+                getEntity(350, 1),
+                getEntity(350, 1),
+                getEntity(720, 1),
+                getEntity(350, 1),
+                getEntity(120, 1)
+        );
+
+        //when
+        when(repository.findAllByProductId(givenId)).thenReturn(givenList);
+        double actualPrice = service.getLastPositivePrice(givenId);
+
+        //then
+        assertEquals(expectedPrice, actualPrice);
+    }
+
     private ProductHistoryEntity getEntity(double price, int day) {
         return ProductHistoryEntity.builder()
                 .productId(1L)

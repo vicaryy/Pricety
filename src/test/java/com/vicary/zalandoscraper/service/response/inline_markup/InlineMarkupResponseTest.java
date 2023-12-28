@@ -17,6 +17,7 @@ import com.vicary.zalandoscraper.service.dto.ProductHistoryDTO;
 import com.vicary.zalandoscraper.service.response.ResponseFacade;
 import com.vicary.zalandoscraper.thread_local.ActiveLanguage;
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
+import com.vicary.zalandoscraper.utils.TerminalExecutor;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -623,6 +624,7 @@ class InlineMarkupResponseTest {
         when(quickSender.messageWithReturn(givenUser.getChatId(), MarkdownV2.applyWithManualBoldAndItalic(Messages.generateProduct("generating")), true)).thenReturn(getDefaultMessage());
         doThrow(new ChartGeneratorException("throw", "throw")).when(givenGenerator).asPngHighResolution(givenProduct, givenDTOs);
         inlineMarkupResponse = new InlineMarkupResponse(responseFacade, givenUser, quickSender);
+        TerminalExecutor.deleteFile(givenFile);
 
         //then
         assertThrows(IllegalArgumentException.class, () -> inlineMarkupResponse.generateProduct(givenGenerator));

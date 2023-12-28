@@ -1,4 +1,4 @@
-package com.vicary.zalandoscraper.service.response;
+package com.vicary.zalandoscraper.service.response.admin;
 
 import com.vicary.zalandoscraper.api_telegram.api_object.bot.bot_command.BotCommand;
 import com.vicary.zalandoscraper.api_telegram.api_request.ApiRequest;
@@ -11,7 +11,7 @@ import com.vicary.zalandoscraper.exception.ScraperBotException;
 import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.model.User;
 import com.vicary.zalandoscraper.service.UpdateReceiverService;
-import com.vicary.zalandoscraper.service.response.admin.AdminResponse;
+import com.vicary.zalandoscraper.service.response.ResponseFacade;
 import com.vicary.zalandoscraper.thread_local.ActiveLanguage;
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
 import com.vicary.zalandoscraper.updater.AutoUpdater;
@@ -571,6 +571,36 @@ class AdminResponseTest {
         verify(quickSender, times(1)).message("3", givenText, true);
         verify(quickSender, times(1)).message("4", givenText, true);
         verify(quickSender, times(1)).message("5", givenText, true);
+    }
+
+    @Test
+    void response_sendMessage_SendMessageToAllUsersWithMultiLanguage() {
+        //given
+        List<UserEntity> givenUserEntity = List.of(
+                getUserEntity("1", "en"),
+                getUserEntity("2", "en"),
+                getUserEntity("3", "pl"),
+                getUserEntity("4", "en"),
+                getUserEntity("5", "pl"));
+        ActiveUser givenUser = getDefaultActiveUser();
+        givenUser.setText("//send message all tekst po polsku -en- text in english");
+        String givenTo = "1234";
+        String givenTextPL = "tekst po polsku";
+        String givenTextEN = "text in english";
+
+        //when
+        when(responseFacade.getAllUsers()).thenReturn(givenUserEntity);
+        adminResponse.set(givenUser, updateFetcher);
+        adminResponse.response();
+
+        //then
+        verify(responseFacade, times(0)).getUser(givenTo);
+        verify(responseFacade, times(1)).getAllUsers();
+        verify(quickSender, times(1)).message("1", givenTextEN, true);
+        verify(quickSender, times(1)).message("2", givenTextEN, true);
+        verify(quickSender, times(1)).message("3", givenTextPL, true);
+        verify(quickSender, times(1)).message("4", givenTextEN, true);
+        verify(quickSender, times(1)).message("5", givenTextPL, true);
     }
 
     @Test
@@ -1216,6 +1246,13 @@ class AdminResponseTest {
     private UserEntity getUserEntity(String userId) {
         return UserEntity.builder()
                 .userId(userId)
+                .build();
+    }
+
+    private UserEntity getUserEntity(String userId, String language) {
+        return UserEntity.builder()
+                .userId(userId)
+                .nationality(language)
                 .build();
     }
 

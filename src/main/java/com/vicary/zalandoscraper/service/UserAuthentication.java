@@ -15,7 +15,6 @@ import com.vicary.zalandoscraper.service.repository_services.ActiveRequestServic
 import com.vicary.zalandoscraper.service.repository_services.AwaitedMessageService;
 import com.vicary.zalandoscraper.service.repository_services.MessageService;
 import com.vicary.zalandoscraper.service.repository_services.UserService;
-import com.vicary.zalandoscraper.service.map.UserMapper;
 import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -37,8 +36,6 @@ public class UserAuthentication {
 
     private final AwaitedMessageService awaitedMessageService;
 
-    private final UserMapper userMapper;
-
     private final MessageService messageService;
 
     private final QuickSender quickSender;
@@ -59,7 +56,6 @@ public class UserAuthentication {
 
         boolean awaitedMessage = isAwaitedMessage(chatId);
 
-//        UserEntity userEntity = checkUserInRepository(message.getFrom(), chatId);
         UserEntity userEntity;
         if (isUserExistsInRepository(chatId))
             userEntity = getUserFromRepository(chatId);
@@ -98,24 +94,22 @@ public class UserAuthentication {
     }
 
     private UserEntity createNewUser(User user) {
-        UserEntity userEntity = userMapper.map(user);
-        if (!isUserNickValid(userEntity.getNick())) {
-            setActiveLanguage(userEntity.getNationality());
-            userService.saveUser(userEntity);
-            sendSetNickMessageAndThrow(userEntity.getUserId());
-        }
-        userService.saveUser(userEntity);
-        return userEntity;
+        UserEntity userEntity = userService.saveUser(user);
+        if (isUserNickValid(userEntity.getNick()))
+            return userEntity;
+
+        setActiveLanguage(userEntity.getNationality());
+        setAwaitedMessageForNick(userEntity.getUserId());
+        throw new ActiveUserException();
     }
 
-    private void sendSetNickMessageAndThrow(String userId) {
+    private void setAwaitedMessageForNick(String userId) {
         awaitedMessageService.saveAwaitedMessage(AwaitedMessageEntity.builder()
                 .userId(userId)
                 .request("-setNick")
                 .build());
         String message = MarkdownV2.applyWithManualBoldAndItalic(Messages.authenticate("setNick"));
         quickSender.message(userId, message, true);
-        throw new ActiveUserException();
     }
 
     private boolean isUserExistsInRepository(String chatId) {

@@ -40,12 +40,8 @@ public class UserService {
 
     public UserEntity saveUser(User user) {
         UserEntity userEntity = mapper.map(user);
-        checkValidation(userEntity);
-
-    }
-
-    private void checkValidation(UserEntity userEntity) {
-
+        saveUser(userEntity);
+        return userEntity;
     }
 
     public boolean existsByUserId(String userId) {
