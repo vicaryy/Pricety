@@ -3,9 +3,6 @@ package com.vicary.zalandoscraper.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
-import java.util.Date;
-
 @Entity
 @Data
 @NoArgsConstructor

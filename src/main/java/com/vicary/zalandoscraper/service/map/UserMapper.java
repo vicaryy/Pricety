@@ -14,7 +14,7 @@ public class UserMapper {
 
         return UserEntity.builder()
                 .userId(user.getId().toString())
-                .nick(user.getUsername() == null ? "" : user.getUsername())
+                .nick(user.getUsername() == null ? "" : user.getUsername().toLowerCase())
                 .nationality(nationality)
                 .premium(false)
                 .admin(false)

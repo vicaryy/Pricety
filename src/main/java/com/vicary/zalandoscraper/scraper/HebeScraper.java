@@ -91,11 +91,12 @@ public class HebeScraper implements Scraper {
             Product product = Product.builder()
                     .name(getName(page))
                     .description(getDescription(page))
+                    .photoUrl(getPhotoUrl(page))
                     .price(0)
                     .variant(variant)
                     .link(link)
                     .serviceName("hebe.pl")
-                    .currency("pl")
+                    .currency("zł")
                     .build();
 
 
@@ -241,6 +242,15 @@ public class HebeScraper implements Scraper {
 
     private String getDescription(Page page) {
         return page.locator(Tag.Hebe.DESCRIPTION).innerText();
+    }
+
+    private String getPhotoUrl(Page page) {
+        List<Locator> locator = page.locator(".product-images__main picture source").all();
+        locator = locator.stream()
+                .filter(e -> e.getAttribute("srcset") != null)
+                .toList();
+        Locator l = locator.size() > 1 ? locator.get(1) : locator.get(0);
+        return l.getAttribute("srcset");
     }
 
     private double getPrice(Page page) {

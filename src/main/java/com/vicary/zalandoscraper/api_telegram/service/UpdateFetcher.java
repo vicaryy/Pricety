@@ -186,6 +186,8 @@ public class UpdateFetcher {
     }
 
     private void handleWebClientResponseException(WebClientResponseException ex) {
+        //TODO Status code: 429 TOO_MANY_REQUESTS
+        //     Description: Too Many Requests
         logger.error("---------------------------");
         logger.error("Telegram API Bot stopped.");
         logger.error("Status code: " + ex.getStatusCode());
