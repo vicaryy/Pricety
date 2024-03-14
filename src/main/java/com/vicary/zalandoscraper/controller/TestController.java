@@ -2,6 +2,7 @@ package com.vicary.zalandoscraper.controller;
 
 import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.model.Product;
+import com.vicary.zalandoscraper.model.ProductTemplate;
 import com.vicary.zalandoscraper.service.repository_services.ProductService;
 import com.vicary.zalandoscraper.service.repository_services.UserService;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,11 @@ public class TestController {
     private final ProductService productService;
 
     private final UserService userService;
+
+    @GetMapping("/test")
+    private void test() {
+//        productService.updatePhotoURL();
+    }
 
     @GetMapping("/")
     private String home() {
@@ -40,8 +46,8 @@ public class TestController {
     @GetMapping("/account")
     private String account(Model model) {
         String userId = "6488358449";
-        List<Product> products = productService.getAllProductsByUserId(userId);
-        model.addAttribute("user", products.get(0).getUser());
+        List<ProductTemplate> products = productService.getAllTemplates();
+        model.addAttribute("user", products.get(2).getUser());
         model.addAttribute("products", products);
         return "account";
     }

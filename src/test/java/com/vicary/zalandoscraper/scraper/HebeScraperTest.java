@@ -41,21 +41,6 @@ class HebeScraperTest {
     }
 
     @Test
-    void test1() {
-        String givenLink = "https://www.hebe.pl/laifen-zestaw-suszarka-1-szt.-koncentrator-1-szt.-dyfuzor-1-szt.-60648222.html";
-        List<String> givenLinks = List.of(
-                "https://www.hebe.pl/laifen-zestaw-suszarka-1-szt.-koncentrator-1-szt.-dyfuzor-1-szt.-60648222.html",
-                "https://www.hebe.pl/halloween-woda-perfumowana-meska-50-ml-000000000000459070.html",
-                "https://www.hebe.pl/barwa-szare-mydlo-w-kostce-100g-000000000000259012.html",
-                "https://www.hebe.pl/essence-tusz-do-rzes-9ml-000000000000242256.html",
-                "https://www.hebe.pl/gosh-tusz-do-rzes-z-efektem-3d-8-ml-000000000000476217.html",
-                "https://www.hebe.pl/tolpa-odzywka-do-wlosow-efekt-laminacji-175-ml-000000000000474650.html",
-                "https://www.hebe.pl/ziaja-zestaw-krem-nawilzajacy-zel-balsam-po-goleniu-antyperspirant-meski-000000000000363349.html"
-        );
-        givenLinks.forEach(e -> scraper.getProduct(e, "-oneVariant"));
-    }
-
-    @Test
     void getAllVariants_expectThrow_InvalidLink() {
         assertThrows(InvalidLinkException.class, () -> scraper.getAllVariants(INVALID_LINK));
     }

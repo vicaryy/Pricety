@@ -41,6 +41,21 @@ class ZalandoScraperTest {
 
 
     @Test
+    void test1() {
+        String givenLink = "https://www.zalando.pl/nike-sportswear-bluza-rozpinana-dk-grey-heatherblack-ni122s0e1-c11.html";
+        List<String> givenLinks = List.of(
+                "https://www.zalando.pl/nike-sportswear-bluza-rozpinana-earth-black-ni122s0e1-b13.html",
+                "https://www.zalando.pl/joop-pasek-czarny-jo952d012-802.html",
+                "https://www.zalando.pl/rituals-precious-amber-hand-wash-mydlo-w-plynie-rig34g07p-s11.html",
+                "https://www.zalando.pl/rituals-private-collection-savage-garden-2023-zestaw-do-kapieli-rig34i02s-s11.html",
+                "https://www.zalando.pl/nike-sportswear-air-max-270-sneakersy-niskie-ni114d0ac-a11.html",
+                "https://www.zalando.pl/jordan-monogram-mini-messenger-bag-unisex-torba-na-ramie-coconut-milk-joc42l074-a11.html",
+                "https://www.zalando.pl/arrivly-etui-na-telefon-transparent-a3h54f03i-d11.html"
+        );
+        givenLinks.forEach(e -> scraper.getProduct(e, "-oneVariant"));
+//        scraper.getProduct(givenLink, "36");
+    }
+    @Test
     void test() {
         //given
         String givenLink = "https://www.zalando.es/nike-sportswear-air-max-90-gtx-unisex-zapatillas-blackhoneydewmica-green-ni112o0xk-q11.html";

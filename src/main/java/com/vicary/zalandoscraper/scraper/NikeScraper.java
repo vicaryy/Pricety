@@ -3,6 +3,7 @@ package com.vicary.zalandoscraper.scraper;
 import com.microsoft.playwright.*;
 import com.microsoft.playwright.BrowserType;
 import com.microsoft.playwright.options.WaitUntilState;
+import com.vicary.zalandoscraper.entity.ProductEntity;
 import com.vicary.zalandoscraper.exception.InvalidLinkException;
 import com.vicary.zalandoscraper.messages.Messages;
 import com.vicary.zalandoscraper.model.Product;
@@ -124,6 +125,7 @@ public class NikeScraper implements Scraper {
             Product product = Product.builder()
                     .name(getName(page))
                     .description(getDescription(page))
+                    .photoUrl(getPhotoUrl(page))
                     .price(0)
                     .variant(variant)
                     .link(link)
@@ -148,7 +150,6 @@ public class NikeScraper implements Scraper {
             return product;
         }
     }
-
 
     @Override
     public List<String> getAllVariants(String link) {
@@ -225,8 +226,6 @@ public class NikeScraper implements Scraper {
     }
 
 
-
-
     @Override
     public void setBugged(boolean bugged) {
         launchOptions.setHeadless(!bugged);
@@ -279,6 +278,10 @@ public class NikeScraper implements Scraper {
 
     private String getDescription(Page page) {
         return page.locator(Tag.Nike.DESCRIPTION).last().innerText();
+    }
+
+    private String getPhotoUrl(Page page) {
+        return page.locator(Tag.Nike.PHOTO_URL).getAttribute("src");
     }
 
     private double getPrice(Page page) {

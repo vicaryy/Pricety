@@ -120,6 +120,7 @@ public class ZaraScraper implements Scraper {
             Product product = Product.builder()
                     .name(getName(page))
                     .description("-")
+                    .photoUrl(getPhotoUrl(page))
                     .price(0)
                     .variant(variant)
                     .link(link)
@@ -217,6 +218,10 @@ public class ZaraScraper implements Scraper {
 
     private void waitForMainContent(Page page) {
         page.waitForSelector(Tag.Zara.PRODUCT_TAB);
+    }
+
+    private String getPhotoUrl(Page page) {
+        return page.locator(Tag.Zara.PHOTO_URL).getAttribute("src");
     }
 
     @Override

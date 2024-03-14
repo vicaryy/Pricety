@@ -42,6 +42,12 @@ class NikeScraperTest {
     }
 
     @Test
+    void getPhotoUrl() {
+        String givenLink = "https://www.nike.com/pl/t/spodnie-dresowe-ze-srednim-stanem-sportswear-phoenix-fleece-0XcGRb/FZ7626-063";
+        scraper.getProduct(givenLink, "-oneVariant");
+    }
+
+    @Test
     void getAllVariants_expectThrow_InvalidLink() {
         assertThrows(InvalidLinkException.class, () -> scraper.getAllVariants(INVALID_LINK));
     }

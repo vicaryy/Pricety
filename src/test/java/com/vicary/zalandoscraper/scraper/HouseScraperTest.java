@@ -41,6 +41,12 @@ class HouseScraperTest {
     }
 
     @Test
+    void testPhotoUrl() {
+        String givenLink = "https://www.housebrand.com/pl/pl/czarne-trampki-za-kostke-800ae-99x";
+        scraper.getProduct(givenLink, "-oneVariant");
+    }
+
+    @Test
     void getAllVariants_expectThrow_InvalidLink() {
         assertThrows(InvalidLinkException.class, () -> scraper.getAllVariants(INVALID_LINK));
     }

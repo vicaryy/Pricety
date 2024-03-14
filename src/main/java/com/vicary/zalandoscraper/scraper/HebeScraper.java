@@ -230,7 +230,14 @@ public class HebeScraper implements Scraper {
     }
 
     private boolean isSoldOut(Page page) {
-        return page.getByText(Tag.Hebe.SOLD_OUT_TAB).isVisible();
+        Locator.WaitForOptions wait = new Locator.WaitForOptions();
+        wait.setTimeout(2000);
+        try {
+            page.locator(".js-non-available.add-to-cart.add-product-detail.add-product-detail--outline.js-subscribe").waitFor(wait);
+            return true;
+        } catch (Exception ignored) {
+        }
+        return false;
     }
 
     private String getName(Page page) {
@@ -245,12 +252,11 @@ public class HebeScraper implements Scraper {
     }
 
     private String getPhotoUrl(Page page) {
-        List<Locator> locator = page.locator(".product-images__main picture source").all();
-        locator = locator.stream()
+        List<Locator> locators = page.locator(Tag.Hebe.PHOTO_URL).all();
+        locators = locators.stream()
                 .filter(e -> e.getAttribute("srcset") != null)
                 .toList();
-        Locator l = locator.size() > 1 ? locator.get(1) : locator.get(0);
-        return l.getAttribute("srcset");
+        return locators.get(0).getAttribute("srcset");
     }
 
     private double getPrice(Page page) {

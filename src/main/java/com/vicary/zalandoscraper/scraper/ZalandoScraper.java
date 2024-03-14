@@ -98,6 +98,7 @@ public class ZalandoScraper implements Scraper {
                 Product product = Product.builder()
                         .name(getName(page))
                         .description(getDescription(page))
+                        .photoUrl(getPhotoUrl(page))
                         .price(0)
                         .variant(variant)
                         .link(page.url())
@@ -141,7 +142,6 @@ public class ZalandoScraper implements Scraper {
             }
         }
     }
-
 
     private Product getProductWithCookiesClicks(Page page, String link, String variant) {
         clickCookiesButton(page);
@@ -312,6 +312,10 @@ public class ZalandoScraper implements Scraper {
 
     private String getDescription(Page page) {
         return page.locator(Tag.Zalando.DESCRIPTION).innerText();
+    }
+
+    private String getPhotoUrl(Page page) {
+        return page.locator(Tag.Zalando.PHOTO_URL).getAttribute("src");
     }
 
     private double getPrice(Page page) {

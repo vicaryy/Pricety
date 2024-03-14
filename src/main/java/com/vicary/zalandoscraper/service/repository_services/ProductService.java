@@ -1,14 +1,20 @@
 package com.vicary.zalandoscraper.service.repository_services;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 import com.vicary.zalandoscraper.entity.ProductEntity;
 import com.vicary.zalandoscraper.model.Product;
+import com.vicary.zalandoscraper.model.ProductTemplate;
 import com.vicary.zalandoscraper.repository.ProductRepository;
+import com.vicary.zalandoscraper.scraper.PhotoUrlUpdater;
 import com.vicary.zalandoscraper.service.map.ProductMapper;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
@@ -26,6 +32,15 @@ public class ProductService {
     private final ProductMapper mapper;
 
     private final UserService userService;
+    private final PhotoUrlUpdater photoUrlUpdater = new PhotoUrlUpdater();
+
+    public List<Product> getAll() {
+        return mapper.map(repository.findAll());
+    }
+
+    public List<ProductTemplate> getAllTemplates() {
+        return mapper.mapToTemplate(getAll());
+    }
 
     public Product getProduct(Long productId) {
         return mapper.map(repository.findById(productId).orElseThrow());

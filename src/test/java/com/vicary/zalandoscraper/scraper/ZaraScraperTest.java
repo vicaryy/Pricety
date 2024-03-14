@@ -39,6 +39,12 @@ class ZaraScraperTest {
     }
 
     @Test
+    void testPhotoUrl() {
+        String givenLink = "https://www.zara.com/pl/pl/buty-skorzane-z-marszczeniem-przy-zapietku-p12429320.html?v1=318993484&v2=2351464";
+        scraper.getProduct(givenLink, "-oneVariant");
+    }
+
+    @Test
     void getAllVariants_expectThrow_InvalidLink() {
         assertThrows(InvalidLinkException.class, () -> scraper.getAllVariants(INVALID_LINK));
     }

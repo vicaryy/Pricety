@@ -21,6 +21,9 @@ public class ProductEntity {
     @Column(name = "description")
     private String description;
 
+    @Column(name = "photo_url")
+    private String photoUrl;
+
     @Column(name = "price")
     private double price;
 

@@ -1,6 +1,7 @@
 package com.vicary.zalandoscraper.service.map;
 
 import com.vicary.zalandoscraper.entity.UserEntity;
+import com.vicary.zalandoscraper.model.ProductTemplate;
 import com.vicary.zalandoscraper.model.User;
 import com.vicary.zalandoscraper.entity.NotificationEntity;
 import com.vicary.zalandoscraper.entity.ProductEntity;
@@ -15,15 +16,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-@RequiredArgsConstructor
 public class ProductMapper {
-
-    private final UserService userService;
 
     public ProductEntity map(Product product, UserEntity user) {
         return ProductEntity.builder()
                 .name(product.getName())
                 .description(product.getDescription())
+                .photoUrl(product.getPhotoUrl())
                 .price(product.getPrice())
                 .variant(product.getVariant())
                 .priceAlert("AUTO")
@@ -39,6 +38,7 @@ public class ProductMapper {
                 .productId(product.getId())
                 .name(product.getName())
                 .description(product.getDescription())
+                .photoUrl(product.getPhotoUrl())
                 .link(product.getLink())
                 .variant(product.getVariant())
                 .price(product.getPrice())
@@ -56,6 +56,43 @@ public class ProductMapper {
                         .notifyByEmail(product.getUser().isNotifyByEmail())
                         .build())
                 .build();
+    }
+
+    public ProductTemplate mapToTemplate(Product product) {
+        String price = product.getPrice() == 0 ? "SOLD OUT" : String.format("%.2f", product.getPrice());
+        String serviceName = product.getServiceName().split("\\.")[0];
+        String priceAlert =
+                (product.getPriceAlert().equalsIgnoreCase("auto") || product.getPriceAlert().equalsIgnoreCase("off"))
+                        ? product.getPriceAlert().toUpperCase() : String.format("%.2f %s", Double.parseDouble(product.getPriceAlert()), product.getCurrency());
+        String variant = product.getVariant().startsWith("-oneVariant") ? "One Variant" : product.getVariant();
+
+        return ProductTemplate.builder()
+                .productId(product.getProductId())
+                .name(product.getName())
+                .description(product.getDescription())
+                .photoUrl(product.getPhotoUrl())
+                .link(product.getLink())
+                .variant(variant)
+                .price(price)
+                .priceAlert(priceAlert)
+                .serviceName(serviceName)
+                .currency(product.getCurrency())
+                .user(User.builder()
+                        .userId(product.getUser().getUserId())
+                        .email(product.getUser().getEmail())
+                        .nick(product.getUser().getNick())
+                        .language(product.getUser().getLanguage())
+                        .premium(product.getUser().isPremium())
+                        .admin(product.getUser().isAdmin())
+                        .notifyByEmail(product.getUser().isNotifyByEmail())
+                        .build())
+                .build();
+    }
+
+    public List<ProductTemplate> mapToTemplate(List<Product> products) {
+        return products.stream()
+                .map(this::mapToTemplate)
+                .toList();
     }
 
     public List<Product> map(List<ProductEntity> products) {

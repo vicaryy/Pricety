@@ -87,6 +87,7 @@ public class HouseScraper implements Scraper {
             Product product = Product.builder()
                     .name(getName(page))
                     .description("-")
+                    .photoUrl(getPhotoUrl(page))
                     .price(0)
                     .variant(variant)
                     .link(page.url())
@@ -145,6 +146,10 @@ public class HouseScraper implements Scraper {
 
     private String getName(Page page) {
         return page.locator(Tag.House.NAME).first().textContent().trim();
+    }
+
+    private String getPhotoUrl(Page page) {
+        return page.locator(Tag.House.PHOTO_URL).getAttribute("src");
     }
 
     @Override

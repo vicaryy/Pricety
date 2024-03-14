@@ -5,6 +5,7 @@ class Tag {
         static final String ONE_VARIANT_TAB = "span.sDq_FX._2kjxJ6.dgII7d.Yb63TQ";
         static final String NAME = "span._ZDS_REF_SCOPE_._5FHGm_";
         static final String DESCRIPTION = "span.EKabf7.R_QwOV";
+        static final String PHOTO_URL = ".LiPgRT.DlJ4rT.S3xARh:first-of-type img";
         static final String PRICE_SPAN = "span.sDq_FX._4sa1cA";
         static final String PRICE_P = "div.hD5J5m > div > div > p.sDq_FX._4sa1cA";
         static final String PRICE_P_SECOND_VARIANT = "div.hD5J5m > div > div > div > p.sDq_FX._4sa1cA";
@@ -24,6 +25,7 @@ class Tag {
         static final String MAIN_TAB = "div.product-summary__main-box";
         static final String SOLD_OUT_TAB = "Produkt niedostępny online";
         static final String NAME = "p.product-content__brand";
+        static final String PHOTO_URL = ".product-images__main picture source";
         static final String DESCRIPTION = "p.js-product-short-description";
         static final String PRICE = "div.price-product__wrapper";
         static final String AVAILABLE_VARIANTS = "div.swatch__item--selectable";
@@ -38,6 +40,7 @@ class Tag {
         static final String MAIN_TAB = "div#RightRail";
         static final String NAME = "h1#pdp_product_title";
         static final String DESCRIPTION = "h2.headline-5.pb1-sm.d-sm-ib";
+        static final String PHOTO_URL = ".css-jpr23i img:first-of-type";
         static final String PRICE = "div.product-price.is--current-price";
         static final String VARIANT_TAB = "label.css-xf3ahq";
     }
@@ -46,6 +49,7 @@ class Tag {
         static final String SOLD_OUT_TAB = "product-unavailable";
         static final String PRICE = "div.basic-pricestyled__StyledBasicPrice-sc-1tz47jj-0.hfTNOq.basic-price";
         static final String CURRENCY = "span.currencycomponent__Currency-sc-1bzking-0.bdfSnQ.currency";
+        static final String PHOTO_URL = ".image-wrapperstyled__ImageWrapper-vn5fec-0:first-of-type img";
         static final String NAME = "div.titlestyled__StyledTitle-urmrll-1.cnhsCB";
         static final String ONE_VARIANT = "size-picker-size-name";
         static final String COOKIES_BUTTON = "button#cookiebotDialogOkButton";
@@ -59,6 +63,7 @@ class Tag {
         static final String ADD_TO_CART_BUTTON = "button.zds-button.product-cart-buttons__button.product-cart-buttons__add-to-cart.zds-bt-none";
         static final String PRICE = "span.price-current__amount";
         static final String NAME = "h1.product-detail-info__header-name";
+        static final String PHOTO_URL = ".product-detail-images__image-wrapper:first-of-type img";
         static final String PRODUCT_TAB = "div.product-detail-info";
         static final String INTERNATIONAL_EXIT_BUTTON = "svg.zds-dialog-icon-button__icon.zds-dialog-close-button__icon";
         static final String CURRENT_COLOR = "p.product-color-extended-name.product-detail-color-selector__selected-color-name";
