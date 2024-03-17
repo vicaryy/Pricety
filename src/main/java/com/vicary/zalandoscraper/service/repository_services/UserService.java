@@ -4,6 +4,7 @@ import com.vicary.zalandoscraper.api_telegram.api_object.User;
 import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.exception.IllegalInputException;
 import com.vicary.zalandoscraper.messages.Messages;
+import com.vicary.zalandoscraper.model.LogInModel;
 import com.vicary.zalandoscraper.repository.UserRepository;
 import com.vicary.zalandoscraper.service.map.UserMapper;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +43,12 @@ public class UserService {
         UserEntity userEntity = mapper.map(user);
         saveUser(userEntity);
         return userEntity;
+    }
+
+    public boolean isLoggedUserValidateTrue(LogInModel logInModel) {
+        return true;
+    }    public boolean isLoggedUserValidateFalse(LogInModel logInModel) {
+        return false;
     }
 
     public boolean existsByUserId(String userId) {
