@@ -1,5 +1,7 @@
 package com.vicary.zalandoscraper.security;
 
+import com.vicary.zalandoscraper.service.repository_services.WebUserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -17,7 +19,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final WebUserService webUserService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -30,25 +35,10 @@ public class SecurityConfig {
                     e.anyRequest().authenticated();
                 })
                 .sessionManagement(e -> e.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(new JwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtAuthenticationFilter(webUserService), UsernamePasswordAuthenticationFilter.class)
                 .formLogin(e -> e.loginPage("/join"));
 
         return http.build();
-    }
-
-    @Bean
-    public UserDetailsService userDetailsService() {
-        return new UserDetailsService() {
-            @Override
-            public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-                return null;
-            }
-        };
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 }
 
