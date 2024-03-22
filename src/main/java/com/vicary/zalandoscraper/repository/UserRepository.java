@@ -10,11 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<UserEntity, String> {
-    Optional<UserEntity> findByUserId(String userId);
+    Optional<UserEntity> findByTelegramId(String userId);
 
     Optional<UserEntity> findByNick(String nick);
 
-    boolean existsByUserId(String userId);
+    boolean existsByTelegramId(String userId);
 
     boolean existsByNick(String nick);
 
@@ -22,40 +22,40 @@ public interface UserRepository extends JpaRepository<UserEntity, String> {
     @Transactional
     @Query(value = """
             update users
-            set notify_by_email = :notifyByEmail
-            where user_id = :userId""", nativeQuery = true)
-    void updateNotifyByEmailById(@Param("userId") String userId, @Param("notifyByEmail") boolean notifyByEmail);
+            set email_notifications = :emailNotifications
+            where telegram_id = :telegramId""", nativeQuery = true)
+    void updateEmailNotificationsByTelegramId(@Param("telegramId") String telegramId, @Param("emailNotifications") boolean emailNotifications);
 
 
     @Modifying
     @Transactional
     @Query(value = """
             update users
-            set email = :email, notify_by_email = false, verified_email = false
-            where user_id = :userId""", nativeQuery = true)
-    void updateEmailById(@Param("userId") String userId, @Param("email") String email);
+            set email = :email, email_notifications = false, verified_email = false
+            where telegram_id = :telegramId""", nativeQuery = true)
+    void updateEmailByTelegramId(@Param("telegramId") String telegramId, @Param("email") String email);
 
     @Modifying
     @Transactional
     @Query(value = """
             update users
-            set email = null, notify_by_email = false, verified_email = false
-            where user_id = :userId""", nativeQuery = true)
-    void deleteEmailById(@Param("userId") String userId);
+            set email = null, email_notifications = false, verified_email = false
+            where telegram_id = :telegramId""", nativeQuery = true)
+    void deleteEmailByTelegramId(@Param("telegramId") String telegramId);
 
     @Transactional
     @Modifying
     @Query(value = """
             update users
             set verified_email = :verified
-            where user_id = :userId""", nativeQuery = true)
-    void setVerifiedEmail(@Param("userId") String userId, @Param("verified") boolean verified);
+            where telegram_id = :telegramId""", nativeQuery = true)
+    void setVerifiedEmail(@Param("telegramId") String telegramId, @Param("verified") boolean verified);
 
     @Transactional
     @Modifying
     @Query(value = """
             update users
             set nationality = :language
-            where user_id = :userId""", nativeQuery = true)
-    void updateLanguage(@Param("userId") String userId, @Param("language") String language);
+            where telegram_id = :telegramId""", nativeQuery = true)
+    void updateLanguage(@Param("telegramId") String telegramId, @Param("language") String language);
 }

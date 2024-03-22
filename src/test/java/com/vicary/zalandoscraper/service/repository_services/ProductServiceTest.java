@@ -15,7 +15,6 @@ import org.springframework.data.domain.Sort;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -144,7 +143,7 @@ class ProductServiceTest {
         UserEntity givenUser = UserEntity.builder().build();
 
         //when
-        when(userService.findByUserId(givenUserId)).thenReturn(givenUser);
+        when(userService.findByTelegramId(givenUserId)).thenReturn(givenUser);
         when(repository.findAllByUser(givenUser, Sort.by("id"))).thenReturn(Collections.emptyList());
 
         List<Product> actualList = productService.getAllProductsByUserId(givenUserId);
@@ -162,7 +161,7 @@ class ProductServiceTest {
         UserEntity givenUser = UserEntity.builder().build();
 
         //when
-        when(userService.findByUserId(givenUserId)).thenReturn(givenUser);
+        when(userService.findByTelegramId(givenUserId)).thenReturn(givenUser);
         when(repository.findAllByUser(givenUser, Sort.by("id"))).thenReturn(givenEntityList);
 
         productService.getAllProductsByUserId(givenUserId);

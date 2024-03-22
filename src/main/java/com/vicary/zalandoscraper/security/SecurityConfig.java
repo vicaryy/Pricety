@@ -40,6 +40,22 @@ public class SecurityConfig {
 
         return http.build();
     }
+
+    @Bean
+    public UserDetailsService userDetailsService() {
+        return new UserDetailsService() {
+            @Override
+            public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+                System.out.println("Korzystam z tego");
+                return webUserService.getByEmail(username).orElseThrow();
+            }
+        };
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 }
 
 

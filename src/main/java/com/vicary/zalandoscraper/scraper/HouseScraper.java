@@ -165,7 +165,7 @@ public class HouseScraper implements Scraper {
             clickCookiesButton(page);
 
             if (!isLinkValid(page))
-                throw new InvalidLinkException(Messages.scraper("invalidLink"), "User %s specified wrong link: %s".formatted(ActiveUser.get().getUserId(), ActiveUser.get().getText()));
+                throw new InvalidLinkException(Messages.scraper("invalidLink"), "User %s specified wrong link: %s".formatted(ActiveUser.get().getTelegramId(), ActiveUser.get().getText()));
 
 
             if (isMultiVariant(page))

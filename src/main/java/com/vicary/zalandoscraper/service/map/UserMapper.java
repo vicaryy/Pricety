@@ -2,6 +2,7 @@ package com.vicary.zalandoscraper.service.map;
 
 import com.vicary.zalandoscraper.api_telegram.api_object.User;
 import com.vicary.zalandoscraper.entity.UserEntity;
+import com.vicary.zalandoscraper.security.Role;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -13,12 +14,14 @@ public class UserMapper {
             nationality = user.getLanguageCode().equals("pl") ? "pl" : "en";
 
         return UserEntity.builder()
-                .userId(user.getId().toString())
+                .telegramId(user.getId().toString())
                 .nick(user.getUsername() == null ? "" : user.getUsername().toLowerCase())
                 .nationality(nationality)
                 .premium(false)
-                .admin(false)
-                .notifyByEmail(false)
+                .role(Role.USER)
+                .emailNotifications(false)
+                .role(Role.USER)
+                .telegram(true)
                 .verifiedEmail(false)
                 .build();
     }

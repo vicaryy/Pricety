@@ -1,6 +1,7 @@
 package com.vicary.zalandoscraper.security;
 
 import com.vicary.zalandoscraper.service.repository_services.WebUserService;
+import com.vicary.zalandoscraper.utils.Cookies;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -33,9 +34,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-        logger.info("Wszedłem tutaj");
 
-        String jwt = getJwtFromCookies(request.getCookies());
+        String jwt = Cookies.getJwtFromCookies(request.getCookies());
         if (jwt.isBlank()) {
             filterChain.doFilter(request, response);
             return;
@@ -46,6 +46,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             userEmail = jwtService.getUserEmail(jwt);
         } catch (Exception ex) {
             logger.warn("Unauthenticated jwt: %s\nFrom IP: %s".formatted(jwt, request.getRemoteAddr()));
+            response.addCookie(Cookies.getEmptyJwtCookie());
             filterChain.doFilter(request, response);
             return;
         }
@@ -53,6 +54,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         UserDetails user = webUserService.getByEmail(userEmail).orElseThrow();
 
         if (!jwtService.isJwtValid(jwt, user)) {
+            response.addCookie(Cookies.getEmptyJwtCookie());
             filterChain.doFilter(request, response);
             return;
         }
@@ -62,13 +64,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         logger.info("User authenticated!");
         filterChain.doFilter(request, response);
-    }
-
-    private String getJwtFromCookies(Cookie[] cookies) {
-        for (Cookie c : cookies)
-            if (c.getName().equals("access_key"))
-                return c.getValue();
-        return "";
     }
 
     private boolean dontNeedsToBeFilter(HttpServletRequest request) {

@@ -3,7 +3,6 @@ package com.vicary.zalandoscraper.scraper;
 import com.microsoft.playwright.*;
 import com.microsoft.playwright.BrowserType;
 import com.microsoft.playwright.options.WaitUntilState;
-import com.vicary.zalandoscraper.entity.ProductEntity;
 import com.vicary.zalandoscraper.exception.InvalidLinkException;
 import com.vicary.zalandoscraper.messages.Messages;
 import com.vicary.zalandoscraper.model.Product;
@@ -164,7 +163,7 @@ public class NikeScraper implements Scraper {
             page.navigate(link, navigateOptions);
 
             if (!isLinkValid(page))
-                throw new InvalidLinkException(Messages.scraper("invalidLink"), "User %s specified wrong link: %s".formatted(ActiveUser.get().getUserId(), ActiveUser.get().getText()));
+                throw new InvalidLinkException(Messages.scraper("invalidLink"), "User %s specified wrong link: %s".formatted(ActiveUser.get().getTelegramId(), ActiveUser.get().getText()));
 
             if (waitForSizes(page, 3500))
                 return getAllVariantsAsString(page);
@@ -189,7 +188,7 @@ public class NikeScraper implements Scraper {
             page.navigate(link, navigateOptions);
 
             if (!isLinkValid(page))
-                throw new InvalidLinkException(Messages.scraper("invalidLink"), "User %s specified wrong link: %s".formatted(ActiveUser.get().getUserId(), ActiveUser.get().getText()));
+                throw new InvalidLinkException(Messages.scraper("invalidLink"), "User %s specified wrong link: %s".formatted(ActiveUser.get().getTelegramId(), ActiveUser.get().getText()));
 
             if (waitForSizes(page, 3500))
                 return getAvailableVariantsAsString(page);
@@ -213,7 +212,7 @@ public class NikeScraper implements Scraper {
             page.navigate(link, navigateOptions);
 
             if (!isLinkValid(page))
-                throw new InvalidLinkException(Messages.scraper("invalidLink"), "User %s specified wrong link: %s".formatted(ActiveUser.get().getUserId(), ActiveUser.get().getText()));
+                throw new InvalidLinkException(Messages.scraper("invalidLink"), "User %s specified wrong link: %s".formatted(ActiveUser.get().getTelegramId(), ActiveUser.get().getText()));
 
             if (waitForSizes(page, 3500))
                 return getNonAvailableVariantsAsString(page);

@@ -3,10 +3,8 @@ package com.vicary.zalandoscraper.service.response;
 import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
 import com.vicary.zalandoscraper.exception.IllegalInputException;
 import com.vicary.zalandoscraper.messages.Messages;
-import com.vicary.zalandoscraper.scraper.Scraper;
 import com.vicary.zalandoscraper.thread_local.ActiveLanguage;
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,7 +47,7 @@ class EmailVerificationResponseTest {
 
         //then
         verify(responseFacade, times(1)).emailVerExistsByUserIdAndToken(anyString(), anyString());
-        verify(responseFacade, times(1)).setUserVerifiedEmail(givenUser.getUserId(), true);
+        verify(responseFacade, times(1)).setUserVerifiedEmail(givenUser.getTelegramId(), true);
         verify(responseFacade, times(1)).deleteEmailVerByToken(givenToken);
         verify(quickSender, times(1)).message(givenUser.getChatId(), Messages.other("emailVerifiedSuccessfully"), false);
     }
@@ -102,7 +100,7 @@ class EmailVerificationResponseTest {
 
     private ActiveUser getDefaultActiveUser() {
         ActiveUser givenUser = new ActiveUser();
-        givenUser.setUserId("123");
+        givenUser.setTelegramId("123");
         givenUser.setChatId("123");
         givenUser.setMessageId(123);
         givenUser.setText("v-123456789");

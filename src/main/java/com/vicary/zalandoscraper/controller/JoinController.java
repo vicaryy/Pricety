@@ -1,16 +1,13 @@
 package com.vicary.zalandoscraper.controller;
 
-import com.vicary.zalandoscraper.entity.UserEntity;
-import com.vicary.zalandoscraper.entity.WebUserEntity;
-import com.vicary.zalandoscraper.model.*;
 import com.vicary.zalandoscraper.model.Error;
-import com.vicary.zalandoscraper.repository.WebUserRepository;
+import com.vicary.zalandoscraper.model.ForgotPasswordModel;
+import com.vicary.zalandoscraper.model.LogInModel;
+import com.vicary.zalandoscraper.model.RegisterModel;
 import com.vicary.zalandoscraper.security.JwtService;
-import com.vicary.zalandoscraper.service.repository_services.ProductService;
-import com.vicary.zalandoscraper.service.repository_services.UserService;
 import com.vicary.zalandoscraper.service.repository_services.WebUserService;
+import com.vicary.zalandoscraper.utils.Cookies;
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -23,26 +20,19 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.List;
-
 @Controller
 @RequiredArgsConstructor
-public class TestController {
-
-    private final static Logger logger = LoggerFactory.getLogger(TestController.class);
-
-    private final ProductService productService;
+public class JoinController {
+    private final static Logger logger = LoggerFactory.getLogger(JoinController.class);
 
     private final WebUserService webUserService;
+
+    private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService = new JwtService();
 
-    @GetMapping("/")
-    private String home() {
-        return "index";
-    }
 
     @GetMapping("/join")
-    private String join(@RequestParam(value = "l", required = false) boolean logIn, Model model) {
+    public String join(@RequestParam(value = "l", required = false) boolean logIn, Model model) {
         if (logIn)
             model.addAttribute("logIn", true);
         else
@@ -52,24 +42,23 @@ public class TestController {
     }
 
     @PostMapping("/join/log-in")
-    private String join(@ModelAttribute LogInModel logInModel, Model model, HttpServletResponse response) {
+    public String join(@ModelAttribute LogInModel logInModel, Model model, HttpServletResponse response) {
 
         try {
-            webUserService.checkLogInModelValidation(logInModel);
+            webUserService.checkLogInModelValidation(logInModel, passwordEncoder);
         } catch (IllegalArgumentException ex) {
             logger.warn(ex.getMessage());
             model.addAttribute("logIn", true);
             setModelAttributes(model, new Error("LogIn", ex.getMessage()));
             return "join";
         }
-        Cookie cookie = new Cookie("access_key", jwtService.generateJwt(webUserService.getByEmail(logInModel.getEmail()).get()));
-        cookie.setPath("/");
+        Cookie cookie = Cookies.getJwtCookie(jwtService.generateJwt(webUserService.getByEmail(logInModel.getEmail()).orElseThrow()));
         response.addCookie(cookie);
         return "redirect:/join";
     }
 
     @PostMapping("/join/register")
-    private String join(@ModelAttribute RegisterModel registerModel, Model model, HttpServletResponse response) {
+    public String join(@ModelAttribute RegisterModel registerModel, Model model, HttpServletResponse response) {
         try {
             webUserService.checkRegisterModelValidation(registerModel);
         } catch (IllegalArgumentException ex) {
@@ -79,20 +68,9 @@ public class TestController {
             return "join";
         }
 
-        webUserService.registerUser(registerModel);
+        webUserService.registerUser(registerModel, passwordEncoder);
         return "redirect:/";
     }
-
-    // 6488358449
-    @GetMapping("/account")
-    private String account(Model model) {
-        String userId = "6488358449";
-        List<ProductTemplate> products = productService.getAllTemplates();
-        model.addAttribute("user", products.get(2).getUser());
-        model.addAttribute("products", products);
-        return "account";
-    }
-
 
 
     private void setModelAttributes(Model model) {
@@ -109,19 +87,3 @@ public class TestController {
         model.addAttribute("errorInfo" + error.getType(), error.getMessage());
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

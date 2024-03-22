@@ -30,7 +30,7 @@ public class AwaitedMessageResponse implements Responser {
 
     @Override
     public void response() {
-        String request = responseFacade.getAwaitedMessageRequest(user.getUserId());
+        String request = responseFacade.getAwaitedMessageRequest(user.getTelegramId());
 
         if (request.startsWith("-edit"))
             updateProductPriceAlert(request);
@@ -45,21 +45,21 @@ public class AwaitedMessageResponse implements Responser {
     private void setNick() {
         String nick = user.getText();
 
-        responseFacade.updateUserNick(user.getUserId(), nick);
-        responseFacade.deleteAwaitedMessage(user.getUserId());
+        responseFacade.updateUserNick(user.getTelegramId(), nick);
+        responseFacade.deleteAwaitedMessage(user.getTelegramId());
         quickSender.popupMessage(user.getChatId(), Messages.other("setNickSuccess"));
         quickSender.message(user.getChatId(), Messages.command("start").formatted(" " + user.getText()), true);
     }
 
     private void updateProductPriceAlert(String request) {
-        responseFacade.deleteAwaitedMessage(user.getUserId());
+        responseFacade.deleteAwaitedMessage(user.getTelegramId());
         Long productId = Long.parseLong(request.split(" ")[1]);
         String priceAlert = getPriceAlertFromText(user.getText());
 
         Product product = responseFacade.getProductById(productId);
 
         if (isPriceAlertHigherThanPrice(priceAlert, product.getPrice()))
-            throw new IllegalInputException(Messages.other("priceAlertHigher"), "User '%s' specify price alert higher than actual price".formatted(user.getUserId()));
+            throw new IllegalInputException(Messages.other("priceAlertHigher"), "User '%s' specify price alert higher than actual price".formatted(user.getTelegramId()));
 
         responseFacade.updateProductPriceAlert(productId, priceAlert);
 
@@ -68,23 +68,23 @@ public class AwaitedMessageResponse implements Responser {
     }
 
     private void updateUserEmail() {
-        responseFacade.deleteAwaitedMessage(user.getUserId());
+        responseFacade.deleteAwaitedMessage(user.getTelegramId());
         String email = user.getText();
 
         if (!Pattern.isEmail(email))
-            throw new IllegalInputException(Messages.other("invalidEmail"), "User '%s' typed invalid email '%s'".formatted(user.getUserId(), user.getText()));
+            throw new IllegalInputException(Messages.other("invalidEmail"), "User '%s' typed invalid email '%s'".formatted(user.getTelegramId(), user.getText()));
 
         if (email.equals(user.getEmail()))
-            throw new IllegalInputException(Messages.other("differentEmail"), "User '%s' typed the same email '%s'".formatted(user.getUserId(), user.getText()));
+            throw new IllegalInputException(Messages.other("differentEmail"), "User '%s' typed the same email '%s'".formatted(user.getTelegramId(), user.getText()));
 
         if (email.equalsIgnoreCase("DELETE")) {
-            responseFacade.deleteEmailById(user.getUserId());
+            responseFacade.deleteEmailById(user.getTelegramId());
             popupMessage(Messages.other("emailDeleted"));
             displayMenu();
             return;
         }
 
-        responseFacade.updateEmailAndSendToken(user.getUserId(), email);
+        responseFacade.updateEmailAndSendToken(user.getTelegramId(), email);
 
         quickSender.message(user.getChatId(), Messages.other("verificationCodeMessage"), true);
     }
@@ -115,7 +115,7 @@ public class AwaitedMessageResponse implements Responser {
                 throw new NumberFormatException();
 
         } catch (NumberFormatException ex) {
-            throw new IllegalInputException(Messages.other("invalidPriceAlert"), "User '%s' typed invalid message '%s'".formatted(user.getUserId(), text));
+            throw new IllegalInputException(Messages.other("invalidPriceAlert"), "User '%s' typed invalid message '%s'".formatted(user.getTelegramId(), text));
         }
 
         return String.format("%.2f", priceAlert).replaceFirst(",", ".");

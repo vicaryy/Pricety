@@ -16,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Table(name = "users", schema = "public")
-public class UserEntity implements UserDetails {
+public class UserEntityTest implements UserDetails {
     @Id
     @Column(name = "user_id")
     private String userId;
@@ -66,18 +66,6 @@ public class UserEntity implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @ToString.Exclude
     private List<WaitingUserEntity> waitingUsers;
-
-    public boolean isAdmin() {
-        return role.toString().equalsIgnoreCase("ADMIN");
-    }
-
-    public void setRoleAdmin() {
-        role = Role.ADMIN;
-    }
-
-    public void setRoleUser() {
-        role = Role.USER;
-    }
 
     public String getRole() {
         return "ROLE_" + role.toString().toUpperCase();

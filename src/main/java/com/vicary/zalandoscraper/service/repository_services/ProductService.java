@@ -1,8 +1,5 @@
 package com.vicary.zalandoscraper.service.repository_services;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
 import com.vicary.zalandoscraper.entity.ProductEntity;
 import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.model.ProductTemplate;
@@ -14,12 +11,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -67,7 +61,7 @@ public class ProductService {
     }
 
     public List<Product> getAllProductsByUserId(String userId) {
-        List<ProductEntity> productEntities = repository.findAllByUser(userService.findByUserId(userId), Sort.by("id"));
+        List<ProductEntity> productEntities = repository.findAllByUser(userService.findByTelegramId(userId), Sort.by("id"));
 
         if (productEntities.isEmpty())
             return Collections.emptyList();
@@ -107,7 +101,7 @@ public class ProductService {
     }
 
     public void saveProduct(Product product, String userId) {
-        repository.save(mapper.map(product, userService.findByUserId(userId)));
+        repository.save(mapper.map(product, userService.findByTelegramId(userId)));
         logger.info("[Product Service] Added new product to database link: {}", product.getLink());
     }
 

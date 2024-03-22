@@ -100,12 +100,12 @@ class UserServiceTest {
         String givenNick = "nick123";
         //when
         when(repository.existsByNick(givenNick)).thenReturn(false);
-        when(repository.findByUserId(givenUserId)).thenReturn(Optional.empty());
+        when(repository.findByTelegramId(givenUserId)).thenReturn(Optional.empty());
 
         //then
         assertThrows(IllegalInputException.class, () -> service.updateUserNick(givenUserId, givenNick));
         verify(repository, times(1)).existsByNick(givenNick);
-        verify(repository, times(1)).findByUserId(givenUserId);
+        verify(repository, times(1)).findByTelegramId(givenUserId);
     }
 
     @Test
@@ -122,7 +122,7 @@ class UserServiceTest {
         );
         //when
         when(repository.existsByNick(anyString())).thenReturn(false);
-        when(repository.findByUserId(anyString())).thenReturn(Optional.of(UserEntity.builder().build()));
+        when(repository.findByTelegramId(anyString())).thenReturn(Optional.of(UserEntity.builder().build()));
 
         //then
         givenNicks.forEach(nick -> assertDoesNotThrow(() -> service.updateUserNick(givenUserId, nick)));

@@ -113,7 +113,7 @@ public class NotificationManager {
 
     private List<ChatNotification> getWaitingUserNotifications(List<WaitingUserEntity> waitingUsers) {
         return waitingUsers.stream()
-                .map(w -> ChatNotificationFactory.getWaitingUserNotification(w.getUser().getUserId(), w.getUser().getNationality()))
+                .map(w -> ChatNotificationFactory.getWaitingUserNotification(w.getUser().getTelegramId(), w.getUser().getNationality()))
                 .toList();
     }
 

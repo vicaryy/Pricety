@@ -25,8 +25,6 @@ public class WebUserService {
 
     private final WebUserMapper mapper;
 
-    private final PasswordEncoder passwordEncoder;
-
     public Optional<WebUserEntity> getByEmail(String email) {
         return repository.findByEmail(email);
     }
@@ -36,8 +34,8 @@ public class WebUserService {
         logger.info("New user added to repository: " + entity.getEmail());
     }
 
-    public void registerUser(RegisterModel model) {
-        registerUser(mapper.map(model));
+    public void registerUser(RegisterModel model, PasswordEncoder encoder) {
+        registerUser(mapper.map(model, encoder));
     }
 
     public void checkRegisterModelValidation(RegisterModel model) throws IllegalArgumentException {
@@ -48,9 +46,9 @@ public class WebUserService {
             throw new IllegalArgumentException("Email is already taken.");
     }
 
-    public void checkLogInModelValidation(LogInModel model) throws IllegalArgumentException {
+    public void checkLogInModelValidation(LogInModel model, PasswordEncoder encoder) throws IllegalArgumentException {
         WebUserEntity user = getByEmail(model.getEmail()).orElseThrow(() -> new IllegalArgumentException("Invalid data."));
-        if (!passwordEncoder.matches(model.getPassword(), user.getPassword()))
+        if (!encoder.matches(model.getPassword(), user.getPassword()))
             throw new IllegalArgumentException("Invalid data.");
     }
 

@@ -59,7 +59,7 @@ public class ResponseFacade {
     }
 
     public void updateNotifyByEmailById(String userId, boolean notifyByEmail) {
-        userService.updateNotifyByEmailById(userId, notifyByEmail);
+        userService.updateNotifyByEmailByTelegramId(userId, notifyByEmail);
     }
 
     public boolean productExistsByUserIdAndLinkAndVariant(String chatId, String link, String variant) {
@@ -75,19 +75,19 @@ public class ResponseFacade {
     }
 
     public boolean updateUserToPremiumByUserId(String userId) {
-        return userService.updateUserToPremiumByUserId(userId);
+        return userService.updateUserToPremiumByTelegramId(userId);
     }
 
     public boolean updateUserToStandardByUserId(String userId) {
-        return userService.updateUserToStandardByUserId(userId);
+        return userService.updateUserToStandardByTelegramId(userId);
     }
 
     public boolean updateUserToAdminByUserId(String userId) {
-        return userService.updateUserToAdminByUserId(userId);
+        return userService.updateUserToAdminByTelegramId(userId);
     }
 
     public boolean updateUserToNonAdminByUserId(String userId) {
-        return userService.updateUserToNonAdminByUserId(userId);
+        return userService.updateUserToNonAdminByTelegramId(userId);
     }
 
     public boolean emailVerExistsByUserIdAndToken(String userId, String token) {
@@ -123,11 +123,11 @@ public class ResponseFacade {
     }
 
     public void deleteEmailById(String userId) {
-        userService.deleteEmailById(userId);
+        userService.deleteEmailByTelegramId(userId);
     }
 
     public void updateEmailAndSendToken(String userId, String email) {
-        userService.updateEmailById(userId, email);
+        userService.updateEmailByTelegramId(userId, email);
 
         if (emailVerificationService.existsByUserId(userId))
             emailVerificationService.deleteAllByUserId(userId);
@@ -154,10 +154,10 @@ public class ResponseFacade {
     }
 
     public UserEntity getUser(String userId) {
-        return userService.findByUserId(userId);
+        return userService.findByTelegramId(userId);
     }
     public boolean isUserExists(String userId) {
-        return userService.existsByUserId(userId);
+        return userService.existsByTelegramId(userId);
     }
 
     public void deleteUser(String userId) {

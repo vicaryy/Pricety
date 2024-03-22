@@ -7,8 +7,6 @@ import com.vicary.zalandoscraper.entity.NotificationEntity;
 import com.vicary.zalandoscraper.entity.ProductEntity;
 import com.vicary.zalandoscraper.entity.ProductHistoryEntity;
 import com.vicary.zalandoscraper.model.Product;
-import com.vicary.zalandoscraper.service.repository_services.UserService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -47,13 +45,13 @@ public class ProductMapper {
                 .serviceName(product.getServiceName())
                 .currency(product.getCurrency())
                 .user(User.builder()
-                        .userId(product.getUser().getUserId())
+                        .userId(product.getUser().getTelegramId())
                         .email(product.getUser().getEmail())
                         .nick(product.getUser().getNick())
                         .language(product.getUser().getNationality())
                         .premium(product.getUser().isPremium())
                         .admin(product.getUser().isAdmin())
-                        .notifyByEmail(product.getUser().isNotifyByEmail())
+                        .notifyByEmail(product.getUser().isEmailNotifications())
                         .build())
                 .build();
     }

@@ -10,12 +10,12 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class WebUserMapper {
 
-    private final PasswordEncoder passwordEncoder;
+//    private final PasswordEncoder passwordEncoder;
 
-    public WebUserEntity map(RegisterModel model) {
+    public WebUserEntity map(RegisterModel model, PasswordEncoder encoder) {
         return WebUserEntity.builder()
                 .email(model.getEmail())
-                .password(passwordEncoder.encode(model.getPassword()))
+                .password(encoder.encode(model.getPassword()))
                 .role("USER")
                 .activated(false)
                 .build();

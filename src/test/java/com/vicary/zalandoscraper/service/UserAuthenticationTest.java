@@ -53,8 +53,8 @@ class UserAuthenticationTest {
         ActiveUser expectedActiveUser = getExpectedActiveUser(givenUserEntity);
 
         //when
-        when(userService.existsByUserId(givenUpdate.getMessage().getChat().getId())).thenReturn(true);
-        when(userService.findByUserId(givenUpdate.getMessage().getChat().getId())).thenReturn(givenUserEntity);
+        when(userService.existsByTelegramId(givenUpdate.getMessage().getChat().getId())).thenReturn(true);
+        when(userService.findByTelegramId(givenUpdate.getMessage().getChat().getId())).thenReturn(givenUserEntity);
         ActiveUser actualActiveUser = authentication.authenticate(givenUpdate);
 
         //then
@@ -72,8 +72,8 @@ class UserAuthenticationTest {
         ActiveUser expectedActiveUser = getExpectedActiveUserFromCallbackQuery(givenUserEntity);
 
         //when
-        when(userService.existsByUserId(givenUpdate.getCallbackQuery().getMessage().getChat().getId())).thenReturn(true);
-        when(userService.findByUserId(givenUpdate.getCallbackQuery().getMessage().getChat().getId())).thenReturn(givenUserEntity);
+        when(userService.existsByTelegramId(givenUpdate.getCallbackQuery().getMessage().getChat().getId())).thenReturn(true);
+        when(userService.findByTelegramId(givenUpdate.getCallbackQuery().getMessage().getChat().getId())).thenReturn(givenUserEntity);
         ActiveUser actualActiveUser = authentication.authenticate(givenUpdate);
 
         //then
@@ -91,8 +91,8 @@ class UserAuthenticationTest {
 
         //when
         when(activeRequestService.existsByUserId(givenUpdate.getMessage().getChat().getId())).thenReturn(true);
-        when(userService.existsByUserId(givenUpdate.getMessage().getChat().getId())).thenReturn(true);
-        when(userService.findByUserId(givenUpdate.getMessage().getChat().getId())).thenReturn(givenUserEntity);
+        when(userService.existsByTelegramId(givenUpdate.getMessage().getChat().getId())).thenReturn(true);
+        when(userService.findByTelegramId(givenUpdate.getMessage().getChat().getId())).thenReturn(givenUserEntity);
 
         //then
         assertThrows(ActiveUserException.class, () -> authentication.authenticate(givenUpdate));
@@ -109,8 +109,8 @@ class UserAuthenticationTest {
 
         //when
         when(activeRequestService.existsByUserId(givenUpdate.getCallbackQuery().getMessage().getChat().getId())).thenReturn(true);
-        when(userService.existsByUserId(givenUpdate.getCallbackQuery().getMessage().getChat().getId())).thenReturn(true);
-        when(userService.findByUserId(givenUpdate.getCallbackQuery().getMessage().getChat().getId())).thenReturn(givenUserEntity);
+        when(userService.existsByTelegramId(givenUpdate.getCallbackQuery().getMessage().getChat().getId())).thenReturn(true);
+        when(userService.findByTelegramId(givenUpdate.getCallbackQuery().getMessage().getChat().getId())).thenReturn(givenUserEntity);
 
         //then
         assertThrows(ActiveUserException.class, () -> authentication.authenticate(givenUpdate));
@@ -133,7 +133,7 @@ class UserAuthenticationTest {
 
         //when
         doThrow(new IllegalInputException("throw", "throw")).when(userService).validateNick(givenNick);
-        when(userService.existsByUserId(givenUpdate.getMessage().getChat().getId())).thenReturn(false);
+        when(userService.existsByTelegramId(givenUpdate.getMessage().getChat().getId())).thenReturn(false);
         when(userService.saveUser(givenUpdate.getMessage().getFrom())).thenReturn(givenUserEntity);
 
         //then
@@ -157,7 +157,7 @@ class UserAuthenticationTest {
 
         //when
         doThrow(new IllegalInputException("throw", "throw")).when(userService).validateNick(givenNick);
-        when(userService.existsByUserId(givenUpdate.getCallbackQuery().getMessage().getChat().getId())).thenReturn(false);
+        when(userService.existsByTelegramId(givenUpdate.getCallbackQuery().getMessage().getChat().getId())).thenReturn(false);
         when(userService.saveUser(givenUpdate.getCallbackQuery().getMessage().getFrom())).thenReturn(givenUserEntity);
 
         //then
@@ -169,7 +169,7 @@ class UserAuthenticationTest {
 
     private UserEntity getDefaultUserEntity() {
         return UserEntity.builder()
-                .userId("123")
+                .telegramId("123")
                 .nick("nick")
                 .nationality("pl")
                 .build();
@@ -220,7 +220,7 @@ class UserAuthenticationTest {
 
     private ActiveUser getExpectedActiveUser(UserEntity userEntity) {
         ActiveUser activeUser = new ActiveUser();
-        activeUser.setUserId(userEntity.getUserId());
+        activeUser.setTelegramId(userEntity.getTelegramId());
         activeUser.setChatId("123");
         activeUser.setMessageId(123);
         activeUser.setText("text");
@@ -231,7 +231,7 @@ class UserAuthenticationTest {
 
     private ActiveUser getExpectedActiveUserFromCallbackQuery(UserEntity userEntity) {
         ActiveUser activeUser = new ActiveUser();
-        activeUser.setUserId(userEntity.getUserId());
+        activeUser.setTelegramId(userEntity.getTelegramId());
         activeUser.setChatId("123");
         activeUser.setMessageId(123);
         activeUser.setText("data");

@@ -99,7 +99,7 @@ public class UserAuthentication {
             return userEntity;
 
         setActiveLanguage(userEntity.getNationality());
-        setAwaitedMessageForNick(userEntity.getUserId());
+        setAwaitedMessageForNick(userEntity.getTelegramId());
         throw new ActiveUserException();
     }
 
@@ -113,11 +113,11 @@ public class UserAuthentication {
     }
 
     private boolean isUserExistsInRepository(String chatId) {
-        return userService.existsByUserId(chatId);
+        return userService.existsByTelegramId(chatId);
     }
 
     private UserEntity getUserFromRepository(String chatId) {
-        return userService.findByUserId(chatId);
+        return userService.findByTelegramId(chatId);
     }
 
     private void saveMessageToRepository(UserEntity user, String text) {
@@ -126,13 +126,13 @@ public class UserAuthentication {
 
     private ActiveUser setActiveUserInThread(UserEntity userEntity, String text, String chatId, int messageId, boolean awaitedMessage) {
         ActiveUser activeUser = ActiveUser.get();
-        activeUser.setUserId(userEntity.getUserId());
+        activeUser.setTelegramId(userEntity.getTelegramId());
         activeUser.setChatId(chatId);
         activeUser.setMessageId(messageId);
         activeUser.setText(text.trim());
         activeUser.setPremium(userEntity.isPremium());
         activeUser.setNick(userEntity.getNick());
-        activeUser.setNotifyByEmail(userEntity.isNotifyByEmail());
+        activeUser.setNotifyByEmail(userEntity.isEmailNotifications());
         activeUser.setAwaitedMessage(awaitedMessage);
         activeUser.setEmail(userEntity.getEmail());
         activeUser.setVerifiedEmail(userEntity.isVerifiedEmail());

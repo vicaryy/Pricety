@@ -19,12 +19,9 @@ import com.vicary.zalandoscraper.exception.InvalidLinkException;
 import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.utils.TerminalExecutor;
 import lombok.SneakyThrows;
-import lombok.extern.flogger.Flogger;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.http.fileupload.FileUtils;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -119,7 +116,7 @@ public class InlineMarkupResponse implements Responser {
 
         checkIfUserHaveProduct(product);
 
-        responseFacade.saveProduct(product, user.getUserId());
+        responseFacade.saveProduct(product, user.getTelegramId());
         quickSender.message(user.getChatId(), Messages.other("productAdded"), false);
     }
 
@@ -142,7 +139,7 @@ public class InlineMarkupResponse implements Responser {
     }
 
     void displayProducts(ProductDisplayer displayer) {
-        List<Product> products = responseFacade.getAllProductsByUserId(user.getUserId());
+        List<Product> products = responseFacade.getAllProductsByUserId(user.getTelegramId());
 
         deletePreviousMessage();
 
@@ -163,7 +160,7 @@ public class InlineMarkupResponse implements Responser {
     }
 
     void displayEditPriceAlertMessage() {
-        responseFacade.createAndSaveAwaitedMessage(user.getUserId(), user.getText());
+        responseFacade.createAndSaveAwaitedMessage(user.getTelegramId(), user.getText());
 
         deletePreviousMessage(1500);
 
@@ -212,7 +209,7 @@ public class InlineMarkupResponse implements Responser {
     }
 
     private void deleteAllProducts() {
-        responseFacade.deleteAllProductsByUserId(user.getUserId());
+        responseFacade.deleteAllProductsByUserId(user.getTelegramId());
 
         popupMessage(Messages.other("allDeleted"), true);
 
@@ -231,7 +228,7 @@ public class InlineMarkupResponse implements Responser {
 
         String language = user.getText().split(" ")[1];
 
-        responseFacade.updateUserLanguage(user.getUserId(), language);
+        responseFacade.updateUserLanguage(user.getTelegramId(), language);
         ActiveLanguage.get().setResourceBundle(ResourceBundle.getBundle("messages", Locale.of(language)));
 
         displayMenu();
@@ -240,7 +237,7 @@ public class InlineMarkupResponse implements Responser {
     private void displaySetEmailMessage() {
         deletePreviousMessage(1500);
 
-        responseFacade.createAndSaveAwaitedMessage(user.getUserId(), user.getText());
+        responseFacade.createAndSaveAwaitedMessage(user.getTelegramId(), user.getText());
 
         quickSender.message(user.getChatId(), Messages.other("sendNewEmail"), true);
     }
@@ -263,7 +260,7 @@ public class InlineMarkupResponse implements Responser {
         }
 
         boolean notifyByEmail = user.getText().equals("-enableEmail");
-        responseFacade.updateNotifyByEmailById(user.getUserId(), notifyByEmail);
+        responseFacade.updateNotifyByEmailById(user.getTelegramId(), notifyByEmail);
         user.setNotifyByEmail(notifyByEmail);
         Thread.sleep(1000);
         displayNotification();

@@ -4,7 +4,6 @@ import com.microsoft.playwright.*;
 import com.microsoft.playwright.BrowserType;
 import com.microsoft.playwright.options.WaitUntilState;
 import com.vicary.zalandoscraper.messages.Messages;
-import com.vicary.zalandoscraper.scraper.config.DefaultExtraHeaders;
 import com.vicary.zalandoscraper.scraper.config.DefaultLaunchOptions;
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
 import com.vicary.zalandoscraper.exception.InvalidLinkException;
@@ -191,7 +190,7 @@ public class ZalandoScraper implements Scraper {
 
                 try {
                     if (!isLinkValid(page))
-                        throw new InvalidLinkException(Messages.scraper("invalidLink"), "User %s specified wrong link: %s".formatted(ActiveUser.get().getUserId(), ActiveUser.get().getText()));
+                        throw new InvalidLinkException(Messages.scraper("invalidLink"), "User %s specified wrong link: %s".formatted(ActiveUser.get().getTelegramId(), ActiveUser.get().getText()));
 
                     if (isItemOneVariant(page)) {
                         return List.of("-oneVariant " + getOneVariantName(page));
@@ -206,7 +205,7 @@ public class ZalandoScraper implements Scraper {
                     clickCookiesButton(page);
 
                     if (!isLinkValid(page))
-                        throw new InvalidLinkException(Messages.scraper("invalidLink"), "User %s specified wrong link: %s".formatted(ActiveUser.get().getUserId(), ActiveUser.get().getText()));
+                        throw new InvalidLinkException(Messages.scraper("invalidLink"), "User %s specified wrong link: %s".formatted(ActiveUser.get().getTelegramId(), ActiveUser.get().getText()));
 
                     if (isItemOneVariant(page)) {
                         return List.of("-oneVariant " + getOneVariantName(page));
@@ -230,7 +229,7 @@ public class ZalandoScraper implements Scraper {
 
                 try {
                     if (!isLinkValid(page))
-                        throw new InvalidLinkException(Messages.scraper("invalidLink"), "User %s specified wrong link: %s".formatted(ActiveUser.get().getUserId(), ActiveUser.get().getText()));
+                        throw new InvalidLinkException(Messages.scraper("invalidLink"), "User %s specified wrong link: %s".formatted(ActiveUser.get().getTelegramId(), ActiveUser.get().getText()));
 
                     if (isItemOneVariant(page)) {
                         return List.of("-oneVariant " + getOneVariantName(page));
@@ -245,7 +244,7 @@ public class ZalandoScraper implements Scraper {
                     clickCookiesButton(page);
 
                     if (!isLinkValid(page))
-                        throw new InvalidLinkException(Messages.scraper("invalidLink"), "User %s specified wrong link: %s".formatted(ActiveUser.get().getUserId(), ActiveUser.get().getText()));
+                        throw new InvalidLinkException(Messages.scraper("invalidLink"), "User %s specified wrong link: %s".formatted(ActiveUser.get().getTelegramId(), ActiveUser.get().getText()));
 
                     if (isItemOneVariant(page)) {
                         return List.of("-oneVariant " + getOneVariantName(page));
@@ -269,7 +268,7 @@ public class ZalandoScraper implements Scraper {
 
                 try {
                     if (!isLinkValid(page))
-                        throw new InvalidLinkException(Messages.scraper("invalidLink"), "User %s specified wrong link: %s".formatted(ActiveUser.get().getUserId(), ActiveUser.get().getText()));
+                        throw new InvalidLinkException(Messages.scraper("invalidLink"), "User %s specified wrong link: %s".formatted(ActiveUser.get().getTelegramId(), ActiveUser.get().getText()));
 
                     if (isItemOneVariant(page)) {
                         return List.of("-oneVariant " + getOneVariantName(page));
@@ -284,7 +283,7 @@ public class ZalandoScraper implements Scraper {
                     clickCookiesButton(page);
 
                     if (!isLinkValid(page))
-                        throw new InvalidLinkException(Messages.scraper("invalidLink"), "User %s specified wrong link: %s".formatted(ActiveUser.get().getUserId(), ActiveUser.get().getText()));
+                        throw new InvalidLinkException(Messages.scraper("invalidLink"), "User %s specified wrong link: %s".formatted(ActiveUser.get().getTelegramId(), ActiveUser.get().getText()));
 
                     if (isItemOneVariant(page)) {
                         return List.of("-oneVariant " + getOneVariantName(page));

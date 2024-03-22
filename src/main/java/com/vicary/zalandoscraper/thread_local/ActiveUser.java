@@ -1,6 +1,5 @@
 package com.vicary.zalandoscraper.thread_local;
 
-import lombok.Builder;
 import lombok.Data;
 
 @Data
@@ -8,7 +7,7 @@ public class ActiveUser {
 
     private static ThreadLocal<ActiveUser> activeUserThreadLocal = ThreadLocal.withInitial(ActiveUser::new);
 
-    private String userId;
+    private String telegramId;
 
     private String chatId;
 
@@ -40,6 +39,6 @@ public class ActiveUser {
     }
 
     public boolean isActive() {
-        return userId != null;
+        return telegramId != null;
     }
 }

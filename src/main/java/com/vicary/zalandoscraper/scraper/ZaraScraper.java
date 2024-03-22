@@ -235,7 +235,7 @@ public class ZaraScraper implements Scraper {
             page.navigate(link);
 
             if (!isLinkValid(page))
-                throw new InvalidLinkException(Messages.scraper("invalidLink"), "User %s specified wrong link: %s".formatted(ActiveUser.get().getUserId(), ActiveUser.get().getText()));
+                throw new InvalidLinkException(Messages.scraper("invalidLink"), "User %s specified wrong link: %s".formatted(ActiveUser.get().getTelegramId(), ActiveUser.get().getText()));
 
             boolean multiColor = isMultiColor(page);
             boolean multiVariant = isMultiVariant(page);

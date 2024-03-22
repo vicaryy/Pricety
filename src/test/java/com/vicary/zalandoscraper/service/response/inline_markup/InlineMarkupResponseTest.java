@@ -5,13 +5,11 @@ import com.vicary.zalandoscraper.api_telegram.api_object.message.Message;
 import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
 import com.vicary.zalandoscraper.entity.LinkRequestEntity;
 import com.vicary.zalandoscraper.exception.ChartGeneratorException;
-import com.vicary.zalandoscraper.exception.IllegalInputException;
 import com.vicary.zalandoscraper.exception.InvalidLinkException;
 import com.vicary.zalandoscraper.format.MarkdownV2;
 import com.vicary.zalandoscraper.messages.Messages;
 import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.scraper.Scraper;
-import com.vicary.zalandoscraper.service.chart.ChartGeneratorFactory;
 import com.vicary.zalandoscraper.service.chart.ProductChartGenerator;
 import com.vicary.zalandoscraper.service.dto.ProductHistoryDTO;
 import com.vicary.zalandoscraper.service.response.ResponseFacade;
@@ -22,7 +20,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.CharConversionException;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
@@ -171,7 +168,7 @@ class InlineMarkupResponseTest {
         List<Product> givenProducts = getDefaultListOfProducts();
 
         //when
-        when(responseFacade.getAllProductsByUserId(givenUser.getUserId())).thenReturn(givenProducts);
+        when(responseFacade.getAllProductsByUserId(givenUser.getTelegramId())).thenReturn(givenProducts);
 
         //then
         inlineMarkupResponse = new InlineMarkupResponse(responseFacade, givenUser, quickSender);
@@ -189,7 +186,7 @@ class InlineMarkupResponseTest {
         List<Product> givenProducts = Collections.emptyList();
 
         //when
-        when(responseFacade.getAllProductsByUserId(givenUser.getUserId())).thenReturn(givenProducts);
+        when(responseFacade.getAllProductsByUserId(givenUser.getTelegramId())).thenReturn(givenProducts);
 
         //then
         inlineMarkupResponse = new InlineMarkupResponse(responseFacade, givenUser, quickSender);
@@ -213,7 +210,7 @@ class InlineMarkupResponseTest {
         List<Product> givenProducts = getDefaultListOfProducts();
 
         //when
-        when(responseFacade.getAllProductsByUserId(givenUser.getUserId())).thenReturn(givenProducts);
+        when(responseFacade.getAllProductsByUserId(givenUser.getTelegramId())).thenReturn(givenProducts);
 
         //then
         inlineMarkupResponse = new InlineMarkupResponse(responseFacade, givenUser, quickSender);
@@ -231,7 +228,7 @@ class InlineMarkupResponseTest {
         List<Product> givenProducts = Collections.emptyList();
 
         //when
-        when(responseFacade.getAllProductsByUserId(givenUser.getUserId())).thenReturn(givenProducts);
+        when(responseFacade.getAllProductsByUserId(givenUser.getTelegramId())).thenReturn(givenProducts);
 
         //then
         inlineMarkupResponse = new InlineMarkupResponse(responseFacade, givenUser, quickSender);
@@ -255,7 +252,7 @@ class InlineMarkupResponseTest {
         List<Product> givenProducts = getDefaultListOfProducts();
 
         //when
-        when(responseFacade.getAllProductsByUserId(givenUser.getUserId())).thenReturn(givenProducts);
+        when(responseFacade.getAllProductsByUserId(givenUser.getTelegramId())).thenReturn(givenProducts);
 
         //then
         inlineMarkupResponse = new InlineMarkupResponse(responseFacade, givenUser, quickSender);
@@ -273,7 +270,7 @@ class InlineMarkupResponseTest {
         List<Product> givenProducts = Collections.emptyList();
 
         //when
-        when(responseFacade.getAllProductsByUserId(givenUser.getUserId())).thenReturn(givenProducts);
+        when(responseFacade.getAllProductsByUserId(givenUser.getTelegramId())).thenReturn(givenProducts);
 
         //then
         inlineMarkupResponse = new InlineMarkupResponse(responseFacade, givenUser, quickSender);
@@ -650,7 +647,7 @@ class InlineMarkupResponseTest {
 
     private ActiveUser getDefaultActiveUser() {
         ActiveUser givenUser = new ActiveUser();
-        givenUser.setUserId("123");
+        givenUser.setTelegramId("123");
         givenUser.setChatId("123");
         givenUser.setMessageId(123);
         return givenUser;

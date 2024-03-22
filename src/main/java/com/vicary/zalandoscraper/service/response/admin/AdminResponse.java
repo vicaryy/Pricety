@@ -320,7 +320,7 @@ public class AdminResponse implements Responser {
         if (to.equals("all"))
             sendMessageToAll(multiLanguage, pl, en);
         else
-            quickSender.message(responseFacade.getUser(to).getUserId(), MarkdownV2.applyWithManualBoldAndItalic(text).trim(), true);
+            quickSender.message(responseFacade.getUser(to).getTelegramId(), MarkdownV2.applyWithManualBoldAndItalic(text).trim(), true);
     }
 
     private void sendMessageToAll(boolean multiLanguage, String pl, String en) {
@@ -328,12 +328,12 @@ public class AdminResponse implements Responser {
         if (multiLanguage) {
             users.forEach(u -> {
                 if (u.getNationality().equals("pl"))
-                    quickSender.message(u.getUserId(), pl, true);
+                    quickSender.message(u.getTelegramId(), pl, true);
                 else
-                    quickSender.message(u.getUserId(), en, true);
+                    quickSender.message(u.getTelegramId(), en, true);
             });
         } else
-            users.forEach(user -> quickSender.message(user.getUserId(), pl, true));
+            users.forEach(user -> quickSender.message(user.getTelegramId(), pl, true));
     }
 
     private void getUser() {
@@ -463,13 +463,13 @@ public class AdminResponse implements Responser {
                         verifiedEmail: %s"""
                     .formatted(
                             MarkdownV2.applyWithManualBoldAndItalic("*User nr. " + (i + 1) + "*"),
-                            u.getUserId(),
+                            u.getTelegramId(),
                             MarkdownV2.apply(u.getNick() == null ? "-" : u.getNick()).get(),
                             MarkdownV2.apply(u.getEmail() == null ? "-" : u.getEmail()).get(),
                             u.getNationality(),
                             Boolean.toString(u.isPremium()),
                             Boolean.toString(u.isAdmin()),
-                            Boolean.toString(u.isNotifyByEmail()),
+                            Boolean.toString(u.isEmailNotifications()),
                             Boolean.toString(u.isVerifiedEmail())
                     ));
             quickSender.message(this.user.getChatId(), user, true);

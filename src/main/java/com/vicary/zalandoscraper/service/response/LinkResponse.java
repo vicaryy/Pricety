@@ -52,7 +52,7 @@ public class LinkResponse implements Responser {
             checkIfUserHaveProduct(user.getText(), variants.get(0));
             getAndSaveOneVariantProduct(variants.get(0), scraper);
             quickSender.deleteMessage(user.getChatId(), currentMessageId);
-            quickSender.message(user.getUserId(), Messages.other("productAdded"), false);
+            quickSender.message(user.getTelegramId(), Messages.other("productAdded"), false);
         } else {
             String requestId = responseFacade.generateAndSaveRequest(user.getText());
             quickSender.deleteMessage(user.getChatId(), currentMessageId);
@@ -63,7 +63,7 @@ public class LinkResponse implements Responser {
 
     private void getAndSaveOneVariantProduct(String variant, Scraper scraper) {
         Product product = scraper.getProduct(user.getText(), variant);
-        responseFacade.saveProduct(product, user.getUserId());
+        responseFacade.saveProduct(product, user.getTelegramId());
     }
 
     private void checkIfUserHaveProduct(String link, String variant) {
@@ -74,7 +74,7 @@ public class LinkResponse implements Responser {
     }
 
     private void checkUserLimit() {
-        if (responseFacade.countProductsByUserId(user.getUserId()) >= MAX_PRODUCT_LIMIT && !user.isPremium()) {
+        if (responseFacade.countProductsByUserId(user.getTelegramId()) >= MAX_PRODUCT_LIMIT && !user.isPremium()) {
             quickSender.deleteMessage(user.getChatId(), currentMessageId);
             throw new InvalidLinkException(Messages.other("productLimit"), "User try to add more than 10 products.");
         }

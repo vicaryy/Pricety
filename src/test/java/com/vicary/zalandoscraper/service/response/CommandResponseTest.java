@@ -178,7 +178,7 @@ class CommandResponseTest {
 
     private ActiveUser getDefaultActiveUser() {
         ActiveUser givenUser = new ActiveUser();
-        givenUser.setUserId("123");
+        givenUser.setTelegramId("123");
         givenUser.setChatId("123");
         givenUser.setMessageId(123);
         return givenUser;

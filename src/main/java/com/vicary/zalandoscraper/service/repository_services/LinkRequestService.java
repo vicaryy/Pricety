@@ -25,7 +25,7 @@ public class LinkRequestService {
     @Transactional
     public LinkRequestEntity getAndDeleteByRequestId(String requestId) {
         LinkRequestEntity linkRequest = repository.findByRequestId(requestId)
-                .orElseThrow(() -> new InvalidLinkException(Messages.other("sessionExpired"), "User '%s' session expired".formatted(ActiveUser.get().getUserId())));
+                .orElseThrow(() -> new InvalidLinkException(Messages.other("sessionExpired"), "User '%s' session expired".formatted(ActiveUser.get().getTelegramId())));
         repository.deleteByRequestId(requestId);
         checkExpiration(linkRequest.getExpiration());
         return linkRequest;
@@ -33,7 +33,7 @@ public class LinkRequestService {
 
     private void checkExpiration(long expiration) {
         if (System.currentTimeMillis() > expiration)
-            throw new InvalidLinkException(Messages.other("sessionExpired"), "User '%s' session expired".formatted(ActiveUser.get().getUserId()));
+            throw new InvalidLinkException(Messages.other("sessionExpired"), "User '%s' session expired".formatted(ActiveUser.get().getTelegramId()));
     }
 
     public String generateAndSaveRequest(String link) {

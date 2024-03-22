@@ -133,7 +133,7 @@ public class HebeScraper implements Scraper {
 
 
             if (!isLinkValid(page))
-                throw new InvalidLinkException(Messages.scraper("invalidLink"), "User %s specified wrong link: %s".formatted(ActiveUser.get().getUserId(), ActiveUser.get().getText()));
+                throw new InvalidLinkException(Messages.scraper("invalidLink"), "User %s specified wrong link: %s".formatted(ActiveUser.get().getTelegramId(), ActiveUser.get().getText()));
 
             waitForContent(page);
 
@@ -154,7 +154,7 @@ public class HebeScraper implements Scraper {
             page.navigate(link, navigateOptions);
 
             if (!isLinkValid(page))
-                throw new InvalidLinkException(Messages.scraper("invalidLink"), "User %s specified wrong link: %s".formatted(ActiveUser.get().getUserId(), ActiveUser.get().getText()));
+                throw new InvalidLinkException(Messages.scraper("invalidLink"), "User %s specified wrong link: %s".formatted(ActiveUser.get().getTelegramId(), ActiveUser.get().getText()));
 
             if (isMultiVariant(page))
                 return getAvailableVariantsAsString(page);
@@ -173,7 +173,7 @@ public class HebeScraper implements Scraper {
             page.navigate(link, navigateOptions);
 
             if (!isLinkValid(page))
-                throw new InvalidLinkException(Messages.scraper("invalidLink"), "User %s specified wrong link: %s".formatted(ActiveUser.get().getUserId(), ActiveUser.get().getText()));
+                throw new InvalidLinkException(Messages.scraper("invalidLink"), "User %s specified wrong link: %s".formatted(ActiveUser.get().getTelegramId(), ActiveUser.get().getText()));
 
             if (isMultiVariant(page))
                 return getNonAvailableVariantsAsString(page);

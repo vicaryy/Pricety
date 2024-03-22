@@ -10,6 +10,7 @@ import com.vicary.zalandoscraper.exception.IllegalInputException;
 import com.vicary.zalandoscraper.exception.ScraperBotException;
 import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.model.User;
+import com.vicary.zalandoscraper.security.Role;
 import com.vicary.zalandoscraper.service.UpdateReceiverService;
 import com.vicary.zalandoscraper.service.response.ResponseFacade;
 import com.vicary.zalandoscraper.thread_local.ActiveLanguage;
@@ -1220,13 +1221,13 @@ class AdminResponseTest {
 
     private UserEntity getDefaultUserEntity() {
         return UserEntity.builder()
-                .userId("1234")
+                .telegramId("1234")
                 .email("email")
                 .nick("nick_")
                 .nationality("pl")
                 .premium(true)
-                .admin(false)
-                .notifyByEmail(true)
+                .role(Role.USER)
+                .emailNotifications(true)
                 .verifiedEmail(true)
                 .build();
     }
@@ -1245,13 +1246,13 @@ class AdminResponseTest {
 
     private UserEntity getUserEntity(String userId) {
         return UserEntity.builder()
-                .userId(userId)
+                .telegramId(userId)
                 .build();
     }
 
     private UserEntity getUserEntity(String userId, String language) {
         return UserEntity.builder()
-                .userId(userId)
+                .telegramId(userId)
                 .nationality(language)
                 .build();
     }
@@ -1268,7 +1269,7 @@ class AdminResponseTest {
 
     private ActiveUser getDefaultActiveUser() {
         ActiveUser givenUser = new ActiveUser();
-        givenUser.setUserId("123");
+        givenUser.setTelegramId("123");
         givenUser.setChatId("123");
         givenUser.setMessageId(123);
         return givenUser;

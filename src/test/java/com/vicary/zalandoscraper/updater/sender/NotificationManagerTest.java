@@ -384,7 +384,7 @@ class NotificationManagerTest {
 
     private WaitingUserEntity getDefaultWaitingUser() {
         return new WaitingUserEntity(UserEntity.builder()
-                .userId("123")
+                .telegramId("123")
                 .nationality("en")
                 .build());
     }
