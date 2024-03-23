@@ -41,12 +41,12 @@ class EmailVerificationResponseTest {
         String givenToken = "validToken";
 
         //when
-        when(responseFacade.emailVerExistsByUserIdAndToken(givenUser.getChatId(), givenToken)).thenReturn(true);
+        when(responseFacade.emailVerExistsByTelegramIdAndToken(givenUser.getChatId(), givenToken)).thenReturn(true);
         emailVerificationResponse = new EmailVerificationResponse(responseFacade, givenUser, quickSender);
         emailVerificationResponse.response();
 
         //then
-        verify(responseFacade, times(1)).emailVerExistsByUserIdAndToken(anyString(), anyString());
+        verify(responseFacade, times(1)).emailVerExistsByTelegramIdAndToken(anyString(), anyString());
         verify(responseFacade, times(1)).setUserVerifiedEmail(givenUser.getTelegramId(), true);
         verify(responseFacade, times(1)).deleteEmailVerByToken(givenToken);
         verify(quickSender, times(1)).message(givenUser.getChatId(), Messages.other("emailVerifiedSuccessfully"), false);
@@ -63,7 +63,7 @@ class EmailVerificationResponseTest {
         emailVerificationResponse.response();
 
         //then
-        verify(responseFacade, times(0)).emailVerExistsByUserIdAndToken(anyString(), anyString());
+        verify(responseFacade, times(0)).emailVerExistsByTelegramIdAndToken(anyString(), anyString());
     }
 
     @Test
@@ -78,7 +78,7 @@ class EmailVerificationResponseTest {
         emailVerificationResponse.response();
 
         //then
-        verify(responseFacade, times(0)).emailVerExistsByUserIdAndToken(anyString(), anyString());
+        verify(responseFacade, times(0)).emailVerExistsByTelegramIdAndToken(anyString(), anyString());
     }
 
     @Test
@@ -91,11 +91,11 @@ class EmailVerificationResponseTest {
 
         //when
         emailVerificationResponse = new EmailVerificationResponse(responseFacade, givenUser, quickSender);
-        when(responseFacade.emailVerExistsByUserIdAndToken(givenUser.getChatId(), givenToken)).thenReturn(false);
+        when(responseFacade.emailVerExistsByTelegramIdAndToken(givenUser.getChatId(), givenToken)).thenReturn(false);
 
         //then
         assertThrows(IllegalInputException.class, () -> emailVerificationResponse.response());
-        verify(responseFacade, times(1)).emailVerExistsByUserIdAndToken(anyString(), anyString());
+        verify(responseFacade, times(1)).emailVerExistsByTelegramIdAndToken(anyString(), anyString());
     }
 
     private ActiveUser getDefaultActiveUser() {

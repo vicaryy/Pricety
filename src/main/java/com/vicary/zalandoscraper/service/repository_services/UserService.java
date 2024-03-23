@@ -44,6 +44,10 @@ public class UserService {
         return userEntity;
     }
 
+    public long getUserIdByTelegramId(String telegramId) {
+        return findByTelegramId(telegramId).getUserId();
+    }
+
     public boolean existsByTelegramId(String telegramId) {
         return repository.existsByTelegramId(telegramId);
     }
@@ -210,6 +214,6 @@ public class UserService {
     }
 
     public void deleteUser(String telegramId) {
-        repository.deleteById(telegramId);
-    }
+        repository.deleteById(2L);
+    } //TODO
 }

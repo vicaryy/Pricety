@@ -29,7 +29,7 @@ public class EmailVerificationResponse implements Responser {
         if (user.getEmail() == null || user.isVerifiedEmail())
             return;
 
-        if (!responseFacade.emailVerExistsByUserIdAndToken(user.getTelegramId(), token))
+        if (!responseFacade.emailVerExistsByTelegramIdAndToken(user.getTelegramId(), token))
             throw new IllegalInputException(Messages.other("invalidEmailVerificationCode"), "User '%s' type wrong email verification code.".formatted(user.getTelegramId()));
 
         responseFacade.setUserVerifiedEmail(user.getTelegramId(), true);

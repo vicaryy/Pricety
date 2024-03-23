@@ -209,7 +209,7 @@ public class InlineMarkupResponse implements Responser {
     }
 
     private void deleteAllProducts() {
-        responseFacade.deleteAllProductsByUserId(user.getTelegramId());
+        responseFacade.deleteAllProductsByTelegramId(user.getTelegramId());
 
         popupMessage(Messages.other("allDeleted"), true);
 
@@ -260,7 +260,7 @@ public class InlineMarkupResponse implements Responser {
         }
 
         boolean notifyByEmail = user.getText().equals("-enableEmail");
-        responseFacade.updateNotifyByEmailById(user.getTelegramId(), notifyByEmail);
+        responseFacade.updateNotifyByEmailByTelegramId(user.getTelegramId(), notifyByEmail);
         user.setNotifyByEmail(notifyByEmail);
         Thread.sleep(1000);
         displayNotification();
@@ -268,7 +268,7 @@ public class InlineMarkupResponse implements Responser {
 
 
     private void checkIfUserHaveProduct(Product product) {
-        if (responseFacade.productExistsByUserIdAndLinkAndVariant(user.getChatId(), product.getLink(), product.getVariant()))
+        if (responseFacade.productExistsByTelegramIdAndLinkAndVariant(user.getChatId(), product.getLink(), product.getVariant()))
             throw new InvalidLinkException(Messages.other("alreadyHave"), "User try to add same product.");
     }
 

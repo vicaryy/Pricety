@@ -132,7 +132,7 @@ public class AdminResponse implements Responser {
 
     private void setPremium() {
         String userId = removePrefix(user.getText());
-        if (responseFacade.updateUserToPremiumByUserId(userId))
+        if (responseFacade.updateUserToPremiumByTelegramId(userId))
             quickSender.message(user.getChatId(), String.format("User %s successfully updated to Premium.", userId), false);
         else
             throw new IllegalInputException(
@@ -142,7 +142,7 @@ public class AdminResponse implements Responser {
 
     private void setStandard() {
         String userId = removePrefix(user.getText());
-        if (responseFacade.updateUserToStandardByUserId(userId))
+        if (responseFacade.updateUserToStandardByTelegramId(userId))
             quickSender.message(user.getChatId(), String.format("User %s successfully updated to Standard.", userId), false);
         else
             throw new IllegalInputException(
@@ -152,7 +152,7 @@ public class AdminResponse implements Responser {
 
     private void setAdmin() {
         String userId = removePrefix(user.getText());
-        if (responseFacade.updateUserToAdminByUserId(userId))
+        if (responseFacade.updateUserToAdminByTelegramId(userId))
             quickSender.message(user.getChatId(), String.format("User %s successfully updated to Admin.", userId), false);
         else
             throw new IllegalInputException(
@@ -162,7 +162,7 @@ public class AdminResponse implements Responser {
 
     void setNonAdmin() {
         String userId = removePrefix(user.getText());
-        if (responseFacade.updateUserToNonAdminByUserId(userId))
+        if (responseFacade.updateUserToNonAdminByTelegramId(userId))
             quickSender.message(user.getChatId(), String.format("User %s successfully updated to Non-Admin.", userId), false);
         else
             throw new IllegalInputException(

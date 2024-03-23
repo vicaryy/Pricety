@@ -15,11 +15,12 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "users", schema = "public")
+@Table(name = "users_test", schema = "public")
 public class UserEntity implements UserDetails {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
-    private String userId;
+    private Long userId;
 
     @Column(name = "telegram_id")
     private String telegramId;
@@ -43,7 +44,7 @@ public class UserEntity implements UserDetails {
     @Column(name = "role")
     private Role role;
 
-    @Column(name = "notify_by_email")
+    @Column(name = "email_notifications")
     private boolean emailNotifications;
 
     @Column(name = "verified_email")
@@ -62,11 +63,11 @@ public class UserEntity implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @ToString.Exclude
     private List<MessageEntity> telegramMessages;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    @ToString.Exclude
-    private List<WaitingUserEntity> waitingUsers;
-
+//
+//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+//    @ToString.Exclude
+//    private List<WaitingUserEntity> waitingUsers;
+ //TODO
     public boolean isAdmin() {
         return role.toString().equalsIgnoreCase("ADMIN");
     }

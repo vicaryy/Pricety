@@ -4,7 +4,6 @@ import com.vicary.zalandoscraper.entity.ProductEntity;
 import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.model.ProductTemplate;
 import com.vicary.zalandoscraper.repository.ProductRepository;
-import com.vicary.zalandoscraper.scraper.PhotoUrlUpdater;
 import com.vicary.zalandoscraper.service.map.ProductMapper;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -26,7 +25,6 @@ public class ProductService {
     private final ProductMapper mapper;
 
     private final UserService userService;
-    private final PhotoUrlUpdater photoUrlUpdater = new PhotoUrlUpdater();
 
     public List<Product> getAll() {
         return mapper.map(repository.findAll());
@@ -60,8 +58,8 @@ public class ProductService {
         return mapper.map(repository.findAll(Sort.by("link")));
     }
 
-    public List<Product> getAllProductsByUserId(String userId) {
-        List<ProductEntity> productEntities = repository.findAllByUser(userService.findByTelegramId(userId), Sort.by("id"));
+    public List<Product> getAllProductsByTelegramId(String telegramId) {
+        List<ProductEntity> productEntities = repository.findAllByUser(userService.findByTelegramId(telegramId), Sort.by("id"));
 
         if (productEntities.isEmpty())
             return Collections.emptyList();
@@ -84,24 +82,24 @@ public class ProductService {
         }
     }
 
-    public int countByUserId(String userId) {
-        return repository.countByUserId(userId);
+    public int countByTelegramId(String telegramId) {
+        return repository.countByTelegramId(userService.getUserIdByTelegramId(telegramId));
     }
 
-    public boolean existsByUserIdAndLinkAndVariant(String userId, String link, String variant) {
-        return repository.existByUserIdLinkAndVariant(userId, link, variant) == 1;
+    public boolean existsByTelegramIdAndLinkAndVariant(String telegramId, String link, String variant) {
+        return repository.existByTelegramIdLinkAndVariant(userService.getUserIdByTelegramId(telegramId), link, variant) == 1;
     }
 
     public void deleteProductById(Long id) {
         repository.deleteById(id);
     }
 
-    public void deleteAllProductsByUserId(String userId) {
-        repository.deleteAllByUserId(userId);
+    public void deleteAllProductsByTelegramId(String telegramId) {
+        repository.deleteAllByUserId(userService.getUserIdByTelegramId(telegramId));
     }
 
-    public void saveProduct(Product product, String userId) {
-        repository.save(mapper.map(product, userService.findByTelegramId(userId)));
+    public void saveProduct(Product product, String telegramId) {
+        repository.save(mapper.map(product, userService.findByTelegramId(telegramId)));
         logger.info("[Product Service] Added new product to database link: {}", product.getLink());
     }
 

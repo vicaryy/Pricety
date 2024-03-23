@@ -46,18 +46,18 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
     @Query(value = """
             delete from products
             where user_id = :userId""", nativeQuery = true)
-    void deleteAllByUserId(@Param("userId") String userId);
+    void deleteAllByUserId(@Param("userId") long userId);
 
 
     @Query(value = """
             select count(1)
             from products
             where user_id = :userId and link = :link and variant = :variant""", nativeQuery = true)
-    int existByUserIdLinkAndVariant(@Param("userId") String userId, @Param("link") String link, @Param("variant") String variant);
+    int existByTelegramIdLinkAndVariant(@Param("userId") long userId, @Param("link") String link, @Param("variant") String variant);
 
     @Query(value = """
             select count(product_id)
             from products
             where user_id = :userId""", nativeQuery = true)
-    int countByUserId(String userId);
+    int countByTelegramId(long userId);
 }

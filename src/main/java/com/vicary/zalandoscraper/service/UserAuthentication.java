@@ -1,6 +1,7 @@
 package com.vicary.zalandoscraper.service;
 
 import com.vicary.zalandoscraper.entity.AwaitedMessageEntity;
+import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.format.MarkdownV2;
 import com.vicary.zalandoscraper.thread_local.ActiveLanguage;
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
@@ -8,7 +9,6 @@ import com.vicary.zalandoscraper.api_telegram.api_object.Update;
 import com.vicary.zalandoscraper.api_telegram.api_object.User;
 import com.vicary.zalandoscraper.api_telegram.api_object.message.Message;
 import com.vicary.zalandoscraper.entity.ActiveRequestEntity;
-import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.exception.ActiveUserException;
 import com.vicary.zalandoscraper.messages.Messages;
 import com.vicary.zalandoscraper.service.repository_services.ActiveRequestService;

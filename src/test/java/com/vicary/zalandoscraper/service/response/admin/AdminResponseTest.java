@@ -5,7 +5,6 @@ import com.vicary.zalandoscraper.api_telegram.api_request.ApiRequest;
 import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
 import com.vicary.zalandoscraper.api_telegram.service.RequestService;
 import com.vicary.zalandoscraper.api_telegram.service.UpdateFetcher;
-import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.exception.IllegalInputException;
 import com.vicary.zalandoscraper.exception.ScraperBotException;
 import com.vicary.zalandoscraper.model.Product;
@@ -64,12 +63,12 @@ class AdminResponseTest {
         givenUser.setText("//set premium " + givenUserId);
 
         //when
-        when(responseFacade.updateUserToPremiumByUserId(givenUserId)).thenReturn(true);
+        when(responseFacade.updateUserToPremiumByTelegramId(givenUserId)).thenReturn(true);
         adminResponse.set(givenUser, updateFetcher);
         adminResponse.response();
 
         //then
-        verify(responseFacade, times(1)).updateUserToPremiumByUserId(givenUserId);
+        verify(responseFacade, times(1)).updateUserToPremiumByTelegramId(givenUserId);
         verify(quickSender, times(1)).message(givenUser.getChatId(), String.format("User %s successfully updated to Premium.", givenUserId), false);
         verify(quickSender, times(0)).message(givenUser.getChatId(), String.format("User %s does not exist.", givenUserId), false);
     }
@@ -82,12 +81,12 @@ class AdminResponseTest {
         givenUser.setText("//set premium " + givenUserId);
 
         //when
-        when(responseFacade.updateUserToPremiumByUserId(givenUserId)).thenReturn(false);
+        when(responseFacade.updateUserToPremiumByTelegramId(givenUserId)).thenReturn(false);
         adminResponse.set(givenUser, updateFetcher);
 
         //then
         assertThrows(IllegalInputException.class, () -> adminResponse.response());
-        verify(responseFacade, times(1)).updateUserToPremiumByUserId(givenUserId);
+        verify(responseFacade, times(1)).updateUserToPremiumByTelegramId(givenUserId);
         verify(quickSender, times(0)).message(givenUser.getChatId(), String.format("User %s successfully updated to Premium.", givenUserId), false);
     }
 
@@ -99,12 +98,12 @@ class AdminResponseTest {
         givenUser.setText("//set standard " + givenUserId);
 
         //when
-        when(responseFacade.updateUserToStandardByUserId(givenUserId)).thenReturn(true);
+        when(responseFacade.updateUserToStandardByTelegramId(givenUserId)).thenReturn(true);
         adminResponse.set(givenUser, updateFetcher);
         adminResponse.response();
 
         //then
-        verify(responseFacade, times(1)).updateUserToStandardByUserId(givenUserId);
+        verify(responseFacade, times(1)).updateUserToStandardByTelegramId(givenUserId);
         verify(quickSender, times(1)).message(givenUser.getChatId(), String.format("User %s successfully updated to Standard.", givenUserId), false);
         verify(quickSender, times(0)).message(givenUser.getChatId(), String.format("User %s does not exist.", givenUserId), false);
     }
@@ -117,12 +116,12 @@ class AdminResponseTest {
         givenUser.setText("//set standard " + givenUserId);
 
         //when
-        when(responseFacade.updateUserToStandardByUserId(givenUserId)).thenReturn(false);
+        when(responseFacade.updateUserToStandardByTelegramId(givenUserId)).thenReturn(false);
         adminResponse.set(givenUser, updateFetcher);
 
         //then
         assertThrows(IllegalInputException.class, () -> adminResponse.response());
-        verify(responseFacade, times(1)).updateUserToStandardByUserId(givenUserId);
+        verify(responseFacade, times(1)).updateUserToStandardByTelegramId(givenUserId);
         verify(quickSender, times(0)).message(givenUser.getChatId(), String.format("User %s successfully updated to Standard.", givenUserId), false);
     }
 
@@ -134,12 +133,12 @@ class AdminResponseTest {
         givenUser.setText("//set admin " + givenUserId);
 
         //when
-        when(responseFacade.updateUserToAdminByUserId(givenUserId)).thenReturn(true);
+        when(responseFacade.updateUserToAdminByTelegramId(givenUserId)).thenReturn(true);
         adminResponse.set(givenUser, updateFetcher);
         adminResponse.response();
 
         //then
-        verify(responseFacade, times(1)).updateUserToAdminByUserId(givenUserId);
+        verify(responseFacade, times(1)).updateUserToAdminByTelegramId(givenUserId);
         verify(quickSender, times(1)).message(givenUser.getChatId(), String.format("User %s successfully updated to Admin.", givenUserId), false);
         verify(quickSender, times(0)).message(givenUser.getChatId(), String.format("User %s does not exist.", givenUserId), false);
     }
@@ -152,12 +151,12 @@ class AdminResponseTest {
         givenUser.setText("//set admin " + givenUserId);
 
         //when
-        when(responseFacade.updateUserToAdminByUserId(givenUserId)).thenReturn(false);
+        when(responseFacade.updateUserToAdminByTelegramId(givenUserId)).thenReturn(false);
         adminResponse.set(givenUser, updateFetcher);
 
         //then
         assertThrows(IllegalInputException.class, () -> adminResponse.response());
-        verify(responseFacade, times(1)).updateUserToAdminByUserId(givenUserId);
+        verify(responseFacade, times(1)).updateUserToAdminByTelegramId(givenUserId);
         verify(quickSender, times(0)).message(givenUser.getChatId(), String.format("User %s successfully updated to Admin.", givenUserId), false);
     }
 
@@ -169,12 +168,12 @@ class AdminResponseTest {
         givenUser.setText("//set non-admin " + givenUserId);
 
         //when
-        when(responseFacade.updateUserToNonAdminByUserId(givenUserId)).thenReturn(true);
+        when(responseFacade.updateUserToNonAdminByTelegramId(givenUserId)).thenReturn(true);
         adminResponse.set(givenUser, updateFetcher);
         adminResponse.response();
 
         //then
-        verify(responseFacade, times(1)).updateUserToNonAdminByUserId(givenUserId);
+        verify(responseFacade, times(1)).updateUserToNonAdminByTelegramId(givenUserId);
         verify(quickSender, times(1)).message(givenUser.getChatId(), String.format("User %s successfully updated to Non-Admin.", givenUserId), false);
         verify(quickSender, times(0)).message(givenUser.getChatId(), String.format("User %s does not exist.", givenUserId), false);
     }
@@ -187,12 +186,12 @@ class AdminResponseTest {
         givenUser.setText("//set non-admin " + givenUserId);
 
         //when
-        when(responseFacade.updateUserToNonAdminByUserId(givenUserId)).thenReturn(false);
+        when(responseFacade.updateUserToNonAdminByTelegramId(givenUserId)).thenReturn(false);
         adminResponse.set(givenUser, updateFetcher);
 
         //then
         assertThrows(IllegalInputException.class, () -> adminResponse.response());
-        verify(responseFacade, times(1)).updateUserToNonAdminByUserId(givenUserId);
+        verify(responseFacade, times(1)).updateUserToNonAdminByTelegramId(givenUserId);
         verify(quickSender, times(0)).message(givenUser.getChatId(), String.format("User %s successfully updated to Non-Admin.", givenUserId), false);
     }
 
@@ -512,7 +511,7 @@ class AdminResponseTest {
     @Test
     void response_sendMessage_SendMessageToUser() {
         //given
-        UserEntity givenUserEntity = getDefaultUserEntity();
+        UserEntityASD givenUserEntity = getDefaultUserEntity();
         ActiveUser givenUser = getDefaultActiveUser();
         givenUser.setText("""
                 //send message 1234 text text text
@@ -540,7 +539,7 @@ class AdminResponseTest {
     @Test
     void response_sendMessage_SendMessageToAllUsers() {
         //given
-        List<UserEntity> givenUserEntity = List.of(
+        List<UserEntityASD> givenUserEntity = List.of(
                 getUserEntity("1"),
                 getUserEntity("2"),
                 getUserEntity("3"),
@@ -577,7 +576,7 @@ class AdminResponseTest {
     @Test
     void response_sendMessage_SendMessageToAllUsersWithMultiLanguage() {
         //given
-        List<UserEntity> givenUserEntity = List.of(
+        List<UserEntityASD> givenUserEntity = List.of(
                 getUserEntity("1", "en"),
                 getUserEntity("2", "en"),
                 getUserEntity("3", "pl"),
@@ -646,7 +645,7 @@ class AdminResponseTest {
         givenUser.setText("""
                 //get user 1234""");
         String givenUserId = "1234";
-        UserEntity givenUserEntity = getDefaultUserEntity();
+        UserEntityASD givenUserEntity = getDefaultUserEntity();
         String expectedText = """
                 *User nr\\. 1*
                     id: 1234
@@ -673,7 +672,7 @@ class AdminResponseTest {
         ActiveUser givenUser = getDefaultActiveUser();
         givenUser.setText("""
                 //get user all""");
-        List<UserEntity> givenUserEntities = getListOfDefaultUserEntity(3);
+        List<UserEntityASD> givenUserEntities = getListOfDefaultUserEntity(3);
         String expectedText1 = """
                 *User nr\\. 1*
                     id: 1234
@@ -1219,8 +1218,8 @@ class AdminResponseTest {
                 .build();
     }
 
-    private UserEntity getDefaultUserEntity() {
-        return UserEntity.builder()
+    private UserEntityASD getDefaultUserEntity() {
+        return UserEntityASD.builder()
                 .telegramId("1234")
                 .email("email")
                 .nick("nick_")
@@ -1232,7 +1231,7 @@ class AdminResponseTest {
                 .build();
     }
 
-    private List<UserEntity> getListOfDefaultUserEntity(int size) {
+    private List<UserEntityASD> getListOfDefaultUserEntity(int size) {
         return IntStream.range(0, size)
                 .mapToObj(i -> getDefaultUserEntity())
                 .toList();
@@ -1244,14 +1243,14 @@ class AdminResponseTest {
                 .toList();
     }
 
-    private UserEntity getUserEntity(String userId) {
-        return UserEntity.builder()
+    private UserEntityASD getUserEntity(String userId) {
+        return UserEntityASD.builder()
                 .telegramId(userId)
                 .build();
     }
 
-    private UserEntity getUserEntity(String userId, String language) {
-        return UserEntity.builder()
+    private UserEntityASD getUserEntity(String userId, String language) {
+        return UserEntityASD.builder()
                 .telegramId(userId)
                 .nationality(language)
                 .build();

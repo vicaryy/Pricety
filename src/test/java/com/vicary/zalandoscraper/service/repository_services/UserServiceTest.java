@@ -1,6 +1,5 @@
 package com.vicary.zalandoscraper.service.repository_services;
 
-import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.exception.IllegalInputException;
 import com.vicary.zalandoscraper.repository.UserRepository;
 import com.vicary.zalandoscraper.service.UpdateReceiverService;
@@ -100,12 +99,12 @@ class UserServiceTest {
         String givenNick = "nick123";
         //when
         when(repository.existsByNick(givenNick)).thenReturn(false);
-        when(repository.findByTelegramId(givenUserId)).thenReturn(Optional.empty());
+        when(repository.findByUserId(givenUserId)).thenReturn(Optional.empty());
 
         //then
         assertThrows(IllegalInputException.class, () -> service.updateUserNick(givenUserId, givenNick));
         verify(repository, times(1)).existsByNick(givenNick);
-        verify(repository, times(1)).findByTelegramId(givenUserId);
+        verify(repository, times(1)).findByUserId(givenUserId);
     }
 
     @Test
@@ -122,7 +121,7 @@ class UserServiceTest {
         );
         //when
         when(repository.existsByNick(anyString())).thenReturn(false);
-        when(repository.findByTelegramId(anyString())).thenReturn(Optional.of(UserEntity.builder().build()));
+        when(repository.findByUserId(anyString())).thenReturn(Optional.of(UserEntityASD.builder().build()));
 
         //then
         givenNicks.forEach(nick -> assertDoesNotThrow(() -> service.updateUserNick(givenUserId, nick)));

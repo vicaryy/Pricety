@@ -30,7 +30,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(e -> {
-                    e.requestMatchers("/", "/join/**", "/assets/**").permitAll();
+                    e.requestMatchers("/", "/join/**", "/assets/**", "/test").permitAll();
                     e.requestMatchers("/account").hasRole("USER");
                     e.anyRequest().authenticated();
                 })

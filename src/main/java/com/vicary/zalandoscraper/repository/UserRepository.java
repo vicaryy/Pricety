@@ -9,7 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-public interface UserRepository extends JpaRepository<UserEntity, String> {
+public interface UserRepository extends JpaRepository<UserEntity, Long> {
+
     Optional<UserEntity> findByTelegramId(String userId);
 
     Optional<UserEntity> findByNick(String nick);

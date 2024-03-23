@@ -1,5 +1,6 @@
 package com.vicary.zalandoscraper.thread_local;
 
+import com.vicary.zalandoscraper.security.Role;
 import lombok.Data;
 
 @Data

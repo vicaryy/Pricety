@@ -67,14 +67,14 @@ public class LinkResponse implements Responser {
     }
 
     private void checkIfUserHaveProduct(String link, String variant) {
-        if (responseFacade.productExistsByUserIdAndLinkAndVariant(user.getChatId(), link, variant)) {
+        if (responseFacade.productExistsByTelegramIdAndLinkAndVariant(user.getChatId(), link, variant)) {
             quickSender.deleteMessage(user.getChatId(), currentMessageId);
             throw new InvalidLinkException(Messages.other("alreadyHave"), "User try to add same product.");
         }
     }
 
     private void checkUserLimit() {
-        if (responseFacade.countProductsByUserId(user.getTelegramId()) >= MAX_PRODUCT_LIMIT && !user.isPremium()) {
+        if (responseFacade.countProductsByTelegramIdId(user.getTelegramId()) >= MAX_PRODUCT_LIMIT && !user.isPremium()) {
             quickSender.deleteMessage(user.getChatId(), currentMessageId);
             throw new InvalidLinkException(Messages.other("productLimit"), "User try to add more than 10 products.");
         }

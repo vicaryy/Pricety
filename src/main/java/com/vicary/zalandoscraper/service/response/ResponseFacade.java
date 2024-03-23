@@ -40,7 +40,7 @@ public class ResponseFacade {
     }
 
     public List<Product> getAllProductsByUserId(String userId) {
-        return productService.getAllProductsByUserId(userId);
+        return productService.getAllProductsByTelegramId(userId);
     }
 
     public void createAndSaveAwaitedMessage(String userId, String request) {
@@ -54,43 +54,43 @@ public class ResponseFacade {
         productService.deleteProductById(productId);
     }
 
-    public void deleteAllProductsByUserId(String userId) {
-        productService.deleteAllProductsByUserId(userId);
+    public void deleteAllProductsByTelegramId(String telegramId) {
+        productService.deleteAllProductsByTelegramId(telegramId);
     }
 
-    public void updateNotifyByEmailById(String userId, boolean notifyByEmail) {
-        userService.updateNotifyByEmailByTelegramId(userId, notifyByEmail);
+    public void updateNotifyByEmailByTelegramId(String telegramId, boolean notifyByEmail) {
+        userService.updateNotifyByEmailByTelegramId(telegramId, notifyByEmail);
     }
 
-    public boolean productExistsByUserIdAndLinkAndVariant(String chatId, String link, String variant) {
-        return productService.existsByUserIdAndLinkAndVariant(chatId, link, variant);
+    public boolean productExistsByTelegramIdAndLinkAndVariant(String telegramId, String link, String variant) {
+        return productService.existsByTelegramIdAndLinkAndVariant(telegramId, link, variant);
     }
 
-    public int countProductsByUserId(String userId) {
-        return productService.countByUserId(userId);
+    public int countProductsByTelegramIdId(String telegramId) {
+        return productService.countByTelegramId(telegramId);
     }
 
     public LinkRequestEntity getLinkRequestByIdAndDelete(String requestId) {
         return linkRequestService.getAndDeleteByRequestId(requestId);
     }
 
-    public boolean updateUserToPremiumByUserId(String userId) {
+    public boolean updateUserToPremiumByTelegramId(String userId) {
         return userService.updateUserToPremiumByTelegramId(userId);
     }
 
-    public boolean updateUserToStandardByUserId(String userId) {
+    public boolean updateUserToStandardByTelegramId(String userId) {
         return userService.updateUserToStandardByTelegramId(userId);
     }
 
-    public boolean updateUserToAdminByUserId(String userId) {
+    public boolean updateUserToAdminByTelegramId(String userId) {
         return userService.updateUserToAdminByTelegramId(userId);
     }
 
-    public boolean updateUserToNonAdminByUserId(String userId) {
+    public boolean updateUserToNonAdminByTelegramId(String userId) {
         return userService.updateUserToNonAdminByTelegramId(userId);
     }
 
-    public boolean emailVerExistsByUserIdAndToken(String userId, String token) {
+    public boolean emailVerExistsByTelegramIdAndToken(String userId, String token) {
         return emailVerificationService.existsByUserIdAndToken(userId, token);
     }
 

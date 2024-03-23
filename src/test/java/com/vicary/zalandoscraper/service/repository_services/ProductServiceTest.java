@@ -1,7 +1,5 @@
 package com.vicary.zalandoscraper.service.repository_services;
 
-import com.vicary.zalandoscraper.entity.ProductEntity;
-import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.repository.ProductRepository;
 import com.vicary.zalandoscraper.scraper.*;
@@ -140,13 +138,13 @@ class ProductServiceTest {
     void getAllProductsByUserId_expectEmptyList_NoProducts() {
         //given
         String givenUserId = "123";
-        UserEntity givenUser = UserEntity.builder().build();
+        UserEntityASD givenUser = UserEntityASD.builder().build();
 
         //when
         when(userService.findByTelegramId(givenUserId)).thenReturn(givenUser);
         when(repository.findAllByUser(givenUser, Sort.by("id"))).thenReturn(Collections.emptyList());
 
-        List<Product> actualList = productService.getAllProductsByUserId(givenUserId);
+        List<Product> actualList = productService.getAllProductsByTelegramId(givenUserId);
 
         //then
         assertEquals(Collections.emptyList(), actualList);
@@ -156,25 +154,25 @@ class ProductServiceTest {
     @Test
     void getAllProductsByUserId_expectList_NormalListOfProducts() {
         //given
-        List<ProductEntity> givenEntityList = getNormalEntityList();
+        List<ProductEntityASD> givenEntityList = getNormalEntityList();
         String givenUserId = "123";
-        UserEntity givenUser = UserEntity.builder().build();
+        UserEntityASD givenUser = UserEntityASD.builder().build();
 
         //when
         when(userService.findByTelegramId(givenUserId)).thenReturn(givenUser);
         when(repository.findAllByUser(givenUser, Sort.by("id"))).thenReturn(givenEntityList);
 
-        productService.getAllProductsByUserId(givenUserId);
+        productService.getAllProductsByTelegramId(givenUserId);
 
         //then
         verify(mapper, times(1)).map(givenEntityList);
     }
 
-    private List<ProductEntity> getNormalEntityList() {
+    private List<ProductEntityASD> getNormalEntityList() {
         return List.of(
-                ProductEntity.builder().build(),
-                ProductEntity.builder().build(),
-                ProductEntity.builder().build());
+                ProductEntityASD.builder().build(),
+                ProductEntityASD.builder().build(),
+                ProductEntityASD.builder().build());
     }
 }
 

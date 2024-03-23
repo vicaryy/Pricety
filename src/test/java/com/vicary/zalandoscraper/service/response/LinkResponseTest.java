@@ -53,12 +53,12 @@ class LinkResponseTest {
         when(quickSender.messageWithReturn(givenUser.getChatId(), Messages.other("processing"), false)).thenReturn(givenMessage);
         when(scraper.getAllVariants(givenUser.getText())).thenReturn(givenListOfVariants);
         when(scraper.getProduct(givenUser.getText(), givenListOfVariants.get(0))).thenReturn(givenProduct);
-        when(responseFacade.productExistsByUserIdAndLinkAndVariant(
+        when(responseFacade.productExistsByTelegramIdAndLinkAndVariant(
                 givenUser.getChatId(),
                 givenUser.getText(),
                 givenProduct.getVariant()))
                 .thenReturn(false);
-        when(responseFacade.countProductsByUserId(givenUser.getChatId())).thenReturn(0);
+        when(responseFacade.countProductsByTelegramIdId(givenUser.getChatId())).thenReturn(0);
 
         //then
         linkResponse = new LinkResponse(responseFacade, givenUser, scraper, quickSender);
@@ -108,7 +108,7 @@ class LinkResponseTest {
         when(quickSender.messageWithReturn(givenUser.getChatId(), Messages.other("processing"), false)).thenReturn(givenMessage);
         when(scraper.getAllVariants(givenUser.getText())).thenReturn(givenListOfVariants);
         when(scraper.getProduct(givenUser.getText(), givenListOfVariants.get(0))).thenReturn(givenProduct);
-        when(responseFacade.productExistsByUserIdAndLinkAndVariant(
+        when(responseFacade.productExistsByTelegramIdAndLinkAndVariant(
                 givenUser.getChatId(),
                 givenUser.getText(),
                 givenProduct.getVariant()))
@@ -138,12 +138,12 @@ class LinkResponseTest {
         when(quickSender.messageWithReturn(givenUser.getChatId(), Messages.other("processing"), false)).thenReturn(givenMessage);
         when(scraper.getAllVariants(givenUser.getText())).thenReturn(givenListOfVariants);
         when(scraper.getProduct(givenUser.getText(), givenListOfVariants.get(0))).thenReturn(givenProduct);
-        when(responseFacade.productExistsByUserIdAndLinkAndVariant(
+        when(responseFacade.productExistsByTelegramIdAndLinkAndVariant(
                 givenUser.getChatId(),
                 givenUser.getText(),
                 givenProduct.getVariant()))
                 .thenReturn(false);
-        when(responseFacade.countProductsByUserId(givenUser.getChatId())).thenReturn(amountOfProducts);
+        when(responseFacade.countProductsByTelegramIdId(givenUser.getChatId())).thenReturn(amountOfProducts);
 
         //then
         linkResponse = new LinkResponse(responseFacade, givenUser, scraper, quickSender);
@@ -170,12 +170,12 @@ class LinkResponseTest {
         when(quickSender.messageWithReturn(givenUser.getChatId(), Messages.other("processing"), false)).thenReturn(givenMessage);
         when(scraper.getAllVariants(givenUser.getText())).thenReturn(givenListOfVariants);
         when(scraper.getProduct(givenUser.getText(), givenListOfVariants.get(0))).thenReturn(givenProduct);
-        when(responseFacade.productExistsByUserIdAndLinkAndVariant(
+        when(responseFacade.productExistsByTelegramIdAndLinkAndVariant(
                 givenUser.getChatId(),
                 givenUser.getText(),
                 givenProduct.getVariant()))
                 .thenReturn(false);
-        when(responseFacade.countProductsByUserId(givenUser.getChatId())).thenReturn(amountOfProducts);
+        when(responseFacade.countProductsByTelegramIdId(givenUser.getChatId())).thenReturn(amountOfProducts);
 
         //then
         linkResponse = new LinkResponse(responseFacade, givenUser, scraper, quickSender);

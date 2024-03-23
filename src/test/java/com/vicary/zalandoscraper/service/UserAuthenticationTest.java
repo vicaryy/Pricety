@@ -8,9 +8,9 @@ import com.vicary.zalandoscraper.api_telegram.api_object.other.CallbackQuery;
 import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
 import com.vicary.zalandoscraper.entity.ActiveRequestEntity;
 import com.vicary.zalandoscraper.entity.AwaitedMessageEntity;
-import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.exception.ActiveUserException;
 import com.vicary.zalandoscraper.exception.IllegalInputException;
+import com.vicary.zalandoscraper.security.Role;
 import com.vicary.zalandoscraper.service.map.UserMapper;
 import com.vicary.zalandoscraper.service.repository_services.ActiveRequestService;
 import com.vicary.zalandoscraper.service.repository_services.AwaitedMessageService;
@@ -49,7 +49,7 @@ class UserAuthenticationTest {
     void authenticate_NormalAuthentication() {
         //given
         Update givenUpdate = getDefaultUpdate();
-        UserEntity givenUserEntity = getDefaultUserEntity();
+        UserEntityASD givenUserEntity = getDefaultUserEntity();
         ActiveUser expectedActiveUser = getExpectedActiveUser(givenUserEntity);
 
         //when
@@ -68,7 +68,7 @@ class UserAuthenticationTest {
     void authenticate_NormalAuthenticationAsCallbackQuery() {
         //given
         Update givenUpdate = getCallbackUpdate();
-        UserEntity givenUserEntity = getDefaultUserEntity();
+        UserEntityASD givenUserEntity = getDefaultUserEntity();
         ActiveUser expectedActiveUser = getExpectedActiveUserFromCallbackQuery(givenUserEntity);
 
         //when
@@ -87,7 +87,7 @@ class UserAuthenticationTest {
     void authenticate_UserTryToDoMoreThanOneRequest() {
         //given
         Update givenUpdate = getDefaultUpdate();
-        UserEntity givenUserEntity = getDefaultUserEntity();
+        UserEntityASD givenUserEntity = getDefaultUserEntity();
 
         //when
         when(activeRequestService.existsByUserId(givenUpdate.getMessage().getChat().getId())).thenReturn(true);
@@ -105,7 +105,7 @@ class UserAuthenticationTest {
     void authenticate_UserTryToDoMoreThanOneRequestAsCallbackQuery() {
         //given
         Update givenUpdate = getCallbackUpdate();
-        UserEntity givenUserEntity = getDefaultUserEntity();
+        UserEntityASD givenUserEntity = getDefaultUserEntity();
 
         //when
         when(activeRequestService.existsByUserId(givenUpdate.getCallbackQuery().getMessage().getChat().getId())).thenReturn(true);
@@ -124,7 +124,7 @@ class UserAuthenticationTest {
         //given
         Update givenUpdate = getDefaultUpdate();
         String givenNick = "!@#$invalid";
-        UserEntity givenUserEntity = getDefaultUserEntity();
+        UserEntityASD givenUserEntity = getDefaultUserEntity();
         givenUserEntity.setNick(givenNick);
         var givenAwaitedMessage = AwaitedMessageEntity.builder()
                 .request("-setNick")
@@ -148,7 +148,7 @@ class UserAuthenticationTest {
         //given
         Update givenUpdate = getCallbackUpdate();
         String givenNick = "!@#$invalid";
-        UserEntity givenUserEntity = getDefaultUserEntity();
+        UserEntityASD givenUserEntity = getDefaultUserEntity();
         givenUserEntity.setNick(givenNick);
         var givenAwaitedMessage = AwaitedMessageEntity.builder()
                 .request("-setNick")
@@ -167,11 +167,12 @@ class UserAuthenticationTest {
         verify(activeRequestService, times(0)).saveActiveUser(any(ActiveRequestEntity.class));
     }
 
-    private UserEntity getDefaultUserEntity() {
-        return UserEntity.builder()
+    private UserEntityASD getDefaultUserEntity() {
+        return UserEntityASD.builder()
                 .telegramId("123")
                 .nick("nick")
                 .nationality("pl")
+                .role(Role.USER)
                 .build();
     }
 
@@ -218,7 +219,7 @@ class UserAuthenticationTest {
                 .build();
     }
 
-    private ActiveUser getExpectedActiveUser(UserEntity userEntity) {
+    private ActiveUser getExpectedActiveUser(UserEntityASD userEntity) {
         ActiveUser activeUser = new ActiveUser();
         activeUser.setTelegramId(userEntity.getTelegramId());
         activeUser.setChatId("123");
@@ -229,7 +230,7 @@ class UserAuthenticationTest {
         return activeUser;
     }
 
-    private ActiveUser getExpectedActiveUserFromCallbackQuery(UserEntity userEntity) {
+    private ActiveUser getExpectedActiveUserFromCallbackQuery(UserEntityASD userEntity) {
         ActiveUser activeUser = new ActiveUser();
         activeUser.setTelegramId(userEntity.getTelegramId());
         activeUser.setChatId("123");

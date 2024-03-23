@@ -1,10 +1,10 @@
 package com.vicary.zalandoscraper.service.map;
 
+import com.vicary.zalandoscraper.entity.ProductEntity;
 import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.model.ProductTemplate;
 import com.vicary.zalandoscraper.model.User;
 import com.vicary.zalandoscraper.entity.NotificationEntity;
-import com.vicary.zalandoscraper.entity.ProductEntity;
 import com.vicary.zalandoscraper.entity.ProductHistoryEntity;
 import com.vicary.zalandoscraper.model.Product;
 import org.springframework.stereotype.Component;
