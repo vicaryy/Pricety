@@ -5,6 +5,7 @@ import com.vicary.zalandoscraper.model.ForgotPasswordModel;
 import com.vicary.zalandoscraper.model.LogInModel;
 import com.vicary.zalandoscraper.model.RegisterModel;
 import com.vicary.zalandoscraper.security.JwtService;
+import com.vicary.zalandoscraper.service.repository_services.UserService;
 import com.vicary.zalandoscraper.service.repository_services.WebUserService;
 import com.vicary.zalandoscraper.utils.Cookies;
 import jakarta.servlet.http.Cookie;
@@ -27,6 +28,8 @@ public class JoinController {
 
     private final WebUserService webUserService;
 
+    private final UserService userService;
+
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService = new JwtService();
 
@@ -45,22 +48,22 @@ public class JoinController {
     public String join(@ModelAttribute LogInModel logInModel, Model model, HttpServletResponse response) {
 
         try {
-            webUserService.checkLogInModelValidation(logInModel, passwordEncoder);
+            userService.checkLogInModelValidation(logInModel, passwordEncoder);
         } catch (IllegalArgumentException ex) {
             logger.warn(ex.getMessage());
             model.addAttribute("logIn", true);
             setModelAttributes(model, new Error("LogIn", ex.getMessage()));
             return "join";
         }
-        Cookie cookie = Cookies.getJwtCookie(jwtService.generateJwt(webUserService.getByEmail(logInModel.getEmail()).orElseThrow()));
+        Cookie cookie = Cookies.getJwtCookie(jwtService.generateJwt(userService.findByEmail(logInModel.getEmail())));
         response.addCookie(cookie);
-        return "redirect:/join";
+        return "redirect:/";
     }
 
     @PostMapping("/join/register")
     public String join(@ModelAttribute RegisterModel registerModel, Model model, HttpServletResponse response) {
         try {
-            webUserService.checkRegisterModelValidation(registerModel);
+            userService.checkRegisterModelValidation(registerModel);
         } catch (IllegalArgumentException ex) {
             logger.warn(ex.getMessage());
             model.addAttribute("signUp", true);
@@ -68,7 +71,7 @@ public class JoinController {
             return "join";
         }
 
-        webUserService.registerUser(registerModel, passwordEncoder);
+        userService.registerUser(registerModel, passwordEncoder);
         return "redirect:/";
     }
 

@@ -78,7 +78,7 @@ public class UpdateReceiverService implements UpdateReceiver {
 
         String userId = user.getTelegramId();
         String chatId = user.getChatId();
-        logger.info("Got message from user '{}'", userId);
+        logger.info("Got message from user '{}' - {}", user.getUserId(), user.getNick());
 
         try {
             if (Pattern.isAdminCommand(user.getText(), user.isAdmin())) {
@@ -89,7 +89,7 @@ public class UpdateReceiverService implements UpdateReceiver {
             if (!running.get())
                 return;
             if (autoUpdater.isUpdating())
-                handleProductUpdaterRunning(userId);
+                handleProductUpdaterRunning(user.getUserId(), userId);
 
 
             Responser responser = null;
@@ -143,9 +143,9 @@ public class UpdateReceiverService implements UpdateReceiver {
         return (update.getMessage() == null && update.getCallbackQuery() == null) || (update.getMessage() != null && update.getMessage().getText() == null);
     }
 
-    private void handleProductUpdaterRunning(String userId) {
+    private void handleProductUpdaterRunning(long userId, String telegramId) {
         String message = Messages.other("updatingProducts");
-        quickSender.message(userId, message, true);
+        quickSender.message(telegramId, message, true);
         facade.checkAndSaveWaitingUser(userId);
         throw new IllegalArgumentException("User '%s' interact with bot while product updater is running.".formatted(userId));
     }

@@ -35,15 +35,15 @@ public class ResponseFacade {
     private final WaitingUserService waitingUserService;
 
 
-    public void saveProduct(Product product, String userId) {
+    public void saveProduct(Product product, long userId) {
         productService.saveProduct(product, userId);
     }
 
-    public List<Product> getAllProductsByUserId(String userId) {
-        return productService.getAllProductsByTelegramId(userId);
+    public List<Product> getAllProductsByUserId(long userId) {
+        return productService.getAllProductsByUserId(userId);
     }
 
-    public void createAndSaveAwaitedMessage(String userId, String request) {
+    public void createAndSaveAwaitedMessage(String userId, String request) { //todo
         awaitedMessageService.saveAwaitedMessage(AwaitedMessageEntity.builder()
                 .userId(userId)
                 .request(request)
@@ -54,47 +54,47 @@ public class ResponseFacade {
         productService.deleteProductById(productId);
     }
 
-    public void deleteAllProductsByTelegramId(String telegramId) {
-        productService.deleteAllProductsByTelegramId(telegramId);
+    public void deleteAllProductsByUserId(long userId) {
+        productService.deleteAllProductsByUserId(userId);
     }
 
-    public void updateNotifyByEmailByTelegramId(String telegramId, boolean notifyByEmail) {
-        userService.updateNotifyByEmailByTelegramId(telegramId, notifyByEmail);
+    public void updateNotifyByEmailByUserId(long userId, boolean notifyByEmail) {
+        userService.updateNotifyByEmailByUserId(userId, notifyByEmail);
     }
 
-    public boolean productExistsByTelegramIdAndLinkAndVariant(String telegramId, String link, String variant) {
-        return productService.existsByTelegramIdAndLinkAndVariant(telegramId, link, variant);
+    public boolean productExistsByUserIdAndLinkAndVariant(long userId, String link, String variant) {
+        return productService.existsByUserIdAndLinkAndVariant(userId, link, variant);
     }
 
-    public int countProductsByTelegramIdId(String telegramId) {
-        return productService.countByTelegramId(telegramId);
+    public int countProductsByUserId(long userId) {
+        return productService.countByUserId(userId);
     }
 
     public LinkRequestEntity getLinkRequestByIdAndDelete(String requestId) {
         return linkRequestService.getAndDeleteByRequestId(requestId);
     }
 
-    public boolean updateUserToPremiumByTelegramId(String userId) {
-        return userService.updateUserToPremiumByTelegramId(userId);
+    public boolean updateUserToPremiumByUserId(long userId) {
+        return userService.updateUserToPremiumByUserId(userId);
     }
 
-    public boolean updateUserToStandardByTelegramId(String userId) {
-        return userService.updateUserToStandardByTelegramId(userId);
+    public boolean updateUserToStandardByUserId(long userId) {
+        return userService.updateUserToStandardByUserId(userId);
     }
 
-    public boolean updateUserToAdminByTelegramId(String userId) {
-        return userService.updateUserToAdminByTelegramId(userId);
+    public boolean updateUserToAdminByUserId(long userId) {
+        return userService.updateUserToAdminByUserId(userId);
     }
 
-    public boolean updateUserToNonAdminByTelegramId(String userId) {
-        return userService.updateUserToNonAdminByTelegramId(userId);
+    public boolean updateUserToNonAdminByUserId(long userId) {
+        return userService.updateUserToNonAdminByUserId(userId);
     }
 
-    public boolean emailVerExistsByTelegramIdAndToken(String userId, String token) {
+    public boolean emailVerExistsByUserIdAndToken(long userId, String token) {
         return emailVerificationService.existsByUserIdAndToken(userId, token);
     }
 
-    public void setUserVerifiedEmail(String userId, boolean b) {
+    public void setUserVerifiedEmail(long userId, boolean b) {
         userService.setVerifiedEmail(userId, b);
     }
 
@@ -102,15 +102,15 @@ public class ResponseFacade {
         emailVerificationService.deleteByToken(token);
     }
 
-    public String getAwaitedMessageRequestAndDelete(String userId) {
+    public String getAwaitedMessageRequestAndDelete(String userId) { //todo
         return awaitedMessageService.getRequestAndDeleteMessage(userId);
     }
 
-    public void deleteAwaitedMessage(String userId) {
+    public void deleteAwaitedMessage(String userId) { //todo
         awaitedMessageService.deleteAwaitedMessage(userId);
     }
 
-    public String getAwaitedMessageRequest(String userId) {
+    public String getAwaitedMessageRequest(String userId) { //todo
         return awaitedMessageService.getRequest(userId);
     }
 
@@ -122,12 +122,12 @@ public class ResponseFacade {
         productService.updateProductPriceAlert(productId, priceAlert);
     }
 
-    public void deleteEmailById(String userId) {
-        userService.deleteEmailByTelegramId(userId);
+    public void deleteEmailById(long userId) {
+        userService.deleteEmailByUserId(userId);
     }
 
-    public void updateEmailAndSendToken(String userId, String email) {
-        userService.updateEmailByTelegramId(userId, email);
+    public void updateEmailAndSendToken(long userId, String email) {
+        userService.updateEmailByUserId(userId, email);
 
         if (emailVerificationService.existsByUserId(userId))
             emailVerificationService.deleteAllByUserId(userId);
@@ -153,14 +153,19 @@ public class ResponseFacade {
         activeRequestService.deleteAllActiveUsers();
     }
 
-    public UserEntity getUser(String userId) {
-        return userService.findByTelegramId(userId);
-    }
-    public boolean isUserExists(String userId) {
-        return userService.existsByTelegramId(userId);
+    public UserEntity getUser(long userId) {
+        return userService.findByUserId(userId);
     }
 
-    public void deleteUser(String userId) {
+    public boolean isUserExists(long userId) {
+        return userService.existsByUserId(userId);
+    }
+
+    public boolean isUserExists(String telegramId) {
+        return userService.existsByTelegramId(telegramId);
+    }
+
+    public void deleteUser(long userId) {
         userService.deleteUser(userId);
     }
 
@@ -168,15 +173,15 @@ public class ResponseFacade {
         return userService.findAllUsers();
     }
 
-    public void updateUserNick(String userId, String nick) {
+    public void updateUserNick(long userId, String nick) {
         userService.updateUserNick(userId, nick);
     }
 
-    public void updateUserLanguage(String userId, String language) {
+    public void updateUserLanguage(long userId, String language) {
         userService.updateLanguage(userId, language);
     }
 
-    public void checkAndSaveWaitingUser(String userId) {
+    public void checkAndSaveWaitingUser(long userId) {
         if (!waitingUserService.existsByUserId(getUser(userId)))
             waitingUserService.saveWaitingUser(new WaitingUserEntity(getUser(userId)));
     }

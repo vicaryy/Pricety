@@ -1,5 +1,6 @@
 package com.vicary.zalandoscraper.updater.sender;
 
+import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.entity.WaitingUserEntity;
 import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.model.User;
@@ -382,7 +383,7 @@ class NotificationManagerTest {
     }
 
     private WaitingUserEntity getDefaultWaitingUser() {
-        return new WaitingUserEntity(UserEntityASD.builder()
+        return new WaitingUserEntity(UserEntity.builder()
                 .telegramId("123")
                 .nationality("en")
                 .build());

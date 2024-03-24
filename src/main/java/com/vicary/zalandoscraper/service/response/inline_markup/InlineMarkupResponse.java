@@ -116,7 +116,7 @@ public class InlineMarkupResponse implements Responser {
 
         checkIfUserHaveProduct(product);
 
-        responseFacade.saveProduct(product, user.getTelegramId());
+        responseFacade.saveProduct(product, user.getUserId());
         quickSender.message(user.getChatId(), Messages.other("productAdded"), false);
     }
 
@@ -139,7 +139,7 @@ public class InlineMarkupResponse implements Responser {
     }
 
     void displayProducts(ProductDisplayer displayer) {
-        List<Product> products = responseFacade.getAllProductsByUserId(user.getTelegramId());
+        List<Product> products = responseFacade.getAllProductsByUserId(user.getUserId());
 
         deletePreviousMessage();
 
@@ -209,7 +209,7 @@ public class InlineMarkupResponse implements Responser {
     }
 
     private void deleteAllProducts() {
-        responseFacade.deleteAllProductsByTelegramId(user.getTelegramId());
+        responseFacade.deleteAllProductsByUserId(user.getUserId());
 
         popupMessage(Messages.other("allDeleted"), true);
 
@@ -228,7 +228,7 @@ public class InlineMarkupResponse implements Responser {
 
         String language = user.getText().split(" ")[1];
 
-        responseFacade.updateUserLanguage(user.getTelegramId(), language);
+        responseFacade.updateUserLanguage(user.getUserId(), language);
         ActiveLanguage.get().setResourceBundle(ResourceBundle.getBundle("messages", Locale.of(language)));
 
         displayMenu();
@@ -260,7 +260,7 @@ public class InlineMarkupResponse implements Responser {
         }
 
         boolean notifyByEmail = user.getText().equals("-enableEmail");
-        responseFacade.updateNotifyByEmailByTelegramId(user.getTelegramId(), notifyByEmail);
+        responseFacade.updateNotifyByEmailByUserId(user.getUserId(), notifyByEmail);
         user.setNotifyByEmail(notifyByEmail);
         Thread.sleep(1000);
         displayNotification();
@@ -268,7 +268,7 @@ public class InlineMarkupResponse implements Responser {
 
 
     private void checkIfUserHaveProduct(Product product) {
-        if (responseFacade.productExistsByTelegramIdAndLinkAndVariant(user.getChatId(), product.getLink(), product.getVariant()))
+        if (responseFacade.productExistsByUserIdAndLinkAndVariant(user.getUserId(), product.getLink(), product.getVariant()))
             throw new InvalidLinkException(Messages.other("alreadyHave"), "User try to add same product.");
     }
 

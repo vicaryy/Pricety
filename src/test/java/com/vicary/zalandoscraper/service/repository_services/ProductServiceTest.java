@@ -1,5 +1,7 @@
 package com.vicary.zalandoscraper.service.repository_services;
 
+import com.vicary.zalandoscraper.entity.ProductEntity;
+import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.repository.ProductRepository;
 import com.vicary.zalandoscraper.scraper.*;
@@ -137,14 +139,14 @@ class ProductServiceTest {
     @Test
     void getAllProductsByUserId_expectEmptyList_NoProducts() {
         //given
-        String givenUserId = "123";
-        UserEntityASD givenUser = UserEntityASD.builder().build();
+        long givenUserId = 123;
+        UserEntity givenUser = UserEntity.builder().build();
 
         //when
-        when(userService.findByTelegramId(givenUserId)).thenReturn(givenUser);
+        when(userService.findByUserId(givenUserId)).thenReturn(givenUser);
         when(repository.findAllByUser(givenUser, Sort.by("id"))).thenReturn(Collections.emptyList());
 
-        List<Product> actualList = productService.getAllProductsByTelegramId(givenUserId);
+        List<Product> actualList = productService.getAllProductsByUserId(givenUserId);
 
         //then
         assertEquals(Collections.emptyList(), actualList);
@@ -154,25 +156,25 @@ class ProductServiceTest {
     @Test
     void getAllProductsByUserId_expectList_NormalListOfProducts() {
         //given
-        List<ProductEntityASD> givenEntityList = getNormalEntityList();
-        String givenUserId = "123";
-        UserEntityASD givenUser = UserEntityASD.builder().build();
+        List<ProductEntity> givenEntityList = getNormalEntityList();
+        long givenUserId = 123;
+        UserEntity givenUser = UserEntity.builder().build();
 
         //when
-        when(userService.findByTelegramId(givenUserId)).thenReturn(givenUser);
+        when(userService.findByUserId(givenUserId)).thenReturn(givenUser);
         when(repository.findAllByUser(givenUser, Sort.by("id"))).thenReturn(givenEntityList);
 
-        productService.getAllProductsByTelegramId(givenUserId);
+        productService.getAllProductsByUserId(givenUserId);
 
         //then
         verify(mapper, times(1)).map(givenEntityList);
     }
 
-    private List<ProductEntityASD> getNormalEntityList() {
+    private List<ProductEntity> getNormalEntityList() {
         return List.of(
-                ProductEntityASD.builder().build(),
-                ProductEntityASD.builder().build(),
-                ProductEntityASD.builder().build());
+                ProductEntity.builder().build(),
+                ProductEntity.builder().build(),
+                ProductEntity.builder().build());
     }
 }
 

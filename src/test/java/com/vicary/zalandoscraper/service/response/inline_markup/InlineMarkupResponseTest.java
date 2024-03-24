@@ -63,12 +63,12 @@ class InlineMarkupResponseTest {
         //when
         when(quickSender.messageWithReturn(givenUser.getChatId(), Messages.other("adding"), false)).thenReturn(givenMessage);
         when(scraper.getProduct(givenLink, givenVariant)).thenReturn(givenProduct);
-        when(responseFacade.productExistsByTelegramIdAndLinkAndVariant(
-                givenUser.getChatId(),
+        when(responseFacade.productExistsByUserIdAndLinkAndVariant(
+                givenUser.getUserId(),
                 givenProduct.getLink(),
                 givenProduct.getVariant()))
                 .thenReturn(false);
-        when(responseFacade.countProductsByTelegramIdId(givenUser.getChatId())).thenReturn(0);
+        when(responseFacade.countProductsByUserId(givenUser.getUserId())).thenReturn(0);
         when(responseFacade.getLinkRequestByIdAndDelete(givenRequestId)).thenReturn(givenLinkRequest);
         inlineMarkupResponse = new InlineMarkupResponse(responseFacade, givenUser, quickSender);
         inlineMarkupResponse.addProduct(givenLink, givenVariant, scraper);
@@ -78,8 +78,8 @@ class InlineMarkupResponseTest {
         verify(quickSender, times(1)).deleteMessage(givenUser.getChatId(), givenMessage.getMessageId());
         verify(quickSender, times(1)).messageWithReturn(givenUser.getChatId(), Messages.other("adding"), false);
         verify(quickSender, times(1)).chatAction(givenUser.getChatId(), Action.TYPING);
-        verify(responseFacade, times(1)).productExistsByTelegramIdAndLinkAndVariant(anyString(), anyString(), anyString());
-        verify(responseFacade, times(1)).saveProduct(givenProduct, givenUser.getChatId());
+        verify(responseFacade, times(1)).productExistsByUserIdAndLinkAndVariant(anyLong(), anyString(), anyString());
+        verify(responseFacade, times(1)).saveProduct(givenProduct, givenUser.getUserId());
         verify(quickSender, times(1)).message(givenUser.getChatId(), Messages.other("productAdded"), false);
     }
 
@@ -98,13 +98,13 @@ class InlineMarkupResponseTest {
         //when
         when(quickSender.messageWithReturn(givenUser.getChatId(), Messages.other("adding"), false)).thenReturn(givenMessage);
         when(scraper.getProduct(givenLink, givenVariant)).thenReturn(givenProduct);
-        when(responseFacade.productExistsByTelegramIdAndLinkAndVariant(
-                givenUser.getChatId(),
+        when(responseFacade.productExistsByUserIdAndLinkAndVariant(
+                givenUser.getUserId(),
                 givenProduct.getLink(),
                 givenProduct.getVariant()))
                 .thenReturn(false);
-        when(responseFacade.productExistsByTelegramIdAndLinkAndVariant(givenUser.getChatId(), givenProduct.getLink(), givenProduct.getVariant())).thenReturn(true);
-        when(responseFacade.countProductsByTelegramIdId(givenUser.getChatId())).thenReturn(0);
+        when(responseFacade.productExistsByUserIdAndLinkAndVariant(givenUser.getUserId(), givenProduct.getLink(), givenProduct.getVariant())).thenReturn(true);
+        when(responseFacade.countProductsByUserId(givenUser.getUserId())).thenReturn(0);
         when(responseFacade.getLinkRequestByIdAndDelete(givenRequestId)).thenReturn(givenLinkRequest);
 
         //then
@@ -115,9 +115,9 @@ class InlineMarkupResponseTest {
         verify(quickSender, times(1)).deleteMessage(givenUser.getChatId(), givenMessage.getMessageId());
         verify(quickSender, times(1)).messageWithReturn(givenUser.getChatId(), Messages.other("adding"), false);
         verify(quickSender, times(1)).chatAction(givenUser.getChatId(), Action.TYPING);
-        verify(responseFacade, times(1)).productExistsByTelegramIdAndLinkAndVariant(anyString(), anyString(), anyString());
-        verify(responseFacade, times(0)).countProductsByTelegramIdId(givenUser.getChatId());
-        verify(responseFacade, times(0)).saveProduct(givenProduct, givenUser.getChatId());
+        verify(responseFacade, times(1)).productExistsByUserIdAndLinkAndVariant(anyLong(), anyString(), anyString());
+        verify(responseFacade, times(0)).countProductsByUserId(givenUser.getUserId());
+        verify(responseFacade, times(0)).saveProduct(givenProduct, givenUser.getUserId());
         verify(quickSender, times(0)).message(givenUser.getChatId(), Messages.other("productAdded"), false);
     }
 
@@ -137,13 +137,13 @@ class InlineMarkupResponseTest {
         //when
         when(quickSender.messageWithReturn(givenUser.getChatId(), Messages.other("adding"), false)).thenReturn(givenMessage);
         when(scraper.getProduct(givenLink, givenVariant)).thenReturn(givenProduct);
-        when(responseFacade.productExistsByTelegramIdAndLinkAndVariant(
-                givenUser.getChatId(),
+        when(responseFacade.productExistsByUserIdAndLinkAndVariant(
+                givenUser.getUserId(),
                 givenProduct.getLink(),
                 givenProduct.getVariant()))
                 .thenReturn(false);
-        when(responseFacade.productExistsByTelegramIdAndLinkAndVariant(givenUser.getChatId(), givenProduct.getLink(), givenProduct.getVariant())).thenReturn(false);
-        when(responseFacade.countProductsByTelegramIdId(givenUser.getChatId())).thenReturn(11);
+        when(responseFacade.productExistsByUserIdAndLinkAndVariant(givenUser.getUserId(), givenProduct.getLink(), givenProduct.getVariant())).thenReturn(false);
+        when(responseFacade.countProductsByUserId(givenUser.getUserId())).thenReturn(11);
         when(responseFacade.getLinkRequestByIdAndDelete(givenRequestId)).thenReturn(givenLinkRequest);
 
         //then
@@ -154,8 +154,8 @@ class InlineMarkupResponseTest {
         verify(quickSender, times(1)).deleteMessage(givenUser.getChatId(), givenMessage.getMessageId());
         verify(quickSender, times(1)).messageWithReturn(givenUser.getChatId(), Messages.other("adding"), false);
         verify(quickSender, times(1)).chatAction(givenUser.getChatId(), Action.TYPING);
-        verify(responseFacade, times(1)).productExistsByTelegramIdAndLinkAndVariant(anyString(), anyString(), anyString());
-        verify(responseFacade, times(1)).saveProduct(givenProduct, givenUser.getChatId());
+        verify(responseFacade, times(1)).productExistsByUserIdAndLinkAndVariant(anyLong(), anyString(), anyString());
+        verify(responseFacade, times(1)).saveProduct(givenProduct, givenUser.getUserId());
         verify(quickSender, times(1)).message(givenUser.getChatId(), Messages.other("productAdded"), false);
     }
 
@@ -168,7 +168,7 @@ class InlineMarkupResponseTest {
         List<Product> givenProducts = getDefaultListOfProducts();
 
         //when
-        when(responseFacade.getAllProductsByUserId(givenUser.getTelegramId())).thenReturn(givenProducts);
+        when(responseFacade.getAllProductsByUserId(givenUser.getUserId())).thenReturn(givenProducts);
 
         //then
         inlineMarkupResponse = new InlineMarkupResponse(responseFacade, givenUser, quickSender);
@@ -186,7 +186,7 @@ class InlineMarkupResponseTest {
         List<Product> givenProducts = Collections.emptyList();
 
         //when
-        when(responseFacade.getAllProductsByUserId(givenUser.getTelegramId())).thenReturn(givenProducts);
+        when(responseFacade.getAllProductsByUserId(givenUser.getUserId())).thenReturn(givenProducts);
 
         //then
         inlineMarkupResponse = new InlineMarkupResponse(responseFacade, givenUser, quickSender);
@@ -210,7 +210,7 @@ class InlineMarkupResponseTest {
         List<Product> givenProducts = getDefaultListOfProducts();
 
         //when
-        when(responseFacade.getAllProductsByUserId(givenUser.getTelegramId())).thenReturn(givenProducts);
+        when(responseFacade.getAllProductsByUserId(givenUser.getUserId())).thenReturn(givenProducts);
 
         //then
         inlineMarkupResponse = new InlineMarkupResponse(responseFacade, givenUser, quickSender);
@@ -228,7 +228,7 @@ class InlineMarkupResponseTest {
         List<Product> givenProducts = Collections.emptyList();
 
         //when
-        when(responseFacade.getAllProductsByUserId(givenUser.getTelegramId())).thenReturn(givenProducts);
+        when(responseFacade.getAllProductsByUserId(givenUser.getUserId())).thenReturn(givenProducts);
 
         //then
         inlineMarkupResponse = new InlineMarkupResponse(responseFacade, givenUser, quickSender);
@@ -252,7 +252,7 @@ class InlineMarkupResponseTest {
         List<Product> givenProducts = getDefaultListOfProducts();
 
         //when
-        when(responseFacade.getAllProductsByUserId(givenUser.getTelegramId())).thenReturn(givenProducts);
+        when(responseFacade.getAllProductsByUserId(givenUser.getUserId())).thenReturn(givenProducts);
 
         //then
         inlineMarkupResponse = new InlineMarkupResponse(responseFacade, givenUser, quickSender);
@@ -270,7 +270,7 @@ class InlineMarkupResponseTest {
         List<Product> givenProducts = Collections.emptyList();
 
         //when
-        when(responseFacade.getAllProductsByUserId(givenUser.getTelegramId())).thenReturn(givenProducts);
+        when(responseFacade.getAllProductsByUserId(givenUser.getUserId())).thenReturn(givenProducts);
 
         //then
         inlineMarkupResponse = new InlineMarkupResponse(responseFacade, givenUser, quickSender);
@@ -384,7 +384,7 @@ class InlineMarkupResponseTest {
         inlineMarkupResponse.response();
 
         //then
-        verify(responseFacade, times(1)).deleteAllProductsByTelegramId(givenUser.getChatId());
+        verify(responseFacade, times(1)).deleteAllProductsByUserId(givenUser.getUserId());
         verify(quickSender, times(1)).popupMessage(givenUser.getChatId(), Messages.other("allDeleted"));
         verify(quickSender, times(1)).deleteMessage(givenUser.getChatId(), givenUser.getMessageId());
         verify(quickSender, times(1)).inlineMarkup(
@@ -405,7 +405,7 @@ class InlineMarkupResponseTest {
         inlineMarkupResponse.response();
 
         //then
-        verify(responseFacade, times(0)).deleteAllProductsByTelegramId(givenUser.getChatId());
+        verify(responseFacade, times(0)).deleteAllProductsByUserId(givenUser.getUserId());
         verify(quickSender, times(0)).popupMessage(givenUser.getChatId(), Messages.other("allDeleted"));
         verify(quickSender, times(1)).deleteMessage(givenUser.getChatId(), givenUser.getMessageId());
         verify(quickSender, times(1)).inlineMarkup(
@@ -430,7 +430,7 @@ class InlineMarkupResponseTest {
         //then
         assertTrue(givenUser.isNotifyByEmail());
         verify(quickSender, times(1)).deleteMessage(givenUser.getChatId(), givenUser.getMessageId());
-        verify(responseFacade, times(1)).updateNotifyByEmailByTelegramId(givenUser.getChatId(), true);
+        verify(responseFacade, times(1)).updateNotifyByEmailByUserId(givenUser.getUserId(), true);
         verify(quickSender, times(1)).inlineMarkup(
                 givenUser.getChatId(),
                 Messages.notifications(givenUser),
@@ -454,7 +454,7 @@ class InlineMarkupResponseTest {
         //then
         assertFalse(givenUser.isNotifyByEmail());
         verify(quickSender, times(1)).deleteMessage(givenUser.getChatId(), givenUser.getMessageId());
-        verify(responseFacade, times(1)).updateNotifyByEmailByTelegramId(givenUser.getChatId(), false);
+        verify(responseFacade, times(1)).updateNotifyByEmailByUserId(givenUser.getUserId(), false);
         verify(quickSender, times(1)).inlineMarkup(
                 givenUser.getChatId(),
                 Messages.notifications(givenUser),
@@ -481,7 +481,7 @@ class InlineMarkupResponseTest {
                 Messages.notifications(givenUser),
                 InlineKeyboardMarkupFactory.getNotification(givenUser),
                 true);
-        verify(responseFacade, times(0)).updateNotifyByEmailByTelegramId(anyString(), anyBoolean());
+        verify(responseFacade, times(0)).updateNotifyByEmailByUserId(anyLong(), anyBoolean());
     }
 
     @Test
@@ -504,7 +504,7 @@ class InlineMarkupResponseTest {
                 Messages.notifications(givenUser),
                 InlineKeyboardMarkupFactory.getNotification(givenUser),
                 true);
-        verify(responseFacade, times(0)).updateNotifyByEmailByTelegramId(anyString(), anyBoolean());
+        verify(responseFacade, times(0)).updateNotifyByEmailByUserId(anyLong(), anyBoolean());
     }
 
     @Test
@@ -535,7 +535,7 @@ class InlineMarkupResponseTest {
 
         //then
         verify(quickSender, times(1)).deleteMessage(givenUser.getChatId(), givenUser.getMessageId());
-        verify(responseFacade, times(1)).updateUserLanguage(givenUser.getChatId(), givenLanguage);
+        verify(responseFacade, times(1)).updateUserLanguage(givenUser.getUserId(), givenLanguage);
         verify(quickSender, times(1)).inlineMarkup(
                 eq(givenUser.getChatId()),
                 anyString(),
@@ -647,6 +647,7 @@ class InlineMarkupResponseTest {
 
     private ActiveUser getDefaultActiveUser() {
         ActiveUser givenUser = new ActiveUser();
+        givenUser.setUserId(123);
         givenUser.setTelegramId("123");
         givenUser.setChatId("123");
         givenUser.setMessageId(123);

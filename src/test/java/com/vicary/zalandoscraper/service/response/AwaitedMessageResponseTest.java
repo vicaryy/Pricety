@@ -48,7 +48,7 @@ class AwaitedMessageResponseTest {
         awaitedMessageResponse.response();
 
         //then
-        verify(responseFacade, times(1)).updateUserNick(givenUser.getChatId(), givenUser.getText());
+        verify(responseFacade, times(1)).updateUserNick(givenUser.getUserId(), givenUser.getText());
         verify(responseFacade, times(1)).deleteAwaitedMessage(givenUser.getChatId());
         verify(quickSender, times(1)).popupMessage(givenUser.getChatId(), Messages.other("setNickSuccess"));
         verify(quickSender, times(1)).message(givenUser.getChatId(), Messages.command("start").formatted(" " + givenUser.getText()), true);
@@ -62,13 +62,13 @@ class AwaitedMessageResponseTest {
         String givenRequest = "-setNick";
 
         //when
-        doThrow(new IllegalInputException()).when(responseFacade).updateUserNick(givenUser.getChatId(), givenUser.getText());
+        doThrow(new IllegalInputException()).when(responseFacade).updateUserNick(givenUser.getUserId(), givenUser.getText());
         when(responseFacade.getAwaitedMessageRequest(givenUser.getChatId())).thenReturn(givenRequest);
         awaitedMessageResponse = new AwaitedMessageResponse(responseFacade, givenUser, quickSender);
 
         //then
         assertThrows(IllegalInputException.class, () -> awaitedMessageResponse.response());
-        verify(responseFacade, times(1)).updateUserNick(givenUser.getChatId(), givenUser.getText());
+        verify(responseFacade, times(1)).updateUserNick(givenUser.getUserId(), givenUser.getText());
         verify(responseFacade, times(0)).deleteAwaitedMessage(givenUser.getChatId());
         verify(quickSender, times(0)).popupMessage(givenUser.getChatId(), Messages.other("setNickSuccess"));
         verify(quickSender, times(0)).message(givenUser.getChatId(), Messages.command("start").formatted(" " + givenUser.getText()), true);
@@ -146,7 +146,7 @@ class AwaitedMessageResponseTest {
 
         //then
         verify(responseFacade, times(1)).deleteAwaitedMessage(givenUser.getChatId());
-        verify(responseFacade, times(1)).updateEmailAndSendToken(givenUser.getChatId(), givenUser.getText());
+        verify(responseFacade, times(1)).updateEmailAndSendToken(givenUser.getUserId(), givenUser.getText());
         verify(quickSender, times(1)).message(givenUser.getChatId(), Messages.other("verificationCodeMessage"), true);
     }
 
@@ -164,14 +164,14 @@ class AwaitedMessageResponseTest {
 
         //then
         verify(responseFacade, times(1)).deleteAwaitedMessage(givenUser.getChatId());
-        verify(responseFacade, times(1)).deleteEmailById(givenUser.getChatId());
+        verify(responseFacade, times(1)).deleteEmailById(givenUser.getUserId());
         verify(quickSender, times(1)).popupMessage(givenUser.getChatId(), Messages.other("emailDeleted"));
         verify(quickSender, times(1)).inlineMarkup(
                 eq(givenUser.getChatId()),
                 anyString(),
                 eq(InlineKeyboardMarkupFactory.getMenu()),
                 eq(true));
-        verify(responseFacade, times(0)).updateEmailAndSendToken(givenUser.getChatId(), givenUser.getText());
+        verify(responseFacade, times(0)).updateEmailAndSendToken(givenUser.getUserId(), givenUser.getText());
         verify(quickSender, times(0)).message(givenUser.getChatId(), Messages.other("verificationCodeMessage"), true);
     }
 
@@ -189,14 +189,14 @@ class AwaitedMessageResponseTest {
 
         //then
         verify(responseFacade, times(1)).deleteAwaitedMessage(givenUser.getChatId());
-        verify(responseFacade, times(1)).deleteEmailById(givenUser.getChatId());
+        verify(responseFacade, times(1)).deleteEmailById(givenUser.getUserId());
         verify(quickSender, times(1)).popupMessage(givenUser.getChatId(), Messages.other("emailDeleted"));
         verify(quickSender, times(1)).inlineMarkup(
                 eq(givenUser.getChatId()),
                 anyString(),
                 eq(InlineKeyboardMarkupFactory.getMenu()),
                 eq(true));
-        verify(responseFacade, times(0)).updateEmailAndSendToken(givenUser.getChatId(), givenUser.getText());
+        verify(responseFacade, times(0)).updateEmailAndSendToken(givenUser.getUserId(), givenUser.getText());
         verify(quickSender, times(0)).message(givenUser.getChatId(), Messages.other("verificationCodeMessage"), true);
     }
 
@@ -214,7 +214,7 @@ class AwaitedMessageResponseTest {
         //then
         assertThrows(IllegalInputException.class, () -> awaitedMessageResponse.response());
         verify(responseFacade, times(1)).deleteAwaitedMessage(givenUser.getChatId());
-        verify(responseFacade, times(0)).updateEmailAndSendToken(givenUser.getChatId(), givenUser.getText());
+        verify(responseFacade, times(0)).updateEmailAndSendToken(givenUser.getUserId(), givenUser.getText());
         verify(quickSender, times(0)).message(givenUser.getChatId(), Messages.other("verificationCodeMessage"), true);
     }
 
@@ -233,7 +233,7 @@ class AwaitedMessageResponseTest {
         //then
         assertThrows(IllegalInputException.class, () -> awaitedMessageResponse.response());
         verify(responseFacade, times(1)).deleteAwaitedMessage(givenUser.getChatId());
-        verify(responseFacade, times(0)).updateEmailAndSendToken(givenUser.getChatId(), givenUser.getText());
+        verify(responseFacade, times(0)).updateEmailAndSendToken(givenUser.getUserId(), givenUser.getText());
         verify(quickSender, times(0)).message(givenUser.getChatId(), Messages.other("verificationCodeMessage"), true);
     }
 
@@ -521,6 +521,7 @@ class AwaitedMessageResponseTest {
 
     private ActiveUser getDefaultActiveUser() {
         ActiveUser givenUser = new ActiveUser();
+        givenUser.setUserId(123);
         givenUser.setTelegramId("123");
         givenUser.setChatId("123");
         givenUser.setMessageId(123);

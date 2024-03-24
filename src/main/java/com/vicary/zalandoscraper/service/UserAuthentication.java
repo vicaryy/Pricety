@@ -126,6 +126,7 @@ public class UserAuthentication {
 
     private ActiveUser setActiveUserInThread(UserEntity userEntity, String text, String chatId, int messageId, boolean awaitedMessage) {
         ActiveUser activeUser = ActiveUser.get();
+        activeUser.setUserId(userEntity.getUserId());
         activeUser.setTelegramId(userEntity.getTelegramId());
         activeUser.setChatId(chatId);
         activeUser.setMessageId(messageId);

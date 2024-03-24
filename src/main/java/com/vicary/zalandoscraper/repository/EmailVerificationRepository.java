@@ -12,7 +12,7 @@ public interface EmailVerificationRepository extends JpaRepository<EmailVerifica
     @Query(value = """
             select count(1) from email_verifications
             where user_id = :userId""", nativeQuery = true)
-    int existsByUserId(@Param("userId") String userId);
+    int existsByUserId(@Param("userId") long userId);
 
 
     @Transactional
@@ -20,11 +20,11 @@ public interface EmailVerificationRepository extends JpaRepository<EmailVerifica
     @Query(value = """
             delete from email_verifications
             where user_id = :userId""", nativeQuery = true)
-    void deleteAllByUserId(@Param("userId") String userId);
+    void deleteAllByUserId(@Param("userId") long userId);
 
-    EmailVerificationEntity findByUserId(String userId);
+    EmailVerificationEntity findByUserId(long userId);
 
-    boolean existsByUserIdAndToken(String userId, String token);
+    boolean existsByUserIdAndToken(long userId, String token);
 
     @Transactional
     @Modifying

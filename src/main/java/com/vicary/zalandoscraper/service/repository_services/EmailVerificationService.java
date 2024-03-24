@@ -22,7 +22,8 @@ public class EmailVerificationService {
 
     private final EmailSender emailSender;
 
-    public EmailVerificationEntity createVerification(String userId) {
+
+    public EmailVerificationEntity createVerification(long userId) {
         var entity = EmailVerificationEntity.builder()
                 .userId(userId)
                 .token(generateToken())
@@ -33,11 +34,11 @@ public class EmailVerificationService {
         return entity;
     }
 
-    public EmailVerificationEntity findByUserId(String userId) {
+    public EmailVerificationEntity findByUserId(long userId) {
         return repository.findByUserId(userId);
     }
 
-    public boolean existsByUserIdAndToken(String userId, String token) {
+    public boolean existsByUserIdAndToken(long userId, String token) {
         return repository.existsByUserIdAndToken(userId, token);
     }
 
@@ -45,11 +46,11 @@ public class EmailVerificationService {
         repository.deleteByToken(token);
     }
 
-    public void deleteAllByUserId(String userId) {
+    public void deleteAllByUserId(long userId) {
         repository.deleteAllByUserId(userId);
     }
 
-    public boolean existsByUserId(String userId) {
+    public boolean existsByUserId(long userId) {
         return repository.existsByUserId(userId) == 1;
     }
 

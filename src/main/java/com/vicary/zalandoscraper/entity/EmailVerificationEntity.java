@@ -17,7 +17,7 @@ public class EmailVerificationEntity {
     private Long id;
 
     @Column(name = "user_id")
-    private String userId;
+    private Long userId;
 
     @Column(name = "token")
     private String token;

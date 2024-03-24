@@ -88,7 +88,9 @@ public class ProductUpdater {
     }
 
     void setUpdatesTimeout() {
-        if (products.size() < 7)
+        if (products.size() < 2)
+            updatesTimeout = System.currentTimeMillis() + 20_000;
+        else if (products.size() < 7)
             updatesTimeout = System.currentTimeMillis() + (12_000 - (products.size() * 1000L)) * products.size();
         else
             updatesTimeout = System.currentTimeMillis() + (long) products.size() * 3500;

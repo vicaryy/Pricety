@@ -47,7 +47,8 @@ public class NotificationManager {
         displayLogsBeforeSendPriceNotifications(chatNotifications.size(), emails.size());
 
         chatSender.sendAndSave(chatNotifications);
-        emailSender.sendAndSave(emails);
+        //todo
+//        emailSender.sendAndSave(emails);
 
         displayLogsAfterSendPriceNotifications();
     }

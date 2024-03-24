@@ -27,7 +27,7 @@ class ProductUpdaterTest {
     void setUpdatesTimeout_expectEquals_ListSizeIsOne() {
         //given
         List<Product> givenList = getListOfDefaultProduct(1);
-        long timeout = 11_000; // 11 sec per DTO
+        long timeout = 20_000; // 11 sec per DTO
 
         //when
         productUpdater = new ProductUpdater(scraper, givenList);

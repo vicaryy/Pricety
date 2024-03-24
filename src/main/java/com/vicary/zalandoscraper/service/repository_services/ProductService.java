@@ -26,6 +26,7 @@ public class ProductService {
 
     private final UserService userService;
 
+
     public List<Product> getAll() {
         return mapper.map(repository.findAll());
     }
@@ -58,8 +59,8 @@ public class ProductService {
         return mapper.map(repository.findAll(Sort.by("link")));
     }
 
-    public List<Product> getAllProductsByTelegramId(String telegramId) {
-        List<ProductEntity> productEntities = repository.findAllByUser(userService.findByTelegramId(telegramId), Sort.by("id"));
+    public List<Product> getAllProductsByUserId(long userId) {
+        List<ProductEntity> productEntities = repository.findAllByUser(userService.findByUserId(userId), Sort.by("id"));
 
         if (productEntities.isEmpty())
             return Collections.emptyList();
@@ -82,24 +83,24 @@ public class ProductService {
         }
     }
 
-    public int countByTelegramId(String telegramId) {
-        return repository.countByTelegramId(userService.getUserIdByTelegramId(telegramId));
+    public int countByUserId(long userId) {
+        return repository.countByUserId(userId);
     }
 
-    public boolean existsByTelegramIdAndLinkAndVariant(String telegramId, String link, String variant) {
-        return repository.existByTelegramIdLinkAndVariant(userService.getUserIdByTelegramId(telegramId), link, variant) == 1;
+    public boolean existsByUserIdAndLinkAndVariant(long userId, String link, String variant) {
+        return repository.existByUserIdLinkAndVariant(userId, link, variant) == 1;
     }
 
     public void deleteProductById(Long id) {
         repository.deleteById(id);
     }
 
-    public void deleteAllProductsByTelegramId(String telegramId) {
-        repository.deleteAllByUserId(userService.getUserIdByTelegramId(telegramId));
+    public void deleteAllProductsByUserId(long userId) {
+        repository.deleteAllByUserId(userId);
     }
 
-    public void saveProduct(Product product, String telegramId) {
-        repository.save(mapper.map(product, userService.findByTelegramId(telegramId)));
+    public void saveProduct(Product product, long userId) {
+        repository.save(mapper.map(product, userService.findByUserId(userId)));
         logger.info("[Product Service] Added new product to database link: {}", product.getLink());
     }
 

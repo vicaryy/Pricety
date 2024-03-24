@@ -45,7 +45,7 @@ public class AwaitedMessageResponse implements Responser {
     private void setNick() {
         String nick = user.getText();
 
-        responseFacade.updateUserNick(user.getTelegramId(), nick);
+        responseFacade.updateUserNick(user.getUserId(), nick);
         responseFacade.deleteAwaitedMessage(user.getTelegramId());
         quickSender.popupMessage(user.getChatId(), Messages.other("setNickSuccess"));
         quickSender.message(user.getChatId(), Messages.command("start").formatted(" " + user.getText()), true);
@@ -61,6 +61,8 @@ public class AwaitedMessageResponse implements Responser {
         if (isPriceAlertHigherThanPrice(priceAlert, product.getPrice()))
             throw new IllegalInputException(Messages.other("priceAlertHigher"), "User '%s' specify price alert higher than actual price".formatted(user.getTelegramId()));
 
+        log.info("Product id {}", productId);
+        log.info("Price Alert {}", priceAlert);
         responseFacade.updateProductPriceAlert(productId, priceAlert);
 
         popupMessage(Messages.other("priceAlertUpdated"));
@@ -78,13 +80,13 @@ public class AwaitedMessageResponse implements Responser {
             throw new IllegalInputException(Messages.other("differentEmail"), "User '%s' typed the same email '%s'".formatted(user.getTelegramId(), user.getText()));
 
         if (email.equalsIgnoreCase("DELETE")) {
-            responseFacade.deleteEmailById(user.getTelegramId());
+            responseFacade.deleteEmailById(user.getUserId());
             popupMessage(Messages.other("emailDeleted"));
             displayMenu();
             return;
         }
 
-        responseFacade.updateEmailAndSendToken(user.getTelegramId(), email);
+        responseFacade.updateEmailAndSendToken(user.getUserId(), email);
 
         quickSender.message(user.getChatId(), Messages.other("verificationCodeMessage"), true);
     }

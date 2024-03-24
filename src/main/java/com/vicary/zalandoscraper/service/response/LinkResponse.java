@@ -63,18 +63,18 @@ public class LinkResponse implements Responser {
 
     private void getAndSaveOneVariantProduct(String variant, Scraper scraper) {
         Product product = scraper.getProduct(user.getText(), variant);
-        responseFacade.saveProduct(product, user.getTelegramId());
+        responseFacade.saveProduct(product, user.getUserId());
     }
 
     private void checkIfUserHaveProduct(String link, String variant) {
-        if (responseFacade.productExistsByTelegramIdAndLinkAndVariant(user.getChatId(), link, variant)) {
+        if (responseFacade.productExistsByUserIdAndLinkAndVariant(user.getUserId(), link, variant)) {
             quickSender.deleteMessage(user.getChatId(), currentMessageId);
             throw new InvalidLinkException(Messages.other("alreadyHave"), "User try to add same product.");
         }
     }
 
     private void checkUserLimit() {
-        if (responseFacade.countProductsByTelegramIdId(user.getTelegramId()) >= MAX_PRODUCT_LIMIT && !user.isPremium()) {
+        if (responseFacade.countProductsByUserId(user.getUserId()) >= MAX_PRODUCT_LIMIT && !user.isPremium()) {
             quickSender.deleteMessage(user.getChatId(), currentMessageId);
             throw new InvalidLinkException(Messages.other("productLimit"), "User try to add more than 10 products.");
         }

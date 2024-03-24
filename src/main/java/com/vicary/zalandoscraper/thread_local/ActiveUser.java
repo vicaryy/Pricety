@@ -8,6 +8,8 @@ public class ActiveUser {
 
     private static ThreadLocal<ActiveUser> activeUserThreadLocal = ThreadLocal.withInitial(ActiveUser::new);
 
+    private long userId;
+
     private String telegramId;
 
     private String chatId;

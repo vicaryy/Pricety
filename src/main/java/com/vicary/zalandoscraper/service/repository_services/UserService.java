@@ -2,14 +2,18 @@ package com.vicary.zalandoscraper.service.repository_services;
 
 import com.vicary.zalandoscraper.api_telegram.api_object.User;
 import com.vicary.zalandoscraper.entity.UserEntity;
+import com.vicary.zalandoscraper.entity.WebUserEntity;
 import com.vicary.zalandoscraper.exception.IllegalInputException;
 import com.vicary.zalandoscraper.messages.Messages;
+import com.vicary.zalandoscraper.model.LogInModel;
+import com.vicary.zalandoscraper.model.RegisterModel;
 import com.vicary.zalandoscraper.repository.UserRepository;
 import com.vicary.zalandoscraper.service.map.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,13 +33,16 @@ public class UserService {
     private final static Pattern NICK_PATTERN = Pattern.compile("^[a-z0-9]+$");
 
 
-    public void updateLanguage(String telegramId, String language) {
-        repository.updateLanguage(telegramId, language);
+    public void updateLanguage(long userId, String language) {
+        repository.updateLanguage(userId, language);
     }
 
     public void saveUser(UserEntity userEntity) {
         repository.save(userEntity);
-        logger.info("[User Service] Added new user to database, telegramId '{}'", userEntity.getTelegramId());
+        if (userEntity.isTelegram())
+            logger.info("[User Service] Added new user to database via telegram, telegramId '{}'", userEntity.getTelegramId());
+        if (userEntity.isWebsite())
+            logger.info("[User Service] Added new user to database via website, email '{}'", userEntity.getEmail());
     }
 
     public UserEntity saveUser(User user) {
@@ -44,20 +51,32 @@ public class UserService {
         return userEntity;
     }
 
-    public long getUserIdByTelegramId(String telegramId) {
-        return findByTelegramId(telegramId).getUserId();
-    }
-
     public boolean existsByTelegramId(String telegramId) {
         return repository.existsByTelegramId(telegramId);
+    }
+
+    public boolean existsByUserId(long userId) {
+        return repository.existsByUserId(userId);
+    }
+
+    public UserEntity findByUserId(long userId) {
+        return repository.findByUserId(userId).orElseThrow(() -> new NoSuchElementException("User '%s' not found".formatted(userId)));
     }
 
     public UserEntity findByTelegramId(String telegramId) {
         return repository.findByTelegramId(telegramId).orElseThrow(() -> new NoSuchElementException("User '%s' not found".formatted(telegramId)));
     }
 
-    public Optional<UserEntity> findByTelegramIdOptional(String telegramId) {
-        return repository.findByTelegramId(telegramId);
+    public UserEntity findByEmail(String email) {
+        return repository.findByEmail(email).orElseThrow(() -> new NoSuchElementException("User '%s' not found".formatted(email)));
+    }
+
+    public Optional<UserEntity> findByEmailOptional(String email) {
+        return repository.findByEmail(email);
+    }
+
+    public Optional<UserEntity> findByUserIdOptional(long userId) {
+        return repository.findByUserId(userId);
     }
 
     public List<UserEntity> findAllUsers() {
@@ -68,72 +87,72 @@ public class UserService {
         return repository.findByNick(nick).orElseThrow(() -> new NoSuchElementException("User '%s' not found".formatted(nick)));
     }
 
-    public void updateNotifyByEmailByTelegramId(String telegramId, boolean notifyByEmail) {
-        repository.updateEmailNotificationsByTelegramId(telegramId, notifyByEmail);
+    public void updateNotifyByEmailByUserId(long userId, boolean notifyByEmail) {
+        repository.updateEmailNotificationsByUserId(userId, notifyByEmail);
     }
 
-    public void deleteEmailByTelegramId(String telegramId) {
-        repository.deleteEmailByTelegramId(telegramId);
+    public void deleteEmailByUserId(long userId) {
+        repository.deleteEmailByUserId(userId);
     }
 
-    public void updateEmailByTelegramId(String telegramId, String email) {
-        repository.updateEmailByTelegramId(telegramId, email);
+    public void updateEmailByUserId(long userId, String email) {
+        repository.updateEmailByUserId(userId, email);
     }
 
-    public boolean isUserAdmin(String telegramId) {
-        return findByTelegramId(telegramId).isAdmin();
+    public boolean isUserAdmin(long userId) {
+        return findByUserId(userId).isAdmin();
     }
 
     @Transactional
-    public boolean updateUserToPremiumByTelegramId(String telegramId) {
+    public boolean updateUserToPremiumByUserId(long userId) {
         UserEntity updatedUser;
         try {
-            updatedUser = findByTelegramId(telegramId);
+            updatedUser = findByUserId(userId);
         } catch (Exception ex) {
             return false;
         }
         updatedUser.setPremium(true);
-        logger.info("User '{}' updated to Premium.", telegramId);
+        logger.info("User '{}' updated to Premium.", userId);
         return true;
     }
 
     @Transactional
-    public boolean updateUserToStandardByTelegramId(String telegramId) {
+    public boolean updateUserToStandardByUserId(long userId) {
         UserEntity updatedUser;
         try {
-            updatedUser = findByTelegramId(telegramId);
+            updatedUser = findByUserId(userId);
         } catch (Exception ex) {
             return false;
         }
         updatedUser.setPremium(false);
-        logger.info("User '{}' updated to Standard.", telegramId);
+        logger.info("User '{}' updated to Standard.", userId);
         return true;
     }
 
     @Transactional
-    public boolean updateUserToAdminByTelegramId(String telegramId) {
+    public boolean updateUserToAdminByUserId(long userId) {
         UserEntity updatedUser;
         try {
-            updatedUser = findByTelegramId(telegramId);
+            updatedUser = findByUserId(userId);
         } catch (Exception ex) {
             return false;
         }
         updatedUser.setRoleAdmin();
-        logger.info("User '{}' updated to Admin.", telegramId);
+        logger.info("User '{}' updated to Admin.", userId);
         return true;
     }
 
 
     @Transactional
-    public boolean updateUserToNonAdminByTelegramId(String telegramId) {
+    public boolean updateUserToNonAdminByUserId(long userId) {
         UserEntity updatedUser;
         try {
-            updatedUser = findByTelegramId(telegramId);
+            updatedUser = findByUserId(userId);
         } catch (Exception ex) {
             return false;
         }
         updatedUser.setRoleUser();
-        logger.info("User '{}' updated to Non-Admin.", telegramId);
+        logger.info("User '{}' updated to Non-Admin.", userId);
         return true;
     }
 
@@ -186,15 +205,15 @@ public class UserService {
         return true;
     }
 
-    public void setVerifiedEmail(String telegramId, boolean verified) {
-        repository.setVerifiedEmail(telegramId, verified);
+    public void setVerifiedEmail(long userId, boolean verified) {
+        repository.setVerifiedEmail(userId, verified);
     }
 
     @Transactional
-    public void updateUserNick(String telegramId, String nick) {
+    public void updateUserNick(long userId, String nick) {
         nick = nick.toLowerCase();
         validateNick(nick);
-        UserEntity user = findByTelegramIdOptional(telegramId).orElseThrow(() -> new IllegalInputException("User not found.", "User to nick change not found"));
+        UserEntity user = findByUserIdOptional(userId).orElseThrow(() -> new IllegalInputException("User not found.", "User to nick change not found"));
         user.setNick(nick);
     }
 
@@ -213,7 +232,47 @@ public class UserService {
         return repository.existsByNick(nick);
     }
 
-    public void deleteUser(String telegramId) {
-        repository.deleteById(2L);
-    } //TODO
+    public void deleteUser(long userId) {
+        repository.deleteById(userId);
+    }
+
+    public void registerUser(RegisterModel model, PasswordEncoder encoder) {
+        saveUser(mapper.map(model, encoder));
+    }
+
+    public void checkRegisterModelValidation(RegisterModel model) throws IllegalArgumentException {
+        if (!isEmailValid(model.getEmail()) || !isPasswordValid(model.getPassword()))
+            throw new IllegalArgumentException("Invalid data.");
+
+        if (isEmailTaken(model.getEmail()))
+            throw new IllegalArgumentException("Email is already taken.");
+    }
+
+    public void checkLogInModelValidation(LogInModel model, PasswordEncoder encoder) throws IllegalArgumentException {
+        UserEntity user = findByEmailOptional(model.getEmail()).orElseThrow(() -> new IllegalArgumentException("Invalid data."));
+        if (!user.isVerifiedEmail())
+            throw new IllegalArgumentException("User not activated.");
+
+        if (!encoder.matches(model.getPassword(), user.getPassword()))
+            throw new IllegalArgumentException("Invalid data.");
+    }
+
+    private boolean isEmailValid(String email) {
+        return com.vicary.zalandoscraper.pattern.Pattern.isEmail(email);
+    }
+
+    private boolean isEmailTaken(String email) {
+        return findByEmailOptional(email).isPresent();
+    }
+
+    private boolean isPasswordValid(String password) {
+        return password.length() > 7 && isPasswordContainsSpecialChar(password);
+    }
+
+    private boolean isPasswordContainsSpecialChar(String password) {
+        for (char c : password.toCharArray())
+            if (!Character.isLetterOrDigit(c))
+                return true;
+        return false;
+    }
 }

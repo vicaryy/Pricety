@@ -63,11 +63,11 @@ public class UserEntity implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @ToString.Exclude
     private List<MessageEntity> telegramMessages;
-//
-//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-//    @ToString.Exclude
-//    private List<WaitingUserEntity> waitingUsers;
- //TODO
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @ToString.Exclude
+    private List<WaitingUserEntity> waitingUsers;
+
     public boolean isAdmin() {
         return role.toString().equalsIgnoreCase("ADMIN");
     }

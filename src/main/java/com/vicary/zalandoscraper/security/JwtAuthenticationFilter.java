@@ -1,5 +1,6 @@
 package com.vicary.zalandoscraper.security;
 
+import com.vicary.zalandoscraper.service.repository_services.UserService;
 import com.vicary.zalandoscraper.service.repository_services.WebUserService;
 import com.vicary.zalandoscraper.utils.Cookies;
 import jakarta.servlet.FilterChain;
@@ -20,15 +21,15 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final static Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
-    private final JwtService jwtService = new JwtService();
 
-    private final WebUserService webUserService;
+    private final JwtService jwtService;
+
+    private final UserService userService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-
 
         if (dontNeedsToBeFilter(request)) {
             filterChain.doFilter(request, response);
@@ -51,7 +52,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        UserDetails user = webUserService.getByEmail(userEmail).orElseThrow();
+        UserDetails user = userService.findByEmail(userEmail);
 
         if (!jwtService.isJwtValid(jwt, user)) {
             response.addCookie(Cookies.getEmptyJwtCookie());
@@ -62,12 +63,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         var token = new UsernamePasswordAuthenticationToken(user.getUsername(), null, user.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(token);
 
-        logger.info("User authenticated!");
+//        logger.info("User authenticated!");
         filterChain.doFilter(request, response);
     }
 
     private boolean dontNeedsToBeFilter(HttpServletRequest request) {
         String uri = request.getRequestURI();
-        return uri.startsWith("/join") || uri.startsWith("/assets") || request.getCookies() == null;
+        return uri.startsWith("/assets") || request.getCookies() == null;
     }
 }

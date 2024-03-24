@@ -18,7 +18,7 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
     @Transactional
     @Modifying
     @Query(value = """
-            update public.products
+            update public.products_test
             set price = :price
             where product_id = :productId""", nativeQuery = true)
     void updatePrice(@Param("productId") Long productId, @Param("price") double price);
@@ -27,7 +27,7 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
     @Transactional
     @Modifying
     @Query(value = """
-            update products
+            update products_test
             set price = :price, price_alert = :priceAlert
             where product_id = :productId""", nativeQuery = true)
     void updatePriceAndPriceAlert(@Param("productId") Long productId, @Param("price") double price, @Param("priceAlert") String priceAlert);
@@ -35,7 +35,7 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
     @Transactional
     @Modifying
     @Query(value = """
-            update products
+            update products_test
             set price_alert = :priceAlert
             where product_id = :productId""", nativeQuery = true)
     void updatePriceAlert(@Param("productId") Long productId, @Param("priceAlert") String priceAlert);
@@ -44,20 +44,20 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
     @Transactional
     @Modifying
     @Query(value = """
-            delete from products
+            delete from products_test
             where user_id = :userId""", nativeQuery = true)
     void deleteAllByUserId(@Param("userId") long userId);
 
 
     @Query(value = """
             select count(1)
-            from products
+            from products_test
             where user_id = :userId and link = :link and variant = :variant""", nativeQuery = true)
-    int existByTelegramIdLinkAndVariant(@Param("userId") long userId, @Param("link") String link, @Param("variant") String variant);
+    int existByUserIdLinkAndVariant(@Param("userId") long userId, @Param("link") String link, @Param("variant") String variant);
 
     @Query(value = """
             select count(product_id)
-            from products
+            from products_test
             where user_id = :userId""", nativeQuery = true)
-    int countByTelegramId(long userId);
+    int countByUserId(long userId);
 }

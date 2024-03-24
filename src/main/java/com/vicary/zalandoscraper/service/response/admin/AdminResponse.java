@@ -126,13 +126,13 @@ public class AdminResponse implements Responser {
         if (userId.isBlank() || nick.isBlank())
             throw new IllegalInputException("UserId and nick cannot be empty", "Admin tries to set nick but userId or nick are empty");
 
-        responseFacade.updateUserNick(userId, nick);
+        responseFacade.updateUserNick(Long.parseLong(userId), nick);
         quickSender.message(user.getChatId(), "UserId: %s nick updated to %s successfully.".formatted(userId, nick), false);
     }
 
     private void setPremium() {
         String userId = removePrefix(user.getText());
-        if (responseFacade.updateUserToPremiumByTelegramId(userId))
+        if (responseFacade.updateUserToPremiumByUserId(Long.parseLong(userId)))
             quickSender.message(user.getChatId(), String.format("User %s successfully updated to Premium.", userId), false);
         else
             throw new IllegalInputException(
@@ -142,7 +142,7 @@ public class AdminResponse implements Responser {
 
     private void setStandard() {
         String userId = removePrefix(user.getText());
-        if (responseFacade.updateUserToStandardByTelegramId(userId))
+        if (responseFacade.updateUserToStandardByUserId(Long.parseLong(userId)))
             quickSender.message(user.getChatId(), String.format("User %s successfully updated to Standard.", userId), false);
         else
             throw new IllegalInputException(
@@ -152,7 +152,7 @@ public class AdminResponse implements Responser {
 
     private void setAdmin() {
         String userId = removePrefix(user.getText());
-        if (responseFacade.updateUserToAdminByTelegramId(userId))
+        if (responseFacade.updateUserToAdminByUserId(Long.parseLong(userId)))
             quickSender.message(user.getChatId(), String.format("User %s successfully updated to Admin.", userId), false);
         else
             throw new IllegalInputException(
@@ -162,7 +162,7 @@ public class AdminResponse implements Responser {
 
     void setNonAdmin() {
         String userId = removePrefix(user.getText());
-        if (responseFacade.updateUserToNonAdminByTelegramId(userId))
+        if (responseFacade.updateUserToNonAdminByUserId(Long.parseLong(userId)))
             quickSender.message(user.getChatId(), String.format("User %s successfully updated to Non-Admin.", userId), false);
         else
             throw new IllegalInputException(
@@ -242,10 +242,10 @@ public class AdminResponse implements Responser {
         if (userId.isBlank())
             throw new IllegalInputException("UserId cannot be empty.", "Admin tries to delete product but userId is empty");
 
-        if (!responseFacade.isUserExists(userId))
+        if (!responseFacade.isUserExists(Long.parseLong(userId)))
             throw new IllegalInputException("User not found.", "Admin tries to delete user but user not found, userId: " + userId);
 
-        responseFacade.deleteUser(userId);
+        responseFacade.deleteUser(Long.parseLong(userId));
         quickSender.message(user.getChatId(), "User deleted.", false);
     }
 
@@ -320,7 +320,7 @@ public class AdminResponse implements Responser {
         if (to.equals("all"))
             sendMessageToAll(multiLanguage, pl, en);
         else
-            quickSender.message(responseFacade.getUser(to).getTelegramId(), MarkdownV2.applyWithManualBoldAndItalic(text).trim(), true);
+            quickSender.message(responseFacade.getUser(Long.parseLong(to)).getTelegramId(), MarkdownV2.applyWithManualBoldAndItalic(text).trim(), true);
     }
 
     private void sendMessageToAll(boolean multiLanguage, String pl, String en) {
@@ -344,7 +344,7 @@ public class AdminResponse implements Responser {
         if (userId.equals("all"))
             displayUsers(responseFacade.getAllUsers());
         else
-            displayUsers(List.of(responseFacade.getUser(userId)));
+            displayUsers(List.of(responseFacade.getUser(Long.parseLong(userId))));
     }
 
     private void getProduct() {
@@ -367,10 +367,10 @@ public class AdminResponse implements Responser {
         if (userId.isBlank())
             throw new IllegalInputException("UserId cannot be empty", "Admin tries to get products but userId is empty");
 
-        if (!responseFacade.isUserExists(userId))
+        if (!responseFacade.isUserExists(Long.parseLong(userId)))
             throw new IllegalInputException("User does not exists.", "Admin tries to display productUser but user '%s' does not exists".formatted(userId));
 
-        displayProducts(responseFacade.getAllProductsByUserId(userId));
+        displayProducts(responseFacade.getAllProductsByUserId(Long.parseLong(userId)));
     }
 
     private void getAllCommands() {
