@@ -2,7 +2,7 @@ package com.vicary.zalandoscraper.updater.sender;
 
 import com.vicary.zalandoscraper.exception.ScraperBotException;
 import com.vicary.zalandoscraper.model.Email;
-import com.vicary.zalandoscraper.sender.EmailSender;
+import com.vicary.zalandoscraper.sender.EmailSenderService;
 import com.vicary.zalandoscraper.service.UpdateReceiverService;
 import com.vicary.zalandoscraper.service.repository_services.NotificationEmailService;
 import lombok.SneakyThrows;
@@ -26,7 +26,7 @@ class EmailNotificationSenderTest {
     private EmailNotificationSender sender;
 
     @MockBean
-    private EmailSender emailSender;
+    private EmailSenderService emailSenderService;
 
     @MockBean
     private NotificationEmailService notificationEmailService;
@@ -47,7 +47,7 @@ class EmailNotificationSenderTest {
         //then
         assertEquals(10, sender.getSentAmountAndReset());
         assertEquals(0, sender.getFailedAmount());
-        verify(emailSender, times(10)).send(any(Email.class));
+        verify(emailSenderService, times(10)).send(any(Email.class));
         verify(notificationEmailService, times(0)).saveEntity(any(Email.class));
     }
 
@@ -63,7 +63,7 @@ class EmailNotificationSenderTest {
         //then
         assertEquals(10, sender.getSentAmountAndReset());
         assertEquals(0, sender.getFailedAmount());
-        verify(emailSender, times(10)).send(any(Email.class));
+        verify(emailSenderService, times(10)).send(any(Email.class));
         verify(notificationEmailService, times(10)).saveEntity(any(Email.class));
     }
 
@@ -76,13 +76,13 @@ class EmailNotificationSenderTest {
         givenElevenNotifications.add(givenFailedNotification);
 
         //when
-        doThrow(ScraperBotException.class).when(emailSender).send(givenFailedNotification);
+        doThrow(ScraperBotException.class).when(emailSenderService).send(givenFailedNotification);
         sender.send(givenElevenNotifications);
 
         //then
         assertEquals(10, sender.getSentAmountAndReset());
         assertEquals(1, sender.getFailedAmount());
-        verify(emailSender, times(11)).send(any(Email.class));
+        verify(emailSenderService, times(11)).send(any(Email.class));
         verify(notificationEmailService, times(0)).saveEntity(any(Email.class));
     }
 

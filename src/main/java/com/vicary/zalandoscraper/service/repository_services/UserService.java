@@ -37,12 +37,13 @@ public class UserService {
         repository.updateLanguage(userId, language);
     }
 
-    public void saveUser(UserEntity userEntity) {
-        repository.save(userEntity);
+    public UserEntity saveUser(UserEntity userEntity) {
         if (userEntity.isTelegram())
             logger.info("[User Service] Added new user to database via telegram, telegramId '{}'", userEntity.getTelegramId());
         if (userEntity.isWebsite())
             logger.info("[User Service] Added new user to database via website, email '{}'", userEntity.getEmail());
+
+        return repository.save(userEntity);
     }
 
     public UserEntity saveUser(User user) {
@@ -236,8 +237,8 @@ public class UserService {
         repository.deleteById(userId);
     }
 
-    public void registerUser(RegisterModel model, PasswordEncoder encoder) {
-        saveUser(mapper.map(model, encoder));
+    public UserEntity registerUser(RegisterModel model, PasswordEncoder encoder) {
+        return saveUser(mapper.map(model, encoder));
     }
 
     public void checkRegisterModelValidation(RegisterModel model) throws IllegalArgumentException {

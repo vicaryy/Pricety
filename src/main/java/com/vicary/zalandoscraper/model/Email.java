@@ -2,6 +2,7 @@ package com.vicary.zalandoscraper.model;
 
 import com.vicary.zalandoscraper.messages.Messages;
 import lombok.*;
+import org.thymeleaf.TemplateEngine;
 
 @Data
 @Builder
@@ -15,6 +16,7 @@ public class Email {
     private String message;
 
     private boolean mime;
+
 
     public Email(String to) {
         this.to = to;

@@ -3,12 +3,14 @@ package com.vicary.zalandoscraper.service.repository_services;
 import com.vicary.zalandoscraper.entity.EmailVerificationEntity;
 import com.vicary.zalandoscraper.model.Email;
 import com.vicary.zalandoscraper.repository.EmailVerificationRepository;
-import com.vicary.zalandoscraper.sender.EmailSender;
+import com.vicary.zalandoscraper.sender.EmailSenderService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
 
@@ -20,7 +22,7 @@ public class EmailVerificationService {
 
     private final EmailVerificationRepository repository;
 
-    private final EmailSender emailSender;
+    private final EmailSenderService emailSenderService;
 
 
     public EmailVerificationEntity createVerification(long userId) {
@@ -38,8 +40,25 @@ public class EmailVerificationService {
         return repository.findByUserId(userId);
     }
 
+    public EmailVerificationEntity findByToken(String token) {
+        return repository.findByToken(token).orElseThrow();
+    }
+
+    @Transactional
+    public Optional<EmailVerificationEntity> findByTokenAndDelete(String token) {
+        Optional<EmailVerificationEntity> entity = repository.findByToken(token);
+        if (entity.isPresent())
+            deleteByToken(token);
+        return entity;
+    }
+
+
     public boolean existsByUserIdAndToken(long userId, String token) {
         return repository.existsByUserIdAndToken(userId, token);
+    }
+
+    public boolean existsByToken(String token) {
+        return repository.existsByToken(token) == 1;
     }
 
     public void deleteByToken(String token) {
@@ -70,7 +89,7 @@ public class EmailVerificationService {
         emailBody.setVerificationMessageAndTitle(verification.getToken());
 
         try {
-            emailSender.send(emailBody);
+            emailSenderService.send(emailBody);
         } catch (Exception e) {
             logger.warn("[Email Verification Service] Failed sent email verification to {}", email);
         }

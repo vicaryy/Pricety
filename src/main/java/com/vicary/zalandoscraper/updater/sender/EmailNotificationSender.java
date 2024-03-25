@@ -1,6 +1,6 @@
 package com.vicary.zalandoscraper.updater.sender;
 
-import com.vicary.zalandoscraper.sender.EmailSender;
+import com.vicary.zalandoscraper.sender.EmailSenderService;
 import com.vicary.zalandoscraper.model.Email;
 import com.vicary.zalandoscraper.service.repository_services.NotificationEmailService;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ class EmailNotificationSender {
     private int emailsSent;
     private int emailsFailed;
 
-    private final EmailSender emailSender;
+    private final EmailSenderService emailSenderService;
 
     private final NotificationEmailService notificationEmailService;
 
@@ -36,7 +36,7 @@ class EmailNotificationSender {
 
     private void send(Email email, boolean save) {
         try {
-            emailSender.send(email);
+            emailSenderService.send(email);
             emailsSent++;
             if (save)
                 saveToRepository(email);
