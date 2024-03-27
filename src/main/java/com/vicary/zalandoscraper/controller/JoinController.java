@@ -17,14 +17,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 import java.util.Optional;
 
+//@CrossOrigin
 @Controller
 @RequiredArgsConstructor
 public class JoinController {
@@ -98,10 +96,7 @@ public class JoinController {
 
     @PostMapping("/join/log-out")
     public String logOut(HttpServletResponse response, HttpServletRequest request) {
-        System.out.println(Arrays.toString(request.getCookies()));
-        logger.info("Dostałem post");
         response.addCookie(Cookies.getEmptyJwtCookie());
-        response.addCookie(new Cookie("test", "testoweCookies"));
         return "redirect:/join";
     }
 
@@ -132,3 +127,5 @@ public class JoinController {
         model.addAttribute("errorInfo" + error.getType(), error.getMessage());
     }
 }
+
+
