@@ -25,11 +25,11 @@ public class Pattern {
     }
 
     public static boolean isHouseURL(String text) {
-        return text.startsWith("https://www.housebrand.com/");
+        return text.startsWith("https://www.housebrand.");
     }
 
     public static boolean isZaraURL(String text) {
-        return text.startsWith("https://www.zara.com/");
+        return text.startsWith("https://www.zara.");
     }
 
     public static boolean isURL(String text) {
