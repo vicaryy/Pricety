@@ -91,8 +91,9 @@ public class ProductService {
         return repository.existByUserIdLinkAndVariant(userId, link, variant) == 1;
     }
 
-    public void deleteProductById(Long id) {
-        repository.deleteById(id);
+    public void deleteProductById(long id) {
+        repository.deleteByProductId(id);
+        logger.info("Deleted product id: '{}'", id);
     }
 
     public void deleteAllProductsByUserId(long userId) {
@@ -104,7 +105,68 @@ public class ProductService {
         logger.info("[Product Service] Added new product to database link: {}", product.getLink());
     }
 
+    public void saveProduct(Product product, String userEmail) {
+        repository.save(mapper.map(product, userService.findByEmail(userEmail)));
+        logger.info("[Product Service] Added new product to database link: {}", product.getLink());
+    }
+
+
     public boolean existsById(long productId) {
         return repository.existsById(productId);
     }
+
+    public void updateProduct(long productId, String title, String description, String alert) {
+        if (!isAlertValid(productId, alert))
+            return;
+        repository.updateTitleDescriptionAlert(productId, title, description, alert);
+    }
+
+    private boolean isAlertValid(long productId, String alert) {
+        if (alert.equalsIgnoreCase("AUTO") || alert.equalsIgnoreCase("OFF"))
+            return true;
+
+        if (alert.contains(","))
+            alert = alert.replaceFirst(",", ".");
+
+        double a;
+        try {
+            a = Double.parseDouble(alert);
+        } catch (Exception ex) {
+            return false;
+        }
+
+        double productPrice = getProduct(productId).getPrice();
+        return productPrice == 0 || productPrice > a;
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

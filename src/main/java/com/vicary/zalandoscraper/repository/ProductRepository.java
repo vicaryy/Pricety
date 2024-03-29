@@ -36,6 +36,18 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
     @Modifying
     @Query(value = """
             update products_test
+            set product_name = :title, description = :description, price_alert = :alert
+            where product_id = :productId""", nativeQuery = true)
+    void updateTitleDescriptionAlert(
+            @Param("productId") Long productId,
+            @Param("title") String title,
+            @Param("description") String description,
+            @Param("alert") String alert);
+
+    @Transactional
+    @Modifying
+    @Query(value = """
+            update products_test
             set price_alert = :priceAlert
             where product_id = :productId""", nativeQuery = true)
     void updatePriceAlert(@Param("productId") Long productId, @Param("priceAlert") String priceAlert);
@@ -60,4 +72,11 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
             from products_test
             where user_id = :userId""", nativeQuery = true)
     int countByUserId(long userId);
+
+    @Transactional
+    @Modifying
+    @Query(value = """
+            delete from products_test
+            where product_id = :productId""", nativeQuery = true)
+    void deleteByProductId(@Param("productId") long productId);
 }

@@ -35,12 +35,12 @@ public class SecurityConfig {
                 .cors(e -> e.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(e -> {
                     e.requestMatchers("/", "/join/**", "/assets/**", "/test", "/add", "/addByVariant").permitAll();
-                    e.requestMatchers("/account").hasRole("USER");
+                    e.requestMatchers("/account/**").hasRole("USER");
                     e.anyRequest().authenticated();
                 })
                 .sessionManagement(e -> e.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(new JwtAuthenticationFilter(new JwtService(), userService), UsernamePasswordAuthenticationFilter.class)
-                .formLogin(e -> e.loginPage("/join"));
+                .formLogin(e -> e.loginPage("/join?l=true"));
 
         return http.build();
     }

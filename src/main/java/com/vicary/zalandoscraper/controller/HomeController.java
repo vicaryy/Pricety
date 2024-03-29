@@ -1,5 +1,7 @@
 package com.vicary.zalandoscraper.controller;
 
+import com.vicary.zalandoscraper.entity.UserEntity;
+import com.vicary.zalandoscraper.exception.IllegalInputException;
 import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.service.ScraperService;
 import com.vicary.zalandoscraper.service.repository_services.ProductService;
@@ -23,10 +25,9 @@ public class HomeController {
 
     private final ScraperService scraperService;
 
-    private final UserService userService;
-
     private final ProductService productService;
 
+    private final UserService userService;
 
     @GetMapping({"/", "/#"})
     public String home(Authentication authentication, Model model) {
@@ -40,50 +41,93 @@ public class HomeController {
 
     @PostMapping("/add")
     public String addItem(@RequestParam(name = "url") String url, Model model, Authentication authentication) {
-        if (authentication == null) {
-            model.addAttribute("unauthorized", true);
-            model.addAttribute("errorInfo", "You have to log in first!");
-            return "/fragments/home/add-item";
-        }
+        if (authentication == null)
+            return unauthorizedTemplate("Only for logged users!", model);
+
         List<String> variants;
-//        System.out.println(authentication.getPrincipal());
         try {
-            variants = scraperService.scrapVariants(url);
+            variants = scrapVariants(url);
+
+            if (variants.size() == 1) {
+                scrapAndSaveProduct(url, variants.get(0), authentication);
+                return successTemplate("Product added successfully!", model);
+            }
+        } catch (IllegalInputException ex) {
+            log.warn(ex.getLoggerMessage());
+            return errorTemplate(ex.getMessage(), model);
         } catch (Exception ex) {
-            model.addAttribute("error", true);
-            model.addAttribute("errorInfo", ex.getMessage());
-            return "/fragments/home/add-item";
+            return errorTemplate(ex.getMessage(), model);
         }
 
-        if (variants.size() == 1) {
-            Product product = scraperService.scrapProduct(url, variants.get(0));
-            model.addAttribute("success", true);
-            return "/fragments/home/add-item";
-        }
-
-        model.addAttribute("size", true);
-        model.addAttribute("variants", variants);
-        model.addAttribute("url", url);
-        return "/fragments/home/add-item";
+        return variantsTemplate(url, variants, model);
     }
 
     @PostMapping("/addByVariant")
     public String addItemByVariant(
             @RequestParam(name = "u") String url,
             @RequestParam(name = "v") String variant,
-            Model model, HttpServletRequest request) throws InterruptedException {
+            Model model,
+            Authentication authentication) throws InterruptedException {
 
-        Product product;
         try {
-            product = scraperService.scrapProduct(url, variant);
+            scrapAndSaveProduct(url, variant, authentication);
+        } catch (IllegalInputException ex) {
+            log.warn(ex.getLoggerMessage());
+            return errorTemplate(ex.getMessage(), model);
         } catch (Exception ex) {
-            model.addAttribute("error", true);
-            model.addAttribute("errorInfo", ex.getMessage());
-            return "/fragments/home/add-item";
+            return errorTemplate(ex.getMessage(), model);
         }
+        return successTemplate("Product added successfully!", model);
+    }
 
+    private void scrapAndSaveProduct(String url, String variant, Authentication authentication) {
+        Product product = scraperService.scrapProduct(url, variant);
+        checkUserAndProductValidations(product, authentication);
+        saveProduct(product, authentication);
+    }
+
+    private List<String> scrapVariants(String url) {
+        return scraperService.scrapVariants(url);
+    }
+
+    private void saveProduct(Product product, Authentication authentication) {
+        productService.saveProduct(product, authentication.getPrincipal().toString());
+    }
+
+    private void checkUserAndProductValidations(Product product, Authentication authentication) {
+        UserEntity user = userService.findByEmail(authentication.getPrincipal().toString());
+        if (productService.existsByUserIdAndLinkAndVariant(user.getUserId(), product.getLink(), product.getVariant()))
+            throw new IllegalInputException("You already have this product!", "User %s already have product.".formatted(user.getEmail()));
+
+        if (user.isPremium())
+            return;
+
+        if (productService.countByUserId(user.getUserId()) > 15)
+            throw new IllegalInputException("You are above limit of 15 products! Go premium.", "User %s above limit of 15 products.".formatted(user.getEmail()));
+    }
+
+    private String errorTemplate(String errorInfo, Model model) {
+        model.addAttribute("error", true);
+        model.addAttribute("errorInfo", errorInfo);
+        return "/fragments/home/add-item";
+    }
+
+    private String unauthorizedTemplate(String errorInfo, Model model) {
+        model.addAttribute("unauthorized", true);
+        model.addAttribute("errorInfo", errorInfo);
+        return "/fragments/home/add-item";
+    }
+
+    private String successTemplate(String successInfo, Model model) {
         model.addAttribute("success", true);
-        log.info("Dodano nowy produkt: " + product);
+        model.addAttribute("successInfo", successInfo);
+        return "/fragments/home/add-item";
+    }
+
+    private String variantsTemplate(String url, List<String> variants, Model model) {
+        model.addAttribute("size", true);
+        model.addAttribute("variants", variants);
+        model.addAttribute("url", url);
         return "/fragments/home/add-item";
     }
 }

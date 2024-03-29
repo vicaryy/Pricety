@@ -2,6 +2,7 @@ package com.vicary.zalandoscraper.security;
 
 import com.vicary.zalandoscraper.service.repository_services.UserService;
 import com.vicary.zalandoscraper.service.repository_services.WebUserService;
+import com.vicary.zalandoscraper.thread_local.ActiveLanguage;
 import com.vicary.zalandoscraper.utils.Cookies;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -17,6 +18,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -30,6 +33,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
+
+        //todo
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", Locale.of("en"));
+        ActiveLanguage.get().setResourceBundle(resourceBundle);
+        //**
 
         if (dontNeedsToBeFilter(request)) {
             filterChain.doFilter(request, response);
