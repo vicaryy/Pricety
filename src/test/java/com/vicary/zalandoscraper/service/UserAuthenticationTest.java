@@ -235,6 +235,7 @@ class UserAuthenticationTest {
 
     private ActiveUser getExpectedActiveUserFromCallbackQuery(UserEntity userEntity) {
         ActiveUser activeUser = new ActiveUser();
+        activeUser.setUserId(123);
         activeUser.setTelegramId(userEntity.getTelegramId());
         activeUser.setChatId("123");
         activeUser.setMessageId(123);

@@ -57,7 +57,7 @@ class ProductServiceTest {
                 .build();
 
         //when
-        productService.updateProductPrices(List.of(givenProduct));
+        productService.updateProductAfterUpdate(List.of(givenProduct));
 
         //then
         verify(repository, times(1)).updatePrice(givenProduct.getProductId(), givenProduct.getNewPrice());
@@ -75,7 +75,7 @@ class ProductServiceTest {
                 .build();
 
         //when
-        productService.updateProductPrices(List.of(givenProduct));
+        productService.updateProductAfterUpdate(List.of(givenProduct));
 
         //then
         verify(repository, times(1)).updatePrice(givenProduct.getProductId(), givenProduct.getNewPrice());
@@ -93,7 +93,7 @@ class ProductServiceTest {
                 .build();
 
         //when
-        productService.updateProductPrices(List.of(givenProduct));
+        productService.updateProductAfterUpdate(List.of(givenProduct));
 
         //then
         verify(repository, times(1)).updatePrice(givenProduct.getProductId(), givenProduct.getNewPrice());
@@ -111,7 +111,7 @@ class ProductServiceTest {
                 .build();
 
         //when
-        productService.updateProductPrices(List.of(givenProduct));
+        productService.updateProductAfterUpdate(List.of(givenProduct));
 
         //then
         verify(repository, times(1)).updatePrice(givenProduct.getProductId(), givenProduct.getNewPrice());
@@ -129,7 +129,7 @@ class ProductServiceTest {
                 .build();
 
         //when
-        productService.updateProductPrices(List.of(givenProduct));
+        productService.updateProductAfterUpdate(List.of(givenProduct));
 
         //then
         verify(repository, times(1)).updatePriceAndPriceAlert(givenProduct.getProductId(), givenProduct.getNewPrice(), "OFF");

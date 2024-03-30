@@ -117,11 +117,11 @@ public class AutoUpdater {
 
         updateProducts(splittedListIntoScrapers);
 
-        updateProductsPriceInRepository(products);
-
         saveToUpdatesHistoryRepository(products);
 
         sendNotificationsToUsers(products);
+
+        updateProductsAfterUpdateInRepository(products);
     }
 
     List<List<Product>> divideListIntoServices(List<Product> products) {
@@ -179,8 +179,8 @@ public class AutoUpdater {
         notificationManager.sendWaitingUserNotifications(waitingUserService.getAllAndDeleteWaitingUsers());
     }
 
-    private void updateProductsPriceInRepository(List<Product> updatedProducts) {
-        productService.updateProductPrices(updatedProducts);
+    private void updateProductsAfterUpdateInRepository(List<Product> updatedProducts) {
+        productService.updateProductAfterUpdate(updatedProducts);
     }
 
     private void sleep(long millis) throws InterruptedException {

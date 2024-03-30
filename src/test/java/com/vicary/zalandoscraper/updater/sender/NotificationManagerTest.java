@@ -195,6 +195,26 @@ class NotificationManagerTest {
         verify(productHistoryService, times(1)).getLastPositivePrice(123L);
     }
 
+    @Test
+    void isUserNeedsNotify_expectTrue_UserNeedsToByNotifiedWhenAvailable() {
+        //given
+        Product givenProduct = getDefaultProduct();
+        givenProduct.setProductId(123L);
+        givenProduct.setPriceAlert("AUTO");
+        givenProduct.setNotifyWhenAvailable(true);
+        givenProduct.setPrice(0);
+        givenProduct.setNewPrice(200);
+        double givenLastPositivePrice = 100;
+
+        //when
+        when(productHistoryService.getLastPositivePrice(givenProduct.getProductId())).thenReturn(givenLastPositivePrice);
+
+
+        //then
+        assertFalse(notificationManager.isUserNeedsNotify(givenProduct));
+        verify(productHistoryService, times(1)).getLastPositivePrice(123L);
+    }
+
 
     @Test
     void updatePriceAlertInRepository_notUpdated_PriceAlertIsOFF() {

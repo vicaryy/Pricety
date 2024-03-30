@@ -6,14 +6,13 @@ import com.vicary.zalandoscraper.service.UpdateReceiverService;
 import com.vicary.zalandoscraper.service.dto.ProductHistoryDTO;
 import com.vicary.zalandoscraper.service.map.ProductHistoryMapper;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Sort;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -40,22 +39,22 @@ public class ProductHistoryServiceTest {
         //given
         long givenProductId = 100;
         List<ProductHistoryEntity> givenList = new ArrayList<>();
-        givenList.add(getEntity(100, 1));
-        givenList.add(getEntity(200, 2));
-        givenList.add(getEntity(300, 3));
-        givenList.add(getEntity(400, 4));
-        givenList.add(getEntity(500, 5));
+        givenList.add(getEntity(5, 500, 5));
+        givenList.add(getEntity(4, 400, 4));
+        givenList.add(getEntity(3, 300, 3));
+        givenList.add(getEntity(2, 200, 2));
+        givenList.add(getEntity(1, 100, 1));
 
         List<ProductHistoryDTO> expectedList = new ArrayList<>();
-        expectedList.add(getDTO(100, 1));
-        expectedList.add(getDTO(200, 2));
-        expectedList.add(getDTO(300, 3));
-        expectedList.add(getDTO(400, 4));
         expectedList.add(getDTO(500, 5));
+        expectedList.add(getDTO(400, 4));
+        expectedList.add(getDTO(300, 3));
+        expectedList.add(getDTO(200, 2));
+        expectedList.add(getDTO(100, 1));
 
         //when
-        when(repository.findAllByProductId(givenProductId)).thenReturn(givenList);
-        List<ProductHistoryDTO> actualList = service.getProductHistory(givenProductId);
+        when(repository.findAllByProductId(givenProductId, Sort.by(Sort.Direction.DESC, "id"))).thenReturn(givenList);
+        List<ProductHistoryDTO> actualList = service.getProductHistorySortedByIdReverse(givenProductId);
 
         //then
         assertEquals(expectedList, actualList);
@@ -116,20 +115,20 @@ public class ProductHistoryServiceTest {
         double expectedPrice = 350;
         long givenId = 1;
         List<ProductHistoryEntity> givenList = List.of(
-                getEntity(100, 1),
-                getEntity(350, 1),
-                getEntity(0, 1),
-                getEntity(0, 1),
-                getEntity(0, 1),
-                getEntity(0, 1),
-                getEntity(0, 1),
-                getEntity(0, 1),
-                getEntity(0, 1),
-                getEntity(0, 1)
-        );
+                getEntity(10, 0, 1),
+                getEntity(9, 0, 1),
+                getEntity(8, 0, 1),
+                getEntity(7, 0, 1),
+                getEntity(6, 0, 1),
+                getEntity(5, 0, 1),
+                getEntity(4, 0, 1),
+                getEntity(3, 0, 1),
+                getEntity(2, 350, 1),
+                getEntity(1, 100, 1)
+                );
 
         //when
-        when(repository.findAllByProductId(givenId)).thenReturn(givenList);
+        when(repository.findAllByProductId(givenId, Sort.by(Sort.Direction.DESC, "id"))).thenReturn(givenList);
         double actualPrice = service.getLastPositivePrice(givenId);
 
         //then
@@ -155,7 +154,7 @@ public class ProductHistoryServiceTest {
         );
 
         //when
-        when(repository.findAllByProductId(givenId)).thenReturn(givenList);
+        when(repository.findAllByProductId(givenId, Sort.by(Sort.Direction.DESC, "id"))).thenReturn(givenList);
         double actualPrice = service.getLastPositivePrice(givenId);
 
         //then
@@ -165,7 +164,7 @@ public class ProductHistoryServiceTest {
     @Test
     void getLastPositivePrice_expectEquals_NoZeroInList() {
         //given
-        double expectedPrice = 120;
+        double expectedPrice = 350;
         long givenId = 1;
         List<ProductHistoryEntity> givenList = List.of(
                 getEntity(350, 1),
@@ -181,11 +180,20 @@ public class ProductHistoryServiceTest {
         );
 
         //when
-        when(repository.findAllByProductId(givenId)).thenReturn(givenList);
+        when(repository.findAllByProductId(givenId, Sort.by(Sort.Direction.DESC, "id"))).thenReturn(givenList);
         double actualPrice = service.getLastPositivePrice(givenId);
 
         //then
         assertEquals(expectedPrice, actualPrice);
+    }
+
+    private ProductHistoryEntity getEntity(long id, double price, int day) {
+        return ProductHistoryEntity.builder()
+                .id(id)
+                .productId(1L)
+                .price(price)
+                .lastUpdate(LocalDateTime.of(2023, 10, day, 10, 10, 10, 10))
+                .build();
     }
 
     private ProductHistoryEntity getEntity(double price, int day) {

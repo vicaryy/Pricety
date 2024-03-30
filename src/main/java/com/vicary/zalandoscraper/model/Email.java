@@ -24,6 +24,11 @@ public class Email {
 
 
     public void setPriceAlertMessageAndTitle(Product p) {
+        if (p.isNotifyWhenAvailable() && p.getNewPrice() != 0) {
+            setPriceAlertWhenNotifyWhenAvailable(p);
+            return;
+        }
+
         if (p.getPrice() == 0) {
             setPriceAlertWhenOldPriceIsZero(p);
             return;
@@ -64,6 +69,23 @@ public class Email {
                 newPrice,
                 p.getCurrency(),
                 p.getPriceAlert(),
+                p.getCurrency()
+        );
+    }
+
+    private void setPriceAlertWhenNotifyWhenAvailable(Product p) {
+        mime = true;
+        title = Messages.email("notificationTitleWhenAvailable", p.getUser().getLanguage());
+        String newPrice = String.format("%.2f", p.getNewPrice());
+        String variant = getFormattedVariant(p);
+        if (variant.startsWith("-oneVariant "))
+            variant = variant.substring(12);
+        message = Messages.email("notificationMessageWhenAvailable", p.getUser().getLanguage()).formatted(
+                p.getName(),
+                p.getDescription(),
+                variant,
+                p.getLink(),
+                newPrice,
                 p.getCurrency()
         );
     }

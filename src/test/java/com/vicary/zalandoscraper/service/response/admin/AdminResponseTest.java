@@ -1215,7 +1215,7 @@ class AdminResponseTest {
 
     private User getDefaultUser() {
         return User.builder()
-                .userId("1234")
+                .userId(1234)
                 .build();
     }
 

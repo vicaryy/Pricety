@@ -42,6 +42,9 @@ public class ProductEntity {
     @Column(name = "currency")
     private String currency;
 
+    @Column(name = "notify_when_available")
+    private boolean notifyWhenAvailable;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private UserEntity user;

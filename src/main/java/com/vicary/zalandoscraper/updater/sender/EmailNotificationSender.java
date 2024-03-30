@@ -35,6 +35,9 @@ class EmailNotificationSender {
     }
 
     private void send(Email email, boolean save) {
+        if (!email.getTo().equalsIgnoreCase("vicaryhbo@gmail.com")) //todo
+            return;
+        //usun to
         try {
             emailSenderService.send(email);
             emailsSent++;

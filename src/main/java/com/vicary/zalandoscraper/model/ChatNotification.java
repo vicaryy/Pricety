@@ -24,6 +24,11 @@ public class ChatNotification {
     }
 
     public void setDefaultPriceAlertMessage(Product p) {
+        if (p.isNotifyWhenAvailable() && p.getNewPrice() != 0) {
+            setPriceAlertWhenNotifyWhenAvailable(p);
+            return;
+        }
+
         if (p.getPrice() == 0) {
             setMessageWhenOldPriceIsZero(p);
             return;
@@ -58,6 +63,19 @@ public class ChatNotification {
                 MarkdownV2.apply(newPrice).get(),
                 MarkdownV2.apply(p.getCurrency()).get(),
                 MarkdownV2.apply(p.getPriceAlert()).get(),
+                MarkdownV2.apply(p.getCurrency()).get()
+        );
+    }
+
+    private void setPriceAlertWhenNotifyWhenAvailable(Product p) {
+        String newPrice = String.format("%.2f", p.getNewPrice());
+        String variant = getFormattedVariant(p);
+        message = Messages.chat("notificationMessageWhenAvailable", p.getUser().getLanguage()).formatted(
+                MarkdownV2.apply(p.getName()).get(),
+                MarkdownV2.apply(p.getDescription()).get(),
+                MarkdownV2.apply(variant).get(),
+                MarkdownV2.apply(p.getLink()).toURL(p.getServiceName()).get(),
+                MarkdownV2.apply(newPrice).get(),
                 MarkdownV2.apply(p.getCurrency()).get()
         );
     }

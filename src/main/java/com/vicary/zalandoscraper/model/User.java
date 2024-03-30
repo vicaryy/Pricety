@@ -10,11 +10,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class User {
-    private String userId;
+    private long userId;
+    private String telegramId;
     private String email;
     private String nick;
     private String language;
     private boolean premium;
     private boolean admin;
     private boolean notifyByEmail;
+    private boolean website;
+    private boolean telegram;
 }

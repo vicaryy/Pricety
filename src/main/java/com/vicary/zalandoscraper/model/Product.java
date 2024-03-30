@@ -32,5 +32,7 @@ public class Product {
 
     private String serviceName;
 
+    private boolean notifyWhenAvailable;
+
     private User user;
 }

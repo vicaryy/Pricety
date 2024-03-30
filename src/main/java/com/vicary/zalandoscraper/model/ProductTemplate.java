@@ -30,5 +30,7 @@ public class ProductTemplate {
 
     private String serviceName;
 
+    private boolean notifyWhenAvailable;
+
     private User user;
 }

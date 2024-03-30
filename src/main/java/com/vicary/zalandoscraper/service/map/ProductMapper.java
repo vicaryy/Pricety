@@ -4,7 +4,6 @@ import com.vicary.zalandoscraper.entity.ProductEntity;
 import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.model.ProductTemplate;
 import com.vicary.zalandoscraper.model.User;
-import com.vicary.zalandoscraper.entity.NotificationEntity;
 import com.vicary.zalandoscraper.entity.ProductHistoryEntity;
 import com.vicary.zalandoscraper.model.Product;
 import org.springframework.stereotype.Component;
@@ -27,6 +26,7 @@ public class ProductMapper {
                 .link(product.getLink())
                 .currency(product.getCurrency())
                 .serviceName(product.getServiceName())
+                .notifyWhenAvailable(product.isNotifyWhenAvailable())
                 .user(user)
                 .build();
     }
@@ -44,8 +44,10 @@ public class ProductMapper {
                 .priceAlert(product.getPriceAlert())
                 .serviceName(product.getServiceName())
                 .currency(product.getCurrency())
+                .notifyWhenAvailable(product.isNotifyWhenAvailable())
                 .user(User.builder()
-                        .userId(product.getUser().getTelegramId())
+                        .userId(product.getUser().getUserId())
+                        .telegramId(product.getUser().getTelegramId())
                         .email(product.getUser().getEmail())
                         .nick(product.getUser().getNick())
                         .language(product.getUser().getNationality())
@@ -75,6 +77,7 @@ public class ProductMapper {
                 .priceAlert(priceAlert)
                 .serviceName(serviceName)
                 .currency(product.getCurrency())
+                .notifyWhenAvailable(product.isNotifyWhenAvailable())
                 .user(User.builder()
                         .userId(product.getUser().getUserId())
                         .email(product.getUser().getEmail())
@@ -112,27 +115,6 @@ public class ProductMapper {
 
         return product.stream()
                 .map(productDTO -> map(productDTO, localDateTime))
-                .collect(Collectors.toList());
-    }
-
-    private NotificationEntity mapToNotificationEntity(Product product) {
-        return NotificationEntity.builder()
-                .userId(product.getUser().getUserId())
-                .email(product.getUser().getEmail())
-                .productName(product.getName())
-                .description(product.getDescription())
-                .variant(product.getVariant())
-                .newPrice(product.getNewPrice())
-                .oldPrice(product.getPrice())
-                .link(product.getLink())
-                .priceAlert(product.getPriceAlert())
-                .notifyByEmail(product.getUser().isNotifyByEmail())
-                .build();
-    }
-
-    public List<NotificationEntity> mapToNotificationEntity(List<Product> products) {
-        return products.stream()
-                .map(this::mapToNotificationEntity)
                 .collect(Collectors.toList());
     }
 }

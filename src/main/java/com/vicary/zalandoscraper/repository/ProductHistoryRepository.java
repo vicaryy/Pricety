@@ -1,6 +1,7 @@
 package com.vicary.zalandoscraper.repository;
 
 import com.vicary.zalandoscraper.entity.ProductHistoryEntity;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -15,4 +16,6 @@ public interface ProductHistoryRepository extends JpaRepository<ProductHistoryEn
     ProductHistoryEntity getLatestUpdate();
 
     List<ProductHistoryEntity> findAllByProductId(long productId);
+
+    List<ProductHistoryEntity> findAllByProductId(long productId, Sort sort);
 }

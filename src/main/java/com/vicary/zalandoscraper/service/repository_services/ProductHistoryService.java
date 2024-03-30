@@ -7,6 +7,7 @@ import com.vicary.zalandoscraper.service.map.ProductHistoryMapper;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -38,21 +39,27 @@ public class ProductHistoryService {
         return repository.getLatestUpdate().getLastUpdate();
     }
 
-    public List<ProductHistoryDTO> getProductHistory(long productId) {
-        List<ProductHistoryEntity> entities = repository.findAllByProductId(productId);
-        return mapper.map(entities);
+    public List<ProductHistoryDTO> getProductHistorySortedByIdReverse(long productId) {
+        List<ProductHistoryEntity> entities = repository.findAllByProductId(productId, Sort.by(Sort.Direction.DESC, "id"));
+        return mapper.map((entities));
     }
 
+    public List<ProductHistoryDTO> getProductHistorySortedById(long productId) {
+        List<ProductHistoryEntity> entities = repository.findAllByProductId(productId, Sort.by(Sort.Direction.ASC, "id"));
+        return mapper.map((entities));
+    }
+
+
     public double getLastPositivePrice(long productId) {
-        List<ProductHistoryDTO> productHistory = getProductHistory(productId);
-        for (int i = productHistory.size() - 1; i > 0; i--)
-            if (productHistory.get(i).getPrice() != 0)
-                return productHistory.get(i).getPrice();
+        List<ProductHistoryDTO> productHistory = getProductHistorySortedByIdReverse(productId);
+        for (ProductHistoryDTO d : productHistory)
+            if (d.getPrice() != 0)
+                return d.getPrice();
         return 0;
     }
 
     public List<ProductHistoryDTO> getReducedProductHistory(long productId) {
-        List<ProductHistoryEntity> entities = repository.findAllByProductId(productId);
+        List<ProductHistoryEntity> entities = repository.findAllByProductId(productId, Sort.by(Sort.Direction.ASC, "id"));
         return mapper.map(getReducedListToOneDay(entities));
     }
 
@@ -83,6 +90,8 @@ public class ProductHistoryService {
         return reduced;
     }
 }
+
+
 
 
 

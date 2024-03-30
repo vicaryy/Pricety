@@ -1,7 +1,10 @@
 package com.vicary.zalandoscraper.controller;
 
+import com.vicary.zalandoscraper.entity.ProductHistoryEntity;
 import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.model.ProductTemplate;
+import com.vicary.zalandoscraper.repository.ProductHistoryRepository;
+import com.vicary.zalandoscraper.service.repository_services.ProductHistoryService;
 import com.vicary.zalandoscraper.service.repository_services.ProductService;
 import com.vicary.zalandoscraper.service.repository_services.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,6 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Controller
@@ -21,6 +25,7 @@ public class AccountController {
 
     private final ProductService productService;
     private final UserService userService;
+    private final ProductHistoryRepository productHistoryRepository;
 
     // 6488358449
     @GetMapping("/account")
@@ -34,8 +39,10 @@ public class AccountController {
     }
 
     @PatchMapping("/account/productNotify")
-    public String notifyWhenAvailableProduct(@RequestParam(name = "productId") long productId) {
-        System.out.println(productId);
+    public String notifyWhenAvailableProduct(@RequestParam(name = "productId") long productId, Authentication authentication) {
+        if (doesUserHaveProduct(productId, authentication))
+            productService.updateProductNotifyWhenAvailable(productId, true);
+
         return "empty";
     }
 

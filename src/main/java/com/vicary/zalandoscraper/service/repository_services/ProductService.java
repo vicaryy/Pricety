@@ -68,8 +68,11 @@ public class ProductService {
         return mapper.map(productEntities);
     }
 
-    public void updateProductPrices(List<Product> products) {
+    public void updateProductAfterUpdate(List<Product> products) {
         for (Product p : products) {
+            if (p.isNotifyWhenAvailable() && p.getNewPrice() != 0)
+                updateProductNotifyWhenAvailable(p.getProductId(), false);
+
             if (p.getPriceAlert().equals("AUTO") || p.getPriceAlert().equals("OFF"))
                 updatePriceById(p.getProductId(), p.getNewPrice());
 
@@ -137,6 +140,10 @@ public class ProductService {
 
         double productPrice = getProduct(productId).getPrice();
         return productPrice == 0 || productPrice > a;
+    }
+
+    public void updateProductNotifyWhenAvailable(long productId, boolean notify) {
+        repository.updateNotifyWhenAvailable(productId, notify);
     }
 }
 

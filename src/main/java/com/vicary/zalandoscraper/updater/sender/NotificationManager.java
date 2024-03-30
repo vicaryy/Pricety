@@ -38,8 +38,7 @@ public class NotificationManager {
             logger.info("[Notification Manager] No price notifications to send.");
             return;
         }
-
-        listThatNeedsToBeSend.forEach(this::updatePriceAlertInRepository);
+//        listThatNeedsToBeSend.forEach(this::updatePriceAlertInRepository); // probably don't need?
 
         List<ChatNotification> chatNotifications = getChatNotifications(listThatNeedsToBeSend);
         List<Email> emails = getEmailNotifications(listThatNeedsToBeSend);
@@ -48,7 +47,7 @@ public class NotificationManager {
 
         chatSender.sendAndSave(chatNotifications);
         //todo
-//        emailSender.sendAndSave(emails);
+        emailSender.sendAndSave(emails);
 
         displayLogsAfterSendPriceNotifications();
     }
@@ -65,8 +64,12 @@ public class NotificationManager {
         displayLogsAfterSendWaitingUser();
     }
 
+
     boolean isUserNeedsNotify(Product p) {
-        if (p.getPriceAlert().equals("AUTO") && p.getNewPrice() != 0 && p.getPrice() == 0) {
+        if (isAvailabilityNotification(p.isNotifyWhenAvailable(), p.getPrice(), p.getNewPrice()))
+            return true;
+
+        if (isAutoNotificationWhenOldPriceIsZero(p.getPriceAlert(), p.getPrice(), p.getNewPrice())) {
             p.setPrice(productHistoryService.getLastPositivePrice(p.getProductId()));
             return p.getNewPrice() < p.getPrice();
         }
@@ -82,6 +85,15 @@ public class NotificationManager {
         return p.getNewPrice() <= priceAlert;
     }
 
+
+    private boolean isAutoNotificationWhenOldPriceIsZero(String priceAlert, double price, double newPrice) {
+        return priceAlert.equals("AUTO") && newPrice != 0 && price == 0;
+    }
+
+    private boolean isAvailabilityNotification(boolean notifyWhenAvailable, double price, double newPrice) {
+        return notifyWhenAvailable && price == 0 && newPrice != 0;
+    }
+
     void updatePriceAlertInRepository(Product p) {
         if (p.getPriceAlert().equals("OFF") || p.getPriceAlert().equals("AUTO"))
             return;
@@ -92,10 +104,13 @@ public class NotificationManager {
     }
 
     private List<ChatNotification> getChatNotifications(List<Product> products) {
-        if (products.isEmpty())
+        List<Product> listWithEnabledChatNotifies = products.stream()
+                .filter(p -> p.getUser().isTelegram())
+                .toList();
+        if (listWithEnabledChatNotifies.isEmpty())
             return Collections.emptyList();
 
-        return products.stream()
+        return listWithEnabledChatNotifies.stream()
                 .map(ChatNotificationFactory::getPriceAlertNotification)
                 .toList();
     }

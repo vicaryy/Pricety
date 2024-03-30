@@ -52,6 +52,14 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
             where product_id = :productId""", nativeQuery = true)
     void updatePriceAlert(@Param("productId") Long productId, @Param("priceAlert") String priceAlert);
 
+    @Transactional
+    @Modifying
+    @Query(value = """
+            update products_test
+            set notify_when_available = :notify
+            where product_id = :productId""", nativeQuery = true)
+    void updateNotifyWhenAvailable(@Param("productId") long productId, @Param("notify") boolean notify);
+
 
     @Transactional
     @Modifying
@@ -79,4 +87,5 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
             delete from products_test
             where product_id = :productId""", nativeQuery = true)
     void deleteByProductId(@Param("productId") long productId);
+
 }
