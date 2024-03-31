@@ -1,13 +1,10 @@
 package com.vicary.zalandoscraper.controller;
 
-import com.vicary.zalandoscraper.entity.ProductHistoryEntity;
 import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.model.ProductTemplate;
 import com.vicary.zalandoscraper.repository.ProductHistoryRepository;
-import com.vicary.zalandoscraper.service.repository_services.ProductHistoryService;
 import com.vicary.zalandoscraper.service.repository_services.ProductService;
 import com.vicary.zalandoscraper.service.repository_services.UserService;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -15,7 +12,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Comparator;
 import java.util.List;
 
 @Controller
@@ -31,9 +27,9 @@ public class AccountController {
     @GetMapping("/account")
     public String account(Model model, Authentication authentication) {
         String userEmail = authentication.getPrincipal().toString();
-//        String userId = "6488358449";
-        List<ProductTemplate> products = productService.getAllTemplates();
-        model.addAttribute("user", products.get(2).getUser());
+        UserEntity user = userService.findByEmail(userEmail);
+        List<ProductTemplate> products = productService.getTemplatesByUserEmail(userEmail);
+        model.addAttribute("user", user);
         model.addAttribute("products", products);
         return "account";
     }
@@ -62,6 +58,16 @@ public class AccountController {
     public String deleteProduct(@RequestParam(name = "item-id") long productId, Authentication authentication) {
         if (doesUserHaveProduct(productId, authentication))
             productService.deleteProductById(productId);
+        return "empty";
+    }
+
+    @PatchMapping("/account/telegramGet")
+    public String getDataFromTelegram() {
+        return "empty";
+    }
+
+    @PatchMapping("/account/telegramSend")
+    public String sendDataToTelegram() {
         return "empty";
     }
 

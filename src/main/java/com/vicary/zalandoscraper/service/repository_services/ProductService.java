@@ -145,6 +145,10 @@ public class ProductService {
     public void updateProductNotifyWhenAvailable(long productId, boolean notify) {
         repository.updateNotifyWhenAvailable(productId, notify);
     }
+
+    public List<ProductTemplate> getTemplatesByUserEmail(String email) {
+        return mapper.mapToTemplate(getAllProductsByUserId(userService.findByEmail(email).getUserId()));
+    }
 }
 
 
