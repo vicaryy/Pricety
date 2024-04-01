@@ -83,6 +83,9 @@ public class UserEntity implements UserDetails {
     public String getRole() {
         return "ROLE_" + role.toString().toUpperCase();
     }
+    public Role getRoleEnum() {
+        return role;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

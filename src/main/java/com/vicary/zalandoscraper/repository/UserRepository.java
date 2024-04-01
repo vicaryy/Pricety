@@ -14,7 +14,8 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     Optional<UserEntity> findByUserId(long userId);
     Optional<UserEntity> findByTelegramId(String telegramId);
     Optional<UserEntity> findByEmail(String email);
-
+    Optional<UserEntity> findByEmailAndWebsite(String email, boolean website);
+    Optional<UserEntity> findByEmailAndTelegram(String email, boolean telegram);
     Optional<UserEntity> findByNick(String nick);
 
     boolean existsByTelegramId(String telegramId);
@@ -22,6 +23,8 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     boolean existsByUserId(long userId);
 
     boolean existsByNick(String nick);
+
+    boolean existsByEmailAndVerifiedEmailAndTelegram(String email, boolean verifiedEmail, boolean telegram);
 
     @Modifying
     @Transactional
@@ -63,4 +66,5 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
             set nationality = :language
             where user_id = :userId""", nativeQuery = true)
     void updateLanguage(@Param("userId") long userId, @Param("language") String language);
+
 }

@@ -1,12 +1,10 @@
 package com.vicary.zalandoscraper.security;
 
 import com.vicary.zalandoscraper.service.repository_services.UserService;
-import com.vicary.zalandoscraper.service.repository_services.WebUserService;
 import com.vicary.zalandoscraper.thread_local.ActiveLanguage;
 import com.vicary.zalandoscraper.utils.Cookies;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -60,7 +58,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        UserDetails user = userService.findByEmail(userEmail);
+        UserDetails user = userService.findWebUserByEmail(userEmail);
 
         if (!jwtService.isJwtValid(jwt, user)) {
             response.addCookie(Cookies.getEmptyJwtCookie());

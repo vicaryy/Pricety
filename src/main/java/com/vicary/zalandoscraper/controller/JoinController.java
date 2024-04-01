@@ -19,7 +19,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.Optional;
 
 //@CrossOrigin
@@ -67,7 +66,7 @@ public class JoinController {
             setModelAttributes(model, new Error("LogIn", ex.getMessage()));
             return "join";
         }
-        Cookie cookie = Cookies.getJwtCookie(jwtService.generateJwt(userService.findByEmail(logInModel.getEmail())));
+        Cookie cookie = Cookies.getJwtCookie(jwtService.generateJwt(userService.findWebUserByEmail(logInModel.getEmail())));
         response.addCookie(cookie);
         return "redirect:/";
     }

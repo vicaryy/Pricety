@@ -109,7 +109,7 @@ public class ProductService {
     }
 
     public void saveProduct(Product product, String userEmail) {
-        repository.save(mapper.map(product, userService.findByEmail(userEmail)));
+        repository.save(mapper.map(product, userService.findWebUserByEmail(userEmail)));
         logger.info("[Product Service] Added new product to database link: {}", product.getLink());
     }
 
@@ -147,7 +147,7 @@ public class ProductService {
     }
 
     public List<ProductTemplate> getTemplatesByUserEmail(String email) {
-        return mapper.mapToTemplate(getAllProductsByUserId(userService.findByEmail(email).getUserId()));
+        return mapper.mapToTemplate(getAllProductsByUserId(userService.findWebUserByEmail(email).getUserId()));
     }
 }
 

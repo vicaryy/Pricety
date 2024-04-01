@@ -8,9 +8,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -18,8 +16,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
@@ -35,7 +31,7 @@ public class SecurityConfig {
                 .cors(e -> e.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(e -> {
                     e.requestMatchers("/", "/join/**", "/assets/**", "/test", "/add", "/addByVariant").permitAll();
-                    e.requestMatchers("/account/**").hasRole("USER");
+                    e.requestMatchers("/account/**").hasAnyRole("USER", "ADMIN");
                     e.anyRequest().authenticated();
                 })
                 .sessionManagement(e -> e.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -47,7 +43,7 @@ public class SecurityConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return userService::findByEmail;
+        return userService::findWebUserByEmail;
     }
 
     @Bean

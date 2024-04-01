@@ -2,7 +2,6 @@ package com.vicary.zalandoscraper.service.repository_services;
 
 import com.vicary.zalandoscraper.api_telegram.api_object.User;
 import com.vicary.zalandoscraper.entity.UserEntity;
-import com.vicary.zalandoscraper.entity.WebUserEntity;
 import com.vicary.zalandoscraper.exception.IllegalInputException;
 import com.vicary.zalandoscraper.messages.Messages;
 import com.vicary.zalandoscraper.model.LogInModel;
@@ -68,12 +67,20 @@ public class UserService {
         return repository.findByTelegramId(telegramId).orElseThrow(() -> new NoSuchElementException("User '%s' not found".formatted(telegramId)));
     }
 
-    public UserEntity findByEmail(String email) {
-        return repository.findByEmail(email).orElseThrow(() -> new NoSuchElementException("User '%s' not found".formatted(email)));
+    public UserEntity findWebUserByEmail(String email) {
+        return repository.findByEmailAndWebsite(email, true).orElseThrow(() -> new NoSuchElementException("User '%s' not found".formatted(email)));
+    }
+
+    public UserEntity findTelegramUserByEmail(String email) {
+        return repository.findByEmailAndTelegram(email, true).orElseThrow(() -> new NoSuchElementException("User '%s' not found".formatted(email)));
     }
 
     public Optional<UserEntity> findByEmailOptional(String email) {
         return repository.findByEmail(email);
+    }
+
+    public Optional<UserEntity> findWebUserByEmailOptional(String email) {
+        return repository.findByEmailAndWebsite(email, true);
     }
 
     public Optional<UserEntity> findByUserIdOptional(long userId) {
@@ -250,7 +257,7 @@ public class UserService {
     }
 
     public void checkLogInModelValidation(LogInModel model, PasswordEncoder encoder) throws IllegalArgumentException {
-        UserEntity user = findByEmailOptional(model.getEmail()).orElseThrow(() -> new IllegalArgumentException("Invalid data."));
+        UserEntity user = findWebUserByEmailOptional(model.getEmail()).orElseThrow(() -> new IllegalArgumentException("Invalid data."));
         if (!user.isVerifiedEmail())
             throw new IllegalArgumentException("User not activated.");
 
@@ -263,7 +270,7 @@ public class UserService {
     }
 
     private boolean isEmailTaken(String email) {
-        return findByEmailOptional(email).isPresent();
+        return findWebUserByEmailOptional(email).isPresent();
     }
 
     private boolean isPasswordValid(String password) {
@@ -276,4 +283,39 @@ public class UserService {
                 return true;
         return false;
     }
+
+    public boolean existsByVerifiedEmailAndTelegram(String email, boolean telegram) {
+        return repository.existsByEmailAndVerifiedEmailAndTelegram(email, true, telegram);
+    }
+
+    public void updateWebUserByTelegram(String email) {
+        UserEntity webUser = findWebUserByEmail(email);
+        UserEntity telegramUser = findTelegramUserByEmail(email);
+        webUser = mapper.mapTelegramToWebsite(telegramUser, webUser);
+        repository.save(webUser);
+        repository.save(telegramUser);
+        repository.deleteById(telegramUser.getUserId());
+        logger.info("Updated webUser by telegramUser, user email: '{}'", webUser.getEmail());
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

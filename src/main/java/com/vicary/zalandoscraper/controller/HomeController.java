@@ -6,7 +6,6 @@ import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.service.ScraperService;
 import com.vicary.zalandoscraper.service.repository_services.ProductService;
 import com.vicary.zalandoscraper.service.repository_services.UserService;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -95,7 +94,7 @@ public class HomeController {
     }
 
     private void checkUserAndProductValidations(Product product, Authentication authentication) {
-        UserEntity user = userService.findByEmail(authentication.getPrincipal().toString());
+        UserEntity user = userService.findWebUserByEmail(authentication.getPrincipal().toString());
         if (productService.existsByUserIdAndLinkAndVariant(user.getUserId(), product.getLink(), product.getVariant()))
             throw new IllegalInputException("You already have this product!", "User %s already have product.".formatted(user.getEmail()));
 

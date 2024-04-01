@@ -23,12 +23,13 @@ public class AccountController {
     private final UserService userService;
     private final ProductHistoryRepository productHistoryRepository;
 
-    // 6488358449
     @GetMapping("/account")
-    public String account(Model model, Authentication authentication) {
+    public String account(Model model, Authentication authentication, @RequestParam(name = "settings", required = false) boolean settings) {
         String userEmail = authentication.getPrincipal().toString();
-        UserEntity user = userService.findByEmail(userEmail);
+        UserEntity user = userService.findWebUserByEmail(userEmail);
         List<ProductTemplate> products = productService.getTemplatesByUserEmail(userEmail);
+        if (settings)
+            model.addAttribute("settings", true);
         model.addAttribute("user", user);
         model.addAttribute("products", products);
         return "account";
@@ -62,7 +63,12 @@ public class AccountController {
     }
 
     @PatchMapping("/account/telegramGet")
-    public String getDataFromTelegram() {
+    public String getDataFromTelegram(Authentication authentication, Model model) {
+        String email = authentication.getPrincipal().toString();
+        if (userService.existsByVerifiedEmailAndTelegram(email, true)) {
+            userService.updateWebUserByTelegram(email);
+            return "redirect:/account?settings=true";
+        }
         return "empty";
     }
 
@@ -72,7 +78,7 @@ public class AccountController {
     }
 
     private boolean doesUserHaveProduct(long productId, Authentication authentication) {
-        return userService.findByEmail(authentication.getPrincipal().toString())
+        return userService.findWebUserByEmail(authentication.getPrincipal().toString())
                 .getProducts()
                 .stream()
                 .anyMatch(e -> e.getId() == productId);
