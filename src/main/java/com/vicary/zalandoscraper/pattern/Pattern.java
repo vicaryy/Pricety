@@ -73,6 +73,10 @@ public class Pattern {
         return text.startsWith("v-");
     }
 
+    public static boolean isDataImportToken(String text) {
+        return text.startsWith("get-") || text.startsWith("send-");
+    }
+
     public static boolean isAdminCommand(String text, boolean isAdmin) {
         return isAdmin && text.startsWith("//");
     }

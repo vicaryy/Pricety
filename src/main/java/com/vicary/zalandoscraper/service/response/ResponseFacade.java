@@ -1,18 +1,16 @@
 package com.vicary.zalandoscraper.service.response;
 
-import com.vicary.zalandoscraper.entity.UserEntity;
-import com.vicary.zalandoscraper.entity.WaitingUserEntity;
+import com.vicary.zalandoscraper.entity.*;
 import com.vicary.zalandoscraper.format.MarkdownV2;
 import com.vicary.zalandoscraper.service.dto.ProductHistoryDTO;
 import com.vicary.zalandoscraper.utils.PrettyTime;
-import com.vicary.zalandoscraper.entity.AwaitedMessageEntity;
-import com.vicary.zalandoscraper.entity.LinkRequestEntity;
 import com.vicary.zalandoscraper.model.Product;
 import com.vicary.zalandoscraper.service.repository_services.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +32,7 @@ public class ResponseFacade {
 
     private final WaitingUserService waitingUserService;
 
+    private final DataImportService dataImportService;
 
     public void saveProduct(Product product, long userId) {
         productService.saveProduct(product, userId);
@@ -96,6 +95,14 @@ public class ResponseFacade {
 
     public void setUserVerifiedEmail(long userId, boolean b) {
         userService.setVerifiedEmail(userId, b);
+    }
+
+    public void updateTelegramByWebUser(String webUserEmail, String telegramId) {
+        userService.updateTelegramByWebUser(webUserEmail, telegramId);
+    }
+
+    public void updateWebUserByTelegram(String webUserEmail, String telegramId) {
+        userService.updateWebUserByTelegram(webUserEmail, telegramId);
     }
 
     public void deleteEmailVerByToken(String token) {
@@ -202,5 +209,9 @@ public class ResponseFacade {
 
     public List<ProductHistoryDTO> getAllReducedProductHistory(long productId) {
         return productHistoryService.getReducedProductHistory(productId);
+    }
+
+    public Optional<DataImportEntity> getDataImportByRequest(String request) {
+        return dataImportService.findByRequest(request);
     }
 }

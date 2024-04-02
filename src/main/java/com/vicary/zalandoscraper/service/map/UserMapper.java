@@ -57,6 +57,21 @@ public class UserMapper {
         webUser.setEmailNotifications(telegramUser.isEmailNotifications());
         return webUser;
     }
+
+    public UserEntity mapWebsiteToTelegram(UserEntity webUser, UserEntity telegramUser) {
+        webUser.getProducts().forEach(e -> e.setUser(telegramUser));
+        webUser.setProducts(new ArrayList<>());
+        telegramUser.setPassword(webUser.getPassword());
+        telegramUser.setEmail(webUser.getEmail());
+        telegramUser.setNick(webUser.getNick());
+        telegramUser.setWebsite(true);
+        telegramUser.setNationality(webUser.getNationality());
+        telegramUser.setPremium(webUser.isPremium());
+        telegramUser.setRole(webUser.getRoleEnum());
+        telegramUser.setEmailNotifications(webUser.isEmailNotifications());
+        telegramUser.setVerifiedEmail(true);
+        return telegramUser;
+    }
 }
 
 

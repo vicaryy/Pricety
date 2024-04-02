@@ -1,8 +1,9 @@
 package com.vicary.zalandoscraper.controller;
 
+import com.vicary.zalandoscraper.entity.DataImportEntity;
 import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.model.ProductTemplate;
-import com.vicary.zalandoscraper.repository.ProductHistoryRepository;
+import com.vicary.zalandoscraper.service.repository_services.DataImportService;
 import com.vicary.zalandoscraper.service.repository_services.ProductService;
 import com.vicary.zalandoscraper.service.repository_services.UserService;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -21,7 +23,7 @@ public class AccountController {
 
     private final ProductService productService;
     private final UserService userService;
-    private final ProductHistoryRepository productHistoryRepository;
+    private final DataImportService dataImportService;
 
     @GetMapping("/account")
     public String account(Model model, Authentication authentication, @RequestParam(name = "settings", required = false) boolean settings) {
@@ -32,6 +34,7 @@ public class AccountController {
             model.addAttribute("settings", true);
         model.addAttribute("user", user);
         model.addAttribute("products", products);
+        model.addAttribute("telegram", user.isTelegram());
         return "account";
     }
 
@@ -63,18 +66,46 @@ public class AccountController {
     }
 
     @PatchMapping("/account/telegramGet")
-    public String getDataFromTelegram(Authentication authentication, Model model) {
+    public String getDataFromTelegram(Authentication authentication, Model model) throws InterruptedException {
+        Thread.sleep(1000);
         String email = authentication.getPrincipal().toString();
+        if (userService.findWebUserByEmail(email).isTelegram())
+            return "empty";
+
         if (userService.existsByVerifiedEmailAndTelegram(email, true)) {
             userService.updateWebUserByTelegram(email);
-            return "redirect:/account?settings=true";
+            model.addAttribute("telegram", false);
+            model.addAttribute("done", true);
+            return "fragments/account/telegram-info :: get-telegram";
         }
-        return "empty";
+
+        Optional<DataImportEntity> importEntity = dataImportService.findByEmailAndMethod(email, "get");
+        if (importEntity.isEmpty())
+            importEntity = Optional.of(dataImportService.generateAndSave(email, "get"));
+        model.addAttribute("telegram", false);
+        model.addAttribute("getCode", importEntity.get().getRequest());
+        return "fragments/account/telegram-info :: get-telegram";
     }
 
     @PatchMapping("/account/telegramSend")
-    public String sendDataToTelegram() {
-        return "empty";
+    public String sendDataToTelegram(Authentication authentication, Model model) throws InterruptedException {
+        Thread.sleep(1000);
+        String email = authentication.getPrincipal().toString();
+        if (userService.findWebUserByEmail(email).isTelegram())
+            return "empty";
+
+        if (userService.existsByVerifiedEmailAndTelegram(email, true)) {
+            userService.updateTelegramByWebUser(email);
+            model.addAttribute("telegram", false);
+            model.addAttribute("done", true);
+            return "fragments/account/telegram-info :: get-telegram";
+        }
+        Optional<DataImportEntity> importEntity = dataImportService.findByEmailAndMethod(email, "send");
+        if (importEntity.isEmpty())
+            importEntity = Optional.of(dataImportService.generateAndSave(email, "send"));
+        model.addAttribute("telegram", false);
+        model.addAttribute("sendCode", importEntity.get().getRequest());
+        return "fragments/account/telegram-info :: send-telegram";
     }
 
     private boolean doesUserHaveProduct(long productId, Authentication authentication) {

@@ -288,7 +288,7 @@ public class UserService {
         return repository.existsByEmailAndVerifiedEmailAndTelegram(email, true, telegram);
     }
 
-    public void updateWebUserByTelegram(String email) {
+    public UserEntity updateWebUserByTelegram(String email) {
         UserEntity webUser = findWebUserByEmail(email);
         UserEntity telegramUser = findTelegramUserByEmail(email);
         webUser = mapper.mapTelegramToWebsite(telegramUser, webUser);
@@ -296,6 +296,40 @@ public class UserService {
         repository.save(telegramUser);
         repository.deleteById(telegramUser.getUserId());
         logger.info("Updated webUser by telegramUser, user email: '{}'", webUser.getEmail());
+        return webUser;
+    }
+
+    public UserEntity updateWebUserByTelegram(String email, String telegramId) {
+        UserEntity webUser = findWebUserByEmail(email);
+        UserEntity telegramUser = findByTelegramId(telegramId);
+        webUser = mapper.mapTelegramToWebsite(telegramUser, webUser);
+        repository.save(webUser);
+        repository.save(telegramUser);
+        repository.deleteById(telegramUser.getUserId());
+        logger.info("Updated webUser by telegramUser, user email: '{}'", webUser.getEmail());
+        return webUser;
+    }
+
+    public UserEntity updateTelegramByWebUser(String email) {
+        UserEntity webUser = findWebUserByEmail(email);
+        UserEntity telegramUser = findTelegramUserByEmail(email);
+        telegramUser = mapper.mapWebsiteToTelegram(webUser, telegramUser);
+        repository.save(telegramUser);
+        repository.save(webUser);
+        repository.deleteById(webUser.getUserId());
+        logger.info("Updated telegramUser by webUser, user email: '{}'", webUser.getEmail());
+        return webUser;
+    }
+
+    public UserEntity updateTelegramByWebUser(String email, String telegramId) {
+        UserEntity webUser = findWebUserByEmail(email);
+        UserEntity telegramUser = findByTelegramId(email);
+        telegramUser = mapper.mapWebsiteToTelegram(webUser, telegramUser);
+        repository.save(telegramUser);
+        repository.save(webUser);
+        repository.deleteById(webUser.getUserId());
+        logger.info("Updated telegramUser by webUser, user email: '{}'", webUser.getEmail());
+        return webUser;
     }
 }
 

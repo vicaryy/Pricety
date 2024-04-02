@@ -106,6 +106,9 @@ public class UpdateReceiverService implements UpdateReceiver {
             else if (Pattern.isEmailToken(user.getText()))
                 responser = new EmailVerificationResponse(facade, user);
 
+            else if (Pattern.isDataImportToken(user.getText()))
+                responser = new DataImportResponse(facade, user);
+
             if (Pattern.isPrefixedURL(user.getText()))
                 user.setText(Pattern.removePrefix(user.getText()));
             if (Pattern.isURL(user.getText())) {
