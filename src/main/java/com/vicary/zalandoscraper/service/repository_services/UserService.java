@@ -99,6 +99,10 @@ public class UserService {
         repository.updateEmailNotificationsByUserId(userId, notifyByEmail);
     }
 
+    public void updateNotifyByEmailByEmail(String email, boolean notifyByEmail) {
+        repository.updateEmailNotificationsByEmail(email, notifyByEmail);
+    }
+
     public void deleteEmailByUserId(long userId) {
         repository.deleteEmailByUserId(userId);
     }
@@ -299,6 +303,7 @@ public class UserService {
         return webUser;
     }
 
+    @Transactional
     public UserEntity updateWebUserByTelegram(String email, String telegramId) {
         UserEntity webUser = findWebUserByEmail(email);
         UserEntity telegramUser = findByTelegramId(telegramId);
@@ -310,6 +315,7 @@ public class UserService {
         return webUser;
     }
 
+    @Transactional
     public UserEntity updateTelegramByWebUser(String email) {
         UserEntity webUser = findWebUserByEmail(email);
         UserEntity telegramUser = findTelegramUserByEmail(email);
@@ -321,9 +327,10 @@ public class UserService {
         return webUser;
     }
 
+    @Transactional
     public UserEntity updateTelegramByWebUser(String email, String telegramId) {
         UserEntity webUser = findWebUserByEmail(email);
-        UserEntity telegramUser = findByTelegramId(email);
+        UserEntity telegramUser = findByTelegramId(telegramId);
         telegramUser = mapper.mapWebsiteToTelegram(webUser, telegramUser);
         repository.save(telegramUser);
         repository.save(webUser);

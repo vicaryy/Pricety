@@ -34,6 +34,14 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
             where user_id = :userId""", nativeQuery = true)
     void updateEmailNotificationsByUserId(@Param("userId") long userId, @Param("emailNotifications") boolean emailNotifications);
 
+    @Modifying
+    @Transactional
+    @Query(value = """
+            update users_test
+            set email_notifications = :emailNotifications
+            where email = :email""", nativeQuery = true)
+    void updateEmailNotificationsByEmail(@Param("email") String email, @Param("emailNotifications") boolean emailNotifications);
+
 
     @Modifying
     @Transactional

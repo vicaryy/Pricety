@@ -214,4 +214,8 @@ public class ResponseFacade {
     public Optional<DataImportEntity> getDataImportByRequest(String request) {
         return dataImportService.findByRequest(request);
     }
+
+    public void deleteAllDataImportByEmail(String email) {
+        dataImportService.deleteAllByEmail(email);
+    }
 }

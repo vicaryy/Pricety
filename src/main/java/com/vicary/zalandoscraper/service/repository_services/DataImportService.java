@@ -4,6 +4,7 @@ import com.vicary.zalandoscraper.entity.DataImportEntity;
 import com.vicary.zalandoscraper.repository.DataImportRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
@@ -27,6 +28,7 @@ public class DataImportService {
         return repository.findByEmailAndMethod(email, method);
     }
 
+    @Transactional
     public void deleteAllByEmail(String email) {
         repository.deleteAllByEmail(email);
     }

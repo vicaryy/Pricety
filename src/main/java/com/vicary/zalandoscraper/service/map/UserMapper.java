@@ -4,6 +4,7 @@ import com.vicary.zalandoscraper.api_telegram.api_object.User;
 import com.vicary.zalandoscraper.entity.ProductEntity;
 import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.entity.WebUserEntity;
+import com.vicary.zalandoscraper.exception.IllegalInputException;
 import com.vicary.zalandoscraper.model.RegisterModel;
 import com.vicary.zalandoscraper.security.Role;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -59,6 +60,10 @@ public class UserMapper {
     }
 
     public UserEntity mapWebsiteToTelegram(UserEntity webUser, UserEntity telegramUser) {
+//        System.out.println(webUser.getProducts().size());
+//        System.out.println(telegramUser);
+//        if (webUser != null)
+//            throw new IllegalArgumentException();
         webUser.getProducts().forEach(e -> e.setUser(telegramUser));
         webUser.setProducts(new ArrayList<>());
         telegramUser.setPassword(webUser.getPassword());

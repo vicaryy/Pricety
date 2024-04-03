@@ -108,6 +108,13 @@ public class AccountController {
         return "fragments/account/telegram-info :: send-telegram";
     }
 
+    @PatchMapping("/account/emailNotifications")
+    public String setEmailNotifications(@RequestParam(name = "n") boolean notifications, Authentication authentication) {
+        userService.updateNotifyByEmailByEmail(authentication.getPrincipal().toString(), notifications);
+        return "empty";
+    }
+
+
     private boolean doesUserHaveProduct(long productId, Authentication authentication) {
         return userService.findWebUserByEmail(authentication.getPrincipal().toString())
                 .getProducts()
