@@ -60,10 +60,6 @@ public class UserMapper {
     }
 
     public UserEntity mapWebsiteToTelegram(UserEntity webUser, UserEntity telegramUser) {
-//        System.out.println(webUser.getProducts().size());
-//        System.out.println(telegramUser);
-//        if (webUser != null)
-//            throw new IllegalArgumentException();
         webUser.getProducts().forEach(e -> e.setUser(telegramUser));
         webUser.setProducts(new ArrayList<>());
         telegramUser.setPassword(webUser.getPassword());

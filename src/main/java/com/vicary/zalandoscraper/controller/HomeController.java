@@ -2,7 +2,11 @@ package com.vicary.zalandoscraper.controller;
 
 import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.exception.IllegalInputException;
+import com.vicary.zalandoscraper.model.ContactModel;
+import com.vicary.zalandoscraper.model.Email;
 import com.vicary.zalandoscraper.model.Product;
+import com.vicary.zalandoscraper.pattern.Pattern;
+import com.vicary.zalandoscraper.sender.EmailSenderService;
 import com.vicary.zalandoscraper.service.ScraperService;
 import com.vicary.zalandoscraper.service.repository_services.ProductService;
 import com.vicary.zalandoscraper.service.repository_services.UserService;
@@ -12,6 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -28,6 +33,8 @@ public class HomeController {
 
     private final UserService userService;
 
+    private final EmailSenderService emailSenderService;
+
     @GetMapping({"/", "/#"})
     public String home(Authentication authentication, Model model) {
         if (authentication != null)
@@ -35,6 +42,7 @@ public class HomeController {
         else
             model.addAttribute("logged", false);
 
+        model.addAttribute("ContactModel", new ContactModel());
         return "index";
     }
 
@@ -77,6 +85,47 @@ public class HomeController {
             return errorTemplate(ex.getMessage(), model);
         }
         return successTemplate("Product added successfully!", model);
+    }
+
+    @PostMapping("/contact")
+    public String sendContactForm(
+            @RequestParam(name = "name") String name,
+            @RequestParam(name = "email") String email,
+            @RequestParam(name = "message") String message,
+            Model model) {
+        if (name.isBlank() || email.isBlank() || message.isBlank()) {
+            model.addAttribute("error", true);
+            model.addAttribute("errorInfo", "Fields cannot be empty.");
+            model.addAttribute("name", name);
+            model.addAttribute("email", email);
+            model.addAttribute("message", message);
+            return "fragments/home/contact";
+        }
+
+        if (!Pattern.isEmail(email)) {
+            model.addAttribute("error", true);
+            model.addAttribute("errorInfo", "Invalid email address.");
+            model.addAttribute("name", name);
+            model.addAttribute("email", email);
+            model.addAttribute("message", message);
+            return "fragments/home/contact";
+        }
+
+        try {
+            emailSenderService.send(
+                    new Email(
+                            "vicarycholewa@gmail.com",
+                            "Wiadomość formularzowa",
+                            """
+                                    Wiadomość od użytkownika %s - %s:
+                                    
+                                    %s""".formatted(name, email, message), false));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        model.addAttribute("success", true);
+        return "fragments/home/contact";
     }
 
     private void scrapAndSaveProduct(String url, String variant, Authentication authentication) {

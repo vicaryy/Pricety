@@ -13,6 +13,8 @@ import java.util.Date;
 
 public class JwtService {
 
+    private final static long JWT_EXPIRATION = 1000L * 60L * 60L * 24L * 31L; // one month
+
     public String getUserEmail(String jwt) {
         return getClaims(jwt).getSubject();
     }
@@ -25,7 +27,7 @@ public class JwtService {
         return Jwts.builder()
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + (1000 * 60 * 60)))
+                .expiration(new Date(JWT_EXPIRATION))
                 .signWith(getKey())
                 .compact();
     }
