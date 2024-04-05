@@ -3,7 +3,7 @@ package com.vicary.zalandoscraper.service.map;
 import com.vicary.zalandoscraper.entity.ProductEntity;
 import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.model.ProductTemplate;
-import com.vicary.zalandoscraper.model.User;
+import com.vicary.zalandoscraper.model.UserDTO;
 import com.vicary.zalandoscraper.entity.ProductHistoryEntity;
 import com.vicary.zalandoscraper.model.Product;
 import org.springframework.stereotype.Component;
@@ -45,15 +45,15 @@ public class ProductMapper {
                 .serviceName(product.getServiceName())
                 .currency(product.getCurrency())
                 .notifyWhenAvailable(product.isNotifyWhenAvailable())
-                .user(User.builder()
+                .userDTO(UserDTO.builder()
                         .userId(product.getUser().getUserId())
                         .telegramId(product.getUser().getTelegramId())
                         .email(product.getUser().getEmail())
                         .nick(product.getUser().getNick())
-                        .language(product.getUser().getNationality())
+                        .nationality(product.getUser().getNationality())
                         .premium(product.getUser().isPremium())
                         .admin(product.getUser().isAdmin())
-                        .notifyByEmail(product.getUser().isEmailNotifications())
+                        .emailNotifications(product.getUser().isEmailNotifications())
                         .build())
                 .build();
     }
@@ -78,14 +78,14 @@ public class ProductMapper {
                 .serviceName(serviceName)
                 .currency(product.getCurrency())
                 .notifyWhenAvailable(product.isNotifyWhenAvailable())
-                .user(User.builder()
-                        .userId(product.getUser().getUserId())
-                        .email(product.getUser().getEmail())
-                        .nick(product.getUser().getNick())
-                        .language(product.getUser().getLanguage())
-                        .premium(product.getUser().isPremium())
-                        .admin(product.getUser().isAdmin())
-                        .notifyByEmail(product.getUser().isNotifyByEmail())
+                .userDTO(UserDTO.builder()
+                        .userId(product.getUserDTO().getUserId())
+                        .email(product.getUserDTO().getEmail())
+                        .nick(product.getUserDTO().getNick())
+                        .nationality(product.getUserDTO().getNationality())
+                        .premium(product.getUserDTO().isPremium())
+                        .admin(product.getUserDTO().isAdmin())
+                        .emailNotifications(product.getUserDTO().isEmailNotifications())
                         .build())
                 .build();
     }

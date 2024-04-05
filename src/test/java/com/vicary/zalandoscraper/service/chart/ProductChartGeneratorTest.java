@@ -2,7 +2,7 @@ package com.vicary.zalandoscraper.service.chart;
 
 import com.vicary.zalandoscraper.exception.ChartGeneratorException;
 import com.vicary.zalandoscraper.model.Product;
-import com.vicary.zalandoscraper.model.User;
+import com.vicary.zalandoscraper.model.UserDTO;
 import com.vicary.zalandoscraper.service.dto.ProductHistoryDTO;
 import org.junit.jupiter.api.Test;
 
@@ -252,12 +252,12 @@ class ProductChartGeneratorTest {
                 .variant("M")
                 .link("https://www.zalando.pl/123")
                 .serviceName("zalando.pl")
-                .user(User.builder()
+                .userDTO(UserDTO.builder()
                         .userId(123)
                         .telegramId("123")
                         .email("email@email.com")
                         .nick("nick")
-                        .language("en")
+                        .nationality("en")
                         .build())
                 .build();
     }

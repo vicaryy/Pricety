@@ -10,7 +10,7 @@ public class EmailNotificationFactory {
 
 
     public static Email getPriceAlertNotification(Product product) {
-        Email notification = new Email(product.getUser().getEmail());
+        Email notification = new Email(product.getUserDTO().getEmail());
         notification.setPriceAlertMessageAndTitle(product);
         return notification;
     }

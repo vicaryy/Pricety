@@ -1,10 +1,8 @@
 package com.vicary.zalandoscraper.service.map;
 
 import com.vicary.zalandoscraper.model.Product;
-import com.vicary.zalandoscraper.model.User;
+import com.vicary.zalandoscraper.model.UserDTO;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class ProductMapperTest {
 
@@ -28,7 +26,7 @@ class ProductMapperTest {
                 .priceAlert("150.00")
                 .serviceName("zalando.pl")
                 .currency("zł")
-                .user(User.builder()
+                .userDTO(UserDTO.builder()
                         .build())
                 .build();
     }

@@ -32,5 +32,5 @@ public class ProductTemplate {
 
     private boolean notifyWhenAvailable;
 
-    private User user;
+    private UserDTO userDTO;
 }

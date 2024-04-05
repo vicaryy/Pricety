@@ -2,7 +2,6 @@ package com.vicary.zalandoscraper.model;
 
 import com.vicary.zalandoscraper.messages.Messages;
 import lombok.*;
-import org.thymeleaf.TemplateEngine;
 
 @Data
 @Builder
@@ -35,12 +34,12 @@ public class Email {
         }
 
         mime = true;
-        title = Messages.email("notificationTitle", p.getUser().getLanguage());
+        title = Messages.email("notificationTitle", p.getUserDTO().getNationality());
         String newPrice = String.format("%.2f", p.getNewPrice());
         String oldPrice = String.format("%.2f", p.getPrice());
         String cheaper = String.format("%.2f", p.getPrice() - p.getNewPrice());
         String variant = getFormattedVariant(p);
-        message = Messages.email("notificationMessage", p.getUser().getLanguage()).formatted(
+        message = Messages.email("notificationMessage", p.getUserDTO().getNationality()).formatted(
                 cheaper,
                 p.getCurrency(),
                 p.getName(),
@@ -56,12 +55,12 @@ public class Email {
 
     private void setPriceAlertWhenOldPriceIsZero(Product p) {
         mime = true;
-        title = Messages.email("notificationTitle", p.getUser().getLanguage());
+        title = Messages.email("notificationTitle", p.getUserDTO().getNationality());
         String newPrice = String.format("%.2f", p.getNewPrice());
         String variant = getFormattedVariant(p);
         if (variant.startsWith("-oneVariant "))
             variant = variant.substring(12);
-        message = Messages.email("notificationMessageWhenPriceZero", p.getUser().getLanguage()).formatted(
+        message = Messages.email("notificationMessageWhenPriceZero", p.getUserDTO().getNationality()).formatted(
                 p.getName(),
                 p.getDescription(),
                 variant,
@@ -75,12 +74,12 @@ public class Email {
 
     private void setPriceAlertWhenNotifyWhenAvailable(Product p) {
         mime = true;
-        title = Messages.email("notificationTitleWhenAvailable", p.getUser().getLanguage());
+        title = Messages.email("notificationTitleWhenAvailable", p.getUserDTO().getNationality());
         String newPrice = String.format("%.2f", p.getNewPrice());
         String variant = getFormattedVariant(p);
         if (variant.startsWith("-oneVariant "))
             variant = variant.substring(12);
-        message = Messages.email("notificationMessageWhenAvailable", p.getUser().getLanguage()).formatted(
+        message = Messages.email("notificationMessageWhenAvailable", p.getUserDTO().getNationality()).formatted(
                 p.getName(),
                 p.getDescription(),
                 variant,
@@ -102,9 +101,9 @@ public class Email {
         if (variant.startsWith("-oneVariant ")) {
             variant = variant.substring(12).trim();
             if (variant.equals("One Variant"))
-                variant = Messages.allProducts("oneVariant", p.getUser().getLanguage());
+                variant = Messages.allProducts("oneVariant", p.getUserDTO().getNationality());
             else if (variant.equals("Unknown"))
-                variant = Messages.allProducts("unknown", p.getUser().getLanguage());
+                variant = Messages.allProducts("unknown", p.getUserDTO().getNationality());
         }
         return variant;
     }

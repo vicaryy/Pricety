@@ -92,12 +92,12 @@ public class ProductChartGenerator {
         if (DTOs.isEmpty()) {
             throw new ChartGeneratorException(
                     MarkdownV2.applyWithManualBoldAndItalic(Messages.generateProduct("noPriceHistory")),
-                    "User '%s' try to get product price history but product history is empty, productId '%s'".formatted(p.getUser().getUserId(), p.getProductId()));
+                    "User '%s' try to get product price history but product history is empty, productId '%s'".formatted(p.getUserDTO().getUserId(), p.getProductId()));
         }
         if (DTOs.stream().allMatch(dto -> dto.getPrice() == 0)) {
             throw new ChartGeneratorException(
                     MarkdownV2.applyWithManualBoldAndItalic(Messages.generateProduct("alwaysSoldOut")),
-                    "User '%s' try to get product price history but product was always sold out, productId '%s'".formatted(p.getUser().getUserId(), p.getProductId()));
+                    "User '%s' try to get product price history but product was always sold out, productId '%s'".formatted(p.getUserDTO().getUserId(), p.getProductId()));
         }
     }
 

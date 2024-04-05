@@ -9,7 +9,7 @@ public class ChatNotificationFactory {
 
     public static ChatNotification getPriceAlertNotification(Product product) {
         ChatNotification notification = new ChatNotification();
-        notification.setChatId(product.getUser().getTelegramId());
+        notification.setChatId(product.getUserDTO().getTelegramId());
         notification.setMarkdownV2(true);
         notification.setDefaultPriceAlertMessage(product);
         return notification;

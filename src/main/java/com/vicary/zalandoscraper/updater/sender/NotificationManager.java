@@ -105,7 +105,7 @@ public class NotificationManager {
 
     private List<ChatNotification> getChatNotifications(List<Product> products) {
         List<Product> listWithEnabledChatNotifies = products.stream()
-                .filter(p -> p.getUser().isTelegram())
+                .filter(p -> p.getUserDTO().isTelegram())
                 .toList();
         if (listWithEnabledChatNotifies.isEmpty())
             return Collections.emptyList();
@@ -117,7 +117,7 @@ public class NotificationManager {
 
     private List<Email> getEmailNotifications(List<Product> products) {
         List<Product> listWithEnabledEmailNotifies = products.stream()
-                .filter(p -> p.getUser().isNotifyByEmail())
+                .filter(p -> p.getUserDTO().isEmailNotifications())
                 .toList();
         if (listWithEnabledEmailNotifies.isEmpty())
             return Collections.emptyList();

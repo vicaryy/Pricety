@@ -38,7 +38,7 @@ public class ChatNotification {
         String cheaper = String.format("%.2f", p.getPrice() - p.getNewPrice());
         String variant = getFormattedVariant(p);
 
-        message = Messages.chat("notificationMessage", p.getUser().getLanguage()).formatted(
+        message = Messages.chat("notificationMessage", p.getUserDTO().getNationality()).formatted(
                 MarkdownV2.apply(cheaper).get(),
                 MarkdownV2.apply(p.getCurrency()).get(),
                 MarkdownV2.apply(p.getName()).get(),
@@ -55,7 +55,7 @@ public class ChatNotification {
     private void setMessageWhenOldPriceIsZero(Product p) {
         String newPrice = String.format("%.2f", p.getNewPrice());
         String variant = getFormattedVariant(p);
-        message = Messages.chat("notificationMessageWhenPriceZero", p.getUser().getLanguage()).formatted(
+        message = Messages.chat("notificationMessageWhenPriceZero", p.getUserDTO().getNationality()).formatted(
                 MarkdownV2.apply(p.getName()).get(),
                 MarkdownV2.apply(p.getDescription()).get(),
                 MarkdownV2.apply(variant).get(),
@@ -70,7 +70,7 @@ public class ChatNotification {
     private void setPriceAlertWhenNotifyWhenAvailable(Product p) {
         String newPrice = String.format("%.2f", p.getNewPrice());
         String variant = getFormattedVariant(p);
-        message = Messages.chat("notificationMessageWhenAvailable", p.getUser().getLanguage()).formatted(
+        message = Messages.chat("notificationMessageWhenAvailable", p.getUserDTO().getNationality()).formatted(
                 MarkdownV2.apply(p.getName()).get(),
                 MarkdownV2.apply(p.getDescription()).get(),
                 MarkdownV2.apply(variant).get(),
@@ -85,9 +85,9 @@ public class ChatNotification {
         if (variant.startsWith("-oneVariant ")) {
             variant = variant.substring(12).trim();
             if (variant.equals("One Variant"))
-                variant = Messages.allProducts("oneVariant", p.getUser().getLanguage());
+                variant = Messages.allProducts("oneVariant", p.getUserDTO().getNationality());
             else if (variant.equals("Unknown"))
-                variant = Messages.allProducts("unknown", p.getUser().getLanguage());
+                variant = Messages.allProducts("unknown", p.getUserDTO().getNationality());
         }
         return variant;
     }

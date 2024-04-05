@@ -497,7 +497,7 @@ public class AdminResponse implements Responser {
                     .formatted(
                             MarkdownV2.applyWithManualBoldAndItalic("*Product nr. " + (i + 1) + "*"),
                             p.getProductId(),
-                            p.getUser().getUserId(),
+                            p.getUserDTO().getUserId(),
                             MarkdownV2.apply(p.getName()).get(),
                             MarkdownV2.apply(p.getDescription()).get(),
                             MarkdownV2.apply(p.getVariant()).get(),

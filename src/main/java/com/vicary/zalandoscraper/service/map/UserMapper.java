@@ -1,11 +1,9 @@
 package com.vicary.zalandoscraper.service.map;
 
 import com.vicary.zalandoscraper.api_telegram.api_object.User;
-import com.vicary.zalandoscraper.entity.ProductEntity;
 import com.vicary.zalandoscraper.entity.UserEntity;
-import com.vicary.zalandoscraper.entity.WebUserEntity;
-import com.vicary.zalandoscraper.exception.IllegalInputException;
 import com.vicary.zalandoscraper.model.RegisterModel;
+import com.vicary.zalandoscraper.model.UserDTO;
 import com.vicary.zalandoscraper.security.Role;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -32,6 +30,28 @@ public class UserMapper {
                 .telegram(true)
                 .verifiedEmail(false)
                 .build();
+    }
+
+    public UserDTO mapToDTO(UserEntity userEntity) {
+        return UserDTO.builder()
+                .userId(userEntity.getUserId())
+                .telegramId(userEntity.getTelegramId())
+                .email(userEntity.getEmail())
+                .password(userEntity.getPassword())
+                .nick(userEntity.getNick())
+                .nationality(userEntity.getNationality())
+                .role(userEntity.getRoleEnum())
+                .emailNotifications(userEntity.isEmailNotifications())
+                .verifiedEmail(userEntity.isVerifiedEmail())
+                .telegram(userEntity.isTelegram())
+                .website(userEntity.isWebsite())
+                .build();
+    }
+
+    public List<UserDTO> mapToDTO(List<UserEntity> userEntity) {
+        return userEntity.stream()
+                .map(this::mapToDTO)
+                .toList();
     }
 
     public UserEntity map(RegisterModel model, PasswordEncoder encoder) {

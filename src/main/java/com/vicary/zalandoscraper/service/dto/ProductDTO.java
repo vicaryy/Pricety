@@ -1,4 +1,4 @@
-package com.vicary.zalandoscraper.model;
+package com.vicary.zalandoscraper.service.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,33 +6,31 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class Product {
-    private Long productId;
-
-    private String photoUrl;
+public class ProductDTO {
+    private Long id;
 
     private String name;
 
     private String description;
 
+    private String photoUrl;
+
     private double price;
-
-    private double newPrice;
-
-    private String currency;
 
     private String variant;
 
-    private String priceAlert;
-
     private String link;
+
+    private String priceAlert;
 
     private String serviceName;
 
+    private String currency;
+
     private boolean notifyWhenAvailable;
 
-    private UserDTO userDTO;
+    private long userId;
 }

@@ -3,7 +3,7 @@ package com.vicary.zalandoscraper.updater.sender;
 import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.entity.WaitingUserEntity;
 import com.vicary.zalandoscraper.model.Product;
-import com.vicary.zalandoscraper.model.User;
+import com.vicary.zalandoscraper.model.UserDTO;
 import com.vicary.zalandoscraper.service.UpdateReceiverService;
 import com.vicary.zalandoscraper.service.repository_services.ProductHistoryService;
 import com.vicary.zalandoscraper.service.repository_services.ProductService;
@@ -351,7 +351,7 @@ class NotificationManagerTest {
         return Product.builder()
                 .productId(123L)
                 .name("name")
-                .user(User.builder().language("en").build())
+                .userDTO(UserDTO.builder().nationality("en").build())
                 .link("https://www.link.pl/")
                 .description("desc")
                 .variant("variant")
@@ -362,7 +362,7 @@ class NotificationManagerTest {
         return Product.builder()
                 .productId(123L)
                 .priceAlert("OFF")
-                .user(User.builder().language("en").build())
+                .userDTO(UserDTO.builder().nationality("en").build())
                 .link("https://www.link.pl/")
                 .name("name")
                 .description("desc")
@@ -374,7 +374,7 @@ class NotificationManagerTest {
         return Product.builder()
                 .productId(123L)
                 .priceAlert("100.00")
-                .user(User.builder().language("en").build())
+                .userDTO(UserDTO.builder().nationality("en").build())
                 .link("https://www.link.pl/")
                 .serviceName("link.pl")
                 .currency("zł")
@@ -390,7 +390,7 @@ class NotificationManagerTest {
         return Product.builder()
                 .productId(123L)
                 .priceAlert("100.00")
-                .user(User.builder().language("en").notifyByEmail(false).build())
+                .userDTO(UserDTO.builder().nationality("en").emailNotifications(false).build())
                 .link("https://www.link.pl/")
                 .serviceName("link.pl")
                 .currency("zł")

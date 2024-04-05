@@ -9,7 +9,7 @@ import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.exception.IllegalInputException;
 import com.vicary.zalandoscraper.exception.ScraperBotException;
 import com.vicary.zalandoscraper.model.Product;
-import com.vicary.zalandoscraper.model.User;
+import com.vicary.zalandoscraper.model.UserDTO;
 import com.vicary.zalandoscraper.security.Role;
 import com.vicary.zalandoscraper.service.UpdateReceiverService;
 import com.vicary.zalandoscraper.service.response.ResponseFacade;
@@ -1209,12 +1209,12 @@ class AdminResponseTest {
                 .priceAlert("AUTO")
                 .link("link")
                 .serviceName("service.com")
-                .user(getDefaultUser())
+                .userDTO(getDefaultUser())
                 .build();
     }
 
-    private User getDefaultUser() {
-        return User.builder()
+    private UserDTO getDefaultUser() {
+        return UserDTO.builder()
                 .userId(1234)
                 .build();
     }

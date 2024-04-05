@@ -4,7 +4,7 @@ import com.vicary.zalandoscraper.api_telegram.service.QuickSender;
 import com.vicary.zalandoscraper.exception.IllegalInputException;
 import com.vicary.zalandoscraper.messages.Messages;
 import com.vicary.zalandoscraper.model.Product;
-import com.vicary.zalandoscraper.model.User;
+import com.vicary.zalandoscraper.model.UserDTO;
 import com.vicary.zalandoscraper.service.response.inline_markup.InlineKeyboardMarkupFactory;
 import com.vicary.zalandoscraper.thread_local.ActiveLanguage;
 import com.vicary.zalandoscraper.thread_local.ActiveUser;
@@ -532,7 +532,7 @@ class AwaitedMessageResponseTest {
         return Product.builder()
                 .variant("M")
                 .link("link")
-                .user(User.builder().email("email@email.pl").build())
+                .userDTO(UserDTO.builder().email("email@email.pl").build())
                 .priceAlert("100.00")
                 .build();
     }

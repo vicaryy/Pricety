@@ -6,6 +6,7 @@ import com.vicary.zalandoscraper.exception.IllegalInputException;
 import com.vicary.zalandoscraper.messages.Messages;
 import com.vicary.zalandoscraper.model.LogInModel;
 import com.vicary.zalandoscraper.model.RegisterModel;
+import com.vicary.zalandoscraper.model.UserDTO;
 import com.vicary.zalandoscraper.repository.UserRepository;
 import com.vicary.zalandoscraper.service.map.UserMapper;
 import lombok.RequiredArgsConstructor;
@@ -89,6 +90,10 @@ public class UserService {
 
     public List<UserEntity> findAllUsers() {
         return repository.findAll(Sort.by("telegramId"));
+    }
+
+    public List<UserDTO> findAllUsersDTO() {
+        return mapper.mapToDTO(repository.findAll(Sort.by("userId")));
     }
 
     public UserEntity findByUserNick(String nick) {
