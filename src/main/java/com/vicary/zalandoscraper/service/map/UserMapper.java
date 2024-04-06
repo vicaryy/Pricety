@@ -5,10 +5,12 @@ import com.vicary.zalandoscraper.entity.UserEntity;
 import com.vicary.zalandoscraper.model.RegisterModel;
 import com.vicary.zalandoscraper.model.UserDTO;
 import com.vicary.zalandoscraper.security.Role;
+import com.vicary.zalandoscraper.service.dto.ProductDTO;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Component
@@ -32,19 +34,42 @@ public class UserMapper {
                 .build();
     }
 
-    public UserDTO mapToDTO(UserEntity userEntity) {
+    public UserEntity mapToEntityWithEmptyProducts(UserDTO u) {
+        return UserEntity.builder()
+                .userId(u.getUserId())
+                .telegramId(u.getTelegramId())
+                .email(u.getEmail())
+                .password(u.getPassword())
+                .nick(u.getNick())
+                .nationality(u.getNationality())
+                .role(u.getRole())
+                .emailNotifications(u.isEmailNotifications())
+                .verifiedEmail(u.isVerifiedEmail())
+                .telegram(u.isTelegram())
+                .website(u.isWebsite())
+                .products(Collections.emptyList())
+                .build();
+    }
+
+    public List<UserEntity> mapToEntityWithEmptyProducts(List<UserDTO> u) {
+        return u.stream()
+                .map(this::mapToEntityWithEmptyProducts)
+                .toList();
+    }
+
+    public UserDTO mapToDTO(UserEntity u) {
         return UserDTO.builder()
-                .userId(userEntity.getUserId())
-                .telegramId(userEntity.getTelegramId())
-                .email(userEntity.getEmail())
-                .password(userEntity.getPassword())
-                .nick(userEntity.getNick())
-                .nationality(userEntity.getNationality())
-                .role(userEntity.getRoleEnum())
-                .emailNotifications(userEntity.isEmailNotifications())
-                .verifiedEmail(userEntity.isVerifiedEmail())
-                .telegram(userEntity.isTelegram())
-                .website(userEntity.isWebsite())
+                .userId(u.getUserId())
+                .telegramId(u.getTelegramId())
+                .email(u.getEmail())
+                .password(u.getPassword())
+                .nick(u.getNick())
+                .nationality(u.getNationality())
+                .role(u.getRoleEnum())
+                .emailNotifications(u.isEmailNotifications())
+                .verifiedEmail(u.isVerifiedEmail())
+                .telegram(u.isTelegram())
+                .website(u.isWebsite())
                 .build();
     }
 

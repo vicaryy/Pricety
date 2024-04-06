@@ -6,6 +6,7 @@ import com.vicary.zalandoscraper.model.ProductTemplate;
 import com.vicary.zalandoscraper.model.UserDTO;
 import com.vicary.zalandoscraper.entity.ProductHistoryEntity;
 import com.vicary.zalandoscraper.model.Product;
+import com.vicary.zalandoscraper.service.dto.ProductDTO;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -14,6 +15,23 @@ import java.util.stream.Collectors;
 
 @Component
 public class ProductMapper {
+
+    public ProductEntity mapFromDTO(ProductDTO product, UserEntity user) {
+        return ProductEntity.builder()
+                .id(product.getId())
+                .name(product.getName())
+                .description(product.getDescription())
+                .photoUrl(product.getPhotoUrl())
+                .price(product.getPrice())
+                .variant(product.getVariant())
+                .priceAlert(product.getPriceAlert())
+                .link(product.getLink())
+                .currency(product.getCurrency())
+                .serviceName(product.getServiceName())
+                .notifyWhenAvailable(product.isNotifyWhenAvailable())
+                .user(user)
+                .build();
+    }
 
     public ProductEntity map(Product product, UserEntity user) {
         return ProductEntity.builder()

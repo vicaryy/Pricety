@@ -8,6 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Entity
+@Builder
 @Table(name = "waiting_users")
 public class WaitingUserEntity {
 
