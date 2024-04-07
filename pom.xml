@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.vicary</groupId>
-    <artifactId>scraper-bot</artifactId>
+    <artifactId>pricety</artifactId>
     <version>2.1.0-STABLE</version>
     <name>scraper-bot</name>
-    <description>Scraper Bot</description>
+    <description>Pricety</description>
 
 
     <properties>
@@ -163,7 +163,7 @@
                             <transformers>
                                 <transformer implementation=
                                                      "org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>com.vicary.zalandoscraper.Main</mainClass>
+                                    <mainClass>com.vicary.pricety.Main</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>

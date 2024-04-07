@@ -1,0 +1,329 @@
+package com.vicary.pricety.scraper;
+
+import com.microsoft.playwright.Browser;
+import com.microsoft.playwright.BrowserType;
+import com.microsoft.playwright.Page;
+import com.microsoft.playwright.Playwright;
+import com.microsoft.playwright.options.WaitUntilState;
+import com.vicary.pricety.exception.InvalidLinkException;
+import com.vicary.pricety.model.Product;
+import com.vicary.pricety.scraper.config.DefaultLaunchOptions;
+import com.vicary.pricety.thread_local.ActiveLanguage;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+
+import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.concurrent.ThreadLocalRandom;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+@Disabled
+class ZalandoScraperTest {
+
+    /**
+     * These tests should only be run manually.
+     * Internet connection required and user have to update the links before.
+     */
+
+    private final static String INVALID_LINK = "https://www.zalando.pl/";
+    private final static String ONE_VARIANT_LINK = "https://www.zalando.pl/new-era-new-york-yankees-czapki-i-kapelusze-niebieski-ne344a07t-502.html";
+    private final static String MULTI_VARIANTS_ENABLED_AND_DISABLED_LINK = "https://www.zalando.pl/puma-shuffle-mid-unisex-sneakersy-wysokie-whiteblackteam-gold-pu115n01n-a12.html";
+    private final static String SOLD_OUT_LINK = "https://www.zalando.pl/vans-t-shirt-z-nadrukiem-black-va222o0p4-q11.html";
+    private final ZalandoScraper scraper = new ZalandoScraper();
+
+    @BeforeAll
+    static void beforeAll() {
+        ActiveLanguage.get().setResourceBundle(ResourceBundle.getBundle("messages"));
+    }
+
+
+    @Test
+    void test1() {
+        String givenLink = "https://www.zalando.pl/nike-sportswear-bluza-rozpinana-dk-grey-heatherblack-ni122s0e1-c11.html";
+        List<String> givenLinks = List.of(
+                "https://www.zalando.pl/nike-sportswear-bluza-rozpinana-earth-black-ni122s0e1-b13.html",
+                "https://www.zalando.pl/joop-pasek-czarny-jo952d012-802.html",
+                "https://www.zalando.pl/rituals-precious-amber-hand-wash-mydlo-w-plynie-rig34g07p-s11.html",
+                "https://www.zalando.pl/rituals-private-collection-savage-garden-2023-zestaw-do-kapieli-rig34i02s-s11.html",
+                "https://www.zalando.pl/nike-sportswear-air-max-270-sneakersy-niskie-ni114d0ac-a11.html",
+                "https://www.zalando.pl/jordan-monogram-mini-messenger-bag-unisex-torba-na-ramie-coconut-milk-joc42l074-a11.html",
+                "https://www.zalando.pl/arrivly-etui-na-telefon-transparent-a3h54f03i-d11.html"
+        );
+        givenLinks.forEach(e -> scraper.getProduct(e, "-oneVariant"));
+//        scraper.getProduct(givenLink, "36");
+    }
+    @Test
+    void test() {
+        //given
+        String givenLink = "https://www.zalando.es/nike-sportswear-air-max-90-gtx-unisex-zapatillas-blackhoneydewmica-green-ni112o0xk-q11.html";
+        String givenVariant = "55";
+
+        Product product = scraper.getProduct(givenLink, givenVariant);
+        System.out.println(product);
+    }
+
+    @Test
+    void getAllVariants_expectThrow_InvalidLink() {
+        assertThrows(InvalidLinkException.class, () -> scraper.getAllVariants(INVALID_LINK));
+    }
+
+    @Test
+    void getAllVariants_expectEquals_OneVariantItem() {
+        //given
+        int expectedSizeOfList = 1;
+
+        //when
+        List<String> actualList = scraper.getAllVariants(ONE_VARIANT_LINK);
+
+        //then
+        assertEquals(expectedSizeOfList, actualList.size());
+        assertTrue(actualList.get(0).startsWith("-oneVariant "));
+    }
+
+    @Test
+    void getAllVariants_expectTrue_AllVariantItem() {
+        //given
+        //when
+        List<String> actualList = scraper.getAllVariants(MULTI_VARIANTS_ENABLED_AND_DISABLED_LINK);
+
+        //then
+        assertTrue(actualList.size() > 1);
+    }
+
+
+    @Test
+    void getAllVariants_expectEquals_SoldOutItem() {
+        //given
+        //when
+        List<String> actualList = scraper.getAllVariants(SOLD_OUT_LINK);
+
+        //then
+        assertFalse(actualList.isEmpty());
+    }
+
+
+    @Test
+    void getProduct_expectEquals_ValidProduct() {
+        //given
+        String givenLink = MULTI_VARIANTS_ENABLED_AND_DISABLED_LINK;
+        List<String> givenVariants = scraper.getAvailableVariants(givenLink);
+        String givenVariant = givenVariants.get(ThreadLocalRandom.current().nextInt(0, givenVariants.size()));
+
+        //when
+        Product actualProduct = scraper.getProduct(givenLink, givenVariant);
+
+        //then
+        assertTrue(actualProduct.getPrice() != 0);
+        assertNotNull(actualProduct.getName());
+        assertNotNull(actualProduct.getDescription());
+        assertEquals(givenVariant, actualProduct.getVariant());
+        assertEquals(givenLink, actualProduct.getLink());
+    }
+
+    @Test
+    void getProduct_expectEquals_ValidProductSizeNotAvailable() {
+        //given
+        String givenLink = MULTI_VARIANTS_ENABLED_AND_DISABLED_LINK;
+        List<String> givenVariants = scraper.getNonAvailableVariants(givenLink);
+        String givenVariant = givenVariants.get(ThreadLocalRandom.current().nextInt(0, givenVariants.size()));
+
+        //when
+        Product actualProduct = scraper.getProduct(givenLink, givenVariant);
+
+        //then
+        assertEquals(0, actualProduct.getPrice());
+        assertNotNull(actualProduct.getName());
+        assertNotNull(actualProduct.getDescription());
+        assertEquals(givenVariant, actualProduct.getVariant());
+        assertEquals(givenLink, actualProduct.getLink());
+    }
+
+    @Test
+    void getProduct_expectEquals_SoldOutItem() {
+        //given
+        String givenLink = SOLD_OUT_LINK;
+        String givenVariant = "givenVariant";
+
+        //when
+        Product actualProduct = scraper.getProduct(givenLink, givenVariant);
+
+        //then
+        assertEquals(0, actualProduct.getPrice());
+        assertNotNull(actualProduct.getName());
+        assertNotNull(actualProduct.getDescription());
+        assertEquals(givenVariant, actualProduct.getVariant());
+        assertEquals(givenLink, actualProduct.getLink());
+    }
+
+    @Test
+    void updateProduct_expectTrue_OneVariantItem() {
+        //given
+        Product givenDto = Product.builder()
+                .price(500)
+                .newPrice(0)
+                .variant("-oneVariant One Size")
+                .build();
+
+        //when
+        runPlaywrightAndUpdateProduct(ONE_VARIANT_LINK, givenDto);
+
+        //then
+        assertTrue(givenDto.getNewPrice() != 0);
+    }
+
+    @Test
+    void updateProduct_expectEquals_ItemSoldOut() {
+        //given
+        int expectedPrice = 0;
+        Product givenDto = Product.builder()
+                .price(500)
+                .newPrice(500)
+                .build();
+
+        //when
+        runPlaywrightAndUpdateProduct(SOLD_OUT_LINK, givenDto);
+
+        //then
+        assertEquals(expectedPrice, givenDto.getNewPrice());
+    }
+
+
+    @Test
+    void updateProduct_expectEquals_ItemWithAvailableVariant() {
+        //given
+        String givenLink = MULTI_VARIANTS_ENABLED_AND_DISABLED_LINK;
+        List<String> givenVariants = scraper.getAvailableVariants(givenLink);
+        String givenVariant = givenVariants.get(ThreadLocalRandom.current().nextInt(0, givenVariants.size()));
+
+        Product givenDto = Product.builder()
+                .price(500)
+                .newPrice(0)
+                .variant(givenVariant)
+                .build();
+
+        //when
+        runPlaywrightAndUpdateProduct(givenLink, givenDto);
+
+        //then
+        assertTrue(givenDto.getNewPrice() != 0);
+    }
+
+    @Test
+    void updateProduct_expectEquals_ItemWithNotAvailableVariant() {
+        //given
+        int expectedPrice = 0;
+        String givenLink = MULTI_VARIANTS_ENABLED_AND_DISABLED_LINK;
+        List<String> givenVariants = scraper.getNonAvailableVariants(givenLink);
+        String givenVariant = givenVariants.get(ThreadLocalRandom.current().nextInt(0, givenVariants.size()));
+
+        Product givenDto = Product.builder()
+                .price(500)
+                .newPrice(500)
+                .variant(givenVariant)
+                .build();
+
+        //when
+        runPlaywrightAndUpdateProduct(givenLink, givenDto);
+
+        assertEquals(expectedPrice, givenDto.getNewPrice());
+    }
+
+    private void runPlaywrightAndUpdateProduct(String link, Product product) {
+        Map<String, String> extraHeaders = Map.of("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36");
+        BrowserType.LaunchOptions launchOptions = new DefaultLaunchOptions();
+        Page.NavigateOptions navigateOptions = new Page.NavigateOptions().setWaitUntil(WaitUntilState.COMMIT);
+
+        try (Playwright playwright = Playwright.create()) {
+            Browser browser = playwright.chromium().launch(launchOptions);
+            Page page = browser.newPage();
+            page.setDefaultTimeout(10000);
+            page.setExtraHTTPHeaders(extraHeaders);
+            page.navigate(link, navigateOptions);
+
+            scraper.updateProduct(page, product);
+        }
+    }
+
+    @Test
+    void getServiceName_expectEquals_ZalandoPL() {
+        //given
+        String givenLink = "https://www.zalando.pl/asdasd-asd/asd.html";
+        String expectedServiceName = "zalando.pl";
+
+        //when
+        String actualServiceName = scraper.getServiceName(givenLink);
+
+        //then
+        assertEquals(expectedServiceName, actualServiceName);
+    }
+
+    @Test
+    void getServiceName_expectEquals_ZalandoCZ() {
+        //given
+        String givenLink = "https://www.zalando.cz/asdasd-asd/asd.html";
+        String expectedServiceName = "zalando.cz";
+
+        //when
+        String actualServiceName = scraper.getServiceName(givenLink);
+
+        //then
+        assertEquals(expectedServiceName, actualServiceName);
+    }
+
+    @Test
+    void getServiceName_expectEquals_ZalandoWHATEVER() {
+        //given
+        String givenLink = "https://www.zalando.whatever123/asdasd-asd/asd.html";
+        String expectedServiceName = "zalando.whatever123";
+
+        //when
+        String actualServiceName = scraper.getServiceName(givenLink);
+
+        //then
+        assertEquals(expectedServiceName, actualServiceName);
+    }
+
+    @Test
+    void getServiceName_expectEquals_ZalandoEnAndDe() {
+        //given
+        String givenLink = "https://en.zalando.de/asdasd-asd/asd.html";
+        String expectedServiceName = "zalando.de";
+
+        //when
+        String actualServiceName = scraper.getServiceName(givenLink);
+
+        //then
+        assertEquals(expectedServiceName, actualServiceName);
+    }
+
+    @Test
+    void getProduct_NotAvailableVariant_UK() {
+        //given
+        String givenLink = "https://it.zalando.ch/hugo-t-shirt-basic-blackwhite-hu722o05k-q11.html";
+        String givenVariant = "XL";
+        //when
+        Product actualProduct = scraper.getProduct(givenLink, givenVariant);
+        System.out.println(actualProduct);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
