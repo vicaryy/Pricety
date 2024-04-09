@@ -1,0 +1,56 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="settings" class="settings block content" th:classappend="${settings} ? 'active' : ''">
+    <p class="title">Settings</p>
+
+    <div class="settings-wrapper">
+        <div th:replace="~{fragments/account/telegram-info :: get-telegram}"></div>
+
+        <div th:replace="~{fragments/account/telegram-info :: send-telegram}"></div>
+
+        <div class="btn-wrapper">
+            <button class="language">
+                <i class="fa-solid fa-globe"></i>
+                <span>change language</span>
+                <div class="cover"></div>
+                <i class="fa-solid fa-caret-down caret"></i>
+                <div class="slider">
+                    <div>
+                        <div th:attr="class=${user.nationality == 'en'} ? 'eng active' : 'eng'">
+                            <span>english</span>
+                            <i class="fa-solid fa-check"></i>
+                        </div>
+                        <div th:attr="class=${user.nationality == 'pl'} ? 'pl active' : 'pl'">
+                            <span>polish</span>
+                            <i class="fa-solid fa-check"></i>
+                        </div>
+                    </div>
+                </div>
+            </button>
+        </div>
+
+        <div class="btn-wrapper">
+            <button class="notification">
+                <i class="fa-solid fa-envelope"></i>
+                <span>email notifications</span>
+                <div class="toggle" th:classappend="${user.emailNotifications} ? 'active' : ''"></div>
+            </button>
+        </div>
+
+        <div class="btn-wrapper">
+            <button class="delete-account">
+                <i class="fa-solid fa-trash"></i>
+                <span>delete account</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="trouble">
+        <p>Have some troubles?</p>
+        <p>Let's chat with administrator - check footer section for contact.</p>
+        <div>
+            <img src="/assets/account/img/settings-photo.png" alt="">
+        </div>
+    </div>
+</div>
+</body>

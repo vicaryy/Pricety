@@ -1,0 +1,19 @@
+telegram-bot:
+  bot-username: "zalandoScraperBot"
+  bot-token: ${BOT_TOKEN}
+
+secret-key-configuration:
+  secret-key: ${SECRET_KEY}
+
+spring:
+  datasource:
+    username: "vicary"
+    password: ${DB_PASSWORD}
+    url: ${DB_URL}
+
+    #    normal url: "jdbc:postgresql://localhost:5432/zalandoScraperDB"
+    #    url for tests: "jdbc:postgresql://localhost:5432/testDB"
+  mail:
+    password: ${MAIL_PASSWORD}
+server:
+  port: 8080

@@ -1,0 +1,125 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="get-telegram" class="btn-wrapper" id="get-telegram">
+    <button th:if="${telegram}"
+            class="get-telegram active" disabled>
+        <div class="get-telegram-wrapper">
+            <i class="fa-brands fa-telegram"></i>
+            <span>get data from telegram <i class="fa-solid fa-file-export"></i></span>
+            <i class="fa-solid fa-check"></i>
+        </div>
+    </button>
+
+    <button th:if="${!telegram AND getCode == null AND done == null}"
+            hx-patch="/account/telegramGet"
+            hx-swap="outerHTML"
+            hx-target="#get-telegram"
+            hx-trigger="click"
+            class="get-telegram">
+        <div class="get-telegram-wrapper">
+            <i class="fa-brands fa-telegram"></i>
+            <span>get data from telegram <i class="fa-solid fa-file-export"></i></span>
+            <i class="fa-solid fa-check"></i>
+            <div class="loading"><img src="assets/common/img/loading1.gif" alt=""></div>
+        </div>
+        <div class="import-data-info">
+            <div class="get-code">
+            </div>
+        </div>
+    </button>
+
+    <button th:if="${getCode}"
+            class="get-telegram" disabled>
+        <div class="get-telegram-wrapper">
+            <i class="fa-brands fa-telegram"></i>
+            <span>get data from telegram <i class="fa-solid fa-file-export"></i></span>
+            <i class="fa-solid fa-check"></i>
+        </div>
+        <div class="import-data-info">
+            <p>Paste this code in telegram chat:</p>
+            <p th:text="${getCode}">get-94615002</p>
+            <a href="/account">Refresh page</a>
+        </div>
+    </button>
+
+    <button th:if="${done}"
+            class="get-telegram active" disabled>
+        <div class="get-telegram-wrapper">
+            <i class="fa-brands fa-telegram"></i>
+            <span>get data from telegram <i class="fa-solid fa-file-export"></i></span>
+            <i class="fa-solid fa-check"></i>
+        </div>
+        <div class="import-data-info" style="margin-top: 15px;">
+            <a href="/account">Refresh page</a>
+        </div>
+        <script>
+            const a = document.querySelector(".send-telegram");
+            a.classList.add("active");
+            a.disabled = true;
+            if (a.querySelector(".import-data-info") != null)
+                a.querySelector(".import-data-info").remove();
+        </script>
+    </button>
+</div>
+
+<div th:fragment="send-telegram" class="btn-wrapper" id="send-telegram">
+    <button th:if="${telegram}"
+            class="send-telegram active" disabled>
+        <div class="send-telegram-wrapper">
+            <i class="fa-brands fa-telegram"></i>
+            <span>send data to telegram <i class="fa-solid fa-file-export"></i></span>
+            <i class="fa-solid fa-check"></i>
+        </div>
+    </button>
+
+
+    <button th:if="${!telegram AND sendCode == null AND done == null}"
+            hx-patch="/account/telegramSend"
+            hx-swap="outerHTML"
+            hx-target="#send-telegram"
+            hx-trigger="click"
+            class="send-telegram">
+        <div class="send-telegram-wrapper">
+            <i class="fa-brands fa-telegram"></i>
+            <span>send data to telegram <i class="fa-solid fa-file-export"></i></span>
+            <i class="fa-solid fa-check"></i>
+            <div class="loading"><img src="assets/common/img/loading1.gif" alt=""></div>
+        </div>
+    </button>
+
+
+    <button th:if="${sendCode}"
+            class="send-telegram" disabled>
+        <div class="send-telegram-wrapper">
+            <i class="fa-brands fa-telegram"></i>
+            <span>send data to telegram <i class="fa-solid fa-file-export"></i></span>
+            <i class="fa-solid fa-check"></i>
+        </div>
+        <div class="import-data-info">
+            <p>Paste this code in telegram chat:</p>
+            <p th:text="${sendCode}"></p>
+            <a href="/account">Refresh page</a>
+        </div>
+    </button>
+
+    <button th:if="${done}"
+            class="send-telegram active" disabled>
+        <div class="send-telegram-wrapper">
+            <i class="fa-brands fa-telegram"></i>
+            <span>send data to telegram <i class="fa-solid fa-file-export"></i></span>
+            <i class="fa-solid fa-check"></i>
+        </div>
+        <div class="import-data-info" style="margin-top: 15px;">
+            <a href="/account">Refresh page</a>
+        </div>
+        <script>
+            const a = document.querySelector(".get-telegram");
+            a.classList.add("active");
+            a.disabled = true;
+            if (a.querySelector(".import-data-info") != null)
+                a.querySelector(".import-data-info").remove();
+        </script>
+    </button>
+</div>
+</body>

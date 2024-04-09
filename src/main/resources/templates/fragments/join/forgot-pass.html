@@ -1,0 +1,26 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="forgot-pass" class="forgot-pass-wrapper wrapper">
+    <div class="block form">
+        <div class="title">forgot password</div>
+        <p class="greeting">Forgot your password?</p>
+
+        <div class="data-form forgot-pass-form">
+            <div class="input-wrapper email">
+                <span class="placeholder">email</span>
+                <input class="input-email" type="email">
+            </div>
+
+            <button class="form-btn forgot-pass-btn active">reset password</button>
+            <p class="safe-info">the entered data is safe and encrypted <i class="fa-solid fa-lock"></i></p>
+        </div>
+    </div>
+
+    <div class="block options">
+        <div class="option">
+            <button class="switch-to-log-in">back</button>
+        </div>
+    </div>
+</div>
+</body>
+</html>

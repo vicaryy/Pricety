@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join Pricety</title>
+    <link rel="icon" type="image/png" href="/assets/common/img/favicon.png">
+    <link rel="stylesheet" href="/assets/join/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+          rel="stylesheet">
+    <script src="/assets/common/js/SupportButton.js" defer></script>
+    <script src="/assets/common/js/NavigationScroll.js" defer></script>
+    <script src="https://kit.fontawesome.com/fb34889874.js" crossorigin="anonymous" defer></script>
+
+</head>
+
+<body>
+<div class="content-wrapper">
+    <div class="main-content-wrapper verify">
+        <nav class="nav">
+            <div class="first-section">
+                <a href="/"><img src="/assets/common/img/logo.png" alt=""></a>
+            </div>
+        </nav>
+
+
+        <div class="verify-wrapper wrapper">
+            <div class="block form">
+                <div class="title">almost done</div>
+                <i class="fa-solid fa-envelope-circle-check"></i>
+                <p>The activation link has been sent to the provided email address, please check your mailbox!</p>
+                <p>Provided email:</p>
+                <p th:text="${email}"></p>
+            </div>
+        </div>
+
+        <div class="photo">
+            <img src="/assets/join/img/email-box.png" alt="">
+        </div>
+
+
+        <div th:replace="~{fragments/common/support.html :: support}"></div>
+        <div th:replace="~{fragments/common/support.html :: copy-area}"></div>
+
+    </div>
+    <div th:replace="~{fragments/common/footer.html :: footer}"></div>
+
+
+</div>
+</body>
+
+</html>

@@ -1,0 +1,39 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="support" class="support">
+    <div class="support-btn">
+        <div class="support-text">
+            <p>support me</p>
+            <i class="fa-solid fa-heart"></i>
+        </div>
+        <div class="support-exit"><i class="fa-solid fa-xmark"></i></div>
+    </div>
+    <div class="support-tab">
+        <div>
+            <div class="arrow"><i class="fa-solid fa-chevron-down"></i></div>
+            <div class="support-content">
+                <div>
+                    <i class="fa-brands fa-paypal"></i>
+                    <p>paypal.com<i class="fa-solid fa-arrow-up-right-from-square"></i></p>
+                </div>
+                <div class="copy">
+                    <i class="fa-brands fa-btc"></i>
+                    <p data-address="17PkbNkE1FfCcyWwJLWMkthaHTRfvBbLtT">17PkbNkE...<i
+                            class="fa-solid fa-copy"></i>
+                    </p>
+                </div>
+                <div class="copy">
+                    <i class="fa-brands fa-ethereum"></i>
+                    <p data-address="0x2ac2cc2fc09fcb051a928c7f7dcb6c332a2e73ac">0x2ac2cc2...<i
+                            class="fa-solid fa-copy"></i></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<textarea th:fragment="copy-area" class="copy-area">.</textarea>
+<div class="pop-up-success">
+    <i class="fa-regular fa-circle-check"></i>
+    <span>success</span>
+</div>
+</body>

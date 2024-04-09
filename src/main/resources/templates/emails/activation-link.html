@@ -1,0 +1,48 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="x-apple-disable-message-reformatting">
+    <title>Document</title>
+</head>
+
+<body style="margin: 0; padding: 20px 0 20px 0; background: radial-gradient(circle at -25% -50%, #0d1117 36%, rgba(13, 17, 23, 0) 48%), radial-gradient(circle at -25% 150%, #0d1117 45%, rgba(13, 17, 23, 0) 89%), radial-gradient(circle at -25% -100%, rgba(13, 17, 23, 0) 55%, rgba(13, 17, 23, .28) 65%, rgba(13, 17, 23, 0) 68%), radial-gradient(circle at -33% -75%, #1f00cc 48%, rgba(131, 5, 49, 0) 56%), radial-gradient(circle farthest-side at 0 -50%, rgba(13, 17, 23, 0) 64%, rgba(1, 2, 36, .4) 69%, rgba(13, 17, 23, 0) 81%), radial-gradient(circle at 0 -50%, rgba(13, 17, 23, 0) 33%, #010c5f 50%, #0077ff 70%, black 100%, rgba(13, 17, 23, 0) 92%); background-repeat: no-repeat;">
+<div class="wrapper" style="width: 100%; max-width: 600px; margin: 0 auto;">
+    <header style="width: 90%; height: 80px; margin-top: 20px; margin-right: auto; margin-bottom: 40px; margin-left: auto; border-radius: 50px; background-color: rgba(118, 91, 255, 0.08);">
+        <div class="logo"
+             style="width: 100%; height: 100%; text-align: center;">
+            <img src="https://i.ibb.co/9wYGSqk/logo.png" alt="" style="height: 80%; margin-top: 8px;">
+        </div>
+    </header>
+    <p style="color: #98a2b3; text-align: center; font-family: 'Roboto', 'Arial', 'sans-serif'; font-size: 22px; margin-bottom: 80px;">
+        This is the last step in the registration process.</p>
+    <p style="color: #f9fafb; text-align: center; font-family: 'Roboto', 'Arial', 'sans-serif'; font-size: 22px; margin-bottom: 10px;">
+        Here's your activation link:</p>
+    <div class="button" style="width: 100%; height: auto; text-align: center; margin-bottom: 100px;">
+        <button style="background-color: rgb(118, 91, 255); border: none; border-radius: 50px;">
+            <a th:href="${link}"
+               style="display: inline-block; width: 200px; line-height: 50px; text-decoration: none; font-size: 20px; font-family: 'Roboto', 'Arial', 'sans-serif'; color: #f9fafb;">click
+                me</a></button>
+    </div>
+    <p style="color: #f9fafb; text-align: center; font-family: 'Roboto', 'Arial', 'sans-serif'; font-size: 22px;">Thank
+        you for joining us!</p>
+    <div class="socials" style="text-align: center;">
+        <a href="mailto:vicarycholewa@gmail.com" target="_blank" style="text-decoration: none;">
+            <img src="https://i.ibb.co/2dHfdpN/email.png" alt="" style="width: 35px; margin-right: 5px;">
+        </a>
+        <a href="https://t.me/vicary1" target="_blank" style="text-decoration: none;">
+            <img src="https://i.ibb.co/bsq72R3/telegram.png" alt="" style="width: 35px; margin-right: 5px;">
+        </a>
+        <a href="https://discord.com/invite/zfhgN2Cy" target="_blank" style="text-decoration: none;">
+            <img src="https://i.ibb.co/RDbXVS7/discord.png" alt="" style="width: 35px; margin-right: 5px;">
+        </a>
+        <a href="https://twitter.com/VicarySW" target="_blank" style="text-decoration: none;">
+            <img src="https://i.ibb.co/2MH4vQC/twitter.png" alt="" style="width: 35px; margin-right: 5px;">
+        </a>
+    </div>
+</div>
+<p th:text="${time}" style="opacity: 0; margin: 0; font-size: 1px;"></p>
+
+</body>
+
+</html>

@@ -1,0 +1,48 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="profile" class="profile block content">
+    <div class="profile-picture-wrapper">
+        <div class="profile-picture">
+            <img src="/assets/account/img/profile-p.jpeg" alt="">
+        </div>
+        <span>newbie buyer</span>
+        <div class="stars">
+            <i class="fa-solid fa-star"></i>
+            <i class="fa-regular fa-star"></i>
+            <i class="fa-regular fa-star"></i>
+            <i class="fa-regular fa-star"></i>
+            <i class="fa-regular fa-star"></i>
+        </div>
+    </div>
+    <div class="profile-wrapper">
+        <div class="email field">
+            <p>email</p>
+            <p th:text="${user.email}"></p>
+        </div>
+        <div class="name field">
+            <p>name</p>
+            <p th:text="${user.nick == null} ? 'not specified' : ${user.nick}"></p>
+        </div>
+        <div class="name field">
+            <p>telegram</p>
+            <p th:text="${user.telegram} ? 'connected' : 'not connected'"></p>
+        </div>
+        <div class="item-amount field">
+            <p>items amount</p>
+<!--            <p th:if="${premium}" th:text="${user.products.size()} + ' - unlimited'"></p>-->
+<!--            <p th:if="${!premium}" th:text="${user.products.size()} + '/20 - limited'"></p>-->
+            <p th:text="${premium} ? ${user.products.size()} + ' - unlimited' : ${user.products.size()} + '/20 - limited'"></p>
+        </div>
+        <div class="type field">
+            <p>type</p>
+            <p th:text="${user.premium} ? 'premium' : 'free'"></p>
+        </div>
+    </div>
+
+    <div class="premium-info">
+        <p>Become a premium today!</p>
+        <p>Unlimited items and many more.*</p>
+        <button class="premium-btn">GO PREMIUM</button>
+    </div>
+</div>
+</body>

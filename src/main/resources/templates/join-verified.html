@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join Scraper</title>
+    <link rel="icon" type="image/png" href="/assets/common/img/favicon.png">
+    <link rel="stylesheet" href="/assets/join/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+          rel="stylesheet">
+    <script src="/assets/common/js/SupportButton.js" defer></script>
+    <script src="/assets/common/js/NavigationScroll.js" defer></script>
+    <script src="https://kit.fontawesome.com/fb34889874.js" crossorigin="anonymous" defer></script>
+
+</head>
+
+<body>
+<div class="content-wrapper">
+    <div class="main-content-wrapper verified">
+        <nav class="nav">
+            <div class="first-section">
+                <a href="/"><img src="/assets/common/img/logo.png" alt=""></a>
+            </div>
+        </nav>
+
+
+        <div class="verified-wrapper wrapper">
+            <div class="block form">
+                <div class="title">welcome</div>
+                <i class="fa-regular fa-circle-check"></i>
+                <p>The account verification has been successfully completed.</p>
+                <p>Check your profile!</p>
+                <button class="my-account-button">
+                    <a href="/account">my account</a>
+                </button>
+            </div>
+        </div>
+
+        <div class="photo">
+            <img src="/assets/join/img/verified.png" alt="">
+        </div>
+
+
+        <div th:replace="~{fragments/common/support.html :: support}"></div>
+        <div th:replace="~{fragments/common/support.html :: copy-area}"></div>
+
+    </div>
+    <div th:replace="~{fragments/common/footer.html :: footer}"></div>
+
+</div>
+</body>
+
+</html>

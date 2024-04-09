@@ -1,0 +1,36 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<div th:if="${success}" class="form-wrapper">
+    <form
+            hx-post="/contact"
+            hx-target=".form-wrapper"
+            hx-swap="outerHTML"
+            hx-trigger="submit"
+            class="form">
+        <input type="text" name="name" placeholder="name">
+        <input type="text" name="email" placeholder="email">
+        <textarea placeholder="message" name="message"></textarea>
+        <div class="submit-wrapper">
+            <input type="submit" class="form-btn send-btn" value="send">
+            <div class="spin"><img src="/assets/common/img/loading1.gif" alt=""></div>
+        </div>
+        <p class="success">Message sent successfully, thanks!</p>
+    </form>
+</div>
+
+<div th:if="${error}" class="form-wrapper">
+    <form
+            hx-post="/contact"
+            hx-target=".form-wrapper"
+            hx-swap="outerHTML"
+            hx-trigger="submit"
+            class="form">
+        <input type="text" name="name" placeholder="name" th:value="${name}">
+        <input type="text" name="email" placeholder="email" th:value="${email}">
+        <textarea placeholder="message" name="message" th:text="${message}"></textarea>
+        <div class="submit-wrapper">
+            <input type="submit" class="form-btn send-btn" value="send">
+            <div class="spin"><img src="/assets/common/img/loading1.gif" alt=""></div>
+        </div>
+        <p th:text="${errorInfo}" class="error"></p>
+    </form>
+</div>

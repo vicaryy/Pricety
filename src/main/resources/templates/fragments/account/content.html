@@ -1,0 +1,181 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="account-content" class="content-wrapper">
+    <nav class="nav">
+        <div class="first-section">
+            <a href="/"><img src="/assets/common/img/logo.png" alt=""></a>
+        </div>
+
+        <div class="log-out-button">
+            <a href="/join?l=true">log out
+                <div class="sign-up-logo">
+                    <i class="fa-solid fa-right-to-bracket"></i>
+                </div>
+            </a>
+        </div>
+
+        <div class="hamburger-wrapper">
+            <div class="hamburger">
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+        </div>
+        <div class="popup-menu">
+            <a href="/join?l=true" class="log-out-button">log out</a>
+        </div>
+    </nav>
+
+    <main>
+        <div class="wrapper">
+            <p class="page-title">My Account <i class="fa-regular fa-user"></i></p>
+            <div class="menu-bar block">
+                <ul>
+                    <li>
+                        <span th:class="${settings} ? '' : 'active'">products</span>
+                    </li>
+                    <li>
+                        <span>profile</span>
+                    </li>
+                    <li>
+                        <span th:class="${settings} ? 'active' : ''">settings</span>
+                    </li>
+                </ul>
+            </div>
+            <div class="content-bar-wrapper">
+                <div class="products block content" th:classappend="${settings} ? '' : 'active'">
+                    <h2 class="title">Products</h2>
+                    <div class="filter">
+                        <p><i class="fa-solid fa-sliders"></i></p>
+                        <div class="services">
+                            <ul>
+                                <li class="active">all</li>
+                                <li>nike</li>
+                                <li>zalando</li>
+                                <li>hebe</li>
+                                <li>zara</li>
+                                <li>housebrand</li>
+                            </ul>
+                        </div>
+                        <div class="options">
+                            <div class="search-wrapper">
+                                <input type="search" class="search">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <span class="placeholder">search</span>
+                            </div>
+                            <div class="sort-by">
+                                <i class="fa-solid fa-arrow-down-wide-short"></i>
+                                <div class="cover"></div>
+                                <div class="sort-bar-slide">
+                                    <div>
+                                        <ul>
+                                            <li class="active">newest<i class="fa-solid fa-check"></i></li>
+                                            <li>oldest<i class="fa-solid fa-check"></i></li>
+                                            <li>higher price<i class="fa-solid fa-check"></i></li>
+                                            <li>lowest price<i class="fa-solid fa-check"></i></li>
+                                        </ul>
+                                        <div class="arrow"><i class="fa-solid fa-angle-up"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="edit-block-cover"></div>
+                    <div class="edit-block block" data-entity-id="0">
+                        <div class="photo-wrapper">
+                            <div class="photo">
+                                <img src="https://img01.ztat.net/article/spp-media-p1/3748d16f5a3c4fde8a972b4a40424806/cafaf7c8a5184c84a5acc46a45ebdf49.jpg?imwidth=300"
+                                     alt="">
+                            </div>
+                        </div>
+                        <div class="inputs">
+                            <input value="" type="text" style="display:none;" name="item-id" class="item-id-input">
+                            <div class="item-title input">
+                                <span class="placeholder">title</span>
+                                <input value="" type="text" name="item-title">
+                                <div class="mark-wrapper">
+                                    <i class="fa-solid fa-check"></i>
+                                    <i class="fa-solid fa-xmark"></i>
+                                </div>
+                            </div>
+                            <div class="description input">
+                                <span class="placeholder">description</span>
+                                <input value="" type="text" name="description">
+                                <div class="mark-wrapper">
+                                    <i class="fa-solid fa-check"></i>
+                                    <i class="fa-solid fa-xmark"></i>
+                                </div>
+                            </div>
+                            <div class="variant input">
+                                <span class="placeholder">variant</span>
+                                <input value="" type="text" disabled class="disabled">
+                                <div class="mark-wrapper">
+                                    <i class="fa-solid fa-lock"></i>
+                                </div>
+                            </div>
+                            <div class="price input">
+                                <span class="placeholder">price</span>
+                                <input value="" type="text" disabled class="disabled">
+                                <div class="mark-wrapper">
+                                    <i class="fa-solid fa-lock"></i>
+                                </div>
+                            </div>
+                            <div class="alert input">
+                                <span class="placeholder">alert</span>
+                                <input value="" type="text" name="alert">
+                                <div class="mark-wrapper">
+                                    <i class="fa-solid fa-check"></i>
+                                    <i class="fa-solid fa-xmark"></i>
+                                </div>
+                            </div>
+                            <div class="alert-options">
+                                <div class="alert-auto">
+                                    <span>alert: auto</span>
+                                </div>
+                                <div class="alert-off">
+                                    <span>alert: off</span>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="buttons">
+                            <button
+                                    hx-delete="/account/product"
+                                    hx-include="[name='item-id']"
+                                    hx-trigger="click"
+                                    hx-swap="none"
+                                    class="delete">delete
+                            </button>
+                            <button
+                                    hx-patch="/account/product"
+                                    hx-include="[name='item-id'], [name='item-title'], [name='description'], [name='alert']"
+                                    hx-trigger="click"
+                                    hx-swap="none"
+                                    class="save active">save
+                            </button>
+                        </div>
+                        <button class="cancel"><i class="fa-regular fa-circle-xmark"></i></button>
+                    </div>
+
+                    <div th:replace="~{fragments/account/item.html :: items}"></div>
+
+                </div>
+
+                <div th:replace="~{fragments/account/profile.html :: profile}"></div>
+
+                <div th:replace="~{fragments/account/settings.html :: settings}"></div>
+
+            </div>
+        </div>
+    </main>
+
+
+    <div th:replace="~{fragments/common/support.html :: support}"></div>
+    <div th:replace="~{fragments/common/support.html :: copy-area}"></div>
+
+    <div th:replace="~{fragments/common/footer.html :: footer}"></div>
+</div>
+</body>
+</html>

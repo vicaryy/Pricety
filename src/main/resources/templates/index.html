@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricety</title>
+    <link rel="icon" type="image/png" href="/assets/common/img/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap"
+          rel="stylesheet">
+    <link rel="stylesheet" href="/assets/home/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+          rel="stylesheet">
+
+    <script src="https://kit.fontawesome.com/fb34889874.js" crossorigin="anonymous" defer></script>
+    <script src="/assets/home/js/Scroll.js" defer></script>
+    <script src="/assets/home/js/NavigationScroll.js" defer></script>
+    <script src="/assets/home/js/AboutBlockSlide.js" defer></script>
+    <script src="/assets/common/js/NavigationMenu.js" defer></script>
+    <script src="/assets/common/js/SupportButton.js" defer></script>
+    <script src="/assets/home/js/AddItem.js" defer></script>
+    <script src="/assets/home/js/Contact.js" defer></script>
+    <script src="https://unpkg.com/htmx.org@1.9.4/dist/htmx.min.js" defer></script>
+</head>
+
+<body>
+<div class="content-wrapper">
+    <nav>
+        <div class="bar first-section">
+            <div class="logo">
+                <a href="#"><img src="/assets/common/img/logo.png" alt=""></a>
+            </div>
+        </div>
+
+        <div class="bar second-section">
+            <ul>
+                <li class="home-btn active">home</li>
+                <li class="about-btn">about</li>
+                <li class="contact-btn">contact</li>
+            </ul>
+        </div>
+
+        <div th:if="${logged}" class="bar third-section">
+            <div class="log-out-button">
+                <a href="/join?l=true">log out
+                    <div class="sign-up-logo">
+                        <i class="fa-solid fa-right-to-bracket"></i>
+                    </div>
+                </a>
+            </div>
+            <div class="my-account-button">
+                <a href="/account">my account</a>
+            </div>
+        </div>
+        <div th:if="${!logged}" class="bar third-section">
+            <div class="sign-in-button">
+                <a href="/join">sign up
+                    <div class="sign-up-logo">
+                        <i class="fa-solid fa-right-to-bracket"></i>
+                    </div>
+                </a>
+            </div>
+            <div class="log-in-button">
+                <a href="/join?l=true">log in</a>
+            </div>
+        </div>
+
+
+        <div class="hamburger-wrapper">
+            <div class="hamburger">
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+        </div>
+
+        <div th:if="${!logged}" class="popup-menu">
+            <a href="/join" class="sign-in-button">sign up</a>
+            <a href="/join?l=true" class="log-in-button">log in</a>
+        </div>
+        <div th:if="${logged}" class="popup-menu">
+            <a href="/join?l=true" class="log-out-button">log out</a>
+            <a href="/account" class="my-account-button">my account</a>
+        </div>
+    </nav>
+    <section class="home">
+        <div class="home-wrapper">
+            <div class="home-text">
+                <p>Hello, im Pricety</p>
+                <p>price watcher</p>
+                <p>on:</p>
+            </div>
+
+            <div class="services">
+                <div class="services-wrapper">
+                    <span id="typedd"></span>
+                </div>
+            </div>
+
+            <div class="url-place-wrapper">
+                <form hx-post="/add"
+                      hx-trigger="submit"
+                      hx-target=".url-place-wrapper"
+                      hx-swap="outerHTML"
+                      class="url-place">
+                    <input type="text" name="url" placeholder="input link here">
+                    <div class="submit-btn-wrapper">
+                        <input type="submit" class="submit-btn" value="add">
+                        <div class="spin"><img src="assets/common/img/loading1.gif" alt=""></div>
+                    </div>
+                    <p>just paste the link to the item and I'll take care of the rest</p>
+                </form>
+            </div>
+        </div>
+
+    </section>
+
+    <section class="about">
+        <div class="block">
+            <div class="fishing">
+                <img src="/assets/home/img/fishing.png" alt="">
+            </div>
+            <div class="title">
+                <h3>about</h3>
+            </div>
+            <div class="about-notifications">
+                <div class="photo">
+                    <img src="/assets/home/img/notify.png" alt="">
+                </div>
+                <div class="description">
+                    <span>Notifications</span>
+                    <span>Pricety will notify you via email if the item becomes cheaper or becomes available for sale.</span>
+                </div>
+            </div>
+            <div class="about-easy">
+                <div class="photo">
+                    <img src="/assets/home/img/puzzle.png" alt="">
+                </div>
+                <div class="description">
+                    <span>Easy</span>
+                    <span>User-friendly, simply paste the link to your chosen item and confirm—it's that easy. Pricety will take care of the rest.</span>
+                </div>
+            </div>
+            <div class="about-one-place">
+                <div class="photo">
+                    <img src="/assets/home/img/home.png" alt="">
+                </div>
+                <div class="description">
+                    <span>One place</span>
+                    <span>All your items in one place, eliminating the need to visit multiple websites to check prices. This is a job for Pricety!</span>
+                </div>
+            </div>
+            <div class="about-edit">
+                <div class="photo">
+                    <img src="/assets/home/img/edit.png" alt="">
+                </div>
+                <div class="description">
+                    <span>Edit</span>
+                    <span>In the My Account section you can edit the added items, set their price alerts, name, description and many more!</span>
+                </div>
+            </div>
+            <div class="about-free">
+                <div class="photo">
+                    <img src="/assets/home/img/handshake.png" alt="">
+                </div>
+                <div class="description">
+                    <span>Free</span>
+                    <span>Pricety is completely free and will remain so; any payments are voluntary and not obligatory.</span>
+                </div>
+            </div>
+            <div class="about-safe">
+                <div class="photo">
+                    <img src="/assets/home/img/encrypt.png" alt="">
+                </div>
+                <div class="description">
+                    <span>Safety</span>
+                    <span>Pricety prioritizes user privacy, which is why all entered data is encrypted using BCrypt.</span>
+                </div>
+            </div>
+
+            <p>Supported websites:</p>
+        </div>
+    </section>
+
+    <section class="about-services">
+
+        <div class="wrapper">
+            <div class="slider-wrapper">
+                <div class="block logo nike">
+                    <div class="image"></div>
+                </div>
+                <div class="block description">
+                    <p>all countries</p>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+        <div class="wrapper">
+            <div class="slider-wrapper">
+                <div class="block logo zalando">
+                    <div class="image"></div>
+                </div>
+                <div class="block description">
+                    <p>all countries</p>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+        <div class="wrapper">
+            <div class="slider-wrapper">
+                <div class="block logo hebe">
+                    <div class="image"></div>
+                </div>
+                <div class="block description">
+                    <p>all countries</p>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+        <div class="wrapper">
+            <div class="slider-wrapper">
+                <div class="block logo zara">
+                    <div class="image"></div>
+                </div>
+                <div class="block description">
+                    <p>all countries</p>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+        <div class="wrapper">
+            <div class="slider-wrapper">
+                <div class="block logo house">
+                    <div class="image"></div>
+                </div>
+                <div class="block description">
+                    <p>all countries</p>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="contact">
+        <div class="contact-wrapper">
+            <div class="title">
+                <h3>contact</h3>
+            </div>
+
+            <div class="form-wrapper">
+                <form
+                      hx-post="/contact"
+                      hx-target=".form-wrapper"
+                      hx-swap="outerHTML"
+                      hx-trigger="submit"
+                      class="form">
+                    <input type="text" name="name" placeholder="name">
+                    <input type="text" name="email" placeholder="email">
+                    <textarea placeholder="message" name="message"></textarea>
+                    <div class="submit-wrapper">
+                        <input type="submit" class="form-btn send-btn" value="send">
+                        <div class="spin"><img src="/assets/common/img/loading1.gif" alt=""></div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="socials">
+                <div class="socials-wrapper">
+                    <p>Let's talk</p>
+                    <p>Have question?</p>
+                    <p>Cooperation offer?</p>
+                    <p>Copyright issue?</p>
+                    <p>Do you want me to scrap another website?</p>
+                    <p>Feedback?</p>
+                    <p>Let me know!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div th:replace="~{fragments/common/support.html :: support}"></div>
+    <div th:replace="~{fragments/common/support.html :: copy-area}"></div>
+
+    <div th:replace="~{fragments/common/footer.html :: footer}"></div>
+</div>
+
+<script src="https://unpkg.com/typed.js@2.1.0/dist/typed.umd.js"></script>
+<script>
+    var typed = new Typed('#typedd', {
+        strings: ["NIKE", "ZALANDO", "HEBE", "ZARA", "HOUSE"],
+        stringsElements: null,
+        typeSpeed: 150,
+        backSpeed: 100,
+        backDelay: 1500,
+        loop: true
+    });
+    document.querySelector(".typed-cursor").innerHTML = "<span>|</span>";
+</script>
+</body>
+
+</html>

@@ -1,0 +1,31 @@
+spring:
+  codec:
+    max-in-memory-size: 10MB
+
+  datasource:
+    driver-class: "org.postgresql.Driver"
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 10
+
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+          batch_size: 50
+    show-sql: false
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: zalandoscraperbot@gmail.com
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  profiles:
+    active: test
+#  normal port: "8080"
+#  port for tests: "7070"

@@ -159,7 +159,7 @@ public class DatabaseSetterController {
             } else {
                 saveAll(objects, repository);
             }
-            System.out.println("It takes: " + (System.currentTimeMillis() - time));
+            log.info("It takes: {}ms", (System.currentTimeMillis() - time));
         } catch (Exception ex) {
             log.error("Error in setting {} to repository.", objectName);
             ex.printStackTrace();

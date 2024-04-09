@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="log-in" th:class="${logIn} ? 'log-in-wrapper wrapper active' : 'log-in-wrapper wrapper'">
+    <div class="block form">
+        <div class="title">log in</div>
+        <p class="greeting">Welcome back!</p>
+
+        <form
+                method="POST"
+                role="form"
+                th:action="@{/join/log-in}"
+                th:object="${logInModel}">
+
+            <div class="data-form log-in-form">
+                <div class="input-wrapper email">
+                    <span class="placeholder">email</span>
+                    <input th:field="*{email}" class="input-email" type="text">
+                </div>
+
+                <div class="input-wrapper password">
+                    <span class="placeholder">password</span>
+                    <input th:field="*{password}" class="input-password" type="password">
+                    <i class="fa-regular fa-eye"></i>
+                </div>
+
+                <div th:if="${errorLogIn}">
+                    <p th:text="${errorInfoLogIn}" class="error-info"></p>
+                </div>
+                <input type="submit" class="form-btn log-in-btn active" value="log in">
+                <p class="safe-info">the entered data is safe and encrypted <i class="fa-solid fa-lock"></i></p>
+            </div>
+        </form>
+    </div>
+
+
+    <div class="block options">
+        <div class="option">
+            <p>forgot password?</p>
+            <button class="switch-to-forgot-pass">reset</button>
+        </div>
+        <div class="option">
+            <p>new user?</p>
+            <button class="switch-to-sign-up">sign up</button>
+        </div>
+    </div>
+</div>
+</body>
+</html>

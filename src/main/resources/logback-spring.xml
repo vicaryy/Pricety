@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/default.xml"/>
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+
+    <property name="log-file" value="src/main/java/com/vicary/zalandoscraper/logs/api-log.log"/>
+
+    <appender name="console-appender" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>
+                %cyan(%d{dd-MM-yyyy HH:mm:ss.SSS}) %yellow([%thread]) %highlight(%-6level) %-35.35logger{36} : %msg%n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <appender name="file-appender" class="ch.qos.logback.core.FileAppender">
+        <encoder>
+            <pattern>
+                %d{dd-MM-yyyy HH:mm:ss.SSS} [%thread] %-6level %-35.35logger{36} : %msg%n
+            </pattern>
+        </encoder>
+        <file>${log-file}</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <fileNamePattern>src/main/java/org/vicary/logs/api_log-%i.log</fileNamePattern>
+            <MinValue>1</MinValue>
+            <MaxValue>100</MaxValue>
+        </rollingPolicy>
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <MaxFileSize>1MB</MaxFileSize>
+        </triggeringPolicy>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="console-appender"/>
+    </root>
+
+    <logger name="com.vicary" level="DEBUG">
+        <appender-ref ref="file-appender"/>
+    </logger>
+
+</configuration>

@@ -1,0 +1,76 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="sign-up" th:class="${signUp} ? 'sign-up-wrapper wrapper active' : 'sign-up-wrapper wrapper'">
+
+    <form
+            method="POST"
+            role="form"
+            th:action="@{/join/register}"
+            th:object="${registerModel}">
+
+        <div class="block form">
+            <div class="title">sign up</div>
+            <p class="greeting">Get started</p>
+
+            <div class="data-form sign-up-form">
+                <div class="input-wrapper email">
+                    <span class="placeholder">email</span>
+                    <input th:field="*{email}" class="input-email" type="text">
+                </div>
+
+                <div class="email-check validation">
+                    <ul>
+                        <li class="valid-email">
+                            <div class="mark-wrapper">
+                                <i class="fa-solid fa-xmark"></i>
+                                <i class="fa-solid fa-check"></i>
+                            </div>
+                            <p>valid email</p>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="input-wrapper password">
+                    <span class="placeholder">password</span>
+                    <input th:field="*{password}" class="input-password" type="password">
+                    <i class="fa-regular fa-eye"></i>
+                </div>
+
+                <div class="password-check validation">
+                    <ul>
+                        <li class="min-letters">
+                            <div class="mark-wrapper">
+                                <i class="fa-solid fa-xmark"></i>
+                                <i class="fa-solid fa-check"></i>
+                            </div>
+                            <p>8-24 characters</p>
+                        </li>
+
+                        <li class="special-char">
+                            <div class="mark-wrapper">
+                                <i class="fa-solid fa-xmark"></i>
+                                <i class="fa-solid fa-check"></i>
+                            </div>
+                            <p>at least one special character</p>
+                        </li>
+                    </ul>
+                </div>
+
+                <div th:if="${errorSignUp}">
+                    <p th:text="${errorInfoSignUp}" class="error-info"></p>
+                </div>
+                <input type="submit" class="form-btn create-btn" value="create account" disabled>
+                <p class="safe-info">the entered data is safe and encrypted <i class="fa-solid fa-lock"></i></p>
+            </div>
+        </div>
+    </form>
+
+    <div class="block options">
+        <div class="option">
+            <p>already have an account?</p>
+            <button class="switch-to-log-in">log in</button>
+        </div>
+    </div>
+</div>
+</body>
+</html>

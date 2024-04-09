@@ -1,0 +1,75 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:if="${success}" class="url-place-wrapper">
+    <form
+            hx-post="/add"
+            hx-trigger="submit"
+            hx-target=".url-place-wrapper"
+            hx-swap="outerHTML"
+            class="url-place">
+        <p th:text="${successInfo}"></p>
+        <input type="text" name="url" placeholder="input link here">
+        <div class="submit-btn-wrapper">
+            <input type="submit" class="submit-btn" value="add">
+            <div class="spin"><img src="assets/common/img/loading1.gif" alt=""></div>
+        </div>
+    </form>
+    <p>just paste the link to the item and I'll take care of the rest</p>
+</div>
+
+<div th:if="${error}" class="url-place-wrapper">
+    <form
+            hx-post="/add"
+            hx-trigger="submit"
+            hx-target=".url-place-wrapper"
+            hx-swap="outerHTML"
+            class="url-place">
+        <p th:text="${errorInfo}" class="error"></p>
+        <input type="text" name="url" placeholder="input link here">
+        <div class="submit-btn-wrapper">
+            <input type="submit" class="submit-btn" value="add">
+            <div class="spin"><img src="assets/common/img/loading1.gif" alt=""></div>
+        </div>
+    </form>
+    <p>just paste the link to the item and I'll take care of the rest</p>
+</div>
+
+<div th:if="${unauthorized}" class="url-place-wrapper">
+    <form
+            class="url-place">
+        <p th:text="${errorInfo}" class="error"></p>
+        <input type="text" name="url" placeholder="input link here">
+        <div class="submit-btn-wrapper">
+            <input type="submit" class="submit-btn log-in-input" value="log in" onclick="toLogIn(event);"
+            >
+        </div>
+    </form>
+    <p>sign up and log in process are so simple!</p>
+</div>
+
+<div th:if="${size}" class="url-place-wrapper">
+    <form class="url-place">
+        <input type="text" name="url" placeholder="input link here" th:attr="value=${url}">
+        <div class="submit-btn-wrapper">
+            <input type="submit" class="submit-btn" value="" disabled>
+            <div class="spin active"><img src="assets/common/img/loading1.gif" alt=""></div>
+        </div>
+    </form>
+    <div class="variants-wrapper block">
+        <div>
+            <p class="title">Please select product variant</p>
+            <div class="variants">
+                <button th:each="variant : ${variants}"
+                        th:text="${variant}"
+                        th:attr="hx-post=@{/addByVariant(u=${url},v=${variant})}"
+                        hx-trigger="click"
+                        hx-target=".url-place-wrapper"
+                        hx-swap="outerHTML"
+                >
+                </button>
+            </div>
+        </div>
+    </div>
+    <p>just paste the link to the item and I'll take care of the rest</p>
+</div>
+</body>

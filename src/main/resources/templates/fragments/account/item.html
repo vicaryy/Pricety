@@ -1,0 +1,52 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="items" class="items">
+    <div class="empty-here">
+        <span>Nothing to see here...</span>
+        <span>Let's go shopping!</span>
+        <div><img src="/assets/account/img/shopping.png" alt=""></div>
+    </div>
+    <div th:each="product : ${products}" th:class="${product.price == 'SOLD OUT'} ? 'item sold-out' : 'item'"
+         th:attr="data-entity-id=${product.productId}, data-service=${product.serviceName}, data-variant=${product.currency}">
+        <input th:attr="value=${product.productId}" type="text" class="item-id-input-element" name="item-id-input-element" style="display:none;">
+        <a target="_blank"
+           th:href="${product.link}">
+            <div class="photo">
+                <div th:attr="data-variant=${product.variant}">
+                    <img th:src="@{${product.photoUrl}}"
+                         alt="" onerror="this.onerror=null;this.src='/assets/account/img/item-photo.jpeg';">
+                </div>
+            </div>
+            <div class="item-title"><span th:text="${product.name}"></span></div>
+            <div class="description"><span th:text="${product.description}"></span>
+            </div>
+        </a>
+        <div class="price">
+            <span th:text="${product.price}"></span>
+            <span th:text="${product.price == 'SOLD OUT'} ? '' : ${product.currency}" class="currency"></span>
+        </div>
+        <div class="alert">
+            <span th:text="${product.priceAlert}">OFF</span>
+            <i class="fa-regular fa-bell"></i>
+            <div th:class="${product.priceAlert == 'AUTO'} ? 'tooltip active' : 'tooltip'"><i
+                    class="fa-solid fa-circle-question"></i></div>
+        </div>
+
+        <button th:if="${product.price == 'SOLD OUT' && product.notifyWhenAvailable == false}" class="notify"
+                th:attr="hx-patch=@{/account/productNotify(productId=${product.productId})}"
+                hx-trigger="click"
+                hx-swap="none"
+        >
+            <div>
+                <i class="fa-solid fa-circle-check"></i>
+                <span>notify when available</span>
+                <i class="fa-regular fa-bell" aria-hidden="true"></i>
+            </div>
+        </button>
+
+        <div class="edit"><i class="fa-solid fa-ellipsis"></i></div>
+    </div>
+</div>
+
+</body>
