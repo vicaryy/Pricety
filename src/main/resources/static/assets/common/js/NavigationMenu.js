@@ -13,11 +13,13 @@ function hamburgerAnimationTrigger() {
     hamburger.classList.toggle("active");
 }
 
-logOutBtn.forEach(e => e.addEventListener("click", logOut));
-async function logOut() {
+logOutBtn.forEach(e => e.addEventListener("click", event => logOut(event)));
+async function logOut(event) {
+    event.preventDefault();
     const url = "/join/log-out";
     const options = {
         method: "POST"
     };
-    fetch(url, options);
+    await fetch(url, options);
+    window.location.href = "/join?l=true";
 }

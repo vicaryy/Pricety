@@ -37,7 +37,6 @@ public class UpdateReceiverService implements UpdateReceiver {
     private final UrlParser urlParser;
     private final AdminResponse adminResponse;
     private final AutoUpdater autoUpdater;
-    private final UpdateFetcher updateFetcher;
 
     @Autowired
     public UpdateReceiverService(UserAuthentication userAuthentication, ResponseFacade facade, QuickSender quickSender, UrlParser urlParser, AdminResponse adminResponse, AutoUpdater autoUpdater) {
@@ -47,18 +46,6 @@ public class UpdateReceiverService implements UpdateReceiver {
         this.urlParser = urlParser;
         this.adminResponse = adminResponse;
         this.autoUpdater = autoUpdater;
-        updateFetcher = new UpdateFetcher(this);
-        facade.deleteAllActiveRequests();
-    }
-
-    public UpdateReceiverService(UserAuthentication userAuthentication, ResponseFacade facade, QuickSender quickSender, UrlParser urlParser, AdminResponse adminResponse, AutoUpdater autoUpdater, UpdateFetcher updateFetcher) {
-        this.userAuthentication = userAuthentication;
-        this.facade = facade;
-        this.quickSender = quickSender;
-        this.urlParser = urlParser;
-        this.adminResponse = adminResponse;
-        this.autoUpdater = autoUpdater;
-        this.updateFetcher = updateFetcher;
         facade.deleteAllActiveRequests();
     }
 
@@ -82,7 +69,7 @@ public class UpdateReceiverService implements UpdateReceiver {
 
         try {
             if (Pattern.isAdminCommand(user.getText(), user.isAdmin())) {
-                adminResponse.set(user, updateFetcher);
+                adminResponse.set(user, UpdateFetcher.getInstance());
                 adminResponse.response();
                 return;
             }

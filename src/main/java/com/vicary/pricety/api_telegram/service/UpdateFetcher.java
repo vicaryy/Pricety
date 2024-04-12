@@ -27,27 +27,46 @@ public class UpdateFetcher {
     private final AtomicBoolean fetcherRunning = new AtomicBoolean(true);
     private Mode mode = Mode.FAST;
     private List<Update> updates = new ArrayList<>();
-    private final Thread thread;
+    private Thread thread;
     private final WebClient client = WebClient.create();
     private final ExecutorService cachedExecutor = Executors.newCachedThreadPool();
-    private final UpdateReceiver updateReceiver;
+    private UpdateReceiver updateReceiver;
     @Setter
     @Getter
     private FetcherOptions options;
+    private static UpdateFetcher updateFetcher;
 
-    public UpdateFetcher(UpdateReceiver updateReceiver) {
+    private UpdateFetcher(){}
+
+    private UpdateFetcher(UpdateReceiver updateReceiver) {
         this.updateReceiver = updateReceiver;
         this.options = new FetcherOptions();
-
-        logger.info("[Api Telegram] Telegram Bot API started successfully.");
-        thread = new Thread(this::run);
-        thread.start();
     }
 
-    public UpdateFetcher(UpdateReceiver updateReceiver, FetcherOptions options) {
+    private UpdateFetcher(UpdateReceiver updateReceiver, FetcherOptions options) {
         this.updateReceiver = updateReceiver;
         this.options = options;
+    }
 
+    public static UpdateFetcher getInstance() {
+        return updateFetcher;
+    }
+
+    public static UpdateFetcher getInstance(UpdateReceiver updateReceiver) {
+        if (updateFetcher == null) {
+            updateFetcher = new UpdateFetcher(updateReceiver);
+        }
+        return updateFetcher;
+    }
+
+    public static UpdateFetcher getInstance(UpdateReceiver updateReceiver, FetcherOptions options) {
+        if (updateFetcher == null) {
+            updateFetcher = new UpdateFetcher(updateReceiver, options);
+        }
+        return updateFetcher;
+    }
+
+    public void start() {
         logger.info("[Api Telegram] Telegram Bot API started successfully.");
         thread = new Thread(this::run);
         thread.start();

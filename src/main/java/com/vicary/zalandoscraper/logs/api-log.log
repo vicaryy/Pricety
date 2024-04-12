@@ -136,3 +136,54 @@
 12-04-2024 16:54:52.856 [Thread-1] WARN   c.v.p.a.service.UpdateFetcher       : [Api Telegram] Can't fetch bot token, trying again...
 12-04-2024 16:54:53.362 [Thread-1] WARN   c.v.p.a.service.UpdateFetcher       : [Api Telegram] Can't fetch bot token, trying again...
 12-04-2024 16:54:53.867 [Thread-1] WARN   c.v.p.a.service.UpdateFetcher       : [Api Telegram] Can't fetch bot token, trying again...
+12-04-2024 17:30:04.712 [main] INFO   com.vicary.pricety.Main             : Starting Main using Java 21 with PID 8441 (/Users/vicary/IdeaProjects/scraper-bot/target/classes started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+12-04-2024 17:30:04.713 [main] DEBUG  com.vicary.pricety.Main             : Running with Spring Boot v3.2.3, Spring v6.1.4
+12-04-2024 17:30:04.713 [main] INFO   com.vicary.pricety.Main             : The following 1 profile is active: "test"
+12-04-2024 17:30:07.177 [main] INFO   c.v.p.a.service.UpdateFetcher       : [Api Telegram] Telegram Bot API started successfully.
+12-04-2024 17:30:07.177 [Thread-1] INFO   c.v.p.a.service.UpdateFetcher       : [Api Telegram] Bot token implemented successfully.
+12-04-2024 17:30:07.530 [main] INFO   com.vicary.pricety.Main             : Started Main in 3.109 seconds (process running for 3.369)
+12-04-2024 17:31:01.806 [Thread-1] DEBUG  c.v.p.a.service.UpdateFetcher       : [Update Fetcher] Slow Mode Active
+12-04-2024 17:47:36.872 [main] INFO   com.vicary.pricety.Main             : Starting Main using Java 21 with PID 8718 (/Users/vicary/IdeaProjects/scraper-bot/target/classes started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+12-04-2024 17:47:36.873 [main] DEBUG  com.vicary.pricety.Main             : Running with Spring Boot v3.2.3, Spring v6.1.4
+12-04-2024 17:47:36.873 [main] INFO   com.vicary.pricety.Main             : The following 1 profile is active: "test"
+12-04-2024 17:47:39.284 [main] INFO   c.v.p.a.service.UpdateFetcher       : [Api Telegram] Telegram Bot API started successfully.
+12-04-2024 17:47:39.284 [Thread-1] INFO   c.v.p.a.service.UpdateFetcher       : [Api Telegram] Bot token implemented successfully.
+12-04-2024 17:47:39.616 [main] INFO   com.vicary.pricety.Main             : Started Main in 3.066 seconds (process running for 3.369)
+12-04-2024 17:48:34.291 [Thread-1] DEBUG  c.v.p.a.service.UpdateFetcher       : [Update Fetcher] Slow Mode Active
+12-04-2024 18:25:53.955 [main] INFO   com.vicary.pricety.Main             : Starting Main using Java 21 with PID 9215 (/Users/vicary/IdeaProjects/scraper-bot/target/classes started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+12-04-2024 18:25:53.957 [main] DEBUG  com.vicary.pricety.Main             : Running with Spring Boot v3.2.3, Spring v6.1.4
+12-04-2024 18:25:53.958 [main] INFO   com.vicary.pricety.Main             : The following 1 profile is active: "test"
+12-04-2024 18:25:56.682 [main] INFO   com.vicary.pricety.Main             : Started Main in 3.022 seconds (process running for 3.239)
+12-04-2024 18:29:33.664 [main] INFO   com.vicary.pricety.Main             : Starting Main using Java 21 with PID 9274 (/Users/vicary/IdeaProjects/scraper-bot/target/classes started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+12-04-2024 18:29:33.665 [main] DEBUG  com.vicary.pricety.Main             : Running with Spring Boot v3.2.3, Spring v6.1.4
+12-04-2024 18:29:33.665 [main] INFO   com.vicary.pricety.Main             : The following 1 profile is active: "test"
+12-04-2024 18:29:36.872 [main] INFO   com.vicary.pricety.Main             : Started Main in 3.508 seconds (process running for 3.849)
+12-04-2024 18:34:27.303 [main] INFO   com.vicary.pricety.Main             : Starting Main using Java 21 with PID 9382 (/Users/vicary/IdeaProjects/scraper-bot/target/classes started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+12-04-2024 18:34:27.304 [main] DEBUG  com.vicary.pricety.Main             : Running with Spring Boot v3.2.3, Spring v6.1.4
+12-04-2024 18:34:27.304 [main] INFO   com.vicary.pricety.Main             : The following 1 profile is active: "test"
+12-04-2024 18:34:30.074 [main] INFO   com.vicary.pricety.Main             : Started Main in 3.071 seconds (process running for 3.495)
+12-04-2024 18:34:51.297 [main] INFO   com.vicary.pricety.Main             : Starting Main using Java 21 with PID 9399 (/Users/vicary/IdeaProjects/scraper-bot/target/classes started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+12-04-2024 18:34:51.298 [main] DEBUG  com.vicary.pricety.Main             : Running with Spring Boot v3.2.3, Spring v6.1.4
+12-04-2024 18:34:51.298 [main] INFO   com.vicary.pricety.Main             : The following 1 profile is active: "test"
+12-04-2024 18:34:54.132 [main] INFO   com.vicary.pricety.Main             : Started Main in 3.17 seconds (process running for 3.496)
+12-04-2024 18:36:57.437 [main] INFO   com.vicary.pricety.Main             : Starting Main using Java 21 with PID 9440 (/Users/vicary/IdeaProjects/scraper-bot/target/classes started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+12-04-2024 18:36:57.438 [main] DEBUG  com.vicary.pricety.Main             : Running with Spring Boot v3.2.3, Spring v6.1.4
+12-04-2024 18:36:57.439 [main] INFO   com.vicary.pricety.Main             : The following 1 profile is active: "test"
+12-04-2024 18:37:00.152 [main] INFO   com.vicary.pricety.Main             : Started Main in 2.985 seconds (process running for 3.259)
+12-04-2024 18:37:01.488 [http-nio-7070-exec-2] INFO   c.v.p.a.service.UpdateFetcher       : [Api Telegram] Telegram Bot API started successfully.
+12-04-2024 18:37:01.489 [Thread-1] INFO   c.v.p.a.service.UpdateFetcher       : [Api Telegram] Bot token implemented successfully.
+12-04-2024 18:37:06.022 [pool-4-thread-1] INFO   c.v.p.s.r.MessageService            : Save message to repo: /menu 47
+12-04-2024 18:37:33.946 [pool-4-thread-2] INFO   c.v.p.s.r.MessageService            : Save message to repo: /menu 47
+12-04-2024 18:37:34.132 [pool-4-thread-2] INFO   c.v.p.service.UpdateReceiverService : Got message from user '47' - ahaha
+12-04-2024 18:37:47.688 [main] INFO   com.vicary.pricety.Main             : Starting Main using Java 21 with PID 9470 (/Users/vicary/IdeaProjects/scraper-bot/target/classes started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+12-04-2024 18:37:47.689 [main] DEBUG  com.vicary.pricety.Main             : Running with Spring Boot v3.2.3, Spring v6.1.4
+12-04-2024 18:37:47.690 [main] INFO   com.vicary.pricety.Main             : The following 1 profile is active: "test"
+12-04-2024 18:37:50.277 [main] INFO   com.vicary.pricety.Main             : Started Main in 2.871 seconds (process running for 3.082)
+12-04-2024 18:38:03.300 [http-nio-7070-exec-2] INFO   c.v.p.a.service.UpdateFetcher       : [Api Telegram] Telegram Bot API started successfully.
+12-04-2024 18:38:03.301 [Thread-1] INFO   c.v.p.a.service.UpdateFetcher       : [Api Telegram] Bot token implemented successfully.
+12-04-2024 18:38:07.842 [pool-4-thread-1] INFO   c.v.p.s.r.MessageService            : Save message to repo: -allProducts 47
+12-04-2024 18:38:07.980 [pool-4-thread-1] INFO   c.v.p.service.UpdateReceiverService : Got message from user '47' - ahaha
+12-04-2024 18:38:24.548 [pool-4-thread-1] INFO   c.v.p.s.r.MessageService            : Save message to repo: -notification 47
+12-04-2024 18:38:24.565 [pool-4-thread-1] INFO   c.v.p.service.UpdateReceiverService : Got message from user '47' - ahaha
+12-04-2024 18:38:28.879 [pool-4-thread-1] INFO   c.v.p.s.r.MessageService            : Save message to repo: -back 47
+12-04-2024 18:38:28.893 [pool-4-thread-1] INFO   c.v.p.service.UpdateReceiverService : Got message from user '47' - ahaha
