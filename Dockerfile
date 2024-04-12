@@ -2,7 +2,9 @@ FROM maven:3-eclipse-temurin-21-alpine as build
 COPY . .
 RUN mvn clean package -DskipTests
 
-FROM eclipse-temurin:21-alpine
-COPY --from=build /target/*.jar dockerTest.jar
+FROM mcr.microsoft.com/playwright/java:v1.43.0-jammy-amd64
+RUN mkdir /apk
+WORKDIR /apk
+COPY --from=build /target/*.jar pricety.jar
 EXPOSE 8080
-ENTRYPOINT ["java","-jar","dockerTest.jar"]
+ENTRYPOINT ["java","-jar","pricety.jar"]

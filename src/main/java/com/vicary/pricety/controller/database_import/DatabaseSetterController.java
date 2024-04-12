@@ -34,7 +34,7 @@ import java.util.stream.IntStream;
 public class DatabaseSetterController {
     private final static int AMOUNT = 12;
     private int set = 1;
-    public static boolean done;
+    public static boolean DONE;
 
     private List<UserEntity> users;
 
@@ -57,6 +57,11 @@ public class DatabaseSetterController {
     private final WaitingUserRepository waitingUserRepository;
     private final WaitingUserMapper waitingUserMapper;
 
+    @PostMapping("done")
+    public ResponseEntity<String> setDONE() {
+        DONE = true;
+        return ResponseEntity.ok("Set done on true.");
+    }
 
     @PostMapping("users")
     public ResponseEntity<String> setUsers(@RequestBody List<UserDTO> users) {
@@ -145,12 +150,12 @@ public class DatabaseSetterController {
         if (set == 1)
             log.info("Starting setting objects in repository...");
 
-        if (done)
+        if (DONE)
             return ResponseEntity.status(HttpStatusCode.valueOf(403)).body("Data is set already.");
         log.info("({}/{}) Setting {} {} to repository...", set++, AMOUNT, objects.size(), objectName);
 
         if (set > AMOUNT)
-            done = true;
+            DONE = true;
         try {
             long time = System.currentTimeMillis();
             if (objects.size() > 200) {

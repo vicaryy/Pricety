@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
-//@CrossOrigin
 @Controller
 @RequiredArgsConstructor
 public class JoinController {

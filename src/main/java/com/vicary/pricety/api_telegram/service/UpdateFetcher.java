@@ -1,5 +1,7 @@
 package com.vicary.pricety.api_telegram.service;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
@@ -29,6 +31,8 @@ public class UpdateFetcher {
     private final WebClient client = WebClient.create();
     private final ExecutorService cachedExecutor = Executors.newCachedThreadPool();
     private final UpdateReceiver updateReceiver;
+    @Setter
+    @Getter
     private FetcherOptions options;
 
     public UpdateFetcher(UpdateReceiver updateReceiver) {
@@ -69,17 +73,20 @@ public class UpdateFetcher {
     }
 
     private void configBotInfo() {
-        botToken = updateReceiver.botToken();
+        while (botToken == null) {
+            botToken = updateReceiver.botToken();
+            if (botToken == null)
+                logger.warn("[Api Telegram] Can't fetch bot token, trying again...");
+            else
+                logger.info("[Api Telegram] Bot token implemented successfully.");
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException ignored) {
+            }
+        }
+
         fetchURL = "https://api.telegram.org/bot" + botToken + EndPoint.GET_UPDATES.getPath();
         deleteURL = "https://api.telegram.org/bot" + botToken + EndPoint.GET_UPDATES_OFFSET.getPath();
-    }
-
-    public FetcherOptions getOptions() {
-        return options;
-    }
-
-    public void setOptions(FetcherOptions options) {
-        this.options = options;
     }
 
     public void setReceiverRunning(boolean isRunning) {
@@ -190,8 +197,8 @@ public class UpdateFetcher {
         //     Description: Too Many Requests
         logger.error("---------------------------");
         logger.error("Telegram API Bot stopped.");
-        logger.error("Status code: " + ex.getStatusCode());
-        logger.error("Description: " + ex.getStatusText());
+        logger.error("Status code: {}", ex.getStatusCode());
+        logger.error("Description: {}", ex.getStatusText());
         logger.error("Check your bot token etc. and try again.");
         logger.error("---------------------------");
         fetcherRunning.set(false);
@@ -207,7 +214,7 @@ public class UpdateFetcher {
 
     private void handleException(Exception ex) {
         logger.error("Telegram API Bot stopped.");
-        logger.error("Unexpected error: " + ex.getMessage());
+        logger.error("Unexpected error: {}", ex.getMessage());
         fetcherRunning.set(false);
     }
 

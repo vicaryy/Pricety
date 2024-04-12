@@ -16,7 +16,7 @@ public class IdGenerator implements IdentifierGenerator {
             SharedSessionContractImplementor session, Object obj)
             throws HibernateException {
 
-        if (!DatabaseSetterController.done) {
+        if (!DatabaseSetterController.DONE) {
             Identifiable identifier = (Identifiable) obj;
             return identifier.getId();
         }

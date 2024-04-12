@@ -42,21 +42,3 @@ public class JwtService {
         return Keys.hmacShaKeyFor(com.vicary.pricety.configuration.SecretKey.get().getBytes(StandardCharsets.UTF_8));
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

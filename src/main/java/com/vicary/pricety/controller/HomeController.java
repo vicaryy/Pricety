@@ -47,6 +47,7 @@ public class HomeController {
 
     @PostMapping("/add")
     public String addItem(@RequestParam(name = "url") String url, Model model, Authentication authentication) {
+        log.info("Auth: {}", authentication);
         if (authentication == null)
             return unauthorizedTemplate("Only for logged users!", model);
 
@@ -156,25 +157,25 @@ public class HomeController {
     private String errorTemplate(String errorInfo, Model model) {
         model.addAttribute("error", true);
         model.addAttribute("errorInfo", errorInfo);
-        return "/fragments/home/add-item";
+        return "fragments/home/add-item";
     }
 
     private String unauthorizedTemplate(String errorInfo, Model model) {
         model.addAttribute("unauthorized", true);
         model.addAttribute("errorInfo", errorInfo);
-        return "/fragments/home/add-item";
+        return "fragments/home/add-item";
     }
 
     private String successTemplate(String successInfo, Model model) {
         model.addAttribute("success", true);
         model.addAttribute("successInfo", successInfo);
-        return "/fragments/home/add-item";
+        return "fragments/home/add-item";
     }
 
     private String variantsTemplate(String url, List<String> variants, Model model) {
         model.addAttribute("size", true);
         model.addAttribute("variants", variants);
         model.addAttribute("url", url);
-        return "/fragments/home/add-item";
+        return "fragments/home/add-item";
     }
 }

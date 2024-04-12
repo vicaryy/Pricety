@@ -1,5 +1,6 @@
 package com.vicary.pricety.security;
 
+import com.vicary.pricety.configuration.SecretKey;
 import com.vicary.pricety.service.repository_services.UserService;
 import com.vicary.pricety.thread_local.ActiveLanguage;
 import com.vicary.pricety.utils.Cookies;
@@ -7,15 +8,18 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -28,14 +32,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final UserService userService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(@NonNull HttpServletRequest request,
+                                    @NonNull HttpServletResponse response,
+                                    @NonNull FilterChain filterChain) throws ServletException, IOException {
+        setLanguage();
 
-        //todo
-        ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", Locale.of("en"));
-        ActiveLanguage.get().setResourceBundle(resourceBundle);
-        //**
+        if (hasSecretKey(request)) {
+            setAsAdmin();
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         if (dontNeedsToBeFilter(request)) {
             filterChain.doFilter(request, response);
@@ -69,12 +75,29 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         var token = new UsernamePasswordAuthenticationToken(user.getUsername(), null, user.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(token);
 
-//        logger.info("User authenticated!");
         filterChain.doFilter(request, response);
+    }
+
+    private void setAsAdmin() {
+        UsernamePasswordAuthenticationToken u = new UsernamePasswordAuthenticationToken("admin", null, List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
+        SecurityContextHolder.getContext().setAuthentication(u);
+    }
+
+    private boolean hasSecretKey(HttpServletRequest request) {
+        String secretKey = request.getHeader("secretKey");
+        if (secretKey == null || secretKey.isBlank())
+            return false;
+
+        return secretKey.equals(SecretKey.get());
     }
 
     private boolean dontNeedsToBeFilter(HttpServletRequest request) {
         String uri = request.getRequestURI();
         return uri.startsWith("/assets") || request.getCookies() == null;
+    }
+
+    private void setLanguage() {
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", Locale.of("en"));
+        ActiveLanguage.get().setResourceBundle(resourceBundle);
     }
 }
