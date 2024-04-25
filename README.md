@@ -25,7 +25,7 @@
 <h2>Preview</h2>
 <div>
   <img src="https://i.ibb.co/RhvfWX9/Zrzut-ekranu-2024-04-25-o-14-22-21.png" width="45%">
-  <img src="https://i.ibb.co/8YW64Wc/b.png" width="40%">
+  <img src="https://i.ibb.co/g69wHVL/Zrzut-ekranu-2024-04-25-o-20-46-22.png" width="45%">
   <div align="center" width="100%">
       <img src="https://i.ibb.co/3m54DPQ/Zrzut-ekranu-2024-04-25-o-14-30-45.png" width="45%" align="center">
   </div>
@@ -36,7 +36,7 @@
 <p><b>1.</b> Gmail address to nofity users</p>
 <p><b>2.</b> SMTP password for gmail address</p>
 <p><b>3.</b> Telegram bot token <a href="https://t.me/botfather">here</a></p>
-<p><b>4.</b> 256-bit encryption key for JWT Tokens<a href="https://asecuritysite.com/encryption/plain">generate here</a></p>
+<p><b>4.</b> 256-bit encryption key for JWT Tokens <a href="https://asecuritysite.com/encryption/plain">generate here</a></p>
 <p><b>5.</b> Database password</p>
 <p><b>6.</b> Database URL</p>
 <p><b>7.</b> Database with tables, use this queries: <a href="https://github.com/vicaryy/Pricety/blob/master/src/main/resources/database-query.txt"></p>
@@ -94,10 +94,10 @@ POST MAPPINGS
 
 <br>
 
-<h2>Commands</h2>
+<h2>API</h2>
 <h4>If you want to use admin commands you have to set one user as admin in your database(user_test table)</h4>
 
-<h3>Web Commands</h3>
+<h3>Web API</h3>
 
 ```sh
 FOR EVERY REQUEST YOU HAVE TO SET THIS HEADER: ("secretKey", [256-bit encryption key])
@@ -118,7 +118,7 @@ GET MAPPINGS
 ```
 <br>
 
-<h3>Telegram Commands</h3>
+<h3>Telegram API</h3>
 
 ```sh
 Set:
@@ -166,7 +166,7 @@ Application:
 
 ## Author
 
-👤 **Vicaryy**
+👤 **vicary**
 
 ## Want to support me?
 
