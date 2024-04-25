@@ -1,5 +1,6 @@
 <div align="center">
   <img src="https://i.ibb.co/th0m4Mq/logo.png" width="20%">
+  <img src="https://i.ibb.co/sFw2p8j/shopping.png" width="10%">
 </div>
 
 <h2>About</h2>
@@ -23,8 +24,8 @@
 
 <h2>Preview</h2>
 <div>
-  <img src="https://i.ibb.co/KrnRjk9/p3.jpg" width="45%">
-  <img src="https://i.ibb.co/xH9JbCb/p2.jpg" width="45%">
+  <img src="https://i.ibb.co/RhvfWX9/Zrzut-ekranu-2024-04-25-o-14-22-21.png" width="45%">
+  <img src="https://i.ibb.co/8YW64Wc/b.png" width="40%">
   <div align="center" width="100%">
       <img src="https://i.ibb.co/3m54DPQ/Zrzut-ekranu-2024-04-25-o-14-30-45.png" width="45%" align="center">
   </div>
@@ -34,9 +35,9 @@
 <h3>What you need?</h3>
 <p><b>1.</b> Gmail address to nofity users</p>
 <p><b>2.</b> SMTP password for gmail address</p>
-<p><b>3.</b> Telegram bot token <a href="https://t.me/botfather">here</a><</p>
+<p><b>3.</b> Telegram bot token <a href="https://t.me/botfather">here</a></p>
 <p><b>4.</b> 256-bit encryption key for JWT Tokens<a href="https://asecuritysite.com/encryption/plain">generate here</a></p>
-<p><b>5.</b> Database password<</p>
+<p><b>5.</b> Database password</p>
 <p><b>6.</b> Database URL</p>
 <p><b>7.</b> Database with tables, use this queries: <a href="https://github.com/vicaryy/Pricety/blob/master/src/main/resources/database-query.txt"></p>
 <p><b>8.</b> <a href="https://www.docker.com/">Docker</a> on your machine</p>
