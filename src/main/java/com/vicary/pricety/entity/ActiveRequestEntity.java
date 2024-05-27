@@ -10,7 +10,7 @@ import org.hibernate.annotations.GenericGenerator;
 @NoArgsConstructor
 @RequiredArgsConstructor
 @Builder
-@Table(name = "ACTIVE_REQUESTS")
+@Table(name = "active_requests")
 public class ActiveRequestEntity implements Identifiable {
     @Id
     @GeneratedValue(generator = "id-generator")

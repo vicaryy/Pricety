@@ -26,6 +26,6 @@ spring:
             enable: true
 
   profiles:
-    active: prod
+    active: test
 #  normal port: "8080"
 #  port for tests: "7070"

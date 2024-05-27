@@ -19,7 +19,6 @@ public class MessageService {
 
 
     public void saveEntity(MessageEntity message) {
-        log.info("Save message to repo: {} {}", message.getMessage(), message.getUser().getUserId());
         repository.save(message);
     }
 

@@ -1,7 +1,9 @@
 package com.vicary.pricety.controller;
 
+import com.vicary.pricety.entity.UpdatedVariantsEntity;
 import com.vicary.pricety.entity.UserEntity;
 import com.vicary.pricety.exception.IllegalInputException;
+import com.vicary.pricety.exception.ScraperBotException;
 import com.vicary.pricety.model.ContactModel;
 import com.vicary.pricety.model.Email;
 import com.vicary.pricety.model.Product;
@@ -47,7 +49,6 @@ public class HomeController {
 
     @PostMapping("/add")
     public String addItem(@RequestParam(name = "url") String url, Model model, Authentication authentication) {
-        log.info("Auth: {}", authentication);
         if (authentication == null)
             return unauthorizedTemplate("Only for logged users!", model);
 
@@ -59,11 +60,11 @@ public class HomeController {
                 scrapAndSaveProduct(url, variants.get(0), authentication);
                 return successTemplate("Product added successfully!", model);
             }
-        } catch (IllegalInputException ex) {
+        } catch (ScraperBotException ex) {
             log.warn(ex.getLoggerMessage());
             return errorTemplate(ex.getMessage(), model);
         } catch (Exception ex) {
-            return errorTemplate(ex.getMessage(), model);
+            return errorTemplate("Something goes wrong, try again.", model);
         }
 
         return variantsTemplate(url, variants, model);
@@ -118,7 +119,7 @@ public class HomeController {
                             "Wiadomość formularzowa",
                             """
                                     Wiadomość od użytkownika %s - %s:
-                                    
+                                                                        
                                     %s""".formatted(name, email, message), false));
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -135,7 +136,10 @@ public class HomeController {
     }
 
     private List<String> scrapVariants(String url) {
-        return scraperService.scrapVariants(url);
+        UpdatedVariantsEntity entity = scraperService.scrapVariants(url);
+        if (entity.isError())
+            throw new ScraperBotException(entity.getErrorMessage());
+        return entity.getVariants();
     }
 
     private void saveProduct(Product product, Authentication authentication) {

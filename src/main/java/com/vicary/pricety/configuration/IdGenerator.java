@@ -16,10 +16,11 @@ public class IdGenerator implements IdentifierGenerator {
             SharedSessionContractImplementor session, Object obj)
             throws HibernateException {
 
-        if (!DatabaseSetterController.DONE) {
-            Identifiable identifier = (Identifiable) obj;
-            return identifier.getId();
-        }
+            //TODO odkomentować
+//        if (!DatabaseSetterController.DONE) {
+//            Identifiable identifier = (Identifiable) obj;
+//            return identifier.getId();
+//        }
 
         String query = String.format("select %s from %s",
                 session.getEntityPersister(obj.getClass().getName(), obj)

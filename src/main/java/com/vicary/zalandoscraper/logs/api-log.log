@@ -187,3 +187,152 @@
 12-04-2024 18:38:24.565 [pool-4-thread-1] INFO   c.v.p.service.UpdateReceiverService : Got message from user '47' - ahaha
 12-04-2024 18:38:28.879 [pool-4-thread-1] INFO   c.v.p.s.r.MessageService            : Save message to repo: -back 47
 12-04-2024 18:38:28.893 [pool-4-thread-1] INFO   c.v.p.service.UpdateReceiverService : Got message from user '47' - ahaha
+15-04-2024 21:13:32.196 [main] INFO   com.vicary.pricety.Main             : Starting Main using Java 21 with PID 39625 (/Users/vicary/IdeaProjects/scraper-bot/target/classes started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+15-04-2024 21:13:32.197 [main] DEBUG  com.vicary.pricety.Main             : Running with Spring Boot v3.2.3, Spring v6.1.4
+15-04-2024 21:13:32.197 [main] INFO   com.vicary.pricety.Main             : The following 1 profile is active: "test"
+15-04-2024 21:13:35.065 [main] INFO   com.vicary.pricety.Main             : Started Main in 3.139 seconds (process running for 3.447)
+17-04-2024 17:39:57.759 [main] INFO   com.vicary.pricety.Main             : Starting Main using Java 21 with PID 64714 (/Users/vicary/IdeaProjects/scraper-bot/target/classes started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+17-04-2024 17:39:57.760 [main] DEBUG  com.vicary.pricety.Main             : Running with Spring Boot v3.2.3, Spring v6.1.4
+17-04-2024 17:39:57.761 [main] INFO   com.vicary.pricety.Main             : The following 1 profile is active: "test"
+17-04-2024 17:40:00.637 [main] INFO   com.vicary.pricety.Main             : Started Main in 3.186 seconds (process running for 3.537)
+18-04-2024 18:40:20.032 [main] INFO   com.vicary.pricety.Main             : Starting Main using Java 21 with PID 77236 (/Users/vicary/IdeaProjects/scraper-bot/target/classes started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+18-04-2024 18:40:20.033 [main] DEBUG  com.vicary.pricety.Main             : Running with Spring Boot v3.2.3, Spring v6.1.4
+18-04-2024 18:40:20.034 [main] INFO   com.vicary.pricety.Main             : The following 1 profile is active: "test"
+18-04-2024 18:40:23.602 [main] INFO   com.vicary.pricety.Main             : Started Main in 3.899 seconds (process running for 4.244)
+21-04-2024 14:40:56.120 [main] INFO   com.vicary.pricety.Main             : Starting Main using Java 21 with PID 16367 (/Users/vicary/IdeaProjects/scraper-bot/target/classes started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+21-04-2024 14:40:56.121 [main] DEBUG  com.vicary.pricety.Main             : Running with Spring Boot v3.2.3, Spring v6.1.4
+21-04-2024 14:40:56.121 [main] INFO   com.vicary.pricety.Main             : The following 1 profile is active: "test"
+21-04-2024 14:40:59.113 [main] INFO   com.vicary.pricety.Main             : Started Main in 3.274 seconds (process running for 3.632)
+21-04-2024 14:42:49.633 [http-nio-7070-exec-5] DEBUG  c.v.pricety.scraper.ZalandoScraper  : Item variant available.
+25-04-2024 14:15:59.178 [main] INFO   com.vicary.pricety.Main             : Starting Main using Java 21 with PID 75257 (/Users/vicary/IdeaProjects/scraper-bot/target/classes started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+25-04-2024 14:15:59.179 [main] DEBUG  com.vicary.pricety.Main             : Running with Spring Boot v3.2.3, Spring v6.1.4
+25-04-2024 14:15:59.180 [main] INFO   com.vicary.pricety.Main             : The following 1 profile is active: "test"
+25-04-2024 14:16:01.940 [main] INFO   com.vicary.pricety.Main             : Started Main in 3.08 seconds (process running for 3.453)
+25-04-2024 14:19:36.307 [main] INFO   com.vicary.pricety.Main             : Starting Main using Java 21 with PID 75333 (/Users/vicary/IdeaProjects/scraper-bot/target/classes started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+25-04-2024 14:19:36.308 [main] DEBUG  com.vicary.pricety.Main             : Running with Spring Boot v3.2.3, Spring v6.1.4
+25-04-2024 14:19:36.308 [main] INFO   com.vicary.pricety.Main             : The following 1 profile is active: "test"
+25-04-2024 14:19:40.084 [main] INFO   com.vicary.pricety.Main             : Started Main in 4.05 seconds (process running for 4.293)
+25-04-2024 14:20:05.935 [main] INFO   com.vicary.pricety.Main             : Starting Main using Java 21 with PID 75345 (/Users/vicary/IdeaProjects/scraper-bot/target/classes started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+25-04-2024 14:20:05.936 [main] DEBUG  com.vicary.pricety.Main             : Running with Spring Boot v3.2.3, Spring v6.1.4
+25-04-2024 14:20:05.937 [main] INFO   com.vicary.pricety.Main             : The following 1 profile is active: "test"
+25-04-2024 14:20:08.692 [main] INFO   com.vicary.pricety.Main             : Started Main in 3.038 seconds (process running for 3.259)
+25-04-2024 14:21:24.739 [main] INFO   com.vicary.pricety.Main             : Starting Main using Java 21 with PID 75378 (/Users/vicary/IdeaProjects/scraper-bot/target/classes started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+25-04-2024 14:21:24.740 [main] DEBUG  com.vicary.pricety.Main             : Running with Spring Boot v3.2.3, Spring v6.1.4
+25-04-2024 14:21:24.741 [main] INFO   com.vicary.pricety.Main             : The following 1 profile is active: "test"
+25-04-2024 14:21:27.344 [main] INFO   com.vicary.pricety.Main             : Started Main in 2.888 seconds (process running for 3.113)
+25-04-2024 20:43:53.676 [main] INFO   com.vicary.pricety.Main             : Starting Main using Java 21 with PID 79989 (/Users/vicary/IdeaProjects/scraper-bot/target/classes started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+25-04-2024 20:43:53.677 [main] DEBUG  com.vicary.pricety.Main             : Running with Spring Boot v3.2.3, Spring v6.1.4
+25-04-2024 20:43:53.677 [main] INFO   com.vicary.pricety.Main             : The following 1 profile is active: "test"
+25-04-2024 20:43:56.527 [main] INFO   com.vicary.pricety.Main             : Started Main in 3.167 seconds (process running for 3.481)
+25-04-2024 20:44:06.789 [http-nio-7070-exec-2] WARN   c.v.p.controller.JoinController     : Invalid data.
+25-04-2024 20:44:55.183 [main] INFO   com.vicary.pricety.Main             : Starting Main using Java 21 with PID 80027 (/Users/vicary/IdeaProjects/scraper-bot/target/classes started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+25-04-2024 20:44:55.183 [main] DEBUG  com.vicary.pricety.Main             : Running with Spring Boot v3.2.3, Spring v6.1.4
+25-04-2024 20:44:55.184 [main] INFO   com.vicary.pricety.Main             : The following 1 profile is active: "test"
+25-04-2024 20:44:58.114 [main] INFO   com.vicary.pricety.Main             : Started Main in 3.215 seconds (process running for 3.427)
+26-04-2024 14:41:01.125 [main] INFO   com.vicary.pricety.Main             : Starting Main using Java 21 with PID 87859 (/Users/vicary/IdeaProjects/scraper-bot/target/classes started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+26-04-2024 14:41:01.126 [main] DEBUG  com.vicary.pricety.Main             : Running with Spring Boot v3.2.3, Spring v6.1.4
+26-04-2024 14:41:01.126 [main] INFO   com.vicary.pricety.Main             : The following 1 profile is active: "test"
+26-04-2024 14:41:03.964 [main] INFO   com.vicary.pricety.Main             : Started Main in 3.112 seconds (process running for 3.411)
+27-05-2024 16:53:54.610 [main] INFO   com.vicary.pricety.Main             : Starting Main using Java 21 with PID 8426 (/Users/vicary/IdeaProjects/scraper-bot/target/classes started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+27-05-2024 16:53:54.612 [main] DEBUG  com.vicary.pricety.Main             : Running with Spring Boot v3.2.3, Spring v6.1.4
+27-05-2024 16:53:54.612 [main] INFO   com.vicary.pricety.Main             : The following 1 profile is active: "test"
+27-05-2024 16:55:37.791 [main] INFO   com.vicary.pricety.Main             : Starting Main using Java 21 with PID 8474 (/Users/vicary/IdeaProjects/scraper-bot/target/classes started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+27-05-2024 16:55:37.791 [main] DEBUG  com.vicary.pricety.Main             : Running with Spring Boot v3.2.3, Spring v6.1.4
+27-05-2024 16:55:37.792 [main] INFO   com.vicary.pricety.Main             : The following 1 profile is active: "test"
+27-05-2024 17:01:49.023 [main] INFO   com.vicary.pricety.Main             : Starting Main using Java 21 with PID 8544 (/Users/vicary/IdeaProjects/scraper-bot/target/classes started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+27-05-2024 17:01:49.023 [main] DEBUG  com.vicary.pricety.Main             : Running with Spring Boot v3.2.3, Spring v6.1.4
+27-05-2024 17:01:49.024 [main] INFO   com.vicary.pricety.Main             : The following 1 profile is active: "test"
+27-05-2024 17:10:27.059 [main] INFO   com.vicary.pricety.Main             : Starting Main using Java 21 with PID 8665 (/Users/vicary/IdeaProjects/scraper-bot/target/classes started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+27-05-2024 17:10:27.060 [main] DEBUG  com.vicary.pricety.Main             : Running with Spring Boot v3.2.3, Spring v6.1.4
+27-05-2024 17:10:27.061 [main] INFO   com.vicary.pricety.Main             : The following 1 profile is active: "test"
+27-05-2024 17:10:30.271 [main] INFO   com.vicary.pricety.Main             : Started Main in 3.541 seconds (process running for 3.815)
+27-05-2024 17:11:41.754 [http-nio-7070-exec-3] INFO   c.v.p.s.r.UserService               : [User Service] Added new user to database via website, email 'vicaryhbo@gmail.com'
+27-05-2024 17:13:54.583 [http-nio-7070-exec-7] INFO   c.v.p.s.r.UserService               : [User Service] Added new user to database via website, email 'vicaryhbo@gmail.com'
+27-05-2024 17:21:35.243 [http-nio-7070-exec-7] INFO   c.v.p.s.r.UserService               : [User Service] Added new user to database via website, email 'vicaryhbo@gmail.com'
+27-05-2024 17:23:31.112 [http-nio-7070-exec-1] DEBUG  c.v.pricety.scraper.ZalandoScraper  : Item variant available.
+27-05-2024 17:23:31.158 [http-nio-7070-exec-1] INFO   c.v.p.s.r.ProductService            : [Product Service] Added new product to database link: https://www.zalando.pl/pier-one-t-shirt-basic-light-blue-pi922o0kz-k12.html
+27-05-2024 20:11:24.823 [main] INFO   com.vicary.pricety.Main             : Starting Main using Java 21 with PID 10445 (/Users/vicary/IdeaProjects/scraper-bot/target/classes started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+27-05-2024 20:11:24.824 [main] DEBUG  com.vicary.pricety.Main             : Running with Spring Boot v3.2.3, Spring v6.1.4
+27-05-2024 20:11:24.825 [main] INFO   com.vicary.pricety.Main             : The following 1 profile is active: "test"
+27-05-2024 20:11:28.083 [main] INFO   com.vicary.pricety.Main             : Started Main in 3.649 seconds (process running for 3.891)
+27-05-2024 20:19:59.632 [main] INFO   .v.p.s.r.WaitingVariantsServiceTest : Starting WaitingVariantsServiceTest using Java 21 with PID 10585 (started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+27-05-2024 20:19:59.632 [main] DEBUG  .v.p.s.r.WaitingVariantsServiceTest : Running with Spring Boot v3.2.3, Spring v6.1.4
+27-05-2024 20:19:59.633 [main] INFO   .v.p.s.r.WaitingVariantsServiceTest : The following 1 profile is active: "test"
+27-05-2024 20:20:02.984 [main] INFO   .v.p.s.r.WaitingVariantsServiceTest : Started WaitingVariantsServiceTest in 3.533 seconds (process running for 3.959)
+27-05-2024 20:20:13.350 [main] INFO   .v.p.s.r.WaitingVariantsServiceTest : Starting WaitingVariantsServiceTest using Java 21 with PID 10600 (started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+27-05-2024 20:20:13.351 [main] DEBUG  .v.p.s.r.WaitingVariantsServiceTest : Running with Spring Boot v3.2.3, Spring v6.1.4
+27-05-2024 20:20:13.351 [main] INFO   .v.p.s.r.WaitingVariantsServiceTest : The following 1 profile is active: "test"
+27-05-2024 20:20:16.900 [main] INFO   .v.p.s.r.WaitingVariantsServiceTest : Started WaitingVariantsServiceTest in 3.741 seconds (process running for 4.423)
+27-05-2024 20:21:38.126 [main] INFO   .v.p.s.r.WaitingVariantsServiceTest : Starting WaitingVariantsServiceTest using Java 21 with PID 10618 (started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+27-05-2024 20:21:38.127 [main] DEBUG  .v.p.s.r.WaitingVariantsServiceTest : Running with Spring Boot v3.2.3, Spring v6.1.4
+27-05-2024 20:21:38.127 [main] INFO   .v.p.s.r.WaitingVariantsServiceTest : The following 1 profile is active: "test"
+27-05-2024 20:21:40.992 [main] INFO   .v.p.s.r.WaitingVariantsServiceTest : Started WaitingVariantsServiceTest in 3.059 seconds (process running for 3.69)
+27-05-2024 20:22:02.081 [main] INFO   .v.p.s.r.WaitingVariantsServiceTest : Starting WaitingVariantsServiceTest using Java 21 with PID 10641 (started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+27-05-2024 20:22:02.081 [main] DEBUG  .v.p.s.r.WaitingVariantsServiceTest : Running with Spring Boot v3.2.3, Spring v6.1.4
+27-05-2024 20:22:02.081 [main] INFO   .v.p.s.r.WaitingVariantsServiceTest : The following 1 profile is active: "test"
+27-05-2024 20:22:04.945 [main] INFO   .v.p.s.r.WaitingVariantsServiceTest : Started WaitingVariantsServiceTest in 3.03 seconds (process running for 3.686)
+27-05-2024 20:23:20.208 [main] INFO   .v.p.s.r.WaitingVariantsServiceTest : Starting WaitingVariantsServiceTest using Java 21 with PID 10659 (started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+27-05-2024 20:23:20.209 [main] DEBUG  .v.p.s.r.WaitingVariantsServiceTest : Running with Spring Boot v3.2.3, Spring v6.1.4
+27-05-2024 20:23:20.209 [main] INFO   .v.p.s.r.WaitingVariantsServiceTest : The following 1 profile is active: "test"
+27-05-2024 20:23:22.841 [main] INFO   .v.p.s.r.WaitingVariantsServiceTest : Started WaitingVariantsServiceTest in 2.794 seconds (process running for 3.326)
+27-05-2024 20:24:21.936 [main] INFO   .v.p.s.r.WaitingVariantsServiceTest : Starting WaitingVariantsServiceTest using Java 21 with PID 10677 (started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+27-05-2024 20:24:21.936 [main] DEBUG  .v.p.s.r.WaitingVariantsServiceTest : Running with Spring Boot v3.2.3, Spring v6.1.4
+27-05-2024 20:24:21.937 [main] INFO   .v.p.s.r.WaitingVariantsServiceTest : The following 1 profile is active: "test"
+27-05-2024 20:24:24.617 [main] INFO   .v.p.s.r.WaitingVariantsServiceTest : Started WaitingVariantsServiceTest in 2.899 seconds (process running for 3.388)
+27-05-2024 20:25:16.020 [main] INFO   .v.p.s.r.WaitingVariantsServiceTest : Starting WaitingVariantsServiceTest using Java 21 with PID 10699 (started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+27-05-2024 20:25:16.020 [main] DEBUG  .v.p.s.r.WaitingVariantsServiceTest : Running with Spring Boot v3.2.3, Spring v6.1.4
+27-05-2024 20:25:16.020 [main] INFO   .v.p.s.r.WaitingVariantsServiceTest : The following 1 profile is active: "test"
+27-05-2024 20:25:18.490 [main] INFO   .v.p.s.r.WaitingVariantsServiceTest : Started WaitingVariantsServiceTest in 2.635 seconds (process running for 3.103)
+27-05-2024 20:27:36.203 [main] INFO   .v.p.s.r.WaitingVariantsServiceTest : Starting WaitingVariantsServiceTest using Java 21 with PID 10726 (started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+27-05-2024 20:27:36.203 [main] DEBUG  .v.p.s.r.WaitingVariantsServiceTest : Running with Spring Boot v3.2.3, Spring v6.1.4
+27-05-2024 20:27:36.203 [main] INFO   .v.p.s.r.WaitingVariantsServiceTest : The following 1 profile is active: "test"
+27-05-2024 20:27:38.975 [main] INFO   .v.p.s.r.WaitingVariantsServiceTest : Started WaitingVariantsServiceTest in 2.964 seconds (process running for 3.462)
+27-05-2024 20:28:19.350 [main] INFO   .v.p.s.r.WaitingVariantsServiceTest : Starting WaitingVariantsServiceTest using Java 21 with PID 10740 (started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+27-05-2024 20:28:19.351 [main] DEBUG  .v.p.s.r.WaitingVariantsServiceTest : Running with Spring Boot v3.2.3, Spring v6.1.4
+27-05-2024 20:28:19.351 [main] INFO   .v.p.s.r.WaitingVariantsServiceTest : The following 1 profile is active: "test"
+27-05-2024 20:28:22.273 [main] INFO   .v.p.s.r.WaitingVariantsServiceTest : Started WaitingVariantsServiceTest in 3.1 seconds (process running for 3.733)
+27-05-2024 20:28:41.174 [main] INFO   .v.p.s.r.WaitingVariantsServiceTest : Starting WaitingVariantsServiceTest using Java 21 with PID 10754 (started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+27-05-2024 20:28:41.174 [main] DEBUG  .v.p.s.r.WaitingVariantsServiceTest : Running with Spring Boot v3.2.3, Spring v6.1.4
+27-05-2024 20:28:41.174 [main] INFO   .v.p.s.r.WaitingVariantsServiceTest : The following 1 profile is active: "test"
+27-05-2024 20:28:44.305 [main] INFO   .v.p.s.r.WaitingVariantsServiceTest : Started WaitingVariantsServiceTest in 3.364 seconds (process running for 3.97)
+27-05-2024 20:32:27.690 [main] INFO   .v.p.s.r.WaitingVariantsServiceTest : Starting WaitingVariantsServiceTest using Java 21 with PID 10908 (started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+27-05-2024 20:32:27.690 [main] DEBUG  .v.p.s.r.WaitingVariantsServiceTest : Running with Spring Boot v3.2.3, Spring v6.1.4
+27-05-2024 20:32:27.690 [main] INFO   .v.p.s.r.WaitingVariantsServiceTest : The following 1 profile is active: "test"
+27-05-2024 20:32:31.078 [main] INFO   .v.p.s.r.WaitingVariantsServiceTest : Started WaitingVariantsServiceTest in 3.626 seconds (process running for 4.378)
+27-05-2024 20:39:48.692 [main] INFO   .v.p.s.r.WaitingVariantsServiceTest : Starting WaitingVariantsServiceTest using Java 21 with PID 10975 (started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+27-05-2024 20:39:48.692 [main] DEBUG  .v.p.s.r.WaitingVariantsServiceTest : Running with Spring Boot v3.2.3, Spring v6.1.4
+27-05-2024 20:39:48.692 [main] INFO   .v.p.s.r.WaitingVariantsServiceTest : The following 1 profile is active: "test"
+27-05-2024 20:39:51.388 [main] INFO   .v.p.s.r.WaitingVariantsServiceTest : Started WaitingVariantsServiceTest in 2.853 seconds (process running for 3.47)
+27-05-2024 20:51:07.813 [main] INFO   com.vicary.pricety.Main             : Starting Main using Java 21 with PID 11081 (/Users/vicary/IdeaProjects/scraper-bot/target/classes started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+27-05-2024 20:51:07.814 [main] DEBUG  com.vicary.pricety.Main             : Running with Spring Boot v3.2.3, Spring v6.1.4
+27-05-2024 20:51:07.815 [main] INFO   com.vicary.pricety.Main             : The following 1 profile is active: "test"
+27-05-2024 20:51:11.165 [main] INFO   com.vicary.pricety.Main             : Started Main in 3.7 seconds (process running for 3.938)
+27-05-2024 21:21:56.528 [main] INFO   com.vicary.pricety.Main             : Starting Main using Java 21 with PID 11355 (/Users/vicary/IdeaProjects/scraper-bot/target/classes started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+27-05-2024 21:21:56.529 [main] DEBUG  com.vicary.pricety.Main             : Running with Spring Boot v3.2.3, Spring v6.1.4
+27-05-2024 21:21:56.530 [main] INFO   com.vicary.pricety.Main             : The following 1 profile is active: "test"
+27-05-2024 21:21:59.250 [main] INFO   com.vicary.pricety.Main             : Started Main in 3.037 seconds (process running for 3.287)
+27-05-2024 21:41:36.637 [main] INFO   com.vicary.pricety.Main             : Starting Main using Java 21 with PID 11508 (/Users/vicary/IdeaProjects/scraper-bot/target/classes started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+27-05-2024 21:41:36.638 [main] DEBUG  com.vicary.pricety.Main             : Running with Spring Boot v3.2.3, Spring v6.1.4
+27-05-2024 21:41:36.638 [main] INFO   com.vicary.pricety.Main             : The following 1 profile is active: "test"
+27-05-2024 21:41:39.370 [main] INFO   com.vicary.pricety.Main             : Started Main in 3.076 seconds (process running for 3.356)
+27-05-2024 21:45:38.443 [main] INFO   com.vicary.pricety.Main             : Starting Main using Java 21 with PID 11569 (/Users/vicary/IdeaProjects/scraper-bot/target/classes started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+27-05-2024 21:45:38.443 [main] DEBUG  com.vicary.pricety.Main             : Running with Spring Boot v3.2.3, Spring v6.1.4
+27-05-2024 21:45:38.444 [main] INFO   com.vicary.pricety.Main             : The following 1 profile is active: "test"
+27-05-2024 21:45:41.213 [main] INFO   com.vicary.pricety.Main             : Started Main in 3.127 seconds (process running for 3.356)
+27-05-2024 21:46:01.044 [main] INFO   com.vicary.pricety.Main             : Starting Main using Java 21 with PID 11583 (/Users/vicary/IdeaProjects/scraper-bot/target/classes started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+27-05-2024 21:46:01.045 [main] DEBUG  com.vicary.pricety.Main             : Running with Spring Boot v3.2.3, Spring v6.1.4
+27-05-2024 21:46:01.045 [main] INFO   com.vicary.pricety.Main             : The following 1 profile is active: "test"
+27-05-2024 21:46:03.898 [main] INFO   com.vicary.pricety.Main             : Started Main in 3.136 seconds (process running for 3.372)
+27-05-2024 21:48:15.192 [main] INFO   com.vicary.pricety.Main             : Starting Main using Java 21 with PID 11666 (/Users/vicary/IdeaProjects/scraper-bot/target/classes started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+27-05-2024 21:48:15.193 [main] DEBUG  com.vicary.pricety.Main             : Running with Spring Boot v3.2.3, Spring v6.1.4
+27-05-2024 21:48:15.194 [main] INFO   com.vicary.pricety.Main             : The following 1 profile is active: "test"
+27-05-2024 21:48:18.334 [main] INFO   com.vicary.pricety.Main             : Started Main in 3.53 seconds (process running for 3.898)
+27-05-2024 21:48:55.836 [http-nio-7070-exec-5] WARN   c.v.p.controller.HomeController     : null
+27-05-2024 21:51:14.428 [main] INFO   com.vicary.pricety.Main             : Starting Main using Java 21 with PID 11774 (/Users/vicary/IdeaProjects/scraper-bot/target/classes started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+27-05-2024 21:51:14.429 [main] DEBUG  com.vicary.pricety.Main             : Running with Spring Boot v3.2.3, Spring v6.1.4
+27-05-2024 21:51:14.429 [main] INFO   com.vicary.pricety.Main             : The following 1 profile is active: "test"
+27-05-2024 21:51:18.551 [main] INFO   com.vicary.pricety.Main             : Started Main in 4.49 seconds (process running for 4.782)
+27-05-2024 21:54:34.779 [main] INFO   com.vicary.pricety.Main             : Starting Main using Java 21 with PID 12015 (/Users/vicary/IdeaProjects/scraper-bot/target/classes started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+27-05-2024 21:54:34.780 [main] DEBUG  com.vicary.pricety.Main             : Running with Spring Boot v3.2.3, Spring v6.1.4
+27-05-2024 21:54:34.780 [main] INFO   com.vicary.pricety.Main             : The following 1 profile is active: "test"
+27-05-2024 21:54:37.804 [main] INFO   com.vicary.pricety.Main             : Started Main in 3.391 seconds (process running for 3.745)
