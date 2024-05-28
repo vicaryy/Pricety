@@ -336,3 +336,83 @@
 27-05-2024 21:54:34.780 [main] DEBUG  com.vicary.pricety.Main             : Running with Spring Boot v3.2.3, Spring v6.1.4
 27-05-2024 21:54:34.780 [main] INFO   com.vicary.pricety.Main             : The following 1 profile is active: "test"
 27-05-2024 21:54:37.804 [main] INFO   com.vicary.pricety.Main             : Started Main in 3.391 seconds (process running for 3.745)
+28-05-2024 11:58:42.332 [main] INFO   com.vicary.pricety.Main             : Starting Main using Java 21 with PID 1272 (/Users/vicary/IdeaProjects/scraper-bot/target/classes started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+28-05-2024 11:58:42.333 [main] DEBUG  com.vicary.pricety.Main             : Running with Spring Boot v3.2.3, Spring v6.1.4
+28-05-2024 11:58:42.333 [main] INFO   com.vicary.pricety.Main             : The following 1 profile is active: "test"
+28-05-2024 11:58:45.424 [main] INFO   com.vicary.pricety.Main             : Started Main in 3.387 seconds (process running for 3.623)
+28-05-2024 15:13:56.865 [main] INFO   com.vicary.pricety.Main             : Starting Main using Java 21 with PID 2596 (/Users/vicary/IdeaProjects/scraper-bot/target/classes started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+28-05-2024 15:13:56.867 [main] DEBUG  com.vicary.pricety.Main             : Running with Spring Boot v3.2.3, Spring v6.1.4
+28-05-2024 15:13:56.867 [main] INFO   com.vicary.pricety.Main             : The following 1 profile is active: "test"
+28-05-2024 15:14:00.859 [main] INFO   com.vicary.pricety.Main             : Started Main in 4.394 seconds (process running for 4.649)
+28-05-2024 15:14:14.662 [main] INFO   com.vicary.pricety.Main             : Starting Main using Java 21 with PID 2612 (/Users/vicary/IdeaProjects/scraper-bot/target/classes started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+28-05-2024 15:14:14.663 [main] DEBUG  com.vicary.pricety.Main             : Running with Spring Boot v3.2.3, Spring v6.1.4
+28-05-2024 15:14:14.663 [main] INFO   com.vicary.pricety.Main             : The following 1 profile is active: "test"
+28-05-2024 15:14:17.272 [main] INFO   com.vicary.pricety.Main             : Started Main in 2.908 seconds (process running for 3.116)
+28-05-2024 15:19:02.268 [http-nio-7070-exec-4] INFO   c.v.p.s.r.ProductService            : [Product Service] Added new product to database link: https://www.hebe.pl/old-spice-dezodorant-meski-w-sztyfcie-50ml-000000000000269501.html
+28-05-2024 21:23:45.564 [main] INFO   com.vicary.pricety.Main             : Starting Main using Java 21 with PID 3095 (/Users/vicary/IdeaProjects/scraper-bot/target/classes started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+28-05-2024 21:23:45.565 [main] DEBUG  com.vicary.pricety.Main             : Running with Spring Boot v3.2.3, Spring v6.1.4
+28-05-2024 21:23:45.566 [main] INFO   com.vicary.pricety.Main             : The following 1 profile is active: "test"
+28-05-2024 21:23:49.208 [main] INFO   com.vicary.pricety.Main             : Started Main in 4.033 seconds (process running for 4.347)
+28-05-2024 21:26:02.994 [main] INFO   com.vicary.pricety.Main             : Starting Main using Java 21 with PID 3135 (/Users/vicary/IdeaProjects/scraper-bot/target/classes started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+28-05-2024 21:26:02.994 [main] DEBUG  com.vicary.pricety.Main             : Running with Spring Boot v3.2.3, Spring v6.1.4
+28-05-2024 21:26:02.995 [main] INFO   com.vicary.pricety.Main             : The following 1 profile is active: "test"
+28-05-2024 21:26:05.804 [main] INFO   com.vicary.pricety.Main             : Started Main in 3.105 seconds (process running for 3.396)
+28-05-2024 21:27:01.110 [main] INFO   com.vicary.pricety.Main             : Starting Main using Java 21 with PID 3171 (/Users/vicary/IdeaProjects/scraper-bot/target/classes started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+28-05-2024 21:27:01.110 [main] DEBUG  com.vicary.pricety.Main             : Running with Spring Boot v3.2.3, Spring v6.1.4
+28-05-2024 21:27:01.110 [main] INFO   com.vicary.pricety.Main             : The following 1 profile is active: "test"
+28-05-2024 21:27:04.787 [main] INFO   com.vicary.pricety.Main             : Started Main in 3.951 seconds (process running for 4.184)
+28-05-2024 21:28:27.221 [http-nio-7070-exec-4] INFO   c.v.p.s.r.ProductService            : [Product Service] Added new product to database link: https://www.zalando.pl/pier-one-koszulka-polo-black-pi922p00x-q11.html
+28-05-2024 21:29:07.269 [http-nio-7070-exec-2] INFO   c.v.p.s.r.ProductService            : [Product Service] Added new product to database link: https://www.zara.com/pl/pl/krotki-kombinezon-denim-trf-p08197067.html?v1=365503895&v2=2352823
+28-05-2024 21:30:47.491 [main] INFO   com.vicary.pricety.Main             : Starting Main using Java 21 with PID 3291 (/Users/vicary/IdeaProjects/scraper-bot/target/classes started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+28-05-2024 21:30:47.492 [main] DEBUG  com.vicary.pricety.Main             : Running with Spring Boot v3.2.3, Spring v6.1.4
+28-05-2024 21:30:47.492 [main] INFO   com.vicary.pricety.Main             : The following 1 profile is active: "test"
+28-05-2024 21:30:50.337 [main] INFO   com.vicary.pricety.Main             : Started Main in 3.15 seconds (process running for 3.385)
+28-05-2024 21:31:10.175 [http-nio-7070-exec-7] WARN   c.v.p.controller.HomeController     : null
+28-05-2024 21:33:00.315 [main] INFO   com.vicary.pricety.Main             : Starting Main using Java 21 with PID 3341 (/Users/vicary/IdeaProjects/scraper-bot/target/classes started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+28-05-2024 21:33:00.316 [main] DEBUG  com.vicary.pricety.Main             : Running with Spring Boot v3.2.3, Spring v6.1.4
+28-05-2024 21:33:00.316 [main] INFO   com.vicary.pricety.Main             : The following 1 profile is active: "test"
+28-05-2024 21:33:03.407 [main] INFO   com.vicary.pricety.Main             : Started Main in 3.416 seconds (process running for 3.739)
+28-05-2024 21:33:19.737 [http-nio-7070-exec-7] WARN   c.v.p.controller.HomeController     : null
+28-05-2024 21:34:44.631 [http-nio-7070-exec-7] WARN   c.v.p.controller.HomeController     : null
+28-05-2024 21:34:48.663 [http-nio-7070-exec-10] WARN   c.v.p.controller.HomeController     : null
+28-05-2024 21:34:54.705 [http-nio-7070-exec-7] WARN   c.v.p.controller.HomeController     : null
+28-05-2024 21:34:56.715 [http-nio-7070-exec-4] WARN   c.v.p.controller.HomeController     : null
+28-05-2024 21:35:00.745 [http-nio-7070-exec-6] WARN   c.v.p.controller.HomeController     : null
+28-05-2024 21:35:15.772 [http-nio-7070-exec-9] WARN   c.v.p.controller.HomeController     : null
+28-05-2024 21:37:35.551 [http-nio-7070-exec-5] WARN   c.v.p.controller.HomeController     : null
+28-05-2024 22:02:31.991 [main] INFO   com.vicary.pricety.Main             : Starting Main using Java 21 with PID 3896 (/Users/vicary/IdeaProjects/scraper-bot/target/classes started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+28-05-2024 22:02:31.992 [main] DEBUG  com.vicary.pricety.Main             : Running with Spring Boot v3.2.3, Spring v6.1.4
+28-05-2024 22:02:31.992 [main] INFO   com.vicary.pricety.Main             : The following 1 profile is active: "test"
+28-05-2024 22:02:34.839 [main] INFO   com.vicary.pricety.Main             : Started Main in 3.179 seconds (process running for 3.518)
+28-05-2024 22:02:57.054 [http-nio-7070-exec-9] WARN   c.v.p.controller.HomeController     : null
+28-05-2024 22:05:52.656 [main] INFO   com.vicary.pricety.Main             : Starting Main using Java 21 with PID 3954 (/Users/vicary/IdeaProjects/scraper-bot/target/classes started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+28-05-2024 22:05:52.657 [main] DEBUG  com.vicary.pricety.Main             : Running with Spring Boot v3.2.3, Spring v6.1.4
+28-05-2024 22:05:52.657 [main] INFO   com.vicary.pricety.Main             : The following 1 profile is active: "test"
+28-05-2024 22:05:55.790 [main] INFO   com.vicary.pricety.Main             : Started Main in 3.544 seconds (process running for 3.837)
+28-05-2024 22:06:07.282 [http-nio-7070-exec-2] WARN   c.v.p.controller.HomeController     : null
+28-05-2024 22:07:20.361 [main] INFO   com.vicary.pricety.Main             : Starting Main using Java 21 with PID 3995 (/Users/vicary/IdeaProjects/scraper-bot/target/classes started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+28-05-2024 22:07:20.362 [main] DEBUG  com.vicary.pricety.Main             : Running with Spring Boot v3.2.3, Spring v6.1.4
+28-05-2024 22:07:20.363 [main] INFO   com.vicary.pricety.Main             : The following 1 profile is active: "test"
+28-05-2024 22:07:24.052 [main] INFO   com.vicary.pricety.Main             : Started Main in 4.046 seconds (process running for 4.284)
+28-05-2024 22:07:35.220 [http-nio-7070-exec-3] WARN   c.v.p.controller.HomeController     : null
+28-05-2024 22:10:21.575 [main] INFO   com.vicary.pricety.Main             : Starting Main using Java 21 with PID 4114 (/Users/vicary/IdeaProjects/scraper-bot/target/classes started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+28-05-2024 22:10:21.576 [main] DEBUG  com.vicary.pricety.Main             : Running with Spring Boot v3.2.3, Spring v6.1.4
+28-05-2024 22:10:21.576 [main] INFO   com.vicary.pricety.Main             : The following 1 profile is active: "test"
+28-05-2024 22:10:24.650 [main] INFO   com.vicary.pricety.Main             : Started Main in 3.346 seconds (process running for 3.576)
+28-05-2024 22:10:38.655 [http-nio-7070-exec-1] WARN   c.v.p.controller.HomeController     : null
+28-05-2024 22:10:52.936 [http-nio-7070-exec-4] WARN   c.v.p.controller.HomeController     : null
+28-05-2024 22:11:16.399 [http-nio-7070-exec-8] WARN   c.v.p.controller.HomeController     : null
+28-05-2024 22:11:29.545 [http-nio-7070-exec-7] WARN   c.v.p.controller.HomeController     : null
+28-05-2024 22:12:32.550 [main] INFO   com.vicary.pricety.Main             : Starting Main using Java 21 with PID 4259 (/Users/vicary/IdeaProjects/scraper-bot/target/classes started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+28-05-2024 22:12:32.551 [main] DEBUG  com.vicary.pricety.Main             : Running with Spring Boot v3.2.3, Spring v6.1.4
+28-05-2024 22:12:32.551 [main] INFO   com.vicary.pricety.Main             : The following 1 profile is active: "test"
+28-05-2024 22:12:36.157 [main] INFO   com.vicary.pricety.Main             : Started Main in 3.899 seconds (process running for 4.171)
+28-05-2024 22:12:53.852 [http-nio-7070-exec-10] WARN   c.v.p.controller.HomeController     : null
+28-05-2024 22:18:50.952 [main] INFO   com.vicary.pricety.Main             : Starting Main using Java 21 with PID 4347 (/Users/vicary/IdeaProjects/scraper-bot/target/classes started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+28-05-2024 22:18:50.952 [main] DEBUG  com.vicary.pricety.Main             : Running with Spring Boot v3.2.3, Spring v6.1.4
+28-05-2024 22:18:50.953 [main] INFO   com.vicary.pricety.Main             : The following 1 profile is active: "test"
+28-05-2024 22:18:54.707 [main] INFO   com.vicary.pricety.Main             : Started Main in 4.028 seconds (process running for 4.308)
+28-05-2024 22:21:09.543 [main] INFO   com.vicary.pricety.Main             : Starting Main using Java 21 with PID 4404 (/Users/vicary/IdeaProjects/scraper-bot/target/classes started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+28-05-2024 22:21:09.544 [main] DEBUG  com.vicary.pricety.Main             : Running with Spring Boot v3.2.3, Spring v6.1.4
+28-05-2024 22:21:09.545 [main] INFO   com.vicary.pricety.Main             : The following 1 profile is active: "test"
+28-05-2024 22:21:12.466 [main] INFO   com.vicary.pricety.Main             : Started Main in 3.202 seconds (process running for 3.458)

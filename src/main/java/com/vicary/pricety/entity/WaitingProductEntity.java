@@ -1,6 +1,6 @@
 package com.vicary.pricety.entity;
 
-import com.vicary.pricety.thread_local.ActiveUser;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,29 +8,35 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "waiting_variants")
+@Table(name = "waiting_products")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class WaitingVariantsEntity {
+public class WaitingProductEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private long id;
+    private long productId;
 
     @Column(name = "url")
     private String url;
 
-    public static WaitingVariantsEntity requestEntity(String url) {
-        return WaitingVariantsEntity.builder()
+    @Column(name = "variant")
+    private String variant;
+
+    public static WaitingProductEntity requestEntity(String url, String variant) {
+        return WaitingProductEntity.builder()
                 .url(url)
+                .variant(variant)
                 .build();
     }
 
-    public static WaitingVariantsEntity emptyEntity() {
-        return WaitingVariantsEntity.builder()
+    public static WaitingProductEntity emptyEntity() {
+        return WaitingProductEntity.builder()
+                .productId(0)
                 .url("")
+                .variant("")
                 .build();
     }
 }

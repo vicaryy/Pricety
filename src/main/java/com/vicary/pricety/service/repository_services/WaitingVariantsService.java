@@ -14,11 +14,12 @@ public class WaitingVariantsService {
 
     private final WaitingVariantsRepository repository;
 
-    public WaitingVariantsEntity getFirst() {
+    public WaitingVariantsEntity getFirstAndDelete() {
         List<WaitingVariantsEntity> waitingVariantsEntities = repository.findAll(Sort.by("id"));
         if (waitingVariantsEntities.isEmpty())
             return WaitingVariantsEntity.emptyEntity();
 
+        deleteById(waitingVariantsEntities.getFirst().getId());
         return waitingVariantsEntities.getFirst();
     }
 

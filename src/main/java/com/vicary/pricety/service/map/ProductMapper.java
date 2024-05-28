@@ -1,6 +1,7 @@
 package com.vicary.pricety.service.map;
 
 import com.vicary.pricety.entity.ProductEntity;
+import com.vicary.pricety.entity.UpdatedProductEntity;
 import com.vicary.pricety.entity.UserEntity;
 import com.vicary.pricety.model.ProductTemplate;
 import com.vicary.pricety.model.UserDTO;
@@ -157,6 +158,19 @@ public class ProductMapper {
         return product.stream()
                 .map(productDTO -> map(productDTO, localDateTime))
                 .collect(Collectors.toList());
+    }
+
+    public Product mapToProduct(UpdatedProductEntity p) {
+        return Product.builder()
+                .photoUrl(p.getPhotoUrl())
+                .name(p.getName())
+                .description(p.getDescription())
+                .price(p.getPrice())
+                .variant(p.getVariant())
+                .link(p.getLink())
+                .serviceName(p.getServiceName())
+                .currency(p.getCurrency())
+                .build();
     }
 }
 

@@ -1,5 +1,6 @@
 package com.vicary.pricety.entity;
 
+import com.vicary.pricety.model.Identifiable;
 import com.vicary.pricety.security.Role;
 import jakarta.persistence.*;
 import lombok.*;

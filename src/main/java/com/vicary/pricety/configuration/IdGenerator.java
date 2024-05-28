@@ -1,7 +1,5 @@
 package com.vicary.pricety.configuration;
 
-import com.vicary.pricety.controller.database_import.DatabaseSetterController;
-import com.vicary.pricety.entity.Identifiable;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.id.IdentifierGenerator;

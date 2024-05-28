@@ -1,23 +1,20 @@
 package com.vicary.pricety.entity;
 
-import com.vicary.pricety.model.Identifiable;
+import jakarta.persistence.Entity;
+
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "products_test", schema = "public")
-public class ProductEntity implements Identifiable {
+@Table(name = "updated_products")
+public class UpdatedProductEntity {
     @Id
-    @GeneratedValue(generator = "id-generator")
-    @GenericGenerator(name = "id-generator",
-            strategy = "com.vicary.pricety.configuration.IdGenerator")
-    @Column(name = "product_id")
-    private Long id;
+    @Column(name = "id")
+    private Long productId;
 
     @Column(name = "product_name")
     private String name;
@@ -46,10 +43,10 @@ public class ProductEntity implements Identifiable {
     @Column(name = "currency")
     private String currency;
 
-    @Column(name = "notify_when_available")
-    private boolean notifyWhenAvailable;
+    @Column(name = "error")
+    private boolean error;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private UserEntity user;
+    @Column(name = "error_message")
+    private String errorMessage;
 }
+

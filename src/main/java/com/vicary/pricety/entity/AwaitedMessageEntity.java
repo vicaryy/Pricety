@@ -1,5 +1,6 @@
 package com.vicary.pricety.entity;
 
+import com.vicary.pricety.model.Identifiable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,7 +19,8 @@ public class AwaitedMessageEntity implements Identifiable {
     @Id
     @GeneratedValue(generator = "id-generator")
     @GenericGenerator(name = "id-generator",
-            strategy = "com.vicary.pricety.configuration.IdGenerator")    @Column(name = "id")
+            strategy = "com.vicary.pricety.configuration.IdGenerator")
+    @Column(name = "id")
     private Long id;
 
     @Column(name = "user_id")

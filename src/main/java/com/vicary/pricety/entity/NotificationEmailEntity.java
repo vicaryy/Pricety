@@ -1,5 +1,6 @@
 package com.vicary.pricety.entity;
 
+import com.vicary.pricety.model.Identifiable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

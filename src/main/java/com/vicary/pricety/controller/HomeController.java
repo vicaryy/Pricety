@@ -119,7 +119,7 @@ public class HomeController {
                             "Wiadomość formularzowa",
                             """
                                     Wiadomość od użytkownika %s - %s:
-                                                                        
+                                                                       \s
                                     %s""".formatted(name, email, message), false));
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -136,10 +136,7 @@ public class HomeController {
     }
 
     private List<String> scrapVariants(String url) {
-        UpdatedVariantsEntity entity = scraperService.scrapVariants(url);
-        if (entity.isError())
-            throw new ScraperBotException(entity.getErrorMessage());
-        return entity.getVariants();
+        return scraperService.scrapVariants(url);
     }
 
     private void saveProduct(Product product, Authentication authentication) {
