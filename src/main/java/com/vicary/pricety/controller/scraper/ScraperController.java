@@ -1,16 +1,12 @@
 package com.vicary.pricety.controller.scraper;
 
-import com.vicary.pricety.entity.UpdatedProductEntity;
-import com.vicary.pricety.entity.UpdatedVariantsEntity;
-import com.vicary.pricety.entity.WaitingProductEntity;
-import com.vicary.pricety.entity.WaitingVariantsEntity;
-import com.vicary.pricety.service.repository_services.UpdatedProductService;
-import com.vicary.pricety.service.repository_services.UpdatedVariantsService;
-import com.vicary.pricety.service.repository_services.WaitingProductService;
-import com.vicary.pricety.service.repository_services.WaitingVariantsService;
+import com.vicary.pricety.entity.*;
+import com.vicary.pricety.service.repository_services.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,6 +17,8 @@ public class ScraperController {
     private final WaitingVariantsService waitingVariantsService;
     private final UpdatedProductService updatedProductService;
     private final WaitingProductService waitingProductService;
+    private final WaitingProductPriceService waitingProductPriceService;
+    private final UpdatedProductPriceService updatedProductPriceService;
 
 
     @GetMapping("variants")
@@ -42,6 +40,17 @@ public class ScraperController {
     @PostMapping("product")
     public ResponseEntity<?> updateProduct(@RequestBody UpdatedProductEntity entity) {
         updatedProductService.save(entity);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("products")
+    public ResponseEntity<List<WaitingProductPriceEntity>> getWaitingProductsPrice() {
+        return ResponseEntity.ok(waitingProductPriceService.getAllAndDelete());
+    }
+
+    @PostMapping("products")
+    public ResponseEntity<?> updateProductsPrice(@RequestBody List<UpdatedProductPriceEntity> u) {
+        updatedProductPriceService.saveAll(u);
         return ResponseEntity.ok().build();
     }
 }

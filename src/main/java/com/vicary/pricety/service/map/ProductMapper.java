@@ -1,11 +1,8 @@
 package com.vicary.pricety.service.map;
 
-import com.vicary.pricety.entity.ProductEntity;
-import com.vicary.pricety.entity.UpdatedProductEntity;
-import com.vicary.pricety.entity.UserEntity;
+import com.vicary.pricety.entity.*;
 import com.vicary.pricety.model.ProductTemplate;
 import com.vicary.pricety.model.UserDTO;
-import com.vicary.pricety.entity.ProductHistoryEntity;
 import com.vicary.pricety.model.Product;
 import com.vicary.pricety.service.dto.ProductDTO;
 import org.springframework.stereotype.Component;
@@ -171,6 +168,20 @@ public class ProductMapper {
                 .serviceName(p.getServiceName())
                 .currency(p.getCurrency())
                 .build();
+    }
+
+    public WaitingProductPriceEntity mapToWaiting(Product p) {
+        return WaitingProductPriceEntity.builder()
+                .productId(p.getProductId())
+                .newPrice(0)
+                .link(p.getLink())
+                .variant(p.getVariant())
+                .serviceName(p.getServiceName())
+                .build();
+    }
+
+    public List<WaitingProductPriceEntity> mapToWaiting(List<Product> p) {
+        return p.stream().map(this::mapToWaiting).toList();
     }
 }
 

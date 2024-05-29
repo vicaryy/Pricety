@@ -4,6 +4,7 @@ import com.vicary.pricety.exception.ScraperBotException;
 import com.vicary.pricety.model.Product;
 import com.vicary.pricety.scraper.*;
 import com.vicary.pricety.scraper.config.BrowserType;
+import com.vicary.pricety.service.ScraperService;
 import com.vicary.pricety.service.repository_services.WaitingUserService;
 import com.vicary.pricety.updater.sender.NotificationManager;
 import com.vicary.pricety.utils.TerminalExecutor;
@@ -29,6 +30,7 @@ public class AutoUpdater {
     private final NotificationManager notificationManager;
     private final WaitingUserService waitingUserService;
     private final Map<String, Scraper> scraperMap = new HashMap<>();
+    private final ScraperService scraperService;
     private Thread runningThread;
     private UpdaterState state;
 
@@ -38,6 +40,7 @@ public class AutoUpdater {
                        ProductMapper productMapper,
                        NotificationManager notificationManager,
                        WaitingUserService waitingUserService,
+                       ScraperService scraperService,
                        ZalandoScraper zalandoScraper,
                        HebeScraper hebeScraper,
                        NikeScraper nikeScraper,
@@ -48,6 +51,7 @@ public class AutoUpdater {
         this.productMapper = productMapper;
         this.waitingUserService = waitingUserService;
         this.notificationManager = notificationManager;
+        this.scraperService = scraperService;
 
         scraperMap.put("zalando", zalandoScraper);
         scraperMap.put("hebe", hebeScraper);
@@ -113,9 +117,7 @@ public class AutoUpdater {
             return;
         }
 
-        List<List<Product>> splittedListIntoScrapers = divideListIntoServices(products);
-
-        updateProducts(splittedListIntoScrapers);
+        scraperService.updateProductsPrice(products);
 
         saveToUpdatesHistoryRepository(products);
 
@@ -137,37 +139,6 @@ public class AutoUpdater {
         }
 
         return new ArrayList<>(serviceMap.values());
-    }
-
-    private void updateProducts(List<List<Product>> listOfLists) {
-        for (List<Product> products : listOfLists) {
-            String serviceNameWithoutCountry = getServiceNameWithoutCountry(products.get(0).getServiceName());
-            Scraper scraper = getScraperFromMap(serviceNameWithoutCountry);
-
-            long startingTime = System.currentTimeMillis();
-            logger.info("[Product Updater] Starting updating '{}' products, service {}", products.size(), products.get(0).getServiceName());
-            ProductUpdater updater = new ProductUpdater(scraper, products);
-            try {
-                updater.update();
-            } catch (TimeoutException ex) {
-                logger.error("[Auto Updater] Timeout in updating products but continuing auto update process.");
-                logger.error("[Auto Updater] Set Scraper as bugged - headless mode OFF.");
-                scraper.setBugged(true);
-                TerminalExecutor.shutdownBrowser(BrowserType.Chromium);
-            }
-            logger.info("[Product Updater] Products updated successfully, it takes {} seconds\n", (System.currentTimeMillis() - startingTime) / 1000);
-        }
-    }
-
-    private Scraper getScraperFromMap(String serviceName) {
-        for (Map.Entry<String, Scraper> entry : scraperMap.entrySet())
-            if (serviceName.startsWith(entry.getKey()))
-                return entry.getValue();
-        throw new ScraperBotException("Can't find Scraper for service '%s'".formatted(serviceName));
-    }
-
-    private String getServiceNameWithoutCountry(String serviceName) {
-        return serviceName.split("\\.")[0];
     }
 
     private void saveToUpdatesHistoryRepository(List<Product> updatedProducts) {

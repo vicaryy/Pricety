@@ -27,7 +27,6 @@ public class UserMapper {
                 .premium(false)
                 .role(Role.USER)
                 .emailNotifications(false)
-                .role(Role.USER)
                 .telegram(true)
                 .verifiedEmail(false)
                 .build();

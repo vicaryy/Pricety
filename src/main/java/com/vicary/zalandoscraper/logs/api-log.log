@@ -416,3 +416,16 @@
 28-05-2024 22:21:09.544 [main] DEBUG  com.vicary.pricety.Main             : Running with Spring Boot v3.2.3, Spring v6.1.4
 28-05-2024 22:21:09.545 [main] INFO   com.vicary.pricety.Main             : The following 1 profile is active: "test"
 28-05-2024 22:21:12.466 [main] INFO   com.vicary.pricety.Main             : Started Main in 3.202 seconds (process running for 3.458)
+29-05-2024 13:02:17.455 [main] INFO   com.vicary.pricety.Main             : Starting Main using Java 21 with PID 1557 (/Users/vicary/IdeaProjects/scraper-bot/target/classes started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+29-05-2024 13:02:17.455 [main] DEBUG  com.vicary.pricety.Main             : Running with Spring Boot v3.2.3, Spring v6.1.4
+29-05-2024 13:02:17.456 [main] INFO   com.vicary.pricety.Main             : The following 1 profile is active: "test"
+29-05-2024 13:02:20.257 [main] INFO   com.vicary.pricety.Main             : Started Main in 3.093 seconds (process running for 3.384)
+29-05-2024 13:02:50.284 [http-nio-7070-exec-7] WARN   c.v.p.controller.HomeController     : Timeout in scraping variants.
+29-05-2024 13:03:05.316 [http-nio-7070-exec-5] WARN   c.v.p.controller.HomeController     : It seems your link is incorrect, please check it and try again.
+29-05-2024 13:04:02.529 [http-nio-7070-exec-3] WARN   c.v.p.controller.HomeController     : It seems your link is incorrect, please check it and try again.
+29-05-2024 13:05:12.769 [http-nio-7070-exec-6] INFO   c.v.p.s.r.ProductService            : [Product Service] Added new product to database link: https://www.zalando.pl/nike-performance-poland-short-stadium-home-krotkie-spodenki-sportowe-redwhite-n1242e33f-g11.html
+29-05-2024 13:09:39.248 [http-nio-7070-exec-3] INFO   c.v.p.s.r.ProductService            : [Product Service] Added new product to database link: https://www.nike.com/pl/t/buty-air-max-dn-SBVfbL/DV3337-101
+29-05-2024 15:54:02.066 [main] INFO   com.vicary.pricety.Main             : Starting Main using Java 21 with PID 3235 (/Users/vicary/IdeaProjects/scraper-bot/target/classes started by vicary in /Users/vicary/IdeaProjects/scraper-bot)
+29-05-2024 15:54:02.067 [main] DEBUG  com.vicary.pricety.Main             : Running with Spring Boot v3.2.3, Spring v6.1.4
+29-05-2024 15:54:02.068 [main] INFO   com.vicary.pricety.Main             : The following 1 profile is active: "test"
+29-05-2024 15:54:04.712 [main] INFO   com.vicary.pricety.Main             : Started Main in 2.92 seconds (process running for 3.153)

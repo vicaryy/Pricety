@@ -60,7 +60,7 @@ public class HomeController {
                 scrapAndSaveProduct(url, variants.get(0), authentication);
                 return successTemplate("Product added successfully!", model);
             }
-        } catch (ScraperBotException ex) {
+        } catch (IllegalInputException ex) {
             log.warn(ex.getLoggerMessage());
             return errorTemplate(ex.getMessage(), model);
         } catch (Exception ex) {
@@ -75,7 +75,7 @@ public class HomeController {
             @RequestParam(name = "u") String url,
             @RequestParam(name = "v") String variant,
             Model model,
-            Authentication authentication) throws InterruptedException {
+            Authentication authentication) {
 
         try {
             scrapAndSaveProduct(url, variant, authentication);
@@ -83,7 +83,7 @@ public class HomeController {
             log.warn(ex.getLoggerMessage());
             return errorTemplate(ex.getMessage(), model);
         } catch (Exception ex) {
-            return errorTemplate(ex.getMessage(), model);
+            return errorTemplate("Something goes wrong, try again.", model);
         }
         return successTemplate("Product added successfully!", model);
     }

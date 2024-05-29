@@ -42,7 +42,7 @@ public class ResponseFacade {
         return productService.getAllProductsByUserId(userId);
     }
 
-    public void createAndSaveAwaitedMessage(String userId, String request) { //todo
+    public void createAndSaveAwaitedMessage(String userId, String request) {
         awaitedMessageService.saveAwaitedMessage(AwaitedMessageEntity.builder()
                 .userId(userId)
                 .request(request)
@@ -109,15 +109,15 @@ public class ResponseFacade {
         emailVerificationService.deleteByToken(token);
     }
 
-    public String getAwaitedMessageRequestAndDelete(String userId) { //todo
+    public String getAwaitedMessageRequestAndDelete(String userId) {
         return awaitedMessageService.getRequestAndDeleteMessage(userId);
     }
 
-    public void deleteAwaitedMessage(String userId) { //todo
+    public void deleteAwaitedMessage(String userId) {
         awaitedMessageService.deleteAwaitedMessage(userId);
     }
 
-    public String getAwaitedMessageRequest(String userId) { //todo
+    public String getAwaitedMessageRequest(String userId) {
         return awaitedMessageService.getRequest(userId);
     }
 

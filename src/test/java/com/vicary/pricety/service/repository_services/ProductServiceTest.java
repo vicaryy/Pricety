@@ -47,6 +47,19 @@ class ProductServiceTest {
 
 
     @Test
+    void saveProduct() {
+        //given
+        Product givenProduct = null;
+        UserEntity givenUser = null;
+
+
+        //when
+        when(userService.findByUserId(0)).thenReturn(null);
+//        when(mapper.map(null, null)).thenReturn()
+    }
+
+
+    @Test
     void updateProductPrices_updateOnlyPrice_PriceAlertAUTO() {
         //given
         Product givenProduct = Product.builder()
