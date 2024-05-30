@@ -69,9 +69,9 @@ docker run -p 8080:8080 -e BOT_TOKEN='[bot token]' -e SECRET_KEY='[256-bit encry
 <p>If you <b>DON'T</b> want to add any records to database then send this to your server:</p>
 
 ```sh
-POST MAPPING
 FOR EVERY REQUEST YOU HAVE TO SET THIS HEADER: ("secretKey", [256-bit encryption key])
 
+POST MAPPING
 /api/set/done
 ```
 <br>
