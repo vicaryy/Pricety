@@ -70,6 +70,8 @@ docker run -p 8080:8080 -e BOT_TOKEN='[bot token]' -e SECRET_KEY='[256-bit encry
 
 ```sh
 POST MAPPING
+FOR EVERY REQUEST YOU HAVE TO SET THIS HEADER: ("secretKey", [256-bit encryption key])
+
 /api/set/done
 ```
 <br>
@@ -77,6 +79,8 @@ POST MAPPING
 <p>If you <b>WANT</b> to add records to database then send this to your server:</p>
 
 ```sh
+FOR EVERY REQUEST YOU HAVE TO SET THIS HEADER: ("secretKey", [256-bit encryption key])
+
 POST MAPPINGS
 /api/set/users - JSON file of List<UserEntity>
 /api/set/products - JSON file of List<ProductEntity>
